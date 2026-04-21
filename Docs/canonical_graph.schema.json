@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/schemas/canonical_graph.schema.json",
+  "title": "Canonical Threat Model Graph",
+  "type": "object",
+  "required": [
+    "metadata",
+    "system",
+    "subsystems",
+    "components",
+    "data_flows"
+  ],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["generation_timestamp", "model_level"],
+      "properties": {
+        "generation_timestamp": { "type": "string" },
+        "model_level": {
+          "type": "string",
+          "enum": ["system", "subsystem", "component"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "system": {
+      "type": "object",
+      "required": ["name", "description", "mission_criticality", "safety_criticality"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "mission_criticality": { "type": "string" },
+        "safety_criticality": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "subsystems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "description", "parent_system"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "parent_system": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "parent_subsystem", "hardware", "software_modules", "description"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "parent_subsystem": { "type": "string" },
+          "hardware": { "type": "string" },
+          "software_modules": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "description": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "data_flows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "from_node",
+          "to_node",
+          "protocol",
+          "data_items",
+          "trust_boundary_crossing",
+          "trust_boundary_name",
+          "stride",
+          "threats"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "from_node": { "type": "string" },
+          "to_node": { "type": "string" },
+          "protocol": { "type": "string" },
+          "data_items": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "trust_boundary_crossing": { "type": "boolean" },
+          "trust_boundary_name": { "type": "string" },
+          "stride": {
+            "type": "object",
+            "required": [
+              "S",
+              "S_justification",
+              "T",
+              "T_justification",
+              "R",
+              "R_justification",
+              "I",
+              "I_justification",
+              "D",
+              "D_justification",
+              "E",
+              "E_justification"
+            ],
+            "properties": {
+              "S": { "type": "integer", "minimum": 0, "maximum": 5 },
+              "S_justification": { "type": "string" },
+              "T": { "type": "integer", "minimum": 0, "maximum": 5 },
+              "T_justification": { "type": "string" },
+              "R": { "type": "integer", "minimum": 0, "maximum": 5 },
+              "R_justification": { "type": "string" },
+              "I": { "type": "integer", "minimum": 0, "maximum": 5 },
+              "I_justification": { "type": "string" },
+              "D": { "type": "integer", "minimum": 0, "maximum": 5 },
+              "D_justification": { "type": "string" },
+              "E": { "type": "integer", "minimum": 0, "maximum": 5 },
+              "E_justification": { "type": "string" }
+            },
+            "additionalProperties": false
+          },
+          "threats": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "description",
+                "mitre_attack_technique",
+                "capec_id",
+                "cwe_id",
+                "likelihood",
+                "impact",
+                "mitigations_technical",
+                "mitigations_administrative"
+              ],
+              "properties": {
+                "name": { "type": "string" },
+                "description": { "type": "string" },
+                "mitre_attack_technique": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                },
+                "capec_id": { "type": "string" },
+                "cwe_id": { "type": "string" },
+                "likelihood": { "type": "integer", "minimum": 1, "maximum": 5 },
+                "impact": { "type": "integer", "minimum": 1, "maximum": 5 },
+                "mitigations_technical": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "control_id": { "type": "string" },
+                      "title": { "type": "string" },
+                      "description": { "type": "string" },
+                      "residual_risk_after_control": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 5
+                      }
+                    },
+                    "required": ["control_id", "title", "description", "residual_risk_after_control"],
+                    "additionalProperties": true
+                  }
+                },
+                "mitigations_administrative": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "control_id": { "type": "string" },
+                      "title": { "type": "string" },
+                      "description": { "type": "string" },
+                      "residual_risk_after_control": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 5
+                      }
+                    },
+                    "required": ["control_id", "title", "description", "residual_risk_after_control"],
+                    "additionalProperties": true
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

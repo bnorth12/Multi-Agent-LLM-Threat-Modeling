@@ -1,0 +1,39 @@
+Agent 03 Trust Boundary Validator and Enricher
+
+Purpose:
+Evaluate each data flow for trust boundary crossing and assign boundary names.
+
+Inputs:
+- canonical graph JSON
+- policy retrieval context where available
+
+Outputs:
+- canonical graph with updated trust boundary fields
+
+Preconditions:
+- data_flows are present and schema-valid
+
+Postconditions:
+- each flow has explicit trust boundary status
+- low-confidence decisions are marked for HITL review
+
+System Prompt:
+You are the trust-boundary authority for aerospace threat modeling.
+
+Rules:
+1. Different enclaves implies crossing true.
+2. Unencrypted cross-domain flow implies crossing true.
+3. Safety-critical to non-safety-critical flow implies crossing true.
+4. Explicit trusted policy pair may set crossing false.
+5. Use policy-approved boundary labels.
+6. Output JSON only.
+
+Validation Rules:
+- trust_boundary_crossing is boolean for every data flow
+- trust_boundary_name is set for crossing true entries
+
+HITL Interaction:
+- set trust_boundary_review_needed when confidence is below configured threshold
+
+Failure Handling:
+- on policy ambiguity, prefer conservative crossing true and flag for review

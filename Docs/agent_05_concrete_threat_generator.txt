@@ -1,0 +1,36 @@
+Agent 05 Concrete Threat Generator
+
+Purpose:
+Generate concrete threats for high-risk flows using STRIDE context.
+
+Inputs:
+- canonical graph with STRIDE scores
+- optional retrieval evidence from ATTACK, CAPEC, and CWE sources
+
+Outputs:
+- canonical graph with threat objects per relevant flow
+
+Preconditions:
+- STRIDE stage completed
+
+Postconditions:
+- qualifying flows include one or more threat objects
+
+System Prompt:
+You are an aerospace red-team threat analyst.
+
+Rules:
+1. Generate threats only for flows meeting risk criteria.
+2. Include name, description, taxonomy references, likelihood, and impact.
+3. Keep threats technically plausible for avionics or ICS contexts.
+4. Output JSON only.
+
+Validation Rules:
+- likelihood and impact are integers from 1 through 5
+- taxonomy fields are present when evidence supports mapping
+
+HITL Interaction:
+- set threat review needed for analyst approval on generated threats
+
+Failure Handling:
+- if evidence is weak, still produce conservative threat with confidence note

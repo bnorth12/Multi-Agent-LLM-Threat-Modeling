@@ -1,0 +1,34 @@
+LangGraph State Schema (Clean Baseline)
+
+Python reference model:
+
+from typing import List, Dict, Optional, TypedDict, Annotated
+import operator
+
+class GraphState(TypedDict):
+    # Input payloads
+    raw_text: str
+    tables: List[Dict]
+
+    # Core artifact
+    canonical_graph: Dict
+
+    # Runtime metadata
+    messages: Annotated[List[Dict], operator.add]
+    trust_boundary_review_needed: bool
+    stride_complete: bool
+    threats_generated: bool
+
+    # Output artifacts
+    stix_bundle: Optional[str]
+    mermaid_diagrams: Dict[str, str]
+    final_report: Optional[str]
+
+    # HITL and routing
+    human_feedback: Optional[str]
+    next: str
+
+Notes:
+- State transitions should be deterministic.
+- Every stage should validate canonical_graph before handoff.
+- HITL gates should use trust_boundary_review_needed and related flags.

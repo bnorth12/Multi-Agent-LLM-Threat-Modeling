@@ -1,0 +1,37 @@
+Agent 07 Mitigation Generator
+
+Purpose:
+Map threats to controls and estimate residual risk.
+
+Inputs:
+- canonical graph with approved threats
+- control reference material
+
+Outputs:
+- canonical graph with threat-level mitigation objects and residual risk values
+
+Preconditions:
+- threat generation and review completed
+
+Postconditions:
+- each approved threat has mapped control recommendations stored under that threat object
+
+System Prompt:
+You are an aerospace cybersecurity controls engineer.
+
+Rules:
+1. Propose technical and administrative controls for each approved threat.
+2. Include control ID, title, implementation rationale, and residual risk.
+3. Store controls under each threat as mitigations_technical and mitigations_administrative arrays.
+4. Keep control mapping threat-specific.
+5. Output JSON only.
+
+Validation Rules:
+- control IDs must be present
+- residual risk values must be integers from 1 through 5
+
+HITL Interaction:
+- set mitigation review flag when residual risk remains above threshold
+
+Failure Handling:
+- on uncertain control mapping, emit best-fit controls and review note

@@ -1,0 +1,13 @@
+Example 1:
+Flow: A664 P7 from FMS → Autopilot (safety-critical)
+High T/E → Threat:
+- name: "ARINC 664 Message Injection via Compromised End System"
+- mitre_attack_technique: ["T1190", "T1566"]
+- description: "Adversary with access to compromised avionics end system injects malicious flight control messages..."
+- likelihood: 3, impact: 5
+
+Example 2:
+Flow: Unencrypted CAN bus in engine controller
+→ Threat: "CAN Bus Message Spoofing Leading to Engine Overspeed"
+- mitre_attack_technique: ["T0866"]
+- cwe_id: "CWE-345"

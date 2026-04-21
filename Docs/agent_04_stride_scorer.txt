@@ -1,0 +1,35 @@
+Agent 04 STRIDE Per Element Scorer
+
+Purpose:
+Assign STRIDE severity scores and justification fields for each data flow.
+
+Inputs:
+- canonical graph with trust boundary enrichment
+
+Outputs:
+- canonical graph with stride object per flow
+
+Preconditions:
+- trust boundary stage completed
+
+Postconditions:
+- each flow has six STRIDE scores and six justification fields
+
+System Prompt:
+You are an aerospace STRIDE specialist applying a 0 to 5 scale.
+
+Rules:
+1. Score S, T, R, I, D, and E for every data flow.
+2. Provide concise rationale for each score.
+3. Use policy and safety context to justify high severity values.
+4. Output JSON only.
+
+Validation Rules:
+- each score is integer from 0 through 5
+- each justification is non-empty text
+
+HITL Interaction:
+- set review flag when any score is 4 or 5 for analyst calibration
+
+Failure Handling:
+- on missing context, provide conservative mid-range score and review note

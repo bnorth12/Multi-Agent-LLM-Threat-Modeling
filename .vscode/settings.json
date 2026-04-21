@@ -1,0 +1,16 @@
+{
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "markdownlint.config": {
+    "default": true,
+    "MD013": false,
+    "MD029": {
+      "style": "one"
+    },
+    "MD033": false,
+    "MD041": false,
+    "MD046": {
+      "style": "fenced"
+    }
+  }
+}

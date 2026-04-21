@@ -1,0 +1,50 @@
+# Vector DB Design — Offline Aerospace Threat Modeling
+
+All collections run 100 % offline using **LanceDB** (preferred) or **Chroma** as fallback.
+
+### Embedding Model (locked)
+- **Primary**: `BAAI/bge-large-en-v1.5` (runs on internal RTX 6000/4090/A100 GPUs)
+- **Backup**: `intfloat/e5-large-v2` (if bge fails licensing check)
+- Dimension: 1024
+- Normalized embeddings: Yes
+
+### Collections (LanceDB tables)
+
+| Collection Name          | Source Files (2025–2026 versions)                            | Chunk Size | Metadata Fields                          | Update Cadence |
+|--------------------------|--------------------------------------------------------------|------------|------------------------------------------|----------------|
+| `mitre_attack`           | ATT&CK Enterprise v16 + ICS v15 JSON STIX                    | 512        | technique_id, name, tactic, platform     | Quarterly      |
+| `capec`                  | capec_v3.9.json                                              | 512        | capec_id, name, prerequisites, mitigations | Annual         |
+| `cwe`                    | cwe_v4.14.xml → JSON                                         | 256        | cwe_id, name, description, related_weaknesses | Annual         |
+| `d3fend`                 | d3fend.owl + NIST 800-53 mapping CSV                         | 512        | tactic, technique, control_id            | Semi-annual    |
+| `nist_80053_r5`          | Official NIST JSON + aerospace overlay (SC/AC/IA focus)      | 512        | control_id, family, title, description   | On revision    |
+| `do326a_ed202a`          | RTCA DO-326A, EUROCAE ED-202A, ED-203A PDFs → parsed         | 384        | section, requirement, guidance           | On revision    |
+| `historical_reports`     | Internal redacted threat models (50–500 docs)                | 512        | program_name, classification, date       | Continuous     |
+| `trust_boundary_policy`  | Internal policy document (PDF → text)                        | 256        | rule_id, boundary_name, condition        | On policy rev  |
+
+### Ingestion Script (Python — runs on air-gapped workstation)
+```python
+# scripts/ingest_all.py
+from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+from langchain.vectorstores import LanceDB
+import lance
+import json, os, glob
+
+embedder = HuggingFaceBgeEmbeddings(
+    model_name="BAAI/bge-large-en-v1.5",
+    model_kwargs={'device': 'cuda'},
+    encode_kwargs={'normalize_embeddings': True}
+)
+
+def ingest_json_collection(path: str, collection_name: str, text_field: str):
+    docs = []
+    for file in glob.glob(f"{path}/*.json"):
+        with open(file) as f:
+            data = json.load(f)
+            for item in data:
+                docs.append(Document(page_content=item[text_field], metadata=item))
+    vectorstore = LanceDB.from_documents(docs, embedder, table_name=collection_name)
+    print(f"Loaded {len(docs)} into {collection_name}")
+
+# Run all
+ingest_json_collection("data/attack", "mitre_attack", "description")
+# ... repeat for others

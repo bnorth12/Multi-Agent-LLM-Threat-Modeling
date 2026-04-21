@@ -1,0 +1,30 @@
+
+```mermaid
+flowchart TD
+    A["User Input
+    • Text descriptions
+    • Information Flow Tables
+    • Trust boundary annotations"] --> B
+
+    B["1. Input Normalizer & Graph Builder"] --> C
+    C["2. Hierarchical Context Builder"] --> D
+    D["3. Trust Boundary Validator"] --> E
+    E["4. STRIDE-per-Element Scorer"] --> F
+    F["5. Concrete Threat Generator"] --> G
+    F --> H
+    G["6. STIX 2.1 Packager"] --> K[STIX 2.1 Bundle]
+    H["7. Mitigation Generator"] --> J
+    E --> I
+    F --> I
+    H --> I
+    I["8. Diagram Generator\nMermaid Level-0/1/2"] --> L[Diagrams]
+    J["9. Human Report Writer"] --> M[Final Report]
+
+    RAG[(Offline Vector DBs\nATT&CK • CAPEC • D3FEND • NIST 800-53 • DO-326A)] --> D & E & F & H
+
+    Supervisor["LangGraph Supervisor\nHuman-in-the-loop gates"] -.-> B & C & D & E & F & H & I & J
+
+    classDef agent fill:#1f78b4,color:white
+    classDef output fill:#33a02c,color:white
+    class B,C,D,E,F,G,H,I,J agent
+    class K,L,M output

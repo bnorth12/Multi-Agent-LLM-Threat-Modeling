@@ -1,0 +1,77 @@
+Canonical JSON Graph Schema (Clean Baseline)
+
+Example canonical structure:
+
+{
+  "metadata": {
+    "generation_timestamp": "",
+    "model_level": "system|subsystem|component"
+  },
+  "system": {
+    "name": "",
+    "description": "",
+    "mission_criticality": "",
+    "safety_criticality": ""
+  },
+  "subsystems": [
+    {
+      "id": "",
+      "name": "",
+      "description": "",
+      "parent_system": ""
+    }
+  ],
+  "components": [
+    {
+      "id": "",
+      "name": "",
+      "parent_subsystem": "",
+      "hardware": "",
+      "software_modules": [],
+      "description": ""
+    }
+  ],
+  "data_flows": [
+    {
+      "id": "df_001",
+      "from_node": "system.subsystem.component.port",
+      "to_node": "system.subsystem.component.port",
+      "protocol": "",
+      "data_items": [],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 0,
+        "S_justification": "",
+        "T": 0,
+        "T_justification": "",
+        "R": 0,
+        "R_justification": "",
+        "I": 0,
+        "I_justification": "",
+        "D": 0,
+        "D_justification": "",
+        "E": 0,
+        "E_justification": ""
+      },
+      "threats": [
+        {
+          "name": "",
+          "description": "",
+          "mitre_attack_technique": [],
+          "capec_id": "",
+          "cwe_id": "",
+          "likelihood": 1,
+          "impact": 1,
+          "mitigations_technical": [],
+          "mitigations_administrative": []
+        }
+      ]
+    }
+  ]
+}
+
+Notes:
+- This is a baseline canonical example payload.
+- Authoritative machine-enforceable schema is canonical_graph.schema.json.
+- Mitigation arrays are stored under each threat object.
