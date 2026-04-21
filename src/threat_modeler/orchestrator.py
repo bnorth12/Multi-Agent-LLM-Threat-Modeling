@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from .agents import build_default_agents
 from .config import RuntimeSettings
 from .hitl import HitlService
+from .models import ExecutionEdge, ExecutionNode, LangGraphExecutionPlan
 from .state import FrameworkState
 from .validation import CanonicalGraphValidator
 
@@ -37,6 +38,20 @@ class FrameworkOrchestrator:
         state.next_stage_id = stage_ids[0] if stage_ids else None
         return state
 
+    def build_langgraph_execution_plan(self) -> LangGraphExecutionPlan:
+        stage_ids = self.planned_stage_ids()
+        nodes = [ExecutionNode(node_id=stage_id, display_name=self.agents[stage_id].display_name) for stage_id in stage_ids]
+        edges = [
+            ExecutionEdge(from_node_id=stage_ids[index], to_node_id=stage_ids[index + 1])
+            for index in range(len(stage_ids) - 1)
+        ]
+        return LangGraphExecutionPlan(
+            start_node_id=stage_ids[0] if stage_ids else None,
+            end_node_id=stage_ids[-1] if stage_ids else None,
+            nodes=nodes,
+            edges=edges,
+        )
+
     def run_stage(self, state: FrameworkState, stage_id: str) -> StageExecutionResult:
         agent = self.agents[stage_id]
         updated_state = agent.run(state)
@@ -44,6 +59,9 @@ class FrameworkOrchestrator:
         return StageExecutionResult(stage_id=stage_id, success=True)
 
     def run_planned_stages(self, state: FrameworkState | None = None) -> FrameworkState:
+        if self.settings.pipeline.execution_mode == "langgraph-compatible":
+            return self.run_langgraph_compatible(state)
+
         active_state = state or self.initialize_state()
 
         for index, stage_id in enumerate(self.planned_stage_ids()):
@@ -56,4 +74,27 @@ class FrameworkOrchestrator:
                     raise ValueError(result.issues[0].message)
 
         # TODO: Replace linear execution with LangGraph routing and checkpointing.
+        return active_state
+
+    def run_langgraph_compatible(self, state: FrameworkState | None = None) -> FrameworkState:
+        active_state = state or self.initialize_state()
+        plan = self.build_langgraph_execution_plan()
+
+        if plan.start_node_id is None:
+            return active_state
+
+        current_stage_id = plan.start_node_id
+        edge_lookup = {edge.from_node_id: edge.to_node_id for edge in plan.edges}
+
+        while current_stage_id is not None:
+            active_state.next_stage_id = current_stage_id
+            self.run_stage(active_state, current_stage_id)
+
+            result = self.validator.validate(active_state)
+            if not result.is_valid and self.settings.pipeline.stop_on_validation_error:
+                raise ValueError(result.issues[0].message)
+
+            current_stage_id = edge_lookup.get(current_stage_id)
+
+        # TODO: Replace this compatibility layer with a real LangGraph StateGraph.
         return active_state

@@ -13,6 +13,7 @@ class ModelSelection:
 
 @dataclass(frozen=True)
 class PipelineSettings:
+    execution_mode: str = "linear"
     enabled_stage_ids: Sequence[str] = field(
         default_factory=lambda: (
             "agent_01",

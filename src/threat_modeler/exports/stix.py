@@ -2,6 +2,7 @@
 
 
 class StixExporter:
-    def export(self, canonical_graph: dict) -> dict:
+    def export(self, canonical_graph) -> dict:
         # TODO: Convert approved threat-model artifacts into STIX 2.1 objects.
-        return {"type": "bundle", "objects": [], "source": canonical_graph.get("metadata", {})}
+        graph_dict = canonical_graph.to_dict() if hasattr(canonical_graph, "to_dict") else canonical_graph
+        return {"type": "bundle", "objects": [], "source": graph_dict.get("metadata", {})}

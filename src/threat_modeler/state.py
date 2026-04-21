@@ -3,12 +3,14 @@
 from dataclasses import dataclass, field
 from typing import Any
 
+from .models import CanonicalThreatModelGraph
+
 
 @dataclass
 class FrameworkState:
     raw_text: str = ""
     tables: list[dict[str, Any]] = field(default_factory=list)
-    canonical_graph: dict[str, Any] = field(default_factory=dict)
+    canonical_graph: CanonicalThreatModelGraph | None = None
     messages: list[dict[str, Any]] = field(default_factory=list)
     stix_bundle: dict[str, Any] | None = None
     mermaid_diagrams: dict[str, str] = field(default_factory=dict)
@@ -21,3 +23,8 @@ class FrameworkState:
 
     def record_message(self, stage_id: str, text: str) -> None:
         self.messages.append({"stage_id": stage_id, "text": text})
+
+    def canonical_graph_dict(self) -> dict[str, Any]:
+        if self.canonical_graph is None:
+            return {}
+        return self.canonical_graph.to_dict()

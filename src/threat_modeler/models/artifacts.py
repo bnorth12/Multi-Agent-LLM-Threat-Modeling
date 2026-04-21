@@ -3,6 +3,8 @@
 from dataclasses import dataclass, field
 from typing import Any
 
+from .canonical import CanonicalThreatModelGraph
+
 
 @dataclass
 class ExportArtifacts:
@@ -13,5 +15,5 @@ class ExportArtifacts:
 
 @dataclass
 class ThreatModelArtifactSet:
-    canonical_graph: dict[str, Any] = field(default_factory=dict)
+    canonical_graph: CanonicalThreatModelGraph = field(default_factory=CanonicalThreatModelGraph)
     exports: ExportArtifacts = field(default_factory=ExportArtifacts)
