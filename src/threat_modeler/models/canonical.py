@@ -5,9 +5,8 @@ from dataclasses import asdict, dataclass, field
 
 @dataclass
 class GraphMetadata:
-    generation_timestamp: str = "placeholder"
+    generation_timestamp: str = "1970-01-01T00:00:00Z"
     model_level: str = "system"
-    status: str = "placeholder"
 
 
 @dataclass
@@ -96,6 +95,59 @@ class CanonicalThreatModelGraph:
 
     def to_dict(self) -> dict:
         return asdict(self)
+
+    @classmethod
+    def from_dict(cls, payload: dict) -> "CanonicalThreatModelGraph":
+        metadata_payload = payload.get("metadata", {})
+        system_payload = payload.get("system", {})
+
+        subsystems = [Subsystem(**item) for item in payload.get("subsystems", [])]
+        components = [Component(**item) for item in payload.get("components", [])]
+
+        data_flows: list[DataFlow] = []
+        for item in payload.get("data_flows", []):
+            stride_payload = item.get("stride", {})
+            threats_payload = item.get("threats", [])
+
+            threats: list[Threat] = []
+            for threat_payload in threats_payload:
+                technical = [Mitigation(**entry) for entry in threat_payload.get("mitigations_technical", [])]
+                administrative = [Mitigation(**entry) for entry in threat_payload.get("mitigations_administrative", [])]
+                threats.append(
+                    Threat(
+                        name=threat_payload.get("name", ""),
+                        description=threat_payload.get("description", ""),
+                        mitre_attack_technique=threat_payload.get("mitre_attack_technique", []),
+                        capec_id=threat_payload.get("capec_id", ""),
+                        cwe_id=threat_payload.get("cwe_id", ""),
+                        likelihood=threat_payload.get("likelihood", 1),
+                        impact=threat_payload.get("impact", 1),
+                        mitigations_technical=technical,
+                        mitigations_administrative=administrative,
+                    )
+                )
+
+            data_flows.append(
+                DataFlow(
+                    id=item.get("id", ""),
+                    from_node=item.get("from_node", ""),
+                    to_node=item.get("to_node", ""),
+                    protocol=item.get("protocol", "unknown"),
+                    data_items=item.get("data_items", []),
+                    trust_boundary_crossing=item.get("trust_boundary_crossing", False),
+                    trust_boundary_name=item.get("trust_boundary_name", ""),
+                    stride=StrideAssessment(**stride_payload),
+                    threats=threats,
+                )
+            )
+
+        return cls(
+            metadata=GraphMetadata(**metadata_payload),
+            system=SystemContext(**system_payload),
+            subsystems=subsystems,
+            components=components,
+            data_flows=data_flows,
+        )
 
 
 def build_placeholder_graph() -> CanonicalThreatModelGraph:
