@@ -23,7 +23,7 @@ def test_parser_normalize_raw_text_only_builds_typed_graph() -> None:
     )
 
     assert graph.system.name == "Vehicle Gateway"
-    assert graph.metadata.status == "parsed"
+    assert graph.metadata.model_level == "system"
     assert len(graph.components) >= 1
     assert len(graph.data_flows) >= 1
     assert graph.data_flows[0].id.startswith("df_")
@@ -78,3 +78,76 @@ def test_agent01_populates_graph_from_state_input() -> None:
 
     assert state.canonical_graph is not None
     assert state.canonical_graph.system.name == "Safety Controller"
+
+
+def test_parser_extracts_subsystems_from_structured_table_schema() -> None:
+    _ensure_src_on_path()
+
+    from threat_modeler.parsing import ParserInput, ParserInterface
+
+    parser = ParserInterface()
+    graph = parser.normalize(
+        ParserInput(
+            raw_text="Mission Platform",
+            tables=[
+                {
+                    "schema": "subsystems",
+                    "rows": [
+                        {
+                            "subsystem": "Guidance",
+                            "subsystem_id": "subsystem_guidance",
+                            "description": "Trajectory and control decisions",
+                        }
+                    ],
+                }
+            ],
+        )
+    )
+
+    assert len(graph.subsystems) == 1
+    assert graph.subsystems[0].id == "subsystem_guidance"
+    assert graph.subsystems[0].name == "Guidance"
+
+
+def test_parser_extracts_richer_flows_from_structured_text_and_table() -> None:
+    _ensure_src_on_path()
+
+    from threat_modeler.parsing import ParserInput, ParserInterface
+
+    parser = ParserInterface()
+    graph = parser.normalize(
+        ParserInput(
+            raw_text=(
+                "Flight Computer\n"
+                "Flow: from=gateway_api; to=policy_engine; protocol=https; data_items=jwt,request; trust_boundary=dmz"
+            ),
+            tables=[
+                {
+                    "schema": "flows",
+                    "rows": [
+                        {
+                            "from_node": "policy_engine",
+                            "to_node": "command_bus",
+                            "protocol": "can",
+                            "data_items": ["command"],
+                            "trust_boundary_name": "internal_control",
+                        }
+                    ],
+                }
+            ],
+        )
+    )
+
+    text_flow = next(flow for flow in graph.data_flows if flow.from_node == "gateway_api")
+    assert text_flow.to_node == "policy_engine"
+    assert text_flow.protocol == "https"
+    assert text_flow.data_items == ["jwt", "request"]
+    assert text_flow.trust_boundary_crossing is True
+    assert text_flow.trust_boundary_name == "dmz"
+
+    table_flow = next(flow for flow in graph.data_flows if flow.from_node == "policy_engine")
+    assert table_flow.to_node == "command_bus"
+    assert table_flow.protocol == "can"
+    assert table_flow.data_items == ["command"]
+    assert table_flow.trust_boundary_crossing is True
+    assert table_flow.trust_boundary_name == "internal_control"

@@ -7,7 +7,6 @@ from dataclasses import asdict, dataclass, field
 class GraphMetadata:
     generation_timestamp: str = "placeholder"
     model_level: str = "system"
-    status: str = "placeholder"
 
 
 @dataclass
