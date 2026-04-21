@@ -35,6 +35,7 @@ htmlcov/
 # OS and editor files
 .DS_Store
 Thumbs.db
+.vscode/settings.json
 
 # Logs
 *.log
