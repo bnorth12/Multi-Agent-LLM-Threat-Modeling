@@ -1,6 +1,12 @@
 """Validation seams for the runtime skeleton."""
 
 from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Any
+
+import json
+from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError
 
 from .models import CanonicalThreatModelGraph
 from .state import FrameworkState
@@ -20,9 +26,19 @@ class ValidationResult:
 
 
 class CanonicalGraphValidator:
-    def validate(self, state: FrameworkState) -> ValidationResult:
-        graph = state.canonical_graph
+    def __init__(self, schema_path: Path | None = None) -> None:
+        self.schema_path = schema_path or self._default_schema_path()
+        self.schema = self._load_schema(self.schema_path)
+        self.validator = Draft202012Validator(self.schema)
 
+    def _default_schema_path(self) -> Path:
+        return Path(__file__).resolve().parents[2] / "docs" / "schemas" / "canonical_graph.schema.json"
+
+    def _load_schema(self, schema_path: Path) -> dict[str, Any]:
+        with schema_path.open("r", encoding="utf-8") as handle:
+            return json.load(handle)
+
+    def validate_graph(self, graph: CanonicalThreatModelGraph | dict[str, Any] | None) -> ValidationResult:
         if graph is None:
             return ValidationResult(
                 is_valid=False,
@@ -35,44 +51,33 @@ class CanonicalGraphValidator:
                 ],
             )
 
-        issues: list[ValidationIssue] = []
-
-        if not isinstance(graph, CanonicalThreatModelGraph):
-            issues.append(
-                ValidationIssue(
-                    code="CANONICAL_GRAPH_TYPE_INVALID",
-                    message="Canonical graph must use the typed canonical model.",
-                    location="canonical_graph",
-                )
-            )
+        if isinstance(graph, CanonicalThreatModelGraph):
+            graph_payload = graph.to_dict()
+        elif isinstance(graph, dict):
+            graph_payload = graph
         else:
-            if not graph.metadata.model_level:
-                issues.append(
+            return ValidationResult(
+                is_valid=False,
+                issues=[
                     ValidationIssue(
-                        code="MODEL_LEVEL_MISSING",
-                        message="Canonical graph metadata model level is required.",
-                        location="metadata.model_level",
+                        code="CANONICAL_GRAPH_TYPE_INVALID",
+                        message="Canonical graph must use the typed canonical model or a schema-shaped dictionary.",
+                        location="canonical_graph",
                     )
-                )
+                ],
+            )
 
-            if not graph.system.name:
-                issues.append(
-                    ValidationIssue(
-                        code="SYSTEM_NAME_MISSING",
-                        message="Canonical graph system name is required.",
-                        location="system.name",
-                    )
-                )
-
-            if graph.data_flows is None:
-                issues.append(
-                    ValidationIssue(
-                        code="DATA_FLOWS_MISSING",
-                        message="Canonical graph data flows collection is required.",
-                        location="data_flows",
-                    )
-                )
-
-        # TODO: Replace this placeholder with schema-backed validation against
-        # docs/schemas/canonical_graph.schema.json once model contracts are wired.
+        schema_errors = sorted(self.validator.iter_errors(graph_payload), key=lambda error: list(error.absolute_path))
+        issues = [self._issue_from_schema_error(error) for error in schema_errors]
         return ValidationResult(is_valid=not issues, issues=issues)
+
+    def validate(self, state: FrameworkState) -> ValidationResult:
+        return self.validate_graph(state.canonical_graph)
+
+    def _issue_from_schema_error(self, error: ValidationError) -> ValidationIssue:
+        location = ".".join(str(part) for part in error.absolute_path)
+        if not location:
+            location = "canonical_graph"
+
+        code = f"SCHEMA_{error.validator.upper()}"
+        return ValidationIssue(code=code, message=error.message, location=location)
