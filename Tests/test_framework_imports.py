@@ -68,5 +68,5 @@ def test_langgraph_compatible_run_populates_typed_graph() -> None:
     state = orchestrator.run_planned_stages()
 
     assert state.canonical_graph is not None
-    assert state.canonical_graph.system.name == "Threat Modeler Placeholder System"
+    assert state.canonical_graph.system.name == "Parsed System"
     assert state.messages[0]["stage_id"] == "agent_01"
