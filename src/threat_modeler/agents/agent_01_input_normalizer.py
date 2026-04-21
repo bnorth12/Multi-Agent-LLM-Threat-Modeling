@@ -1,5 +1,5 @@
 from .base import FrameworkAgent
-from ..models import build_placeholder_graph
+from ..parsing import ParserInput, ParserInterface
 
 
 class Agent01InputNormalizer(FrameworkAgent):
@@ -9,7 +9,9 @@ class Agent01InputNormalizer(FrameworkAgent):
             display_name="Input Normalizer and Graph Builder",
             next_stage_id="agent_02",
         )
+        self.parser = ParserInterface()
 
     def _apply_placeholder_behavior(self, state):
         if state.canonical_graph is None:
-            state.canonical_graph = build_placeholder_graph()
+            payload = ParserInput(raw_text=state.raw_text, tables=state.tables)
+            state.canonical_graph = self.parser.normalize(payload)
