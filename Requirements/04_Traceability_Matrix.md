@@ -19,6 +19,7 @@ Project to component and interface mapping:
 - PRJ-015 -> C01-STATE-003, C04-A03-002
 
 Note:
+
 - Requirement identifiers intentionally map to component file prefixes for easier ticketing.
 
 Administration linkage:

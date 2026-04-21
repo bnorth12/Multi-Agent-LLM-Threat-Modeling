@@ -33,12 +33,12 @@ Selection and lock criteria are documented in Python_Dependency_Strategy.md.
 
 ## Repository Layout
 
-- Docs: source architecture and prompt specifications
-- Implemenation Plan: phased implementation plans and planning artifacts
+- docs: source architecture, schemas, prompts, and process references
+- planning: phased implementation plans and planning artifacts
 - Requirements: formal requirements package and component-level requirement sets
 - Releases: release notes and release evidence bundles
 - Tests: automated and scenario-based tests
-- Threat Modeler Code: Python source code for runtime, agents, and interfaces
+- src: Python source code workspace for runtime, agents, and interfaces
 
 ## Current Status
 

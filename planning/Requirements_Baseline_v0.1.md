@@ -7,6 +7,7 @@ Requirement format: Noun SHALL Verb
 ## 1. Scope
 
 This baseline defines:
+
 - Project-level requirements for the overall Threat Modeler.
 - Derived component requirements for each pipeline agent and core services.
 - Interface requirements for module-to-module and human-to-system interactions.
@@ -211,6 +212,7 @@ HITL-008: Threat Modeler SHALL preserve gate decisions as signed run records.
 ## 7. Verification Method Recommendations
 
 Each requirement should be tagged in the next revision with one or more verification methods:
+
 - Test: verified by automated or manual test case
 - Analysis: verified by design or data analysis
 - Inspection: verified by artifact review
@@ -219,7 +221,7 @@ Each requirement should be tagged in the next revision with one or more verifica
 ## 8. Next Requirements Engineering Steps
 
 1. Approve this baseline and lock requirement ID namespace.
-2. Decide mitigation data model placement and update all affected requirements.
-3. Add acceptance criteria per requirement with objective pass conditions.
-4. Add verification ownership and planned verification milestone.
-5. Generate component specification sheets from this baseline for implementation tickets.
+1. Decide mitigation data model placement and update all affected requirements.
+1. Add acceptance criteria per requirement with objective pass conditions.
+1. Add verification ownership and planned verification milestone.
+1. Generate component specification sheets from this baseline for implementation tickets.

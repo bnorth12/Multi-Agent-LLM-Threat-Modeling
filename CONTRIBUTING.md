@@ -51,7 +51,7 @@ Each pull request should include:
 
 Markdown quality gate:
 
-- Follow Docs/Markdown_Style_Guide.md for markdown authoring rules.
+- Follow docs/process/Markdown_Style_Guide.md for markdown authoring rules.
 - Run markdownlint and resolve issues in files changed by the branch.
 - Avoid introducing any new markdownlint errors.
 

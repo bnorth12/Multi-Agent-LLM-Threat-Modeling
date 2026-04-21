@@ -9,10 +9,10 @@ The architecture and requirement contracts are still being normalized. Locking d
 ## Dependency Selection Principles
 
 1. Add a dependency only when a requirement or interface explicitly needs it.
-2. Prefer stable, widely adopted Python packages with active maintenance.
-3. Prefer dependencies with permissive licensing and clear offline usage support.
-4. Minimize transitive dependency count for security and maintainability.
-5. Keep core runtime dependencies separate from optional feature dependencies.
+1. Prefer stable, widely adopted Python packages with active maintenance.
+1. Prefer dependencies with permissive licensing and clear offline usage support.
+1. Minimize transitive dependency count for security and maintainability.
+1. Keep core runtime dependencies separate from optional feature dependencies.
 
 ## Planned Dependency Buckets
 
@@ -38,11 +38,11 @@ Developer tooling candidate areas:
 ## Introduction Process
 
 1. Open issue describing requirement-driven need.
-2. Document alternatives considered.
-3. Record expected usage scope and risk.
-4. Add dependency in focused feature branch.
-5. Add tests proving required behavior.
-6. Update this file and any relevant README files.
+1. Document alternatives considered.
+1. Record expected usage scope and risk.
+1. Add dependency in focused feature branch.
+1. Add tests proving required behavior.
+1. Update this file and any relevant README files.
 
 ## Initial Bootstrapping Guidance
 
