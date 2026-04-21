@@ -2,9 +2,25 @@
 
 This directory is the Python implementation root for runtime code.
 
-Planned modules:
+Current package scaffold:
 
-- core orchestration and state management
-- agent implementations and adapters
-- input parsing and normalization
-- export pipelines for STIX, diagrams, and reports
+- `threat_modeler/`
+- `threat_modeler/agents/`
+- `threat_modeler/models/`
+- `threat_modeler/parsing/`
+- `threat_modeler/hitl/`
+- `threat_modeler/exports/`
+
+Initial framework modules now include:
+
+- runtime configuration and pipeline settings
+- framework state container
+- linear orchestrator scaffold for known stages
+- placeholder validation seam
+- stub agent classes for Agent 1 through Agent 9
+- parsing, HITL, and export placeholders
+
+Implementation rule:
+
+- represent current architectural knowledge explicitly
+- defer incomplete behavior with targeted `TODO` markers rather than hiding future work
