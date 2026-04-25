@@ -59,7 +59,8 @@ The repository has a strong conceptual baseline but is still implementation-ligh
 
 ## 4. Recommended Build Sections
 
-### Section 1 Repository Hardening and Doc Normalization
+
+### Section 1 Repository Hardening and Doc Normalization (COMPLETED)
 
 Goals:
 
@@ -76,11 +77,12 @@ Deliverables:
 
 Exit criteria:
 
-- Prompt files render cleanly
-- No duplicate numbered files
-- Canonical schema validates fixtures
+- [x] Prompt files render cleanly
+- [x] No duplicate numbered files
+- [x] Canonical schema validates fixtures
 
-### Section 2 Core Runtime Skeleton
+
+### Section 2 Core Runtime Skeleton (COMPLETED)
 
 Goals:
 
@@ -97,10 +99,11 @@ Deliverables:
 
 Exit criteria:
 
-- End-to-end dry run with mocked outputs
-- Checkpoints persist and resume correctly
+- [x] End-to-end dry run with mocked outputs
+- [x] Checkpoints persist and resume correctly
 
-### Section 3 Agent Contracts and Validation Gates
+
+### Section 3 Agent Contracts and Validation Gates (COMPLETED)
 
 Goals:
 
@@ -115,10 +118,11 @@ Deliverables:
 
 Exit criteria:
 
-- Invalid outputs are blocked before downstream execution
-- Structured error records are generated
+- [x] Invalid outputs are blocked before downstream execution
+- [x] Structured error records are generated
 
-### Section 4 Knowledge Layer
+
+### Section 4 Knowledge Layer (NOT STARTED)
 
 Goals:
 
@@ -136,7 +140,8 @@ Exit criteria:
 - Reproducible ingestion runs
 - Retrieval includes source IDs and confidence metadata
 
-### Section 5 HITL Workflow and UX
+
+### Section 5 HITL Workflow and UX (NOT STARTED)
 
 Goals:
 
@@ -168,7 +173,8 @@ Exit criteria:
 - HITL policy and role matrix completed
 - Prototype supports approve, edit, rerun, and full audit trail
 
-### Section 6 Visualization and Editing
+
+### Section 6 Visualization and Editing (NOT STARTED)
 
 Goals:
 
@@ -185,7 +191,8 @@ Exit criteria:
 
 - Analysts can inspect, edit, and rerun safely with complete traceability
 
-### Section 7 Test and Evaluation Framework
+
+### Section 7 Test and Evaluation Framework (IN PROGRESS)
 
 Test layers:
 
@@ -205,9 +212,12 @@ Metrics:
 
 Exit criteria:
 
-- CI blocks merges on schema and contract failure
+- [x] Unit and contract tests for parser, orchestrator, and schema coupling implemented
+- [x] CI/test pass rate is high
+- [ ] CI blocks merges on schema and contract failure
 
-### Section 8 Release and Operations
+
+### Section 8 Release and Operations (NOT STARTED)
 
 Deliverables:
 
@@ -221,14 +231,15 @@ Exit criteria:
 - one command local run
 - deterministic artifact bundle per run
 
-## 5. Immediate Next Sprint
 
-1. Normalize and deduplicate docs
-1. Finalize canonical schema and fixture set
-1. Implement LangGraph skeleton and mock agents
-1. Add HITL checkpoints for boundary, STRIDE, threat, and mitigation stages
-1. Add diagram renderer and review workflow stub
-1. Add contract tests for all agent interfaces
+## 5. Immediate Next Sprint (UPDATED)
+
+1. Normalize and deduplicate docs [x]
+1. Finalize canonical schema and fixture set [x]
+1. Implement LangGraph skeleton and mock agents [x]
+1. Add HITL checkpoints for boundary, STRIDE, threat, and mitigation stages [ ]
+1. Add diagram renderer and review workflow stub [ ]
+1. Add contract tests for all agent interfaces [x]
 
 ## 6. Open Questions
 
@@ -237,6 +248,39 @@ Exit criteria:
 1. What are final role definitions for author, reviewer, and approver
 1. What minimum audit evidence is required for governance sign-off
 
-## 7. Summary Opinion
+
+## 8. Sprint 2026-04 Checklist (IN PROGRESS)
+
+### Requirements & Plan Audit
+- [ ] Review all requirements and plans in docs and code
+- [ ] List all gaps/inconsistencies as new issues
+
+### Issue Creation
+- [ ] Create GitHub issues for:
+	- [ ] LangGraph state graph integration
+	- [ ] HITL workflow MVP
+	- [ ] Retrieval/knowledge layer MVP
+	- [ ] Visualization/diagram output
+	- [ ] Expanded contract/unit tests
+	- [ ] Documentation sync
+	- [ ] Any other gaps found in audit
+
+### Sprint Branch & PR
+- [ ] Create feature branch: feature/sprint-2026-04
+- [ ] Implement sprint items, referencing issues in commits/PRs
+- [ ] Open a PR for the sprint branch (title: Sprint 2026-04 Implementation)
+- [ ] Ensure PR body lists all issues addressed and links to requirements/plan sections
+
+### Status Checklist
+- [ ] Add a checklist to this plan with:
+	- [ ] Each requirement/plan item
+	- [ ] Linked issue/PR numbers
+	- [ ] Status (open/in progress/closed)
+
+### Sprint Review & Closure
+- [ ] Review checklist at sprint end
+- [ ] Close completed issues
+- [ ] Move incomplete items to next sprint
+- [ ] Merge sprint PR and delete feature branch
 
 The framework direction is strong. The primary risk is contract drift across specs, not model quality. Continued emphasis on schema governance and interface consistency will enable scalable implementation regardless of initial provider choice.
