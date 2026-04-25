@@ -1,0 +1,146 @@
+# Sample Input for Multi-Agent Threat Modeler
+
+components:
+  - id: flight_director
+    name: Flight Director
+    type: control_computer
+    description: Provides flight path computation and guidance
+  - id: fcs
+    name: Flight Control System
+    type: control_computer
+    description: Executes flight control algorithms and issues commands
+  - id: servos
+    name: Flight Control Servos
+    type: actuator
+    description: Actuate control surfaces based on FCS commands
+  - id: route_planner
+    name: Route Planner
+    type: mission_planning
+    description: Computes optimal flight routes
+  - id: waypoint_manager
+    name: Waypoint Manager
+    type: mission_planning
+    description: Manages waypoints and navigation data
+  - id: comm_manager
+    name: Communication Manager
+    type: comms
+    description: Manages radio and datalink communications
+  - id: radio_mgr_vhf
+    name: VHF Radio Manager
+    type: radio
+    description: Controls VHF radio
+  - id: radio_mgr_uhf
+    name: UHF Radio Manager
+    type: radio
+    description: Controls UHF radio
+  - id: eoir_mgr
+    name: EO/IR Manager
+    type: sensor_manager
+    description: Manages EO/IR sensor data
+  - id: radar_mgr
+    name: Radar Manager
+    type: sensor_manager
+    description: Manages radar sensor data
+  - id: fusion_engine
+    name: Multimodal Sensor Fusion Engine
+    type: fusion
+    description: Fuses sensor and datalink data
+  - id: tdl_interpreter
+    name: Tactical Datalink Interpreter
+    type: datalink
+    description: Parses and interprets tactical datalink messages
+  - id: tdl_radio_mgr
+    name: Tactical Datalink Radio Manager
+    type: radio
+    description: Controls tactical datalink radio
+  - id: mission_system
+    name: Mission System Equipment
+    type: mission_system
+    description: Aggregates mission payloads and avionics
+  - id: power_gen
+    name: Power Generation
+    type: utility
+    description: Generates electrical power
+  - id: power_dist
+    name: Power Distribution
+    type: utility
+    description: Distributes electrical power
+  - id: hydraulic_pump
+    name: Hydraulic Pumping
+    type: utility
+    description: Provides hydraulic pressure
+  - id: hydraulic_act
+    name: Hydraulic Actuation
+    type: utility
+    description: Actuates hydraulic systems
+  - id: fcc
+    name: Flight Control Computer
+    type: control_computer
+    description: Runs flight control software and closed-loop feedback
+
+data_flows:
+  - source: fcs
+    destination: servos
+    protocol: ARINC-429
+    bus_type: serial
+    description: Flight control commands to servos
+  - source: servos
+    destination: fcs
+    protocol: ARINC-429
+    bus_type: serial
+    description: Feedback from servos to FCS
+  - source: route_planner
+    destination: waypoint_manager
+    protocol: Ethernet
+    bus_type: ethernet
+    description: Route updates and navigation data
+  - source: comm_manager
+    destination: radio_mgr_vhf
+    protocol: RS-232
+    bus_type: serial
+    description: VHF radio control
+  - source: comm_manager
+    destination: radio_mgr_uhf
+    protocol: RS-232
+    bus_type: serial
+    description: UHF radio control
+  - source: eoir_mgr
+    destination: fusion_engine
+    protocol: Ethernet
+    bus_type: ethernet
+    description: EO/IR sensor data to fusion engine
+  - source: radar_mgr
+    destination: fusion_engine
+    protocol: Ethernet
+    bus_type: ethernet
+    description: Radar data to fusion engine
+  - source: fusion_engine
+    destination: tdl_interpreter
+    protocol: Ethernet
+    bus_type: ethernet
+    description: Fused track data to datalink interpreter
+  - source: tdl_interpreter
+    destination: tdl_radio_mgr
+    protocol: MIL-STD-1553
+    bus_type: serial
+    description: Datalink messages to radio
+  - source: mission_system
+    destination: power_gen
+    protocol: CAN
+    bus_type: can
+    description: Power status/control
+  - source: power_gen
+    destination: power_dist
+    protocol: CAN
+    bus_type: can
+    description: Power distribution control
+  - source: hydraulic_pump
+    destination: hydraulic_act
+    protocol: CAN
+    bus_type: can
+    description: Hydraulic pressure to actuators
+  - source: fcc
+    destination: fcs
+    protocol: SPI
+    bus_type: backplane
+    description: Flight control computer to FCS commands
