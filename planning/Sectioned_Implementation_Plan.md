@@ -1,3 +1,64 @@
+## Sprint 2026-05 Plan: HITL, E2E Testing, and Requirements Alignment
+
+### 1. Administrative Tasks
+- Create feature branch: `feature/sprint_2026_05`
+- Create all required GitHub issues for each major feature, capability, and administrative task
+- Draft and maintain a Sprint Plan in `planning/Sectioned_Implementation_Plan.md`
+- Open a PR for the sprint branch, referencing all issues and requirements
+- Update requirements documentation as features are implemented and tested
+- Close PR and merge branch at sprint completion
+
+### 2. Requirements & Capability Analysis
+- Review and update requirements for HITL, LLM integration, and E2E testing
+- Document any gaps or ambiguities and create issues for each
+- Ensure traceability from requirements to implementation and tests
+
+### 3. HITL Implementation Plan
+- Analyze HITL options:
+	- Conduct a short trade study comparing conceptual frameworks and/or prototypes (e.g., custom workflow, open-source HITL frameworks, commercial solutions)
+	- Evaluate for auditability, ease of integration, user experience, and extensibility
+	- Document findings and select initial approach
+- Implement HITL workflow MVP:
+	- Approval, edit, and override stages
+	- Role and permission matrix
+	- Audit trail for all user actions
+	- Integration with orchestrator/state graph
+- Create issues for each HITL feature and subtask
+
+### 4. End-to-End Testing Plan
+- Develop E2E test suite covering:
+	- Orchestrator pipeline from input to output
+	- HITL checkpoints and user interventions
+	- LLM integration (initially XAI API, with selectors for OpenAI, Anthropic, Google, Azure, etc.)
+	- Live tests using actual LLM endpoints
+- Implement test selectors for all major AI providers (XAI, OpenAI, Anthropic, Google, Azure, etc.)
+- Document and automate test execution
+- Create issues for each E2E test and provider integration
+
+### 5. LLM Integration Plan
+- Target XAI API for initial live tests
+- Implement provider selector abstraction for future expansion (OpenAI, Anthropic, Google, Azure, Mythos, etc.)
+- Document requirements and integration steps for each provider
+- Create issues for each provider integration
+
+### 6. Requirements Traceability & Updates
+- Update requirements documentation as features are implemented and tested
+- Ensure all requirements are covered by tests
+- Create issues for any requirements that need clarification or updating
+
+### 7. Sprint Review & Closure
+- Review all issues and PRs
+- Ensure all features are implemented, tested, and documented
+- Update the status checklist in the sprint plan
+- Close completed issues
+- Move incomplete items to the next sprint
+- Merge PR and delete feature branch
+
+### 8. Additional Best Practices
+- Continuous integration: Ensure CI runs all tests and blocks merges on failures
+- Code review: Require at least one review before merging
+- Documentation: Update user and developer docs as needed
+- Retrospective: Hold a brief sprint retrospective to capture lessons learned
 # Multi-Agent Threat Modeler Sectioned Implementation Plan
 
 Date: 2026-04-20
