@@ -232,6 +232,14 @@ Exit criteria:
 - deterministic artifact bundle per run
 
 
+### Test Automation and Coverage (UPDATED)
+- [x] Scaffolded and executed unit tests for orchestrator and state graph integration
+- [x] Added stubs and infrastructure to enable automated tests for all new modules
+- [x] All orchestrator and state graph code is now covered by automated tests
+- [ ] Continue to develop and execute automated tests for all new code and modules as they are integrated
+- [ ] CI to block merges on schema/contract test failure (to be implemented)
+
+
 ## 5. Immediate Next Sprint (UPDATED)
 
 1. Normalize and deduplicate docs [x]
