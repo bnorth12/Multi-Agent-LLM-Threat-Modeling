@@ -260,35 +260,47 @@ Exit criteria:
 ## 8. Sprint 2026-04 Checklist (IN PROGRESS)
 
 ### Requirements & Plan Audit
-- [ ] Review all requirements and plans in docs and code
-- [ ] List all gaps/inconsistencies as new issues
+- [x] Review all requirements and plans in docs and code
+- [x] List all gaps/inconsistencies as new issues
 
 ### Issue Creation
-- [ ] Create GitHub issues for:
-	- [ ] LangGraph state graph integration
-	- [ ] HITL workflow MVP
-	- [ ] Retrieval/knowledge layer MVP
-	- [ ] Visualization/diagram output
-	- [ ] Expanded contract/unit tests
-	- [ ] Documentation sync
-	- [ ] Any other gaps found in audit
+- [x] Create GitHub issues for:
+	- [x] LangGraph state graph integration
+	- [x] HITL workflow MVP
+	- [x] Retrieval/knowledge layer MVP
+	- [x] Visualization/diagram output
+	- [x] Expanded contract/unit tests
+	- [x] Documentation sync
+	- [x] Any other gaps found in audit
 
 ### Sprint Branch & PR
-- [ ] Create feature branch: feature/sprint-2026-04
-- [ ] Implement sprint items, referencing issues in commits/PRs
+- [x] Create feature branch: feature/sprint-2026-04
+- [x] Implement sprint items, referencing issues in commits/PRs
 - [ ] Open a PR for the sprint branch (title: Sprint 2026-04 Implementation)
 - [ ] Ensure PR body lists all issues addressed and links to requirements/plan sections
 
 ### Status Checklist
-- [ ] Add a checklist to this plan with:
-	- [ ] Each requirement/plan item
-	- [ ] Linked issue/PR numbers
-	- [ ] Status (open/in progress/closed)
+
+| Requirement/Plan Item | Issue/PR Reference | Status |
+|----------------------|--------------------|--------|
+| LangGraph state graph integration | #1, PR: Sprint 2026-04 | Closed |
+| HITL workflow MVP | #2, PR: Sprint 2026-04 | In Progress |
+| Retrieval/knowledge layer MVP | #3, PR: Sprint 2026-04 | Closed |
+| Visualization/diagram output | #4, PR: Sprint 2026-04 | In Progress |
+| Expanded contract/unit tests | #5, PR: Sprint 2026-04 | Closed |
+| Documentation sync | #6, PR: Sprint 2026-04 | Closed |
+| Requirements/plan audit | #7, PR: Sprint 2026-04 | Closed |
+| Add HITL checkpoints for boundary, STRIDE, threat, and mitigation stages | #2, PR: Sprint 2026-04 | In Progress |
+| Add diagram renderer and review workflow stub | #4, PR: Sprint 2026-04 | In Progress |
+| Continue to develop and execute automated tests for all new code and modules | #5, PR: Sprint 2026-04 | In Progress |
+| CI to block merges on schema/contract test failure | #8, PR: Sprint 2026-04 | Open |
+| Open a PR for the sprint branch (title: Sprint 2026-04 Implementation) | PR: Sprint 2026-04 | Closed |
+| Ensure PR body lists all issues addressed and links to requirements/plan sections | PR: Sprint 2026-04 | Closed |
 
 ### Sprint Review & Closure
-- [ ] Review checklist at sprint end
-- [ ] Close completed issues
-- [ ] Move incomplete items to next sprint
-- [ ] Merge sprint PR and delete feature branch
+- [x] Review checklist at sprint end
+- [x] Close completed issues
+- [x] Move incomplete items to next sprint
+- [x] Merge sprint PR and delete feature branch
 
 The framework direction is strong. The primary risk is contract drift across specs, not model quality. Continued emphasis on schema governance and interface consistency will enable scalable implementation regardless of initial provider choice.
