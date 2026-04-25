@@ -3,6 +3,7 @@ Stub execution plan and node/edge dataclasses for orchestrator compatibility.
 """
 from dataclasses import dataclass
 from typing import List
+from .canonical import CanonicalThreatModelGraph
 
 @dataclass
 class ExecutionNode:
