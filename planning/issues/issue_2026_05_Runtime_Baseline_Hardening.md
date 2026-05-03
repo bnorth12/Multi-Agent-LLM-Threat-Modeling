@@ -26,5 +26,8 @@ Consolidate the runtime into one authoritative execution path and remove duplica
 
 ## Status
 - [ ] Not started
-- [x] In progress
-- [ ] Completed
+- [ ] In progress
+- [x] Completed
+
+## Notes
+2026-05-03 BN: Duplicate runtime stubs removed from orchestrator.py, state.py, config.py, validation.py, models/canonical.py. pytest 6/6 pass. Committed 8e2c113 and pushed to feature/sprint_2026_05.
