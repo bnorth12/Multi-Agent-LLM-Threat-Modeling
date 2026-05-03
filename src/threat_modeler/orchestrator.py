@@ -1,7 +1,5 @@
-"""
-LangGraph Orchestrator: State Graph Integration
-Implements the core orchestrator and state graph for multi-agent pipeline execution.
-"""
+"""Stage orchestration and compatibility state graph utilities."""
+
 from typing import Any, Dict, Callable, List
 
 class StateGraph:
@@ -60,7 +58,6 @@ def build_default_state_graph():
     sg.add_edge("input_normalizer", "context_builder")
     # ... add more nodes and edges ...
     return sg
-"""Stage orchestration skeleton for the threat modeler framework."""
 
 from dataclasses import dataclass
 

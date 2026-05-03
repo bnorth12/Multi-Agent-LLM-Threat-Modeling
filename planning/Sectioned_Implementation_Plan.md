@@ -1,367 +1,366 @@
-## Sprint 2026-05 Plan: HITL, E2E Testing, and Requirements Alignment
+# Multi-Agent Threat Modeler
+# Sectioned Implementation Plan
 
-### 1. Administrative Tasks
-- Create feature branch: `feature/sprint_2026_05`
-- Create all required GitHub issues for each major feature, capability, and administrative task
-- Draft and maintain a Sprint Plan in `planning/Sectioned_Implementation_Plan.md`
-- Open a PR for the sprint branch, referencing all issues and requirements
-- Update requirements documentation as features are implemented and tested
-- Close PR and merge branch at sprint completion
+Date: 2026-05-02
+Status: Active execution plan
+Scope: Sprint 2026-05 and Sprint 2026-06
 
-### 2. Requirements & Capability Analysis
-- Review and update requirements for HITL, LLM integration, and E2E testing
-- Document any gaps or ambiguities and create issues for each
-- Ensure traceability from requirements to implementation and tests
+## 1. Plan Purpose
 
-### 3. HITL Implementation Plan
-- Analyze HITL options:
-	- Conduct a short trade study comparing conceptual frameworks and/or prototypes (e.g., custom workflow, open-source HITL frameworks, commercial solutions)
-	- Evaluate for auditability, ease of integration, user experience, and extensibility
-	- Document findings and select initial approach
-- Implement HITL workflow MVP:
-	- Approval, edit, and override stages
-	- Role and permission matrix
-	- Audit trail for all user actions
-	- Integration with orchestrator/state graph
-- Create issues for each HITL feature and subtask
+This document is the single execution plan for the next two sprints. It replaces prior mixed-status planning content and is intended to:
 
-### 4. End-to-End Testing Plan
-- Develop E2E test suite covering:
-	- Orchestrator pipeline from input to output
-	- HITL checkpoints and user interventions
-	- LLM integration (initially XAI API, with selectors for OpenAI, Anthropic, Google, Azure, etc.)
-	- Live tests using actual LLM endpoints
-- Implement test selectors for all major AI providers (XAI, OpenAI, Anthropic, Google, Azure, etc.)
-- Document and automate test execution
-- Create issues for each E2E test and provider integration
+- align implementation to current repository reality
+- assign accountable owners by workstream
+- define measurable acceptance criteria per sprint
+- define a realistic Definition of Done for feature completion
+- standardize test input format around spreadsheet ICD data plus narrative architecture documents
 
-### 5. LLM Integration Plan
-- Target XAI API for initial live tests
-- Implement provider selector abstraction for future expansion (OpenAI, Anthropic, Google, Azure, Mythos, etc.)
-- Document requirements and integration steps for each provider
-- Create issues for each provider integration
+## 2. Current Baseline (As of 2026-05-02)
 
-### 6. Requirements Traceability & Updates
-- Update requirements documentation as features are implemented and tested
-- Ensure all requirements are covered by tests
-- Create issues for any requirements that need clarification or updating
+### 2.1 What exists now
 
-### 7. Sprint Review & Closure
-- Review all issues and PRs
-- Ensure all features are implemented, tested, and documented
-- Update the status checklist in the sprint plan
-- Close completed issues
-- Move incomplete items to the next sprint
-- Merge PR and delete feature branch
+- Runtime scaffolding exists for orchestrator, state, validation, retrieval, and canonical models.
+- Minimal unit tests are present and passing.
+- Requirements package and traceability artifacts are present.
 
-### 8. Additional Best Practices
-- Continuous integration: Ensure CI runs all tests and blocks merges on failures
-- Code review: Require at least one review before merging
-- Documentation: Update user and developer docs as needed
-- Retrospective: Hold a brief sprint retrospective to capture lessons learned
-# Multi-Agent Threat Modeler Sectioned Implementation Plan
+### 2.2 What is not complete
 
-Date: 2026-04-20
-Status: Initial working plan
+- Agent registry is not operational end-to-end.
+- HITL workflow and audit trail are not implemented beyond stubs.
+- Integration and e2e tests are mostly placeholders.
+- CI quality gates that block merges on schema and contract failures are not configured.
+- Documentation and plan status are not fully synchronized with code state.
 
-## 1. Executive Direction
+### 2.3 Primary delivery risk
 
-The repository has a strong conceptual baseline but is still implementation-light. The immediate objective is to move from fragmented specs to a single versioned source of truth, then implement a runnable Python LangGraph pipeline with strict validation and HITL checkpoints.
+- The largest risk is requirements-to-code-to-test drift, not raw model quality.
 
-## 2. Major Decisions to Lock First
+## 3. Input and Fixture Standard (Updated)
 
-1. Deployment mode
+The project will not treat YAML as the primary source format for test input. YAML may be used only as an optional derived transport artifact.
 
-- Option A: offline and air-gapped only
-- Option B: hybrid mode with approved external providers
+### 3.1 Authoritative test input artifacts
 
-1. Model abstraction
+1. ICD spreadsheet input (authoritative tabular source)
+- Format: xlsx and csv export
+- Contents: flows, interfaces, protocol, source and destination, data classification, trust boundary hints
+- Location: Tests/fixtures/inputs/icd/
 
-- Implement provider-agnostic model routing
-- Make model and provider selectable by configuration
+2. Narrative architecture and mission context documents (authoritative text source)
+- Format: md and docx
+- Contents: system, subsystem, component, function descriptions, assumptions, operating constraints
+- Location: Tests/fixtures/inputs/descriptions/
 
-1. Source-of-truth hierarchy
+3. Optional derived serialization for automated test execution
+- Format: json (preferred), yaml (allowed if needed for compatibility)
+- Rule: derived artifacts must be reproducible from spreadsheet plus narrative source data
+- Location: Tests/fixtures/inputs/derived/
 
-- Canonical schema file
-- Agent prompt files
-- LangGraph state schema
-- No duplicate numbered variants
+### 3.2 Fixture quality gates
 
-1. Governance baseline
+- Every fixture set must include a provenance note identifying source spreadsheet and source document versions.
+- Every fixture set must include a requirement ID list for traceability.
+- Every fixture set must include expected output assertions in Tests/fixtures/expected_outputs/.
 
-- JSON schema validation at every agent boundary
-- Prompt versioning and fixture-based contract checks
+## 4. Owners and Responsibilities
 
-## 3. Current Inconsistencies and Gaps
+Owners are role-based and must be mapped to named individuals in sprint kickoff.
 
-### A. File quality and version drift
+- Product Owner: scope decisions, priority, acceptance sign-off
+- Technical Lead: architecture integrity, sequencing, code review standards
+- Orchestrator Engineer: pipeline execution, routing, checkpoint behavior
+- HITL and Audit Engineer: gate logic, role permissions, immutable audit records
+- Data and Parsing Engineer: spreadsheet and narrative ingestion, normalization, fixture provenance
+- Validation and Schema Engineer: typed contracts, schema boundary checks, failure policy
+- Test Lead: test design, integration and e2e coverage, requirement mapping
+- DevOps Engineer: CI gating, branch protections, test reporting
+- Documentation Owner: README and planning sync, requirement and traceability updates
 
-1. Duplicate files existed for same agent and have been cleaned.
+## 5. Sprint 2026-05 Execution Plan
 
-1. Multiple files previously contained pasted wrapper artifacts from other folder structures.
+Sprint objective:
+Stabilize the runtime foundation and deliver a demonstrable governed pipeline path from authoritative inputs to validated intermediate artifacts.
 
-1. Several prompt or spec files were truncated and required normalization.
-
-### B. Schema and pipeline alignment issues
-
-1. Mitigation placement conflict existed between flow-level and threat-level modeling.
-
-1. Agent dependency depiction varied across documents.
-
-1. Canonical schema was described but not initially enforced with formal JSON Schema.
-
-### C. Architectural and operational ambiguity
-
-1. Model strategy had mixed language between offline-only and configurable provider options.
-
-1. Runtime implementation scaffold was not yet established.
-
-1. HITL stage behavior and user permissions were underdefined.
-
-## 4. Recommended Build Sections
-
-
-### Section 1 Repository Hardening and Doc Normalization (COMPLETED)
-
-Goals:
-
-- Remove duplicate and truncated docs
-- Rebuild clean source-of-truth artifacts
-- Lock naming and folder standards
+### 5.1 Workstream A: Runtime baseline hardening
+Owner: Technical Lead and Orchestrator Engineer
 
 Deliverables:
 
-- docs specs canonical schema
-- docs specs state schema
-- one prompt file per agent
-- architecture decision records for model strategy and mitigation placement
+- remove duplicate legacy blocks in core runtime modules
+- keep one authoritative orchestrator and state model path
+- ensure pipeline stage IDs and settings are consistent
 
-Exit criteria:
+Acceptance criteria:
 
-- [x] Prompt files render cleanly
-- [x] No duplicate numbered files
-- [x] Canonical schema validates fixtures
+- core modules have no duplicate class or function definitions for active runtime paths
+- orchestrator runs a deterministic linear execution path across enabled stages
+- code review confirms no dead compatibility seams remain in active execution path
 
-
-### Section 2 Core Runtime Skeleton (COMPLETED)
-
-Goals:
-
-- Build runnable LangGraph pipeline with typed state
-- Add deterministic routing and checkpoint persistence
+### 5.2 Workstream B: Authoritative input ingestion (spreadsheet plus narrative)
+Owner: Data and Parsing Engineer
 
 Deliverables:
 
-- core state model
-- graph definition
-- routing module
-- agent stubs and contracts
-- parser module
+- ICD ingestion from xlsx and csv
+- narrative ingestion from md and docx
+- normalized intermediate representation for downstream agents
+- fixture provenance metadata
 
-Exit criteria:
+Acceptance criteria:
 
-- [x] End-to-end dry run with mocked outputs
-- [x] Checkpoints persist and resume correctly
+- at least two ICD spreadsheet fixtures parse successfully
+- at least two narrative description fixtures parse successfully
+- normalization output contains required fields for system, subsystem, component, function, and flow entities
+- test fixtures document source versions and requirement mappings
 
-
-### Section 3 Agent Contracts and Validation Gates (COMPLETED)
-
-Goals:
-
-- Enforce strict contracts at each stage boundary
-- Block malformed output propagation
+### 5.3 Workstream C: Validation gates at stage boundaries
+Owner: Validation and Schema Engineer
 
 Deliverables:
 
-- Pydantic models
-- JSON schema validation middleware
-- failure policy for retry, escalate, or halt
+- strict validation invocation at each stage handoff
+- structured error codes and locations
+- safe halt behavior when critical validation fails
 
-Exit criteria:
+Acceptance criteria:
 
-- [x] Invalid outputs are blocked before downstream execution
-- [x] Structured error records are generated
+- invalid stage output is blocked from downstream execution
+- validator emits machine-readable issue records with location and code
+- integration tests verify halt behavior for at least two failure modes
 
-
-### Section 4 Knowledge Layer (NOT STARTED)
-
-Goals:
-
-- Implement retrieval with source traceability
-- Keep retrieval policy configurable by deployment mode
+### 5.4 Workstream D: HITL gate MVP (Gate Set 1)
+Owner: HITL and Audit Engineer
 
 Deliverables:
 
-- corpus ingestion pipelines
-- retriever abstraction and provider toggles
-- citation metadata in threat and mitigation outputs
+- gate before context merge (input integrity Gate 0)
+- gate after context merge (scope confirmation)
+- gate after trust boundary validation (trust boundary approval)
+- approve and reject actions with rationale capture
+- HITL review UI at active gates with read and edit capability
+- immutable audit event records for user actions
 
-Exit criteria:
+HITL GUI choice for Sprint 2026-05:
 
-- Reproducible ingestion runs
-- Retrieval includes source IDs and confidence metadata
+- workflow model: Option B Structured Review Workflow
+- implementation profile: P2 Service-Based API Plus UI
+- UI scope: review console with gate queue, artifact viewer, structured edit panel, diff preview, and decision submission
 
+HITL GUI MVP action model for initial implementation:
 
-### Section 5 HITL Workflow and UX (NOT STARTED)
+- Review: analyst can inspect full gate artifact content before deciding
+- Edit: analyst can update artifact content in structured edit form
+- Save draft: analyst can persist edits without advancing the pipeline
+- Accept as is: analyst accepts unmodified artifact and advances to the next stage
+- Accept changes: analyst accepts edited artifact and advances to the next stage
+- Reject: analyst rejects artifact and routes to configured halt or rerun handling
 
-Goals:
+Acceptance criteria:
 
-- Define approval, edit, and override behavior
-- Define role permissions and audit requirements
+- pipeline pauses at Gate 0 and both required gates
+- approve and reject decisions are persisted with actor, role, timestamp, rationale
+- analyst can view gate artifacts and submit tracked edits before decision at both gates
+- analyst can save draft edits without triggering stage advancement
+- accept as is and accept changes both resume execution to the next configured stage
+- selective rerun from first gate point works for at least one integration scenario
 
-Required gates:
-
-1. Scope confirmation after context merge
-1. Trust boundary approval after validation
-1. STRIDE calibration after scoring
-1. Threat plausibility review after generation
-1. Mitigation adequacy review after mapping
-1. Final sign-off before release
-
-Allowed actions:
-
-- Edit nodes, flows, boundaries, and risk values with rationale
-- Approve or reject threats and controls
-- Trigger selective rerun from chosen stage
-
-Restricted actions:
-
-- Silent mutation of approved artifacts
-- Untracked edits to historical run evidence
-
-Exit criteria:
-
-- HITL policy and role matrix completed
-- Prototype supports approve, edit, rerun, and full audit trail
-
-
-### Section 6 Visualization and Editing (NOT STARTED)
-
-Goals:
-
-- Deliver deterministic diagrams first
-- Add safe editing without bypassing schema or audit controls
-
-Recommended path:
-
-1. Mermaid outputs with deterministic IDs and legend
-1. Interactive viewer with flow-level detail panel
-1. Advanced edits after ID stability and patch workflows are proven
-
-Exit criteria:
-
-- Analysts can inspect, edit, and rerun safely with complete traceability
-
-
-### Section 7 Test and Evaluation Framework (IN PROGRESS)
-
-Test layers:
-
-1. Unit tests
-1. Contract tests
-1. Scenario tests
-1. Regression tests
-1. Safety tests
-
-Metrics:
-
-- schema pass rate
-- citation coverage
-- threat quality on curated fixtures
-- HITL override rate
-- time to report
-
-Exit criteria:
-
-- [x] Unit and contract tests for parser, orchestrator, and schema coupling implemented
-- [x] CI/test pass rate is high
-- [ ] CI blocks merges on schema and contract failure
-
-
-### Section 8 Release and Operations (NOT STARTED)
+### 5.5 Workstream E: Testing and CI baseline
+Owner: Test Lead and DevOps Engineer
 
 Deliverables:
 
-- reproducible environment setup
-- runbooks for offline and hybrid modes
-- versioned model provider matrix
-- internal deployment packaging strategy
+- expanded unit tests for orchestrator, validator, ingestion
+- first integration test suite for stage flow and halt behavior
+- CI workflow for unit and integration tests on pull requests
 
-Exit criteria:
+Acceptance criteria:
 
-- one command local run
-- deterministic artifact bundle per run
+- minimum 15 total automated tests passing
+- at least 4 integration tests implemented
+- pull request CI fails on test failure
+- pull request CI fails on schema or contract validation failure
 
+### 5.6 Workstream F: Documentation synchronization
+Owner: Documentation Owner
 
-### Test Automation and Coverage (UPDATED)
-- [x] Scaffolded and executed unit tests for orchestrator and state graph integration
-- [x] Added stubs and infrastructure to enable automated tests for all new modules
-- [x] All orchestrator and state graph code is now covered by automated tests
-- [ ] Continue to develop and execute automated tests for all new code and modules as they are integrated
-- [ ] CI to block merges on schema/contract test failure (to be implemented)
+Deliverables:
 
+- synchronize README, src README, and test documentation to actual implementation state
+- update traceability references for new ingestion and HITL artifacts
 
-## 5. Immediate Next Sprint (UPDATED)
+Acceptance criteria:
 
-1. Normalize and deduplicate docs [x]
-1. Finalize canonical schema and fixture set [x]
-1. Implement LangGraph skeleton and mock agents [x]
-1. Add HITL checkpoints for boundary, STRIDE, threat, and mitigation stages [ ]
-1. Add diagram renderer and review workflow stub [ ]
-1. Add contract tests for all agent interfaces [x]
+- status language in primary docs reflects current implemented capability
+- all newly added tests include requirement IDs in metadata, name, or nearby comment
 
-## 6. Open Questions
+## 6. Sprint 2026-06 Execution Plan
 
-1. Is first release strictly offline or policy-approved hybrid
-1. Is STIX generation after threat stage or after mitigation stage
-1. What are final role definitions for author, reviewer, and approver
-1. What minimum audit evidence is required for governance sign-off
+Sprint objective:
+Complete first end-to-end governed run with artifacts, expand HITL controls, and establish release readiness baseline.
 
+### 6.1 Workstream A: Agent pipeline completeness (MVP breadth)
+Owner: Orchestrator Engineer and Technical Lead
 
-## 8. Sprint 2026-04 Checklist (IN PROGRESS)
+Deliverables:
 
-### Requirements & Plan Audit
-- [x] Review all requirements and plans in docs and code
-- [x] List all gaps/inconsistencies as new issues
+- operational registry for all planned stage IDs
+- stage contract conformance checks for each agent boundary
+- deterministic stage transition map for normal flow
 
-### Issue Creation
-- [x] Create GitHub issues for:
-	- [x] LangGraph state graph integration
-	- [x] HITL workflow MVP
-	- [x] Retrieval/knowledge layer MVP
-	- [x] Visualization/diagram output
-	- [x] Expanded contract/unit tests
-	- [x] Documentation sync
-	- [x] Any other gaps found in audit
+Acceptance criteria:
 
-### Sprint Branch & PR
-- [x] Create feature branch: feature/sprint-2026-04
-- [x] Implement sprint items, referencing issues in commits/PRs
-- [ ] Open a PR for the sprint branch (title: Sprint 2026-04 Implementation)
-- [ ] Ensure PR body lists all issues addressed and links to requirements/plan sections
+- all configured stages execute in sequence for golden-path fixtures
+- stage contracts are validated for each transition
+- failure in one stage prevents unsafe downstream execution
 
-### Status Checklist
+### 6.2 Workstream B: HITL gate expansion (Gate Set 2)
+Owner: HITL and Audit Engineer
 
-| Requirement/Plan Item | Issue/PR Reference | Status |
-|----------------------|--------------------|--------|
-| LangGraph state graph integration | #1, PR: Sprint 2026-04 | Closed |
-| HITL workflow MVP | #2, PR: Sprint 2026-04 | In Progress |
-| Retrieval/knowledge layer MVP | #3, PR: Sprint 2026-04 | Closed |
-| Visualization/diagram output | #4, PR: Sprint 2026-04 | In Progress |
-| Expanded contract/unit tests | #5, PR: Sprint 2026-04 | Closed |
-| Documentation sync | #6, PR: Sprint 2026-04 | Closed |
-| Requirements/plan audit | #7, PR: Sprint 2026-04 | Closed |
-| Add HITL checkpoints for boundary, STRIDE, threat, and mitigation stages | #2, PR: Sprint 2026-04 | In Progress |
-| Add diagram renderer and review workflow stub | #4, PR: Sprint 2026-04 | In Progress |
-| Continue to develop and execute automated tests for all new code and modules | #5, PR: Sprint 2026-04 | In Progress |
-| CI to block merges on schema/contract test failure | #8, PR: Sprint 2026-04 | Open |
-| Open a PR for the sprint branch (title: Sprint 2026-04 Implementation) | PR: Sprint 2026-04 | Closed |
-| Ensure PR body lists all issues addressed and links to requirements/plan sections | PR: Sprint 2026-04 | Closed |
+Deliverables:
 
-### Sprint Review & Closure
-- [x] Review checklist at sprint end
-- [x] Close completed issues
-- [x] Move incomplete items to next sprint
-- [x] Merge sprint PR and delete feature branch
+- STRIDE calibration gate
+- threat plausibility gate
+- mitigation adequacy gate
+- conditional merge conflict resolution gate
+- conditional export consistency gate
+- edit and rerun actions with full diff tracking
+- GUI support for per-gate view, edit, diff preview, and rerun controls
 
-The framework direction is strong. The primary risk is contract drift across specs, not model quality. Continued emphasis on schema governance and interface consistency will enable scalable implementation regardless of initial provider choice.
+Acceptance criteria:
+
+- all three additional gates are active in orchestrated run
+- conditional gates trigger only when configured conditions are met
+- edit action requires rationale and produces before and after audit records
+- analyst can view and edit gate artifacts at each active gate before approve or reject
+- rerun from selected gate resumes with preserved context
+
+### 6.3 Workstream C: Retrieval evidence linkage
+Owner: Data and Parsing Engineer and Validation and Schema Engineer
+
+Deliverables:
+
+- retrieval source linkage for threat and mitigation outputs
+- confidence metadata in output model
+- reproducible corpus ingestion scripts for controlled fixture corpus
+
+Acceptance criteria:
+
+- generated threats and mitigations include source identifiers when retrieval is enabled
+- confidence metadata is present and schema-valid
+- retrieval behavior is covered by unit and integration tests
+
+### 6.4 Workstream D: Artifact generation and e2e validation
+Owner: Test Lead and Orchestrator Engineer
+
+Deliverables:
+
+- canonical JSON export
+- STIX bundle export
+- Mermaid diagram export
+- markdown report export
+- end-to-end golden path and one negative-path scenario tests
+
+Acceptance criteria:
+
+- one complete run emits all four artifact classes
+- e2e tests validate artifact presence and minimum structural correctness
+- negative-path e2e demonstrates safe halt and auditable failure record
+
+### 6.5 Workstream E: Release and operational readiness
+Owner: DevOps Engineer and Documentation Owner
+
+Deliverables:
+
+- reproducible local setup instructions
+- runbook for offline mode and hybrid mode policy profile
+- release checklist and evidence packaging convention
+
+Acceptance criteria:
+
+- a new developer can run setup and baseline tests from documented steps
+- release checklist is complete and linked to evidence artifacts
+
+## 7. Definition of Done (Realistic)
+
+A feature or workstream is Done only when all conditions below are true.
+
+1. Implementation completeness
+- code merged for scoped behavior
+- no active TODO placeholders in merged scope for required behavior
+
+2. Contract and validation safety
+- boundary validation implemented for new or changed interfaces
+- unsafe downstream propagation is blocked on critical failures
+
+3. Automated testing
+- unit tests added or updated for changed logic
+- integration tests added for changed stage transitions or gate behavior
+- e2e tests added when workflow-level behavior changes
+
+4. Traceability
+- requirement IDs linked in tests or implementation notes
+- traceability matrix updated if new requirement mappings were introduced
+
+5. Documentation
+- user and developer docs reflect actual behavior
+- fixture format and provenance instructions updated when input contracts change
+
+6. CI and quality
+- pull request checks pass
+- no unresolved critical defects in sprint scope
+
+7. Review and acceptance
+- code review completed by designated owner role
+- Product Owner acceptance criteria are met and recorded
+
+## 8. Exit Criteria by Sprint
+
+### Sprint 2026-05 exit criteria
+
+- spreadsheet plus narrative fixture pipeline is operational
+- HITL Gate Set 1 is operational with audit trail
+- integration test layer is established and running in CI
+- planning and README documentation are synchronized
+
+### Sprint 2026-06 exit criteria
+
+- complete orchestrated pipeline runs across all planned stages for golden path
+- HITL Gate Set 2 is operational
+- e2e validation covers artifact generation and failure safety
+- release readiness baseline package is complete
+
+## 9. Sprint Ceremonies and Governance
+
+- Sprint kickoff: assign named individuals to each owner role and confirm scope
+- Mid-sprint review: evaluate acceptance criteria progress by workstream
+- Sprint closeout: evaluate Definition of Done per completed item
+- Carryover policy: incomplete scope must include explicit blocker, owner, and next sprint target
+- Branch policy: use one feature branch per sprint and track all sprint issues on that single branch
+
+## 10. Immediate Next Actions (Week 1)
+
+1. Create branch feature/sprint_2026_05 and issue set by workstream.
+2. Assign named owners to role placeholders in this plan.
+3. Implement fixture folder structure for icd, descriptions, and derived inputs.
+4. Build first ingestion path for one ICD spreadsheet plus one narrative document.
+5. Add CI workflow for unit and integration tests.
+6. Open sprint tracking PR with requirement and issue links.
+
+## 11. Issue Tracking in Repo
+
+All sprint execution issues for this plan are created and tracked in planning/issues.
+
+- Tracker: planning/issues/Sprint_2026_05_06_Issue_Tracker.md
+- Sprint 2026-05 issues: S05-01 through S05-06
+- Sprint 2026-06 issues: S06-01 through S06-05
+
+Issue status updates must be performed in both the individual issue file and the central tracker in the same commit.
+
+## 12. Sprint Branch Strategy
+
+To reduce branch overhead and keep traceability simple, each sprint uses exactly one feature branch.
+
+- Sprint 2026-05 branch: feature/sprint_2026_05
+- Sprint 2026-06 branch: feature/sprint_2026_06
+
+All workstream issues for a sprint are implemented and tracked on that sprint branch until merge.

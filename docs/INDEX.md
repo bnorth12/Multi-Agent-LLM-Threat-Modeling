@@ -8,6 +8,7 @@
 ## Schemas
 
 - [schemas/canonical_graph.schema.json](schemas/canonical_graph.schema.json) (authoritative)
+- [schemas/hitl_trigger_rules.schema.json](schemas/hitl_trigger_rules.schema.json) (HITL trigger thresholds)
 - [schemas/canonical_json_schema.txt](schemas/canonical_json_schema.txt) (example payload)
 - [schemas/langgraph_state_schema.txt](schemas/langgraph_state_schema.txt)
 

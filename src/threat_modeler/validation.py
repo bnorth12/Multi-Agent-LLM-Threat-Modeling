@@ -1,18 +1,3 @@
-"""
-Stub CanonicalGraphValidator for orchestrator compatibility.
-"""
-class ValidationResult:
-    def __init__(self, is_valid=True, issues=None):
-        self.is_valid = is_valid
-        self.issues = issues or []
-
-class ValidationIssue:
-    def __init__(self, message):
-        self.message = message
-
-class CanonicalGraphValidator:
-    def validate(self, state):
-        return ValidationResult()
 """Validation seams for the runtime skeleton."""
 
 from dataclasses import dataclass, field

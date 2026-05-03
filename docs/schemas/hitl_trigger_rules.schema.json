@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hitl_trigger_rules.schema.json",
+  "title": "HITL Trigger Rules Config",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "gates"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$"
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "input_integrity",
+        "merge_conflict_resolution",
+        "export_consistency"
+      ],
+      "properties": {
+        "input_integrity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "thresholds"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "thresholds": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "parse_error_count_gt",
+                "required_field_missing_count_gt",
+                "schema_validation_pass_rate_lt",
+                "source_provenance_complete_required"
+              ],
+              "properties": {
+                "parse_error_count_gt": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "required_field_missing_count_gt": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "schema_validation_pass_rate_lt": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "source_provenance_complete_required": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        },
+        "merge_conflict_resolution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "thresholds"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "thresholds": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "merge_conflict_count_gte",
+                "approved_artifact_conflict_count_gte",
+                "critical_field_conflict_count_gte",
+                "conflict_severity_max_gte"
+              ],
+              "properties": {
+                "merge_conflict_count_gte": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "approved_artifact_conflict_count_gte": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "critical_field_conflict_count_gte": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "conflict_severity_max_gte": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "export_consistency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "enabled",
+            "thresholds"
+          ],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "thresholds": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "canonical_stix_error_count_gt",
+                "canonical_report_error_count_gt",
+                "diagram_reference_error_count_gt",
+                "consistency_warning_count_gt"
+              ],
+              "properties": {
+                "canonical_stix_error_count_gt": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "canonical_report_error_count_gt": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "diagram_reference_error_count_gt": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "consistency_warning_count_gt": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

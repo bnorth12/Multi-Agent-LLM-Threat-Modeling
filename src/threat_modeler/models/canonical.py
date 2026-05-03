@@ -1,9 +1,3 @@
-"""
-Stub CanonicalThreatModelGraph for orchestrator and state compatibility.
-"""
-class CanonicalThreatModelGraph:
-    def to_dict(self):
-        return {}
 """Typed canonical graph models for the framework skeleton."""
 
 from dataclasses import asdict, dataclass, field

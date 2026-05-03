@@ -1,18 +1,3 @@
-"""
-Runtime settings and pipeline configuration stubs for orchestrator.
-"""
-from dataclasses import dataclass, field
-from typing import List
-
-@dataclass
-class PipelineSettings:
-    enabled_stage_ids: List[str] = field(default_factory=lambda: ["input_normalizer", "context_builder"])
-    execution_mode: str = "langgraph-compatible"
-    stop_on_validation_error: bool = True
-
-@dataclass
-class RuntimeSettings:
-    pipeline: PipelineSettings = field(default_factory=PipelineSettings)
 """Runtime configuration primitives for the framework skeleton."""
 
 from dataclasses import dataclass, field

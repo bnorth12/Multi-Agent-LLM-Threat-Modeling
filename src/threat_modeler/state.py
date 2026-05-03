@@ -1,9 +1,3 @@
-"""
-Stub FrameworkState for orchestrator compatibility.
-"""
-class FrameworkState:
-    def __init__(self):
-        self.next_stage_id = None
 """Shared state container for staged framework execution."""
 
 from dataclasses import dataclass, field
