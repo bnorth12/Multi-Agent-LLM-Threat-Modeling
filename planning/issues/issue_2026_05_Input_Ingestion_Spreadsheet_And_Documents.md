@@ -29,4 +29,7 @@ Implement authoritative input ingestion for ICD spreadsheet data and narrative a
 ## Status
 - [ ] Not started
 - [ ] In progress
-- [ ] Completed
+- [x] Completed
+
+## Completion Notes
+2026-05-03 BN: Fixtures rebuilt (icd_alpha_v1.csv, icd_bravo_v2.csv, icd_charlie_v1.xlsx, description_alpha.md, description_charlie.txt). Canonical model updated with Function and Interface dataclasses. ICD parser updated to dispatch on entity_type (subsystem, component, function, interface, data_flow-legacy). All 43 unit tests passing including 17 for TestIcdCsvAlpha, 7 for TestIcdCsvBravo, and full narrative parsing coverage.

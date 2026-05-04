@@ -1,9 +1,15 @@
 """Validation seams for the runtime skeleton."""
 
 from dataclasses import dataclass, field
+from enum import Enum
 
 from .models import CanonicalThreatModelGraph
 from .state import FrameworkState
+
+
+class ValidationSeverity(str, Enum):
+    CRITICAL = "CRITICAL"
+    WARNING = "WARNING"
 
 
 @dataclass(frozen=True)
@@ -11,12 +17,33 @@ class ValidationIssue:
     code: str
     message: str
     location: str = ""
+    severity: ValidationSeverity = ValidationSeverity.CRITICAL
 
 
 @dataclass(frozen=True)
 class ValidationResult:
     is_valid: bool
     issues: list[ValidationIssue] = field(default_factory=list)
+
+    @property
+    def critical_issues(self) -> list[ValidationIssue]:
+        return [i for i in self.issues if i.severity == ValidationSeverity.CRITICAL]
+
+    @property
+    def has_critical(self) -> bool:
+        return any(i.severity == ValidationSeverity.CRITICAL for i in self.issues)
+
+
+class ValidationHaltError(Exception):
+    """Raised when a critical validation failure halts downstream stage execution."""
+
+    def __init__(self, result: ValidationResult, stage_id: str) -> None:
+        self.result = result
+        self.stage_id = stage_id
+        codes = ", ".join(i.code for i in result.critical_issues)
+        super().__init__(
+            f"Validation halt after stage '{stage_id}': critical issues [{codes}]"
+        )
 
 
 class CanonicalGraphValidator:

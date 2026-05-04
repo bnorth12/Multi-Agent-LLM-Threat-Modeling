@@ -14,14 +14,15 @@ This tracker is the canonical in-repo status view for sprint issues defined in t
 | ID | Issue File | Owner Role | Branch | Status | Notes |
 |----|------------|------------|--------|--------|-------|
 | S05-01 | issue_2026_05_Runtime_Baseline_Hardening.md | Technical Lead and Orchestrator Engineer | feature/sprint_2026_05 | Completed | GH #7; 2026-05-03 BN: duplicate stubs removed, pytest 6/6, committed 8e2c113, pushed |
-| S05-02 | issue_2026_05_Input_Ingestion_Spreadsheet_And_Documents.md | Data and Parsing Engineer | feature/sprint_2026_05 | Not started | GH #8 |
-| S05-03 | issue_2026_05_Validation_Gates_At_Stage_Boundaries.md | Validation and Schema Engineer | feature/sprint_2026_05 | Not started | GH #9 |
-| S05-04 | issue_2026_05_HITL_Gate_Set_1.md | HITL and Audit Engineer | feature/sprint_2026_05 | Not started | GH #10 |
-| S05-05 | issue_2026_05_Testing_And_CI_Baseline.md | Test Lead and DevOps Engineer | feature/sprint_2026_05 | Not started | GH #11 |
-| S05-06 | issue_2026_05_Documentation_Synchronization.md | Documentation Owner | feature/sprint_2026_05 | Not started | GH #12 |
-| S05-07 | issue_2026_05_Sprint_Branch_And_PR_Lifecycle.md | Technical Lead and DevOps Engineer | feature/sprint_2026_05 | In progress | GH #13; 2026-05-03 BN: branch created, sprint PR opened against main with refs #7-#15 |
-| S05-08 | issue_2026_05_Regression_And_Requirement_Test_Execution.md | Test Lead and Validation and Schema Engineer | feature/sprint_2026_05 | Not started | GH #14 |
-| S05-09 | issue_2026_05_Issue_Closure_And_Validation.md | Product Owner and Technical Lead | feature/sprint_2026_05 | Not started | GH #15 |
+| S05-02 | issue_2026_05_Input_Ingestion_Spreadsheet_And_Documents.md | Data and Parsing Engineer | feature/sprint_2026_05 | Completed | GH #8; 2026-05-03 BN: Function+Interface entities, fixtures rebuilt (CSV/XLSX/MD/TXT), parser updated, 43 unit tests passing |
+| S05-03 | issue_2026_05_Validation_Gates_At_Stage_Boundaries.md | Validation and Schema Engineer | feature/sprint_2026_05 | Completed | GH #9; 2026-05-03 BN: halt behavior wired, 12 integration tests passing, all ACs met, 55 total tests |
+| S05-04 | issue_2026_05_HITL_Gate_Set_1.md | HITL and Audit Engineer | feature/sprint_2026_05 | Completed | GH #10; 2026-05-03 BN: Gate 0/1/2 implemented; GateEngine, HitlService, HitlAuditLog; orchestrator wired; 30 integration tests; 85 total tests passing |
+| S05-05 | issue_2026_05_Testing_And_CI_Baseline.md | Test Lead and DevOps Engineer | feature/sprint_2026_05 | Completed | GH #11; 2026-05-03 BN: 55 tests passing (43 unit + 12 integration); .github/workflows/ci.yml created; all 4 ACs met |
+| S05-06 | issue_2026_05_Documentation_Synchronization.md | Documentation Owner | feature/sprint_2026_05 | Completed | GH #12; 2026-05-03 BN: HMI blueprint, README/src/Tests/fixtures docs updated, fixture format documented, traceability matrix updated |
+| S05-10 | issue_2026_05_HMI_Architecture_Blueprint.md | HMI Architect and Documentation Owner | feature/sprint_2026_05 | Completed | GH #17; 2026-05-03 BN: docs/HMI_Architecture_Blueprint.md v0.1; 11 sections, 3 Mermaid flows, screen inventory SCR-001–014, 6 shared components, role matrix; all 7 ACs met |
+| S05-07 | issue_2026_05_Sprint_Branch_And_PR_Lifecycle.md | Technical Lead and DevOps Engineer | feature/sprint_2026_05 | Completed | GH #13; 2026-05-03 BN: branch created; all sprint work committed; PR created against main; all 4 ACs met |
+| S05-08 | issue_2026_05_Regression_And_Requirement_Test_Execution.md | Test Lead and Validation and Schema Engineer | feature/sprint_2026_05 | Completed | GH #14; 2026-05-03 BN: 85/85 tests passing; requirement mapping in Test_Execution_Summary_Sprint_2026_05.md; all 4 ACs met |
+| S05-09 | issue_2026_05_Issue_Closure_And_Validation.md | Product Owner and Technical Lead | feature/sprint_2026_05 | Completed | GH #15; 2026-05-03 BN: all 10 issues carry evidence, dates, initials; no issue closed without requirement + test linkage; all 3 ACs met |
 
 ## 3. Sprint 2026-06
 

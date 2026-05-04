@@ -47,17 +47,38 @@ Examples of fixture categories:
 - high-risk STRIDE scenario
 - malformed input cases for negative testing
 
-## Manual Execution (Planned Python Commands)
+## Manual Execution
 
-When runtime code and dependencies are available, execute manually from project root:
+From project root with the virtual environment active:
 
-1. Run all tests
+```sh
+# Run all tests
+.venv\Scripts\python.exe -m pytest Tests/ -q
 
-- pytest
+# Run only unit tests
+.venv\Scripts\python.exe -m pytest Tests/unit -q
 
-1. Run only unit tests
+# Run only integration tests
+.venv\Scripts\python.exe -m pytest Tests/integration -q
 
-- pytest Tests/unit
+# Run with verbose output
+.venv\Scripts\python.exe -m pytest Tests/ -v
+```
+
+## Current Test Counts
+
+| Suite | File | Tests | Status |
+|---|---|---|---|
+| Unit | Tests/unit/test_input_ingestion.py | 43 | Passing |
+| Integration | Tests/integration/test_validation_gates.py | 12 | Passing |
+| **Total** | | **55** | **All passing** |
+
+## Requirement Linkage
+
+| Test File | Requirements Covered |
+|---|---|
+| test_input_ingestion.py | PRJ-001, PRJ-002, INT-001, INT-002 (ingestion contracts) |
+| test_validation_gates.py | PRJ-003, PRJ-015, INT-005 (validation halt behavior) |
 
 1. Run integration tests
 

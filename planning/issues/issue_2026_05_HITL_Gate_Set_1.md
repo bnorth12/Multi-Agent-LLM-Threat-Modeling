@@ -41,4 +41,7 @@ GUI choice for this issue:
 ## Status
 - [ ] Not started
 - [ ] In progress
-- [ ] Completed
+- [x] Completed
+
+## Completion Notes
+2026-05-03 BN: Gate Set 1 implemented. hitl/models.py (GateStatus, GateAction, HitlDecision, HitlGateRecord, HitlAuditLog), hitl/gate_engine.py (GateEngine, GatePausedError, GateRejectedError, InputIntegrityMetrics, diff computation), hitl/service.py (HitlService facade), hitl/__init__.py updated. state.py extended with hitl_paused_at_gate/hitl_rejected_at_gate/hitl_gate_checkpoint. orchestrator.py wired: Gate 0 before agent_01, Gate 1 after agent_02, Gate 2 after agent_03. require_hitl_gates flag controls enable/disable. 30 integration tests, all passing. Full suite 85/85.

@@ -28,4 +28,7 @@ Establish the sprint baseline for automated testing and CI pull request gates.
 ## Status
 - [ ] Not started
 - [ ] In progress
-- [ ] Completed
+- [x] Completed
+
+## Completion Notes
+2026-05-03 BN: 55 tests passing (43 unit + 12 integration) — all ACs met. CI workflow created at .github/workflows/ci.yml targeting ubuntu-latest, Python 3.11, running unit and integration suites separately then full suite. Triggers on push and PR to main and feature/** branches.

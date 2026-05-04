@@ -5,6 +5,11 @@
 - [architecture/framework_overview.md](architecture/framework_overview.md)
 - [architecture/architecture_diagram.mermaid](architecture/architecture_diagram.mermaid)
 
+## Design Specifications
+
+- [HMI_Architecture_Blueprint.md](HMI_Architecture_Blueprint.md) (**Design authority** for all analyst-facing GUI screens; covers GUI-001 through GUI-014, navigation model, shared components, role gating, and state management)
+- [Model_Configuration_Design_Specification.md](Model_Configuration_Design_Specification.md) (Model provider selection and connection configuration for GUI — see also HMI blueprint §9.4)
+
 ## Schemas
 
 - [schemas/canonical_graph.schema.json](schemas/canonical_graph.schema.json) (authoritative)

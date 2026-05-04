@@ -29,6 +29,7 @@ Primary files:
 - 07_Release_Process.md
 - 08_Feature_Branch_Checklist_Template.md
 - 09_HITL_Framework_Options.md
+- 10_GUI_Requirements.md
 
 Component files:
 
