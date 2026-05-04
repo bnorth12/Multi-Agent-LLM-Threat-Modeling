@@ -1,0 +1,51 @@
+# Charlie Satellite Communications Terminal
+
+The Charlie Satellite Communications Terminal is a ground-based modem and encryption gateway used to relay mission data between airborne assets and the classified operations network. It performs link layer encryption, traffic shaping, and key distribution for all satellite channels.
+
+## Encryption Gateway Subsystem
+
+The Encryption Gateway Subsystem performs in-line encryption and decryption of all data transiting the satellite link. It enforces key rotation schedules and logs all key usage events for audit.
+
+### Bulk Encryption Module
+
+The Bulk Encryption Module applies AES-256-GCM encryption to outbound data frames and decrypts inbound frames before forwarding to the Operations Network Interface.
+
+#### Function: Encrypt Outbound Frame
+
+Accepts a plaintext data frame from the Traffic Shaper, applies AES-256-GCM using the current active key, and passes the ciphertext to the Satellite Modem Interface.
+
+#### Function: Decrypt Inbound Frame
+
+Receives a ciphertext frame from the Satellite Modem Interface, decrypts it using the active inbound key, and forwards the plaintext to the Operations Network Interface.
+
+### Key Distribution Module
+
+The Key Distribution Module receives keying material from the Key Management Authority and distributes keys to the Bulk Encryption Module on scheduled rotation intervals.
+
+#### Function: Receive Key Material
+
+Accepts new keying material over the Key Distribution Interface from the Key Management Authority and stores it in the key store pending activation.
+
+#### Function: Activate Key
+
+Activates the next scheduled key in the key store and notifies the Bulk Encryption Module to begin using the new key.
+
+## Traffic Shaping Subsystem
+
+The Traffic Shaping Subsystem controls data flow rates and priority queuing to prevent link saturation on the satellite uplink and downlink.
+
+### Traffic Shaper
+
+The Traffic Shaper component manages queuing, prioritization, and rate limiting for all data destined for the satellite link.
+
+#### Function: Queue Data Frame
+
+Accepts an incoming data frame from the Operations Network Interface, assigns a priority class, and places the frame in the appropriate transmit queue.
+
+#### Function: Shape Transmit Rate
+
+Regulates the outbound transmit rate based on the current link budget and priority class weights and forwards frames to the Encryption Gateway at the scheduled rate.
+
+## Trust Boundaries
+
+The interface between the Operations Network Interface and the Traffic Shaping Subsystem crosses the Operations Network Boundary. All data entering from the Operations Network must be validated for source authorization before queuing. The Satellite Modem Interface crosses the Satellite Link Boundary and requires in-line encryption for all transmitted frames.

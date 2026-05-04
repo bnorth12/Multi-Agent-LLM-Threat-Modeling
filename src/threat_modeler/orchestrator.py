@@ -1,7 +1,5 @@
-"""
-LangGraph Orchestrator: State Graph Integration
-Implements the core orchestrator and state graph for multi-agent pipeline execution.
-"""
+"""Stage orchestration and compatibility state graph utilities."""
+
 from typing import Any, Dict, Callable, List
 
 class StateGraph:
@@ -60,16 +58,21 @@ def build_default_state_graph():
     sg.add_edge("input_normalizer", "context_builder")
     # ... add more nodes and edges ...
     return sg
-"""Stage orchestration skeleton for the threat modeler framework."""
 
 from dataclasses import dataclass
 
 from .agents import build_default_agents
 from .config import RuntimeSettings
-from .hitl import HitlService
+from .hitl import GatePausedError, GateRejectedError, HitlService, InputIntegrityMetrics
 from .models import ExecutionEdge, ExecutionNode, LangGraphExecutionPlan
 from .state import FrameworkState
-from .validation import CanonicalGraphValidator
+from .validation import CanonicalGraphValidator, ValidationHaltError
+
+# Stage IDs that always open a mandatory HITL gate after the stage completes.
+_MANDATORY_POST_STAGE_GATES: dict[str, str] = {
+    "agent_02": "gate_1_scope_confirmation",
+    "agent_03": "gate_2_boundary_approval",
+}
 
 
 @dataclass
@@ -85,11 +88,14 @@ class FrameworkOrchestrator:
         *,
         validator: CanonicalGraphValidator | None = None,
         hitl_service: HitlService | None = None,
+        run_id: str = "run-default",
     ) -> None:
         self.settings = settings
         self.validator = validator or CanonicalGraphValidator()
         self.hitl_service = hitl_service or HitlService()
         self.agents = build_default_agents()
+        self._run_id = run_id
+        self.hitl_service.initialise(run_id)
 
     def planned_stage_ids(self) -> list[str]:
         return [stage_id for stage_id in self.settings.pipeline.enabled_stage_ids if stage_id in self.agents]
@@ -133,7 +139,7 @@ class FrameworkOrchestrator:
             if index > 0:
                 result = self.validator.validate(active_state)
                 if not result.is_valid and self.settings.pipeline.stop_on_validation_error:
-                    raise ValueError(result.issues[0].message)
+                    raise ValidationHaltError(result, stage_id)
 
         # TODO: Replace linear execution with LangGraph routing and checkpointing.
         return active_state
@@ -145,6 +151,23 @@ class FrameworkOrchestrator:
         if plan.start_node_id is None:
             return active_state
 
+        # Gate 0: Input Integrity — evaluated before first stage executes.
+        if self.settings.pipeline.require_hitl_gates:
+            metrics = InputIntegrityMetrics(
+                parse_error_count=len(active_state.tables) == 0 and active_state.raw_text == "",
+                source_provenance_complete=bool(active_state.tables or active_state.raw_text),
+            )
+            try:
+                self.hitl_service.evaluate_and_open_input_integrity_gate(
+                    metrics=metrics,
+                    artifact_snapshot={"raw_text_length": len(active_state.raw_text),
+                                       "table_count": len(active_state.tables)},
+                )
+            except GatePausedError as exc:
+                active_state.hitl_paused_at_gate = exc.gate_record.gate_id
+                active_state.hitl_gate_checkpoint = self.hitl_service.checkpoint_state()
+                raise
+
         current_stage_id = plan.start_node_id
         edge_lookup = {edge.from_node_id: edge.to_node_id for edge in plan.edges}
 
@@ -154,7 +177,28 @@ class FrameworkOrchestrator:
 
             result = self.validator.validate(active_state)
             if not result.is_valid and self.settings.pipeline.stop_on_validation_error:
-                raise ValueError(result.issues[0].message)
+                raise ValidationHaltError(result, current_stage_id)
+
+            # Mandatory HITL gates after specific stages.
+            if self.settings.pipeline.require_hitl_gates and current_stage_id in _MANDATORY_POST_STAGE_GATES:
+                gate_id = _MANDATORY_POST_STAGE_GATES[current_stage_id]
+                try:
+                    if gate_id == "gate_1_scope_confirmation":
+                        self.hitl_service.open_scope_confirmation_gate(
+                            artifact_snapshot=active_state.canonical_graph_dict()
+                        )
+                    elif gate_id == "gate_2_boundary_approval":
+                        self.hitl_service.open_boundary_approval_gate(
+                            artifact_snapshot=active_state.canonical_graph_dict()
+                        )
+                except GatePausedError as exc:
+                    active_state.hitl_paused_at_gate = exc.gate_record.gate_id
+                    active_state.hitl_gate_checkpoint = self.hitl_service.checkpoint_state()
+                    raise
+                except GateRejectedError as exc:
+                    active_state.hitl_rejected_at_gate = exc.gate_record.gate_id
+                    active_state.hitl_gate_checkpoint = self.hitl_service.checkpoint_state()
+                    raise
 
             current_stage_id = edge_lookup.get(current_stage_id)
 

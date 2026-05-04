@@ -1,0 +1,16 @@
+entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,interface_type,protocol,data_items,trust_boundary_crossing,trust_boundary_name
+subsystem,SS-NAV-01,Navigation Subsystem,Provides position and attitude data to the mission computer,Alpha UAV System,,,,,,,,,
+subsystem,SS-CMD-01,Command and Control Subsystem,Receives and validates operator commands,Alpha UAV System,,,,,,,,,
+component,C-GPS-01,GPS Receiver,Acquires satellite signals and outputs position fixes,SS-NAV-01,embedded,nav.gps_driver,,,,,,,
+component,C-IMU-01,Inertial Measurement Unit,Measures angular rate and acceleration,SS-NAV-01,embedded,nav.imu_driver,,,,,,,
+component,C-CMD-01,Command Processor,Parses and validates operator uplink messages,SS-CMD-01,hosted,cmd.processor|cmd.validator,,,,,,,
+function,F-GPS-01,Acquire Satellite Signal,Searches for and locks onto GPS satellite signals,C-GPS-01,,,,,,,,,
+function,F-GPS-02,Output Position Fix,Formats and outputs timestamped position fix to navigation bus,C-GPS-01,,,,,,,,,
+function,F-IMU-01,Measure Inertial State,Measures angular rate and linear acceleration and packages sensor frame,C-IMU-01,,,,,,,,,
+function,F-CMD-01,Validate Command Message,Checks integrity and authentication of received operator uplink commands,C-CMD-01,,,,,,,,,
+function,F-CMD-02,Route Command,Routes validated commands to target subsystem handler,C-CMD-01,,,,,,,,,
+interface,IF-001,GPS Position Interface,Carries position fix and timestamp from GPS Receiver to Command Processor,,,,C-GPS-01,C-CMD-01,component-component,UDP,position_fix|timestamp,false,
+interface,IF-002,IMU Telemetry Interface,Carries angular rate and acceleration from IMU to Command Processor,,,,C-IMU-01,C-CMD-01,component-component,SPI,angular_rate|acceleration,false,
+interface,IF-003,Operator Command Uplink,Encrypted operator command link from Ground Control Station to Command Processor,,,,GCS,C-CMD-01,external-component,TLS,command_message|auth_token,true,External Radio Link
+interface,IF-004,Navigation Internal Bus,Navigation subsystem data bus between Navigation and Command subsystems,,,,SS-NAV-01,SS-CMD-01,subsystem-subsystem,UDP,nav_data_bundle,false,
+interface,IF-005,Position Fix to Validate Function,Position fix data passed from Output Position Fix function to Validate Command Message function,,,,F-GPS-02,F-CMD-01,function-function,internal,position_fix,false,

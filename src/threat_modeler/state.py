@@ -1,9 +1,3 @@
-"""
-Stub FrameworkState for orchestrator compatibility.
-"""
-class FrameworkState:
-    def __init__(self):
-        self.next_stage_id = None
 """Shared state container for staged framework execution."""
 
 from dataclasses import dataclass, field
@@ -26,6 +20,11 @@ class FrameworkState:
     trust_boundary_review_needed: bool = False
     stride_complete: bool = False
     threats_generated: bool = False
+
+    # HITL state — populated by gate engine interactions
+    hitl_gate_checkpoint: dict[str, Any] | None = None  # serialised gate engine state
+    hitl_paused_at_gate: str | None = None               # gate_id when pipeline is paused
+    hitl_rejected_at_gate: str | None = None             # gate_id if analyst rejected
 
     def record_message(self, stage_id: str, text: str) -> None:
         self.messages.append({"stage_id": stage_id, "text": text})

@@ -42,13 +42,28 @@ Selection and lock criteria are documented in Python_Dependency_Strategy.md.
 
 ## Current Status
 
-The repository is currently documentation and requirements heavy. The next major phase is Python runtime implementation of the orchestrator, state model, agent interfaces, and test harness.
+Sprint 2026-05 runtime implementation is underway. The following modules are implemented and tested:
 
-## Getting Started (Planned)
+- **Orchestrator** (`src/threat_modeler/orchestrator.py`): LangGraph-compatible stage execution with validation halt behavior
+- **Canonical model** (`src/threat_modeler/models/canonical.py`): typed dataclasses for System, Subsystem, Component, Function, Interface, and threat graph
+- **Validation** (`src/threat_modeler/validation.py`): `CanonicalGraphValidator`, `ValidationResult`, `ValidationHaltError`
+- **Input parsing** (`src/threat_modeler/parsing/icd_parser.py`): CSV and XLSX ICD parsing with Function and Interface entity dispatch; narrative document parser
+- **Config** (`src/threat_modeler/config.py`): `RuntimeSettings`, `ModelSelection`, `PipelineSettings`
+- **Test suite**: 55 tests passing (43 unit + 12 integration)
 
-1. Create and activate a Python virtual environment.
-1. Install project dependencies.
-1. Run tests.
-1. Execute a local sample threat-modeling run.
+Active sprint work: S05-04 HITL gate implementation, S05-05 CI baseline, GUI/HMI implementation (post-sprint).
 
-Implementation commands will be added once code scaffolding is committed.
+## Getting Started
+
+```sh
+# Create and activate virtual environment
+python -m venv .venv
+.venv\Scripts\activate      # Windows
+# source .venv/bin/activate  # macOS/Linux
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run all tests
+.venv\Scripts\python.exe -m pytest Tests/ -q
+```

@@ -1,0 +1,16 @@
+entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,interface_type,protocol,data_items,trust_boundary_crossing,trust_boundary_name
+subsystem,SS-PROC-01,Processing Subsystem,Executes mission payloads and sensor fusion,Bravo Ground Station,,,,,,,,,
+subsystem,SS-STORE-01,Storage Subsystem,Manages persistent data recording and encryption key lifecycle,Bravo Ground Station,,,,,,,,,
+component,C-PROC-01,Mission Computer,Runs payload algorithms and logs results,SS-PROC-01,embedded,proc.mission|proc.logger,,,,,,,
+component,C-STORE-01,Solid State Recorder,Records high-rate sensor data to persistent storage,SS-STORE-01,embedded,store.recorder,,,,,,,
+component,C-STORE-02,Key Management Module,Manages encryption keys for stored data,SS-STORE-01,hosted,store.kms,,,,,,,
+function,F-PROC-01,Execute Payload Algorithm,Runs sensor fusion pipeline and generates processed output,C-PROC-01,,,,,,,,,
+function,F-PROC-02,Log Results,Streams processed output to the Storage Subsystem at high rate,C-PROC-01,,,,,,,,,
+function,F-STORE-01,Write Encrypted Record,Encrypts a sensor frame and writes it to the solid state recorder,C-STORE-01,,,,,,,,,
+function,F-STORE-02,Request Encryption Key,Sends key request to the Key Management Module and receives response,C-STORE-01,,,,,,,,,
+function,F-KMS-01,Issue Encryption Key,Validates key request and returns encryption key to requestor,C-STORE-02,,,,,,,,,
+interface,IF-101,Sensor Fusion Output Interface,Carries fused sensor frames and metadata from Mission Computer to Solid State Recorder,,,,C-PROC-01,C-STORE-01,component-component,PCIe,fused_sensor_frame|metadata,false,
+interface,IF-102,Key Request Interface,Carries key request and key response between Mission Computer and Key Management Module,,,,C-PROC-01,C-STORE-02,component-component,I2C,key_request|key_response,false,
+interface,IF-103,Remote Diagnostics Interface,Carries diagnostic request and report between Remote Operations and Mission Computer,,,,REMOTE_OPS,C-PROC-01,external-component,HTTPS,diagnostics_request|diagnostics_report,true,Operations Network Boundary
+interface,IF-104,Processing to Storage Subsystem Bus,Internal bus between Processing Subsystem and Storage Subsystem,,,,SS-PROC-01,SS-STORE-01,subsystem-subsystem,PCIe,proc_output_stream,false,
+interface,IF-105,Log Results to Write Encrypted Record,Function-level interface from Log Results function to Write Encrypted Record function,,,,F-PROC-02,F-STORE-01,function-function,internal,encrypted_frame,false,

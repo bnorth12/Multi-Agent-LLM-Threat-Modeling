@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "gates": {
+    "input_integrity": {
+      "enabled": true,
+      "thresholds": {
+        "parse_error_count_gt": 0,
+        "required_field_missing_count_gt": 0,
+        "schema_validation_pass_rate_lt": 1.0,
+        "source_provenance_complete_required": true
+      }
+    },
+    "merge_conflict_resolution": {
+      "enabled": true,
+      "thresholds": {
+        "merge_conflict_count_gte": 5,
+        "approved_artifact_conflict_count_gte": 1,
+        "critical_field_conflict_count_gte": 1,
+        "conflict_severity_max_gte": "high"
+      }
+    }
+  }
+}
