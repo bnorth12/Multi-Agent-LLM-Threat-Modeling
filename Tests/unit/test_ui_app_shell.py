@@ -381,3 +381,109 @@ class TestAppNavIncludesInputEntry:
             for node in ast.walk(tree)
         ]
         assert "Input Entry" in strings, "app.py _PAGES dict must include 'Input Entry'"
+
+
+# ---------------------------------------------------------------------------
+# S07-03 — Connection validator unit tests
+# ---------------------------------------------------------------------------
+
+class TestConnectionValidatorFixtureMode:
+    """Fixture and offline-only modes always validate without network I/O."""
+
+    def test_fixture_provider_auto_passes(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="fixture", model_name="fixture", offline_only=True)
+        result = validate_connection(model)
+        assert result.ok is True
+        assert "offline" in result.message.lower() or "fixture" in result.message.lower()
+
+    def test_offline_only_flag_auto_passes(self):
+        """offline_only=True should bypass network regardless of provider."""
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="openai", model_name="gpt-4o", offline_only=True)
+        result = validate_connection(model)
+        assert result.ok is True
+
+    def test_unknown_provider_fails_gracefully(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="nonexistent", model_name="x", offline_only=False)
+        result = validate_connection(model)
+        assert result.ok is False
+        assert "nonexistent" in result.message or "Unknown" in result.message
+
+
+class TestConnectionValidatorApiKeyCheck:
+    """Providers that require_api_key fail fast when no key is supplied."""
+
+    def test_openai_fails_without_api_key(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="openai", model_name="gpt-4o", offline_only=False)
+        result = validate_connection(model, api_key="")
+        assert result.ok is False
+        assert "API key" in result.message
+
+    def test_anthropic_fails_without_api_key(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="anthropic", model_name="claude-3-5-sonnet", offline_only=False)
+        result = validate_connection(model, api_key="")
+        assert result.ok is False
+
+    def test_api_key_hint_mentions_env_var(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="openai", model_name="gpt-4o", offline_only=False)
+        result = validate_connection(model, api_key="")
+        assert "OPENAI_API_KEY" in result.detail
+
+
+class TestConnectionValidatorUrlCheck:
+    """Providers that require_url fail fast when URL is blank."""
+
+    def test_ollama_fails_without_url(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="ollama", model_name="llama3", offline_only=False, connection_url="")
+        result = validate_connection(model, api_key="")
+        assert result.ok is False
+        assert "URL" in result.message or "url" in result.message.lower()
+
+    def test_custom_fails_without_url(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="custom", model_name="my-model", offline_only=False, connection_url="")
+        result = validate_connection(model, api_key="")
+        assert result.ok is False
+
+
+class TestConnectionValidatorResult:
+    """ValidationResult named-tuple contract."""
+
+    def test_result_has_ok_message_detail(self):
+        from threat_modeler.ui.connection_validator import ValidationResult
+        r = ValidationResult(ok=True, message="OK")
+        assert r.ok is True
+        assert r.message == "OK"
+        assert r.detail == ""  # default
+
+    def test_failed_result_carries_detail(self):
+        from threat_modeler.ui.connection_validator import ValidationResult
+        r = ValidationResult(ok=False, message="Failed", detail="some detail")
+        assert r.ok is False
+        assert r.detail == "some detail"
+
+
+class TestSessionOfflineOverrideKey:
+    """offline_override_active key exists in session defaults."""
+
+    def test_offline_override_active_in_defaults(self):
+        st_stub = _make_st_stub()
+        import threat_modeler.ui.session as session_mod
+        with patch.object(session_mod, "st", st_stub):
+            session_mod.init_session_state()
+        assert "offline_override_active" in st_stub.session_state
+        assert st_stub.session_state["offline_override_active"] is False

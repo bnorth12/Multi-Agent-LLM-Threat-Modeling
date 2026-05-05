@@ -160,19 +160,74 @@ def render() -> None:
             st.session_state["settings_override"] = new_settings
             st.success(f"✅ Settings applied. Provider: {provider_info['label']}, Model: {model_name.strip()}")
 
-    # ===== Connection Validation Status Display =====
+    # ===== SCR-014: Connection Validation =====
     st.divider()
-    st.subheader("SCR-014 — Connection Status")
+    st.subheader("SCR-014 — Connection Validation")
+
+    active = _defaults()
+    is_fixture = active.model.offline_only or active.model.provider == "fixture"
     is_valid = st.session_state.get("model_connection_valid", False)
-    if is_valid:
-        st.success("✅ Model connection validated and ready to use.", icon="✅")
-    else:
-        st.warning("⚠️ Model connection not yet validated. Configure connection details and click 'Validate Connection' to proceed.", icon="⚠️")
-        if st.button("Validate Connection", type="primary", key="validate_connection_btn"):
-            # Placeholder for actual validation logic (will be implemented in S07-03)
-            st.session_state["model_connection_valid"] = True
+
+    if is_fixture:
+        st.info(
+            "**Offline/Fixture mode** — no connection validation required. "
+            "The pipeline will use deterministic fixture data."
+        )
+        # Fixture mode is always considered valid
+        st.session_state["model_connection_valid"] = True
+    elif is_valid:
+        active_info = PROVIDER_MATRIX.get(active.model.provider, {})
+        st.success(
+            f"✅ **Validated**: {active_info.get('label', active.model.provider)} / "
+            f"{active.model.model_name} — connection is ready."
+        )
+        if st.button("Re-validate", key="revalidate_btn"):
+            st.session_state["model_connection_valid"] = False
             st.rerun()
-            st.success("Settings applied. Start a run from the Home screen.")
+    else:
+        st.warning(
+            "⚠️ Model connection not yet validated. Apply settings above, then click "
+            "**Validate Connection** to confirm the endpoint is reachable before running."
+        )
+
+        api_key_input = st.text_input(
+            "API key (optional — leave blank to use environment variable)",
+            type="password",
+            key="api_key_input",
+            help="Provide the API key here, or set the appropriate environment variable "
+                 "(e.g. OPENAI_API_KEY). The key is held in session state only and never persisted.",
+        )
+
+        col_validate, col_override = st.columns(2)
+        with col_validate:
+            if st.button("Validate Connection", type="primary", key="validate_connection_btn"):
+                from threat_modeler.ui.connection_validator import validate_connection  # noqa: PLC0415
+
+                # Resolve API key: UI input first, then environment
+                import os  # noqa: PLC0415
+                env_var = active.model.provider.upper() + "_API_KEY"
+                resolved_key = api_key_input.strip() or os.environ.get(env_var, "")
+
+                with st.spinner("Checking connection…"):
+                    result = validate_connection(active.model, api_key=resolved_key)
+
+                if result.ok:
+                    st.session_state["model_connection_valid"] = True
+                    st.rerun()
+                else:
+                    st.error(f"❌ {result.message}")
+                    if result.detail:
+                        st.caption(result.detail)
+
+        with col_override:
+            if st.button(
+                "Use Offline Override",
+                key="offline_override_btn",
+                help="Mark connection valid for offline/testing use without a live API key.",
+            ):
+                st.session_state["model_connection_valid"] = True
+                st.session_state["offline_override_active"] = True
+                st.rerun()
 
     # Show active settings summary
     st.divider()

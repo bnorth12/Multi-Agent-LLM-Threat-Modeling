@@ -10,6 +10,7 @@ _DEFAULTS: dict = {
     "gate_states": {},                # gate_id -> {"status": "pending"|"approved"|"rejected"}
     "settings_override": None,        # RuntimeSettings built from the Config screen
     "model_connection_valid": False,  # Boolean: whether model connection has been validated (S07-02/03)
+    "offline_override_active": False, # Boolean: user explicitly chose offline override (S07-03)
     "theme": "Default",               # "Default" | "Dark"
     "input_system_name": "",          # last system name entered on Input Entry
     "input_system_description": "",   # last description entered on Input Entry
