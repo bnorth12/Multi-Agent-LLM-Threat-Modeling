@@ -14,7 +14,7 @@ This tracker is the canonical in-repo status view for sprint issues defined in t
 
 | ID | GitHub Issue | Workstream | Owner Role | Status | Notes |
 |----|--------------|-----------|------------|--------|-------|
-| S07-01 | GH #26 | A | Documentation Owner | Not Started | Documentation and Traceability Cleanup: SCR naming, README status, traceability matrix, issue linking |
+| S07-01 | GH #26 | A | Documentation Owner | Completed | Reconciled SCR naming across blueprint/manual/tracker/screenshots; updated README (S06 baseline, 240 tests); Traceability Matrix now has GUI Delivery Status table; screenshots README clarifies Blueprint vs Implementation SCRs; Implementation Plan links to GH issues #26–#33; 2026-05-04 BN commit e7c7fc5 |
 | S07-02 | GH #27 | B | HMI Architect and Orchestrator Engineer | Not Started | Model Provider Selection and Connection HMI (SCR-012/013/014): provider dropdown, connection details, validation, Custom/Intranet support |
 | S07-03 | GH #28 | C | Validation and Schema Engineer | Not Started | Enforce Input Entry Model Validation Gate with Offline Override: validation state, offline mode banner, guard logic |
 | S07-04 | GH #29 | D | Orchestrator Engineer and HMI Architect | Not Started | Prompt Editor and Version History HMI (SCR-010/011): per-agent editor, version history, temperature config |
