@@ -33,6 +33,14 @@ A sprint issue can be marked Completed only when all of the following are true:
 - Documentation changes are merged if behavior changed.
 - Sprint issue status updated in this tracker with date and initials.
 
+## 3. Discovered Issues (During Sprint Execution)
+
+Issues discovered during sprint work that are not in the original 8 workstreams. Track here to prevent loss of scope if work is deferred.
+
+| ID | GitHub Issue | Description | Severity | Status | Notes |
+|----|--------------|-------------|----------|--------|-------|
+| — | — | — | — | — | — |
+
 ## 4. Sprint Definition of Done
 
 - All 8 workstream issues completed and passed completion gate.
@@ -41,3 +49,4 @@ A sprint issue can be marked Completed only when all of the following are true:
 - User manual and traceability matrix updated.
 - Feature branch merged to main via PR with all issue links verified.
 - All GitHub issues closed with Completion evidence.
+- Discovered issues logged with GH issue numbers; deferred issues marked `deferred-to-sprint-2026-08`.
