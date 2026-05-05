@@ -1,0 +1,29 @@
+MERMAID_LEVEL0
+```mermaid
+flowchart TD
+    GND["Ground Station"]
+    ADN["Avionics Data Network"]
+    GND -->|"ACARS [Air-Ground Boundary]"| ADN
+    classDef boundary fill:#ffeeba,stroke:#856404
+    class GND boundary
+```
+
+MERMAID_LEVEL1
+```mermaid
+flowchart TD
+    GDS["Ground Data Link Subsystem"]
+    FMS["Flight Management Subsystem"]
+    GDS -->|"ACARS uplink [crossing=true]"| FMS
+    classDef boundary fill:#ffeeba,stroke:#856404
+    class GDS boundary
+```
+
+MERMAID_LEVEL2
+```mermaid
+flowchart TD
+    VHF["VHF Data Radio (cmp-02)"]
+    FMSCore["FMS Core (cmp-01)"]
+    VHF -->|"if-01 ACARS [S:4 T:3]"| FMSCore
+    classDef high fill:#f8d7da,stroke:#721c24
+    class VHF high
+```

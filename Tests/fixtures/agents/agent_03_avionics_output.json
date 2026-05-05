@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "generation_timestamp": "2026-05-03T00:00:00Z",
+    "model_level": "system"
+  },
+  "system": {
+    "name": "Avionics Data Network",
+    "description": "Trust boundary enriched graph.",
+    "mission_criticality": "high",
+    "safety_criticality": "high"
+  },
+  "subsystems": [
+    {
+      "id": "ss-01",
+      "name": "Flight Management Subsystem",
+      "description": "Manages flight planning and navigation.",
+      "parent_system": "Avionics Data Network"
+    },
+    {
+      "id": "ss-02",
+      "name": "Ground Data Link Subsystem",
+      "description": "Handles communication with ground stations.",
+      "parent_system": "Avionics Data Network"
+    }
+  ],
+  "components": [
+    {
+      "id": "cmp-01",
+      "name": "FMS Core",
+      "parent_subsystem": "ss-01",
+      "hardware": "Embedded processor",
+      "software_modules": ["nav_engine", "route_planner"],
+      "description": "Core flight management computer."
+    },
+    {
+      "id": "cmp-02",
+      "name": "VHF Data Radio",
+      "parent_subsystem": "ss-02",
+      "hardware": "VHF transceiver",
+      "software_modules": ["acars_stack"],
+      "description": "VHF data radio for ACARS communication."
+    }
+  ],
+  "functions": [
+    {
+      "id": "fn-01",
+      "name": "Route Upload",
+      "parent_component": "cmp-01",
+      "description": "Receives and validates uplinked route data."
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "if-01",
+      "name": "Ground to FMS Route Uplink",
+      "description": "ACARS uplink carrying route amendments from ground to FMS.",
+      "from_node": "cmp-02",
+      "to_node": "cmp-01",
+      "interface_type": "component-component",
+      "protocol": "ACARS",
+      "data_items": ["route_amendment", "weather_data"],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Air-Ground Boundary",
+      "stride": {
+        "S": 0, "S_justification": "Not scored yet.",
+        "T": 0, "T_justification": "Not scored yet.",
+        "R": 0, "R_justification": "Not scored yet.",
+        "I": 0, "I_justification": "Not scored yet.",
+        "D": 0, "D_justification": "Not scored yet.",
+        "E": 0, "E_justification": "Not scored yet."
+      },
+      "threats": []
+    }
+  ]
+}

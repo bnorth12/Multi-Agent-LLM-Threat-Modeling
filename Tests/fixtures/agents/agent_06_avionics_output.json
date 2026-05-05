@@ -1,0 +1,40 @@
+{
+  "type": "bundle",
+  "id": "bundle--fixture-stix-001",
+  "spec_version": "2.1",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--fixture-001",
+      "spec_version": "2.1",
+      "name": "Threat Modeler System",
+      "identity_class": "system"
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--fixture-001",
+      "spec_version": "2.1",
+      "name": "Route Spoofing via Unauthenticated ACARS Uplink",
+      "description": "An adversary transmits a forged ACARS uplink to alter the active flight route in the FMS.",
+      "external_references": [
+        {"source_name": "mitre-ics-attack", "external_id": "T0856"},
+        {"source_name": "capec", "external_id": "CAPEC-194"}
+      ]
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--fixture-001",
+      "spec_version": "2.1",
+      "name": "Implement ACARS Message Authentication",
+      "description": "Apply cryptographic message authentication to all ACARS uplinks."
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--fixture-001",
+      "spec_version": "2.1",
+      "relationship_type": "mitigates",
+      "source_ref": "course-of-action--fixture-001",
+      "target_ref": "attack-pattern--fixture-001"
+    }
+  ]
+}

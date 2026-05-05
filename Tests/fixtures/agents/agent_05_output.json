@@ -1,0 +1,319 @@
+{
+  "metadata": {
+    "generation_timestamp": "2026-05-03T00:00:00Z",
+    "model_level": "system"
+  },
+  "system": {
+    "name": "Multi-Agent LLM Threat Modeler",
+    "description": "Threat enriched graph. Three concrete threats identified: LLM prompt injection on if-01, PyPI supply chain substitution on if-03, and insider contributor backdoor on if-04.",
+    "mission_criticality": "medium",
+    "safety_criticality": "low"
+  },
+  "subsystems": [
+    {
+      "id": "ss-01",
+      "name": "Agent Pipeline",
+      "description": "FrameworkOrchestrator and 9 sequential LLM-driven analysis agents sharing a CanonicalGraph state object.",
+      "parent_system": "Multi-Agent LLM Threat Modeler"
+    },
+    {
+      "id": "ss-02",
+      "name": "LLM Integration Layer",
+      "description": "Adapters that translate agent prompts into calls to remote LLMs (XaiAdapter) or local fixture files (FixtureAdapter).",
+      "parent_system": "Multi-Agent LLM Threat Modeler"
+    },
+    {
+      "id": "ss-03",
+      "name": "Supply Chain and Development Environment",
+      "description": "GitHub repository, PyPI package index, developer workstations (Windows 11 or Linux), and CI pipeline used to build, test, and distribute the tool. Includes all contributors, whose accounts represent a potential insider-threat surface.",
+      "parent_system": "Multi-Agent LLM Threat Modeler"
+    }
+  ],
+  "components": [
+    {
+      "id": "cmp-01",
+      "name": "FrameworkOrchestrator",
+      "parent_subsystem": "ss-01",
+      "hardware": "host OS process (Windows or Linux)",
+      "software_modules": [
+        "orchestrator.py",
+        "validation.py"
+      ],
+      "description": "Sequences all 9 agent stages, enforces schema-validation gates at each boundary, and manages HITL checkpoints."
+    },
+    {
+      "id": "cmp-02",
+      "name": "Agent Registry and BaseAgent",
+      "parent_subsystem": "ss-01",
+      "hardware": "host OS process",
+      "software_modules": [
+        "agents/__init__.py",
+        "agents/base.py"
+      ],
+      "description": "Maintains the ordered agent map and dispatches run() calls. BaseAgent handles prompt loading and adapter selection."
+    },
+    {
+      "id": "cmp-03",
+      "name": "Canonical Graph and State",
+      "parent_subsystem": "ss-01",
+      "hardware": "host OS memory",
+      "software_modules": [
+        "models/canonical.py",
+        "state.py"
+      ],
+      "description": "In-memory Python dataclass holding the evolving threat model graph (subsystems, components, interfaces, STRIDE, threats, mitigations) passed between agents."
+    },
+    {
+      "id": "cmp-04",
+      "name": "XaiAdapter",
+      "parent_subsystem": "ss-02",
+      "hardware": "host OS process",
+      "software_modules": [
+        "llm/xai_adapter.py"
+      ],
+      "description": "OpenAI-SDK-compatible HTTPS client targeting the xAI Grok inference API. Reads XAI_API_KEY from the environment at call time."
+    },
+    {
+      "id": "cmp-05",
+      "name": "FixtureAdapter",
+      "parent_subsystem": "ss-02",
+      "hardware": "host OS filesystem",
+      "software_modules": [
+        "llm/base.py"
+      ],
+      "description": "Reads pre-generated JSON/text fixture files from disk instead of making live LLM calls. Used for CI and offline testing."
+    },
+    {
+      "id": "cmp-06",
+      "name": "GitHub Repository",
+      "parent_subsystem": "ss-03",
+      "hardware": "GitHub cloud infrastructure (external)",
+      "software_modules": [
+        "bnorth12/Multi-Agent-LLM-Threat-Modeling"
+      ],
+      "description": "Remote Git repository hosting source code, agent prompt files, GitHub Actions workflow definitions, and issue tracking."
+    },
+    {
+      "id": "cmp-07",
+      "name": "Developer Workstation",
+      "parent_subsystem": "ss-03",
+      "hardware": "Windows 11 or Linux workstation",
+      "software_modules": [
+        "git",
+        "python3",
+        "vscode",
+        "venv"
+      ],
+      "description": "Local machine where the tool is authored, tested, and run. May also serve as the primary deployment host for local threat modeling sessions."
+    },
+    {
+      "id": "cmp-08",
+      "name": "Python venv and pip",
+      "parent_subsystem": "ss-03",
+      "hardware": "host OS filesystem",
+      "software_modules": [
+        "pip",
+        "requirements.txt"
+      ],
+      "description": "Isolated Python virtual environment and package installer. Resolves and downloads dependencies from PyPI and executes their setup scripts."
+    }
+  ],
+  "functions": [
+    {
+      "id": "fn-01",
+      "name": "Pipeline Execution",
+      "parent_component": "cmp-01",
+      "description": "Sequences all 9 agent stages, validates canonical graph at each boundary, and pauses at HITL gates."
+    },
+    {
+      "id": "fn-02",
+      "name": "LLM Completion",
+      "parent_component": "cmp-04",
+      "description": "Serialises the system-prompt and user-message (architecture JSON), sends them to the xAI Grok API over HTTPS, and returns the LLM response text."
+    },
+    {
+      "id": "fn-03",
+      "name": "Source Code Commit and Push",
+      "parent_component": "cmp-07",
+      "description": "Developer commits code locally and pushes to the GitHub repository over SSH or HTTPS."
+    },
+    {
+      "id": "fn-04",
+      "name": "Dependency Installation",
+      "parent_component": "cmp-08",
+      "description": "Resolves and downloads Python packages from PyPI and executes their setup scripts inside the virtual environment."
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "if-01",
+      "name": "XaiAdapter to xAI Grok API",
+      "description": "HTTPS REST calls from XaiAdapter to the remote xAI Grok inference endpoint. Carries system prompts, user messages containing architecture JSON, and LLM responses. XAI_API_KEY is transmitted as a Bearer token.",
+      "from_node": "cmp-04",
+      "to_node": "xAI Grok API (external)",
+      "interface_type": "component-external",
+      "protocol": "HTTPS/REST",
+      "data_items": [
+        "system_prompt",
+        "user_message_json",
+        "llm_response_text",
+        "XAI_API_KEY"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Internet API Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Compromised XAI_API_KEY allows an attacker to impersonate the tool when calling the Grok API.",
+        "T": 4,
+        "T_justification": "LLM response content can be adversarially crafted to inject false components or threats into the canonical graph.",
+        "R": 2,
+        "R_justification": "LLM outputs carry no digital signature; specific responses cannot be attributed to a session.",
+        "I": 4,
+        "I_justification": "System architecture JSON including component names, interfaces, and trust boundaries is transmitted to a third-party LLM provider.",
+        "D": 3,
+        "D_justification": "xAI API outage or rate-limiting halts the entire analysis pipeline.",
+        "E": 4,
+        "E_justification": "Prompt injection in an LLM response could cause agents to produce false security assessments or exfiltrate architecture data."
+      },
+      "threats": [
+        {
+          "name": "LLM Prompt Injection via Malicious Response Content",
+          "description": "An adversary who controls or influences the LLM via model poisoning, jailbreak, or API compromise crafts a response that injects false components, threats, or mitigations into the canonical graph, causing the tool to produce a misleading threat model that understates or conceals real risks.",
+          "mitre_attack_technique": [
+            "T1190"
+          ],
+          "capec_id": "CAPEC-137",
+          "cwe_id": "CWE-20",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [],
+          "mitigations_administrative": []
+        }
+      ]
+    },
+    {
+      "id": "if-02",
+      "name": "Developer Workstation to GitHub",
+      "description": "SSH or HTTPS Git operations (push, pull, clone) between the developer workstation and the GitHub-hosted repository. Carries source code, configuration files, and GitHub Actions workflow definitions.",
+      "from_node": "cmp-07",
+      "to_node": "cmp-06",
+      "interface_type": "component-component",
+      "protocol": "SSH/HTTPS",
+      "data_items": [
+        "source_code",
+        "workflow_yaml",
+        "commit_metadata",
+        "git_credentials"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Internet Version Control Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Stolen or phished developer credentials allow an attacker to push code as a legitimate developer.",
+        "T": 3,
+        "T_justification": "Source code could be modified in transit via MITM if HTTPS certificate validation is bypassed.",
+        "R": 2,
+        "R_justification": "Git commits are attributed by username/email but GPG signing is not enforced on this repository.",
+        "I": 2,
+        "I_justification": "Repository contents including architecture documents and agent prompts are visible to all contributors.",
+        "D": 2,
+        "D_justification": "GitHub service outage blocks code push, pull, and CI execution.",
+        "E": 3,
+        "E_justification": "A compromised developer account could push malicious agent code that appears trusted during PR review."
+      },
+      "threats": []
+    },
+    {
+      "id": "if-03",
+      "name": "pip to PyPI Package Index",
+      "description": "HTTPS requests from pip to PyPI to resolve and download Python packages listed in requirements.txt. Package archives are extracted and setup scripts executed with local user privileges during installation.",
+      "from_node": "cmp-08",
+      "to_node": "PyPI (external)",
+      "interface_type": "component-external",
+      "protocol": "HTTPS",
+      "data_items": [
+        "package_names",
+        "version_specifiers",
+        "package_archives",
+        "setup_scripts"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Internet Supply Chain Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Dependency confusion and typosquatting allow a malicious package to impersonate a legitimate project dependency.",
+        "T": 5,
+        "T_justification": "A compromised or malicious PyPI package upload executes arbitrary code during pip install.",
+        "R": 1,
+        "R_justification": "Package hashes in requirements.txt provide integrity verification when all dependencies are pinned with hashes.",
+        "I": 2,
+        "I_justification": "Malicious package setup scripts can harvest local environment variables including XAI_API_KEY.",
+        "D": 2,
+        "D_justification": "PyPI outage or network disruption blocks dependency installation.",
+        "E": 5,
+        "E_justification": "pip install executes setup.py with full developer-user privileges; a malicious package achieves arbitrary code execution."
+      },
+      "threats": [
+        {
+          "name": "Supply Chain Compromise via PyPI Dependency Substitution",
+          "description": "An attacker publishes a malicious package whose name matches or closely resembles a project dependency (typosquatting or dependency confusion). When a developer or CI system runs pip install, the malicious package executes arbitrary code with local user privileges, enabling credential theft or persistent access.",
+          "mitre_attack_technique": [
+            "T1195.001"
+          ],
+          "capec_id": "CAPEC-538",
+          "cwe_id": "CWE-494",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [],
+          "mitigations_administrative": []
+        }
+      ]
+    },
+    {
+      "id": "if-04",
+      "name": "Contributor to GitHub Repository",
+      "description": "Git push operations from individual contributors (including potential insider threats) to the shared repository. Any contributor with write access can modify source code, agent prompt files, or CI workflow definitions.",
+      "from_node": "contributor_account",
+      "to_node": "cmp-06",
+      "interface_type": "human-component",
+      "protocol": "SSH/HTTPS Git",
+      "data_items": [
+        "source_code_commits",
+        "pr_content",
+        "workflow_changes",
+        "agent_prompt_files"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Contributor Trust Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "A compromised or malicious contributor account appears as a trusted identity in git history.",
+        "T": 5,
+        "T_justification": "A malicious contributor can inject backdoors into agent logic, LLM adapter code, or GitHub Actions workflow definitions.",
+        "R": 3,
+        "R_justification": "PR review history and git log provide a partial audit trail but can be bypassed through social engineering of reviewers.",
+        "I": 3,
+        "I_justification": "Contributors with repository access can read all source code and any secrets accidentally committed.",
+        "D": 1,
+        "D_justification": "An insider could corrupt branches, but GitHub branch-protection rules limit the blast radius.",
+        "E": 4,
+        "E_justification": "A contributor with write access to the main branch (if branch protection is not enforced) can introduce supply chain backdoors."
+      },
+      "threats": [
+        {
+          "name": "Insider Threat: Malicious Code Injection via Contributor Access",
+          "description": "A malicious or compromised contributor with repository write access injects backdoor code into agent logic, the LLM adapter, or CI workflow definitions. The change may be disguised as a routine bug fix or feature addition and pass superficial code review, compromising every downstream consumer of the tool.",
+          "mitre_attack_technique": [
+            "T1195.001"
+          ],
+          "capec_id": "CAPEC-444",
+          "cwe_id": "CWE-506",
+          "likelihood": 2,
+          "impact": 5,
+          "mitigations_technical": [],
+          "mitigations_administrative": []
+        }
+      ]
+    }
+  ]
+}

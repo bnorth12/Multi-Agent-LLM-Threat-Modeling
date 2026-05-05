@@ -35,4 +35,30 @@ jobs:
         run: python -m pytest Tests/integration -q --tb=short
 
       - name: Run full test suite
-        run: python -m pytest Tests/ -q --tb=short
+        run: python -m pytest Tests/ -q --tb=short -m "not llm_live"
+
+  llm-live:
+    name: Live LLM tests (Grok API)
+    runs-on: ubuntu-latest
+    # Only run on pushes to main; skip on PRs from forks (no secret access)
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run live LLM tests
+        env:
+          GROK_API: ${{ secrets.GROK_API }}
+        run: python -m pytest Tests/ -q --tb=short -m "llm_live"

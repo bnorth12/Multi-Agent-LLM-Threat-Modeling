@@ -28,11 +28,15 @@ This tracker is the canonical in-repo status view for sprint issues defined in t
 
 | ID | Issue File | Owner Role | Branch | Status | Notes |
 |----|------------|------------|--------|--------|-------|
-| S06-01 | issue_2026_06_Agent_Pipeline_Completeness.md | Orchestrator Engineer and Technical Lead | feature/sprint_2026_06 | Not started | |
-| S06-02 | issue_2026_06_HITL_Gate_Set_2.md | HITL and Audit Engineer | feature/sprint_2026_06 | Not started | |
-| S06-03 | issue_2026_06_Retrieval_Evidence_Linkage.md | Data and Parsing Engineer and Validation and Schema Engineer | feature/sprint_2026_06 | Not started | |
-| S06-04 | issue_2026_06_Artifact_Generation_And_E2E_Validation.md | Test Lead and Orchestrator Engineer | feature/sprint_2026_06 | Not started | |
-| S06-05 | issue_2026_06_Release_And_Operational_Readiness.md | DevOps Engineer and Documentation Owner | feature/sprint_2026_06 | Not started | |
+| S06-01 | issue_2026_06_Agent_Pipeline_Completeness.md | Orchestrator Engineer and Technical Lead | feature/sprint_2026_06 | Completed | GH #18; 2026-05-04 BN: 9 agents implemented, xAI adapter, fixture golden-path, ValidationHaltError, 240 tests passing |
+| S06-02 | issue_2026_06_HITL_Gate_Set_2.md | HITL and Audit Engineer | feature/sprint_2026_06 | Completed | GH #19; 2026-05-04 BN: Gates 3–7 registered, all 5 actions, selective rerun, audit records, integration tests |
+| S06-03 | issue_2026_06_Retrieval_Evidence_Linkage.md | Data and Parsing Engineer and Validation and Schema Engineer | feature/sprint_2026_06 | Completed | GH #20; 2026-05-04 BN: source_ids/confidence schema fields, ChromaDB adapter, fixture corpus, unit+integration tests |
+| S06-04 | issue_2026_06_Artifact_Generation_And_E2E_Validation.md | Test Lead and Orchestrator Engineer | feature/sprint_2026_06 | Completed | GH #21; 2026-05-04 BN: 4 exporters, golden-path E2E, negative-path E2E, llm_live mark, 240 tests |
+| S06-05 | issue_2026_06_Release_And_Operational_Readiness.md | DevOps Engineer and Documentation Owner | feature/sprint_2026_06 | Completed | GH #22; 2026-05-04 BN: 4 screenshots captured to docs/screenshots/, README index, requirements.txt complete |
+| S06-06 | issue_2026_06_User_Manual.md | Documentation Owner and HMI Architect | feature/sprint_2026_06 | Completed | GH #23; 2026-05-04 BN: HTML manual at docs/user_manual/index.html, Markdown at docs/User_Manual.md, INDEX.md updated, all 9 ACs met |
+| S06-07 | issue_2026_06_Streamlit_App_Shell.md | HMI Architect and Orchestrator Engineer | feature/sprint_2026_06 | Completed | GH #24; 2026-05-04 BN: 4 screens (Home/InputEntry/RoleSelect/Config), Dark theme, 42 unit tests, SCR-004 Input Entry delivered |
+| OBE-01 | — | — | feature/sprint_2026_06 | Completed | GH #2; OBE: framework delivered in S05; closed on S06 PR merge |
+| OBE-02 | — | — | feature/sprint_2026_06 | Completed | GH #3; OBE: canonical graph validation delivered in S05; closed on S06 PR merge |
 
 ## 4. Completion Gate
 
@@ -42,3 +46,13 @@ A sprint issue can be marked Completed only when all of the following are true.
 - Tests are added or updated and passing.
 - Requirement links are verified.
 - Documentation changes are merged if behavior changed.
+
+## 5. Sprint Definition of Done
+
+A sprint can be closed only when all of the following are true in addition to each issue's Completion Gate.
+
+- All sprint issues are Completed.
+- Sprint test execution summary is published with passing test counts and requirement mapping.
+- Sprint demonstration is completed and evidence (annotated screenshots or recording) is attached to the sprint PR.
+- Demo record in the test execution summary includes date, performer, scenario, outcome, and evidence link.
+- Sprint PR is merged to main.

@@ -1,0 +1,65 @@
+[
+  {
+    "id": "doc_001",
+    "text": "SQL injection attacks exploit unsanitized user input in database queries, allowing attackers to read, modify, or delete data.",
+    "metadata": {
+      "category": "injection",
+      "source": "OWASP Top 10",
+      "cwe": "CWE-89"
+    }
+  },
+  {
+    "id": "doc_002",
+    "text": "Broken authentication and session management allows attackers to compromise passwords, keys, or session tokens to assume other users identities.",
+    "metadata": {
+      "category": "authentication",
+      "source": "OWASP Top 10",
+      "cwe": "CWE-287"
+    }
+  },
+  {
+    "id": "doc_003",
+    "text": "Cross-site scripting (XSS) flaws occur when an application includes unvalidated or unescaped user input in its output, enabling script injection.",
+    "metadata": {
+      "category": "injection",
+      "source": "OWASP Top 10",
+      "cwe": "CWE-79"
+    }
+  },
+  {
+    "id": "doc_004",
+    "text": "Insecure direct object references occur when an application exposes internal implementation objects such as files, directories, or database keys directly without access control.",
+    "metadata": {
+      "category": "access_control",
+      "source": "OWASP Top 10",
+      "cwe": "CWE-639"
+    }
+  },
+  {
+    "id": "doc_005",
+    "text": "Security misconfiguration is the most commonly seen issue, including insecure default configurations, incomplete setup, open cloud storage, and verbose error messages.",
+    "metadata": {
+      "category": "misconfiguration",
+      "source": "OWASP Top 10",
+      "cwe": "CWE-16"
+    }
+  },
+  {
+    "id": "doc_006",
+    "text": "Man-in-the-middle attacks allow adversaries to intercept and alter communications between two parties who believe they are communicating directly with each other.",
+    "metadata": {
+      "category": "network",
+      "source": "MITRE ATT&CK",
+      "technique": "T1557"
+    }
+  },
+  {
+    "id": "doc_007",
+    "text": "Denial of service attacks flood a target system with traffic or requests to exhaust its resources and prevent legitimate users from accessing the service.",
+    "metadata": {
+      "category": "availability",
+      "source": "MITRE ATT&CK",
+      "technique": "T1498"
+    }
+  }
+]

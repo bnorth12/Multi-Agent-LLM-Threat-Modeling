@@ -68,6 +68,15 @@ Verification and administration requirements:
 - [ ] S05-08 Regression and Requirement Test Execution
 - [ ] S05-09 Issue Closure and Validation Workflow
 
+### Sprint Demonstration
+
+- [ ] demonstration completed
+- [ ] demonstration scenario:
+- [ ] environment:
+- [ ] outcome: [ ] pass  [ ] pass with notes  [ ] fail
+- [ ] evidence (screenshots / recording):
+- [ ] open defects discovered:
+
 ### Test Evidence
 
 Unit tests:
@@ -102,8 +111,9 @@ Regression testing:
 
 ### Reviewer Checklist
 
-- [ ] Scope aligns with Sprint 2026-05 issue set (#7 to #15)
+- [ ] Scope aligns with sprint issue set
 - [ ] Requirement IDs are explicitly covered
 - [ ] Test and regression evidence included
 - [ ] Documentation updates included for changed behavior
 - [ ] Closure notes are complete for finished sprint issues
+- [ ] Sprint demonstration completed and evidence linked
