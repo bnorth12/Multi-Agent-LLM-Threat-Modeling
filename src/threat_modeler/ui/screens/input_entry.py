@@ -201,10 +201,27 @@ def render() -> None:
     # ── Validation and submit ────────────────────────────────────────────
     can_submit = bool(system_name.strip()) and (bool(uploaded_files) or bool(raw_text_paste.strip()))
 
+    # SCR-011: Check model connection validation gate
+    model_valid = st.session_state.get("model_connection_valid", False)
+    settings = st.session_state.get("settings_override")
+    is_fixture_mode = (
+        settings is None or 
+        getattr(getattr(settings, "model", None), "offline_only", True) or 
+        getattr(getattr(settings, "model", None), "provider", "unconfigured") == "unconfigured"
+    )
+
+    # Allow submit if: (1) inputs valid AND (2) either fixture mode OR live mode with validation
+    can_submit = can_submit and (is_fixture_mode or model_valid)
+
     if not system_name.strip():
         st.warning("⚠️ Enter a **System name** before starting a run.")
     elif not uploaded_files and not raw_text_paste.strip():
         st.warning("⚠️ Upload at least one architecture file **or** paste raw text before starting a run.")
+    elif not is_fixture_mode and not model_valid:
+        st.error(
+            "🔒 **Model connection required** — Go to **Pipeline Configuration** to configure and validate your LLM connection before starting a run.",
+            icon="🔒"
+        )
 
     col_btn, col_clear = st.columns([3, 1])
     with col_btn:

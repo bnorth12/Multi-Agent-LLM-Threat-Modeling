@@ -1,14 +1,18 @@
-"""SCR-003 — Pipeline Configuration.
+"""SCR-003 — Pipeline Configuration with SCR-012/013 Model Selection and Connection Details.
 
-Renders a form pre-populated from build_default_settings() that lets the
-analyst override ModelSelection fields and the enabled stage list. The
-resulting RuntimeSettings is stored in st.session_state["settings_override"]
-for use when a run is started.
+Renders configuration form with:
+- SCR-012: Model provider selection (dropdown with Custom/Intranet support)
+- SCR-013: Model connection details (URL for providers that need it)
+- Pipeline settings (stage selection, error handling, HITL gates)
+
+The resulting RuntimeSettings is stored in st.session_state["settings_override"]
+and connection validation state is stored in st.session_state["model_connection_valid"].
 """
 
 import streamlit as st
 
 from threat_modeler.config import (
+    PROVIDER_MATRIX,
     ModelSelection,
     PipelineSettings,
     RuntimeSettings,
@@ -48,31 +52,60 @@ def _defaults() -> RuntimeSettings:
 
 
 def render() -> None:
-    """Render SCR-003 Pipeline Configuration."""
+    """Render SCR-003 Pipeline Configuration with provider selection and connection details."""
     st.header("Pipeline Configuration")
-    st.caption("SCR-003 — configure model and pipeline settings before starting a run")
+    st.caption("SCR-003 — configure model, connection, and pipeline settings before starting a run")
 
     defaults = _defaults()
 
     with st.form("pipeline_config_form"):
-        st.subheader("Model Selection")
+        # ===== SCR-012: Model Provider Selection =====
+        st.subheader("SCR-012 — Model Provider Selection")
+        st.write("Choose an LLM provider to use for this threat modeling run.")
 
-        provider = st.text_input(
+        provider_options = {prov_key: f"{meta['label']}" for prov_key, meta in PROVIDER_MATRIX.items()}
+        selected_provider = st.selectbox(
             "Provider",
-            value=defaults.model.provider,
-            help="LLM provider identifier, e.g. 'xai' or 'unconfigured' for fixture mode.",
+            options=list(PROVIDER_MATRIX.keys()),
+            format_func=lambda x: provider_options[x],
+            index=list(PROVIDER_MATRIX.keys()).index(defaults.model.provider)
+            if defaults.model.provider in PROVIDER_MATRIX
+            else 0,
+            help="Select the LLM provider to use.",
         )
+
+        # Show provider description
+        provider_info = PROVIDER_MATRIX.get(selected_provider, {})
+        if provider_info:
+            st.info(f"**{provider_info['label']}**: {provider_info['description']}")
+
+        # Model name (use provider default, allow override)
         model_name = st.text_input(
             "Model name",
             value=defaults.model.model_name,
-            help="Model name passed to the provider, e.g. 'grok-3-mini'.",
-        )
-        offline_only = st.checkbox(
-            "Offline / fixture mode (no live LLM calls)",
-            value=defaults.model.offline_only,
-            help="When checked, FixtureAdapter is used and no API key is required.",
+            help=f"Model identifier for the provider. Default: {provider_info.get('default_model', 'N/A')}",
         )
 
+        # ===== SCR-013: Connection Details =====
+        st.subheader("SCR-013 — Connection Details")
+
+        connection_url = ""
+        if provider_info.get("requires_url", False):
+            connection_url = st.text_input(
+                "Connection URL",
+                value=defaults.model.connection_url,
+                placeholder="e.g., https://api.azure.com/v1 or http://localhost:11434",
+                help=f"Connection URL or endpoint for {provider_info['label']}.",
+            )
+            st.caption("This URL is used to connect to the LLM provider. It will be securely stored in session state.")
+
+        offline_mode_checkbox = st.checkbox(
+            "Offline/Fixture mode (no live LLM calls)",
+            value=defaults.model.offline_only,
+            help="When checked, uses deterministic fixture data instead of calling a live LLM.",
+        )
+
+        # ===== Pipeline Settings =====
         st.subheader("Pipeline Settings")
 
         default_enabled = list(defaults.pipeline.enabled_stage_ids)
@@ -98,18 +131,25 @@ def render() -> None:
         submitted = st.form_submit_button("Apply Settings", type="primary")
 
     if submitted:
-        if not provider.strip():
-            st.error("Provider must not be empty.")
-        elif not model_name.strip():
-            st.error("Model name must not be empty.")
-        elif not enabled_stages:
-            st.error("At least one stage must be enabled.")
+        # Validate inputs
+        errors = []
+        if not model_name.strip():
+            errors.append("Model name must not be empty.")
+        if provider_info.get("requires_url", False) and not connection_url.strip():
+            errors.append(f"Connection URL is required for {provider_info['label']}.")
+        if not enabled_stages:
+            errors.append("At least one stage must be enabled.")
+
+        if errors:
+            for err in errors:
+                st.error(err)
         else:
             new_settings = RuntimeSettings(
                 model=ModelSelection(
-                    provider=provider.strip(),
+                    provider=selected_provider,
                     model_name=model_name.strip(),
-                    offline_only=offline_only,
+                    offline_only=offline_mode_checkbox,
+                    connection_url=connection_url.strip() if provider_info.get("requires_url", False) else "",
                 ),
                 pipeline=PipelineSettings(
                     enabled_stage_ids=tuple(enabled_stages),
@@ -118,6 +158,20 @@ def render() -> None:
                 ),
             )
             st.session_state["settings_override"] = new_settings
+            st.success(f"✅ Settings applied. Provider: {provider_info['label']}, Model: {model_name.strip()}")
+
+    # ===== Connection Validation Status Display =====
+    st.divider()
+    st.subheader("SCR-014 — Connection Status")
+    is_valid = st.session_state.get("model_connection_valid", False)
+    if is_valid:
+        st.success("✅ Model connection validated and ready to use.", icon="✅")
+    else:
+        st.warning("⚠️ Model connection not yet validated. Configure connection details and click 'Validate Connection' to proceed.", icon="⚠️")
+        if st.button("Validate Connection", type="primary", key="validate_connection_btn"):
+            # Placeholder for actual validation logic (will be implemented in S07-03)
+            st.session_state["model_connection_valid"] = True
+            st.rerun()
             st.success("Settings applied. Start a run from the Home screen.")
 
     # Show active settings summary

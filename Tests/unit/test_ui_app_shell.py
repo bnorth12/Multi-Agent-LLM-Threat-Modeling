@@ -135,10 +135,12 @@ class TestConfigPageDefaults:
         s = build_default_settings()
         assert isinstance(s, RuntimeSettings)
 
-    def test_default_provider_is_unconfigured(self):
+    def test_default_provider_is_fixture(self):
+        """Verify default provider is 'fixture' (offline mode)."""
         from threat_modeler.config import build_default_settings
         s = build_default_settings()
-        assert s.model.provider == "unconfigured"
+        assert s.model.provider == "fixture"
+        assert s.model.offline_only is True
 
     def test_default_all_nine_stages_enabled(self):
         from threat_modeler.config import build_default_settings
@@ -160,6 +162,23 @@ class TestConfigPageDefaults:
         fake_state["settings_override"] = settings
         assert isinstance(fake_state["settings_override"], RuntimeSettings)
         assert fake_state["settings_override"].model.provider == "xai"
+
+    def test_provider_matrix_has_required_providers(self):
+        """Verify PROVIDER_MATRIX includes all required providers."""
+        from threat_modeler.config import PROVIDER_MATRIX
+        required_providers = ["fixture", "openai", "anthropic", "xai", "azure", "ollama", "custom"]
+        for prov in required_providers:
+            assert prov in PROVIDER_MATRIX, f"Provider '{prov}' missing from PROVIDER_MATRIX"
+
+    def test_provider_matrix_entries_complete(self):
+        """Verify each provider has required metadata."""
+        from threat_modeler.config import PROVIDER_MATRIX
+        for prov_key, metadata in PROVIDER_MATRIX.items():
+            assert "label" in metadata, f"{prov_key} missing 'label'"
+            assert "description" in metadata, f"{prov_key} missing 'description'"
+            assert "requires_url" in metadata, f"{prov_key} missing 'requires_url'"
+            assert "requires_api_key" in metadata, f"{prov_key} missing 'requires_api_key'"
+            assert "default_model" in metadata, f"{prov_key} missing 'default_model'"
 
 
 # ---------------------------------------------------------------------------
