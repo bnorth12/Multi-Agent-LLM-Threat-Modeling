@@ -3,11 +3,11 @@
 
 Date: 2026-05-02
 Status: Active execution plan
-Scope: Sprint 2026-05 and Sprint 2026-06
+Scope: Sprint 2026-05 through Sprint 2026-07
 
 ## 1. Plan Purpose
 
-This document is the single execution plan for the next two sprints. It replaces prior mixed-status planning content and is intended to:
+This document is the single execution plan for the active sprint window. It replaces prior mixed-status planning content and is intended to:
 
 - align implementation to current repository reality
 - assign accountable owners by workstream
@@ -280,7 +280,116 @@ Acceptance criteria:
 - a new developer can run setup and baseline tests from documented steps
 - release checklist is complete and linked to evidence artifacts
 
-## 7. Definition of Done (Realistic)
+## 7. Sprint 2026-07 Execution Plan
+
+Sprint objective:
+Close requirement and documentation alignment gaps while delivering the remaining
+high-priority HMI configuration and review capabilities defined in the HMI
+Architecture Blueprint.
+
+### 7.1 Workstream A: Documentation and traceability cleanup
+Owner: Documentation Owner and Technical Lead
+
+Deliverables:
+
+- reconcile screen ID naming across blueprint, user manual, tracker, and screenshot index
+- update README project status and current test counts
+- update traceability matrix to separate delivered behavior from deferred behavior
+- update implementation plan and sprint tracker references for S07 issue set
+
+Acceptance criteria:
+
+- no conflicting SCR ID mappings remain across active docs
+- README status language reflects current sprint closeout state
+- traceability matrix clearly marks deferred GUI requirements
+- S07 tracker and issue files are linked from the implementation plan
+
+### 7.2 Workstream B: Model provider and connection HMI (SCR-012/013/014)
+Owner: HMI Architect and Orchestrator Engineer
+
+Deliverables:
+
+- SCR-012 Model Provider Selection with provider dropdowns
+- include Custom or Intranet provider option for self-hosted enterprise endpoints
+- SCR-013 Model Connection Details for endpoint, model name, auth settings, and non-secret config
+- SCR-014 Connection Validation with explicit pass/fail state handling
+
+Acceptance criteria:
+
+- providers include at minimum:
+	- Local or Fixture (unconfigured, offline test mode)
+	- OpenAI
+	- Anthropic
+	- xAI or Grok
+	- Azure OpenAI
+	- Ollama
+	- Custom or Intranet (OpenAI-compatible self-hosted endpoint)
+- connection details screen supports API key and endpoint URL for Custom or Intranet provider
+- for commercial providers with known defaults, base URL is shown and locked by default; for Azure, Ollama, and Custom or Intranet it is editable
+- connection validation status is persisted to `session_state["model_connection_valid"]`
+- validation failures produce actionable error messaging without app crash
+
+### 7.3 Workstream C: Input gate enforcement and controlled offline mode
+Owner: HMI Architect and Test Lead
+
+Deliverables:
+
+- enforce `model_connection_valid == True` gate on Input Entry run initiation per blueprint
+- explicit offline test override mode for fixture-only verification scenarios
+- banner and helper text that clearly distinguishes offline test mode from validated online mode
+
+Acceptance criteria:
+
+- Start Run button remains disabled when neither model validation nor approved offline override is active
+- offline override is intentionally selectable and visibly indicated to analyst
+- automated tests cover run gating for validated online, offline override, and blocked states
+
+### 7.4 Workstream D: Prompt configuration HMI (SCR-010/011)
+Owner: HMI Architect and Prompt Engineering Owner
+
+Deliverables:
+
+- agent prompt editor screen per agent (SCR-010)
+- prompt version history and rollback controls (SCR-011)
+- per-agent temperature configuration in prompt/config workflow
+
+Acceptance criteria:
+
+- authorized role can edit, save, and revert prompts without source edits
+- each save creates version history entry with actor and timestamp metadata
+- per-agent temperature settings are persisted and used in subsequent runs
+
+### 7.5 Workstream E: Remaining analyst workflow screens
+Owner: HMI Architect and HITL Engineer
+
+Deliverables:
+
+- Stage Results Viewer (SCR-003)
+- Threat and Mitigation Review (SCR-004)
+- Results Export, Snapshot Export, and Snapshot Restore (SCR-007/008/009)
+
+Acceptance criteria:
+
+- analyst can inspect stage outputs and threat artifacts through GUI without direct file access
+- analyst can export canonical JSON, STIX, Mermaid, and report artifacts via GUI
+- snapshot export and restore flow rehydrates run context in a new session
+
+### 7.6 Workstream F: Test and CI closeout gates
+Owner: Test Lead and DevOps Engineer
+
+Deliverables:
+
+- expanded unit/integration/e2e coverage for all S07-delivered GUI workflows
+- CI rules that keep `llm_live` out of default PR test path but runnable as explicit gate
+- sprint closeout checklist entry for required online validation evidence
+
+Acceptance criteria:
+
+- non-live suite remains green in CI
+- at least one online end-to-end `llm_live` test run is required and evidenced to close the sprint
+- sprint test execution summary records date, performer, scenario, outcome, and evidence link for the online run
+
+## 8. Definition of Done (Realistic)
 
 A feature or workstream is Done only when all conditions below are true.
 
@@ -313,7 +422,7 @@ A feature or workstream is Done only when all conditions below are true.
 - code review completed by designated owner role
 - Product Owner acceptance criteria are met and recorded
 
-## 8. Exit Criteria by Sprint
+## 9. Exit Criteria by Sprint
 
 ### Sprint 2026-05 exit criteria
 
@@ -329,7 +438,15 @@ A feature or workstream is Done only when all conditions below are true.
 - e2e validation covers artifact generation and failure safety
 - release readiness baseline package is complete
 
-## 9. Sprint Ceremonies and Governance
+### Sprint 2026-07 exit criteria
+
+- documentation and traceability cleanup items are complete and merged
+- model provider selection and connection validation screens are operational
+- Input Entry run gating enforces validated model connection with explicit offline test override
+- prompt editor and version history are operational with per-agent temperature configuration
+- at least one online end-to-end `llm_live` test run is executed and documented as sprint closeout evidence
+
+## 10. Sprint Ceremonies and Governance
 
 - Sprint kickoff: assign named individuals to each owner role and confirm scope
 - Mid-sprint review: evaluate acceptance criteria progress by workstream
@@ -337,30 +454,33 @@ A feature or workstream is Done only when all conditions below are true.
 - Carryover policy: incomplete scope must include explicit blocker, owner, and next sprint target
 - Branch policy: use one feature branch per sprint and track all sprint issues on that single branch
 
-## 10. Immediate Next Actions (Week 1)
+## 11. Immediate Next Actions (Sprint 2026-07 Kickoff)
 
-1. Create branch feature/sprint_2026_05 and issue set by workstream.
+1. Create branch feature/sprint_2026_07 and issue set by workstream.
 2. Assign named owners to role placeholders in this plan.
-3. Implement fixture folder structure for icd, descriptions, and derived inputs.
-4. Build first ingestion path for one ICD spreadsheet plus one narrative document.
-5. Add CI workflow for unit and integration tests.
-6. Open sprint tracking PR with requirement and issue links.
+3. Implement S07 cleanup workstream first to remove planning and traceability drift.
+4. Implement SCR-012 through SCR-014 model configuration sequence with Custom/Intranet provider support.
+5. Implement Input Entry model validation gate and offline override behavior.
+6. Execute and document one required online `llm_live` e2e run before sprint closure.
 
-## 11. Issue Tracking in Repo
+## 12. Issue Tracking in Repo
 
 All sprint execution issues for this plan are created and tracked in planning/issues.
 
 - Tracker: planning/issues/Sprint_2026_05_06_Issue_Tracker.md
 - Sprint 2026-05 issues: S05-01 through S05-06
-- Sprint 2026-06 issues: S06-01 through S06-05
+- Sprint 2026-06 issues: S06-01 through S06-07
+- Tracker: planning/issues/Sprint_2026_07_Issue_Tracker.md
+- Sprint 2026-07 issues: S07-01 through S07-08
 
 Issue status updates must be performed in both the individual issue file and the central tracker in the same commit.
 
-## 12. Sprint Branch Strategy
+## 13. Sprint Branch Strategy
 
 To reduce branch overhead and keep traceability simple, each sprint uses exactly one feature branch.
 
 - Sprint 2026-05 branch: feature/sprint_2026_05
 - Sprint 2026-06 branch: feature/sprint_2026_06
+- Sprint 2026-07 branch: feature/sprint_2026_07
 
 All workstream issues for a sprint are implemented and tracked on that sprint branch until merge.

@@ -33,7 +33,14 @@ Scope:
 **Purpose:** Maintain a list of available model providers and their configuration requirements.
 
 **Responsibilities:**
-- Define available providers: local (ollama), OpenAI, Azure OpenAI, Anthropic Claude, Google Vertex, open-source endpoints, custom endpoints
+- Define available providers:
+   - Local or Fixture (offline test mode)
+   - OpenAI
+   - Anthropic
+   - xAI or Grok
+   - Azure OpenAI
+   - Ollama
+   - Custom or Intranet (OpenAI-compatible self-hosted endpoint)
 - For each provider: required fields, optional fields, default values, authentication method
 - Provide provider metadata to GUI for form generation
 
@@ -150,11 +157,16 @@ class ModelConnectionManager:
 - Clear indication of required vs. optional fields
 
 **Form Generation Logic:**
+- For Local or Fixture: no API key required; offline mode enabled
 - For OpenAI: API Key (required, masked), Model Name (required, dropdown), Organization ID (optional)
-- For Azure OpenAI: Endpoint URL (required), API Key (required, masked), Deployment Name (required), Model Name (required)
 - For Anthropic: API Key (required, masked), Model Name (required)
-- For Ollama: Base URL (required, default: http://localhost:11434), Model Name (required, readonly if offline)
-- For custom endpoints: Endpoint URL (required), Auth Method (dropdown), Credentials (conditional)
+- For xAI or Grok: API Key (required, masked), Model Name (required), Base URL default `https://api.x.ai/v1`
+- For Azure OpenAI: Endpoint URL (required), API Key (required, masked), Deployment Name (required), API Version (required), Model Name (optional display)
+- For Ollama: Base URL (required, default: `http://localhost:11434`), Model Name (required), API Key optional
+- For Custom or Intranet: Endpoint URL (required), API Key (usually required), Model Name (required), Auth Method (dropdown)
+
+Most enterprise self-hosted providers use commercial-compatible APIs with internal base URLs;
+the Custom or Intranet provider exists specifically for this case.
 
 **Layout Example (Azure OpenAI):**
 ```
