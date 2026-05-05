@@ -282,6 +282,10 @@ Acceptance criteria:
 
 ## 7. Sprint 2026-07 Execution Plan
 
+**Sprint Tracking Artifacts:**
+- **Local Tracker:** planning/issues/Sprint_2026_07_Issue_Tracker.md (in-repo canonical status)
+- **GitHub Issues:** #26–#33 (bnorth12/Multi-Agent-LLM-Threat-Modeling)
+
 Sprint objective:
 Close requirement and documentation alignment gaps while delivering the remaining
 high-priority HMI configuration and review capabilities defined in the HMI

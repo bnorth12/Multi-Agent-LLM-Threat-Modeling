@@ -1,7 +1,8 @@
 # Multi-Agent LLM Threat Modeler — User Manual
 
-**Version:** Sprint 2026-06
+**Version:** Sprint 2026-07 (in-progress; S06 baseline + S07 workstreams A–F)
 **Audience:** Security analysts, threat modeling practitioners, and project administrators
+**Status:** Delivered features S06-07 (4 screens); 8 additional screens in development for S07
 
 ---
 
