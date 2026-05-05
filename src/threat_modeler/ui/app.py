@@ -13,6 +13,7 @@ from threat_modeler.ui.screens.home import render as render_home
 from threat_modeler.ui.screens.role_select import render as render_role_select
 from threat_modeler.ui.screens.config import render as render_config
 from threat_modeler.ui.screens.input_entry import render as render_input_entry
+from threat_modeler.ui.screens.prompt_editor import render as render_prompt_editor
 from threat_modeler.ui.session import init_session_state
 from threat_modeler.ui.theme import apply_theme
 
@@ -42,6 +43,7 @@ _PAGES = {
     "Input Entry": render_input_entry,
     "Role Selection": render_role_select,
     "Pipeline Configuration": render_config,
+    "Prompt Editor": render_prompt_editor,
 }
 
 # ---------------------------------------------------------------------------

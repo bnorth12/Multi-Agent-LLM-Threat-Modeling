@@ -487,3 +487,198 @@ class TestSessionOfflineOverrideKey:
             session_mod.init_session_state()
         assert "offline_override_active" in st_stub.session_state
         assert st_stub.session_state["offline_override_active"] is False
+
+
+# ---------------------------------------------------------------------------
+# S07-04 — Prompt store unit tests
+# ---------------------------------------------------------------------------
+
+class TestPromptStoreConstants:
+    """AGENT_IDS and AGENT_LABELS cover all nine agents."""
+
+    def test_nine_agent_ids(self):
+        from threat_modeler.ui.prompt_store import AGENT_IDS
+        assert len(AGENT_IDS) == 9
+
+    def test_agent_ids_sequential(self):
+        from threat_modeler.ui.prompt_store import AGENT_IDS
+        for i, aid in enumerate(AGENT_IDS, start=1):
+            assert aid == f"agent_0{i}", f"Expected agent_0{i}, got {aid}"
+
+    def test_labels_cover_all_agents(self):
+        from threat_modeler.ui.prompt_store import AGENT_IDS, AGENT_LABELS
+        for agent_id in AGENT_IDS:
+            assert agent_id in AGENT_LABELS, f"{agent_id} missing from AGENT_LABELS"
+            assert len(AGENT_LABELS[agent_id]) > 5
+
+    def test_default_prompts_non_empty(self):
+        from threat_modeler.ui.prompt_store import AGENT_IDS, get_default_prompt
+        for agent_id in AGENT_IDS:
+            assert len(get_default_prompt(agent_id)) > 20, f"{agent_id} default prompt too short"
+
+
+class TestPromptStoreGetSet:
+    """get_prompt / set_prompt / get_history round-trip."""
+
+    def _make_st(self):
+        return _make_st_stub()
+
+    def test_get_prompt_returns_default_initially(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = self._make_st()
+        with patch.object(ps, "st", st_stub):
+            default = ps.get_default_prompt("agent_01")
+            current = ps.get_prompt("agent_01")
+        assert current == default
+
+    def test_set_prompt_updates_current(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = self._make_st()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_01", "New prompt text", actor="Author")
+            assert ps.get_prompt("agent_01") == "New prompt text"
+
+    def test_set_prompt_appends_history(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = self._make_st()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_01", "Version 2 text", actor="Author")
+            history = ps.get_history("agent_01")
+        # Seed v1 (default) + v2 (just saved)
+        assert len(history) == 2
+        assert history[-1].text == "Version 2 text"
+        assert history[-1].actor == "Author"
+        assert history[-1].version == 2
+
+    def test_history_version_numbers_increment(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = self._make_st()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_02", "A", actor="Author")
+            ps.set_prompt("agent_02", "B", actor="Author")
+            history = ps.get_history("agent_02")
+        versions = [e.version for e in history]
+        assert versions == list(range(1, len(versions) + 1))
+
+    def test_unknown_agent_raises_key_error(self):
+        import pytest
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = self._make_st()
+        with patch.object(ps, "st", st_stub):
+            with pytest.raises(KeyError):
+                ps.get_prompt("agent_99")
+
+
+class TestPromptStoreRevert:
+    """revert_to restores a prior version and records a new entry."""
+
+    def test_revert_restores_text(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            original = ps.get_prompt("agent_03")
+            ps.set_prompt("agent_03", "Changed text", actor="Author")
+            ps.revert_to("agent_03", 0, actor="Author")  # index 0 = initial default
+            assert ps.get_prompt("agent_03") == original
+
+    def test_revert_creates_new_history_entry(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_03", "Changed", actor="Author")
+            before_len = len(ps.get_history("agent_03"))
+            ps.revert_to("agent_03", 0, actor="Author")
+            after_len = len(ps.get_history("agent_03"))
+        assert after_len == before_len + 1
+
+    def test_revert_out_of_range_raises(self):
+        import pytest
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            with pytest.raises(IndexError):
+                ps.revert_to("agent_03", 999, actor="Author")
+
+
+class TestPromptStoreTemperature:
+    """get_temperature / set_temperature round-trip and validation."""
+
+    def test_default_temperature_is_0_2(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            assert ps.get_temperature("agent_01") == 0.2
+
+    def test_set_temperature_persists(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            ps.set_temperature("agent_01", 0.8)
+            assert abs(ps.get_temperature("agent_01") - 0.8) < 0.001
+
+    def test_temperature_out_of_range_raises(self):
+        import pytest
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            with pytest.raises(ValueError):
+                ps.set_temperature("agent_01", 2.5)
+
+    def test_temperature_boundary_values_accepted(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            ps.set_temperature("agent_01", 0.0)
+            assert ps.get_temperature("agent_01") == 0.0
+            ps.set_temperature("agent_01", 2.0)
+            assert ps.get_temperature("agent_01") == 2.0
+
+
+class TestPromptStoreIsModified:
+    """is_modified returns False for default prompt, True after edit."""
+
+    def test_not_modified_initially(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            assert ps.is_modified("agent_04") is False
+
+    def test_modified_after_set(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_04", "Something different", actor="Author")
+            assert ps.is_modified("agent_04") is True
+
+    def test_not_modified_after_reset(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_04", "Something different", actor="Author")
+            ps.reset_to_default("agent_04", actor="Author")
+            assert ps.is_modified("agent_04") is False
+
+
+class TestPromptEditorModuleStructure:
+    """prompt_editor.py exports a render() function."""
+
+    def test_module_importable(self):
+        import threat_modeler.ui.screens.prompt_editor  # noqa: F401
+
+    def test_render_function_exists(self):
+        from threat_modeler.ui.screens.prompt_editor import render
+        assert callable(render)
+
+
+class TestAppNavIncludesPromptEditor:
+    """app.py _PAGES registry includes 'Prompt Editor'."""
+
+    def test_prompt_editor_in_pages(self):
+        import ast
+        from pathlib import Path
+        tree = ast.parse(Path("src/threat_modeler/ui/app.py").read_text(encoding="utf-8"))
+        strings = [
+            node.s if isinstance(node, ast.Constant) and isinstance(node.s, str) else None
+            for node in ast.walk(tree)
+        ]
+        assert "Prompt Editor" in strings, "app.py _PAGES must include 'Prompt Editor'"
