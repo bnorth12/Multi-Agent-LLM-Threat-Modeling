@@ -210,6 +210,17 @@
                     "required": ["control_id", "title", "description", "residual_risk_after_control"],
                     "additionalProperties": true
                   }
+                },
+                "source_ids": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Retrieval evidence: IDs of corpus documents that informed this threat."
+                },
+                "confidence": {
+                  "type": ["number", "null"],
+                  "minimum": 0.0,
+                  "maximum": 1.0,
+                  "description": "Retrieval confidence score in [0.0, 1.0]; null when retrieval is disabled."
                 }
               },
               "additionalProperties": true
@@ -338,6 +349,17 @@
                     "required": ["control_id", "title", "description", "residual_risk_after_control"],
                     "additionalProperties": true
                   }
+                },
+                "source_ids": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "Retrieval evidence: IDs of corpus documents that informed this threat."
+                },
+                "confidence": {
+                  "type": ["number", "null"],
+                  "minimum": 0.0,
+                  "maximum": 1.0,
+                  "description": "Retrieval confidence score in [0.0, 1.0]; null when retrieval is disabled."
                 }
               },
               "additionalProperties": true

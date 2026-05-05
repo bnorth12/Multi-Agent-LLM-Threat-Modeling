@@ -1,0 +1,17 @@
+# Runtime dependencies for the Multi-Agent LLM Threat Modeler.
+# Install with: pip install -r requirements.txt
+
+# LLM integration
+openai>=1.0.0
+
+# UI
+streamlit>=1.57.0
+
+# Vector store (retrieval evidence linkage)
+chromadb>=0.4.0
+
+# STIX 2.1 export
+stix2>=3.0.0
+
+# Local dev / test secret loading (.env → GROK_API)
+python-dotenv>=1.0.0

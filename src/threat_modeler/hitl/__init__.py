@@ -1,6 +1,13 @@
-"""HITL subsystem — Gate Set 1 (Gate 0, Gate 1, Gate 2)."""
+"""HITL subsystem — Gate Set 1 + Gate Set 2."""
 
-from .gate_engine import GateEngine, GatePausedError, GateRejectedError, InputIntegrityMetrics
+from .gate_engine import (
+    ExportConsistencyMetrics,
+    GateEngine,
+    GatePausedError,
+    GateRejectedError,
+    InputIntegrityMetrics,
+    MergeConflictMetrics,
+)
 from .models import (
     GateAction,
     GateStatus,
@@ -20,5 +27,7 @@ __all__ = [
     "HitlDecision",
     "HitlGateRecord",
     "HitlService",
+    "ExportConsistencyMetrics",
     "InputIntegrityMetrics",
+    "MergeConflictMetrics",
 ]

@@ -1,0 +1,107 @@
+{
+  "metadata": {
+    "generation_timestamp": "2026-05-03T00:00:00Z",
+    "model_level": "system"
+  },
+  "system": {
+    "name": "Avionics Data Network",
+    "description": "Mitigation enriched graph.",
+    "mission_criticality": "high",
+    "safety_criticality": "high"
+  },
+  "subsystems": [
+    {
+      "id": "ss-01",
+      "name": "Flight Management Subsystem",
+      "description": "Manages flight planning and navigation.",
+      "parent_system": "Avionics Data Network"
+    },
+    {
+      "id": "ss-02",
+      "name": "Ground Data Link Subsystem",
+      "description": "Handles communication with ground stations.",
+      "parent_system": "Avionics Data Network"
+    }
+  ],
+  "components": [
+    {
+      "id": "cmp-01",
+      "name": "FMS Core",
+      "parent_subsystem": "ss-01",
+      "hardware": "Embedded processor",
+      "software_modules": ["nav_engine", "route_planner"],
+      "description": "Core flight management computer."
+    },
+    {
+      "id": "cmp-02",
+      "name": "VHF Data Radio",
+      "parent_subsystem": "ss-02",
+      "hardware": "VHF transceiver",
+      "software_modules": ["acars_stack"],
+      "description": "VHF data radio for ACARS communication."
+    }
+  ],
+  "functions": [
+    {
+      "id": "fn-01",
+      "name": "Route Upload",
+      "parent_component": "cmp-01",
+      "description": "Receives and validates uplinked route data."
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "if-01",
+      "name": "Ground to FMS Route Uplink",
+      "description": "ACARS uplink carrying route amendments from ground to FMS.",
+      "from_node": "cmp-02",
+      "to_node": "cmp-01",
+      "interface_type": "component-component",
+      "protocol": "ACARS",
+      "data_items": ["route_amendment", "weather_data"],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Air-Ground Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Unauthenticated ACARS uplink allows route spoofing by ground impersonation.",
+        "T": 3,
+        "T_justification": "Route data can be tampered in transit without integrity protection.",
+        "R": 2,
+        "R_justification": "No digital signature; sender repudiation possible.",
+        "I": 3,
+        "I_justification": "Route amendments carry sensitive flight intent data.",
+        "D": 2,
+        "D_justification": "Jamming of VHF channel could deny route updates.",
+        "E": 2,
+        "E_justification": "Malformed uplink could exploit FMS parsing vulnerabilities."
+      },
+      "threats": [
+        {
+          "name": "Route Spoofing via Unauthenticated ACARS Uplink",
+          "description": "An adversary transmits a forged ACARS uplink to alter the active flight route in the FMS without aircrew awareness.",
+          "mitre_attack_technique": ["T0856"],
+          "capec_id": "CAPEC-194",
+          "cwe_id": "CWE-290",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-T-01",
+              "title": "ACARS Message Authentication",
+              "description": "Implement HMAC-based message authentication for all ACARS uplinks. Reject messages without valid authentication tags.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-A-01",
+              "title": "Ground Station Access Control Review",
+              "description": "Periodic review of authorised ACARS ground station identifiers and access credentials.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

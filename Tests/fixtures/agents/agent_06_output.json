@@ -1,0 +1,110 @@
+{
+  "type": "bundle",
+  "id": "bundle--matm-self-model-001",
+  "spec_version": "2.1",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--matm-001",
+      "spec_version": "2.1",
+      "name": "Multi-Agent LLM Threat Modeler",
+      "identity_class": "system"
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--matm-001",
+      "spec_version": "2.1",
+      "name": "LLM Prompt Injection via Malicious Response Content",
+      "description": "Adversary influences LLM output to inject false data into the canonical threat graph.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1190"
+        },
+        {
+          "source_name": "capec",
+          "external_id": "CAPEC-137"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--matm-002",
+      "spec_version": "2.1",
+      "name": "Supply Chain Compromise via PyPI Dependency Substitution",
+      "description": "Attacker publishes malicious PyPI package matching a project dependency; executes arbitrary code on pip install.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1195.001"
+        },
+        {
+          "source_name": "capec",
+          "external_id": "CAPEC-538"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--matm-003",
+      "spec_version": "2.1",
+      "name": "Insider Threat: Malicious Code Injection via Contributor Access",
+      "description": "Malicious or compromised contributor injects backdoor code into agent logic or CI workflows that passes superficial review.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1195.001"
+        },
+        {
+          "source_name": "capec",
+          "external_id": "CAPEC-444"
+        }
+      ]
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--matm-001",
+      "spec_version": "2.1",
+      "name": "LLM Response Schema Validation",
+      "description": "Enforce JSON schema validation on all LLM outputs; reject schema violations before propagating to downstream agents."
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--matm-002",
+      "spec_version": "2.1",
+      "name": "Dependency Hash Pinning",
+      "description": "Pin all dependencies with SHA-256 hashes using pip-compile --generate-hashes."
+    },
+    {
+      "type": "course-of-action",
+      "id": "course-of-action--matm-003",
+      "spec_version": "2.1",
+      "name": "Branch Protection and Required PR Reviews",
+      "description": "Enforce protected main branch with required reviewer approval and GPG-signed commits."
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--matm-001",
+      "spec_version": "2.1",
+      "relationship_type": "mitigates",
+      "source_ref": "course-of-action--matm-001",
+      "target_ref": "attack-pattern--matm-001"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--matm-002",
+      "spec_version": "2.1",
+      "relationship_type": "mitigates",
+      "source_ref": "course-of-action--matm-002",
+      "target_ref": "attack-pattern--matm-002"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--matm-003",
+      "spec_version": "2.1",
+      "relationship_type": "mitigates",
+      "source_ref": "course-of-action--matm-003",
+      "target_ref": "attack-pattern--matm-003"
+    }
+  ]
+}

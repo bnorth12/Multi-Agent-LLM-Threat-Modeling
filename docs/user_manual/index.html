@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Agent LLM Threat Modeler — User Manual</title>
+  <style>
+    /* ── Reset & base ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: #1e2230;
+      background: #f5f7fa;
+    }
+
+    /* ── Layout ─────────────────────────────────────────────────── */
+    .layout { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    nav#sidebar {
+      width: 270px;
+      flex-shrink: 0;
+      background: #1a1f36;
+      color: #c8cfe8;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 0 0 2rem 0;
+    }
+    nav#sidebar .brand {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: #12162a;
+      padding: 1.2rem 1.4rem;
+      font-size: 0.9rem; font-weight: 700;
+      color: #e8ecff; letter-spacing: 0.02em;
+    }
+    nav#sidebar .brand .icon { font-size: 1.4rem; }
+    nav#sidebar .nav-section {
+      padding: 1rem 1.4rem 0.3rem;
+      font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: #6b74a0;
+    }
+    nav#sidebar a {
+      display: block;
+      padding: 0.45rem 1.4rem;
+      color: #a8b3d8;
+      text-decoration: none;
+      font-size: 0.875rem;
+      border-left: 3px solid transparent;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
+    }
+    nav#sidebar a:hover {
+      color: #e8ecff; background: #22294a;
+      border-left-color: #5b7fff;
+    }
+    nav#sidebar a.sub {
+      padding-left: 2.4rem;
+      font-size: 0.82rem;
+      color: #8090bc;
+    }
+    nav#sidebar a.sub:hover { color: #c8d0f0; }
+
+    /* Main content */
+    main {
+      flex: 1;
+      padding: 2.5rem 3rem 4rem;
+      max-width: 960px;
+    }
+
+    /* ── Typography ─────────────────────────────────────────────── */
+    h1 { font-size: 2rem; font-weight: 800; color: #0f1526; margin-bottom: 0.4rem; }
+    h2 {
+      font-size: 1.45rem; font-weight: 700; color: #1a1f36;
+      margin: 3rem 0 0.8rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid #d6dbf0;
+    }
+    h3 { font-size: 1.1rem; font-weight: 700; color: #2c3461; margin: 2rem 0 0.5rem; }
+    h4 { font-size: 0.95rem; font-weight: 700; color: #3d4878; margin: 1.4rem 0 0.35rem; }
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.6rem 0 1rem 1.6rem; }
+    li { margin-bottom: 0.3rem; }
+    strong { color: #1a2150; }
+    code {
+      font-family: "Cascadia Code", "Fira Code", Consolas, "Courier New", monospace;
+      font-size: 0.85em;
+      background: #e8ecf8;
+      color: #2a3580;
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+    }
+    pre {
+      background: #1a1f36;
+      color: #c8d8ff;
+      padding: 1.1rem 1.4rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 0.8rem 0 1.2rem;
+      font-size: 0.85rem;
+      line-height: 1.55;
+    }
+    pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+    a { color: #3a5bff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Components ─────────────────────────────────────────────── */
+    .subtitle {
+      font-size: 1rem; color: #5a6280;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #d6dbe8;
+    }
+    .subtitle span { font-weight: 600; color: #3a4270; }
+
+    /* Tables */
+    table {
+      width: 100%; border-collapse: collapse;
+      margin: 1rem 0 1.5rem;
+      font-size: 0.875rem;
+    }
+    th {
+      background: #1a1f36; color: #d8dff8;
+      text-align: left; padding: 0.6rem 0.8rem;
+      font-weight: 600; font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    td { padding: 0.55rem 0.8rem; border-bottom: 1px solid #e0e4f0; vertical-align: top; }
+    tr:nth-child(even) td { background: #f0f2fb; }
+    td:first-child { font-weight: 600; white-space: nowrap; }
+    td.center, th.center { text-align: center; }
+
+    /* Callout boxes */
+    .callout {
+      border-left: 4px solid #5b7fff;
+      background: #eef1ff;
+      padding: 0.9rem 1.2rem;
+      border-radius: 0 8px 8px 0;
+      margin: 1rem 0 1.4rem;
+      font-size: 0.9rem;
+    }
+    .callout.warn { border-color: #f0a030; background: #fff8ed; }
+    .callout.danger { border-color: #e03c3c; background: #fff0f0; }
+    .callout.success { border-color: #2db880; background: #edfaf4; }
+    .callout strong { color: #1e2855; }
+    .callout.warn strong { color: #7a4c00; }
+    .callout.danger strong { color: #7a0000; }
+    .callout.success strong { color: #0a5c38; }
+
+    /* Screenshot figures */
+    figure.screenshot {
+      margin: 1.5rem 0 2rem;
+      border: 1px solid #d0d5e8;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(30,35,80,0.08);
+    }
+    figure.screenshot img {
+      display: block; width: 100%; height: auto;
+    }
+    figure.screenshot .placeholder {
+      display: flex; align-items: center; justify-content: center;
+      height: 260px;
+      background: linear-gradient(135deg, #1a1f36 0%, #2c3580 100%);
+      color: #8090cc; font-size: 0.85rem; text-align: center;
+      flex-direction: column; gap: 0.6rem;
+    }
+    figure.screenshot .placeholder .ph-icon { font-size: 2.5rem; opacity: 0.5; }
+    figure.screenshot .placeholder .ph-label { max-width: 340px; line-height: 1.5; }
+    figcaption {
+      padding: 0.6rem 1rem;
+      font-size: 0.8rem; color: #5a6280;
+      border-top: 1px solid #e0e4f0;
+      background: #f8f9fd;
+    }
+    figcaption strong { color: #2c3461; }
+
+    /* Step badges */
+    .steps { list-style: none; margin: 0 0 1.4rem; padding: 0; counter-reset: step; }
+    .steps li {
+      counter-increment: step;
+      display: flex; gap: 1rem;
+      margin-bottom: 1.2rem;
+      align-items: flex-start;
+    }
+    .steps li::before {
+      content: counter(step);
+      flex-shrink: 0;
+      width: 2rem; height: 2rem;
+      background: #1a1f36; color: #e0e8ff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; font-weight: 700;
+      margin-top: 0.1rem;
+    }
+
+    /* Gate cards */
+    .gate-card {
+      border: 1px solid #d0d5e8;
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1rem;
+      background: #fff;
+    }
+    .gate-card .gate-header {
+      display: flex; align-items: center; gap: 0.7rem;
+      margin-bottom: 0.5rem;
+    }
+    .gate-badge {
+      display: inline-block;
+      padding: 0.18rem 0.65rem;
+      border-radius: 20px;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .mandatory { background: #fff0f0; color: #b02020; border: 1px solid #f0b0b0; }
+    .conditional { background: #fff8e0; color: #7a4c00; border: 1px solid #f0d080; }
+    .gate-id { font-weight: 700; font-size: 0.95rem; color: #1a1f36; }
+
+    /* Role chips */
+    .role-chip {
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.8rem; font-weight: 600;
+      margin: 0.1rem;
+    }
+    .chip-author   { background: #e8f0ff; color: #2040a0; }
+    .chip-reviewer { background: #e8fff0; color: #105030; }
+    .chip-approver { background: #fff0e8; color: #803020; }
+    .chip-admin    { background: #f0e8ff; color: #502080; }
+
+    /* Decision table */
+    .decision-table td:first-child { font-weight: 700; font-family: monospace; font-size: 0.85rem; }
+
+    /* Troubleshoot sections */
+    .trouble {
+      border: 1px solid #e0e4f0;
+      border-radius: 8px;
+      margin-bottom: 1.4rem;
+      overflow: hidden;
+    }
+    .trouble-header {
+      background: #f0f2fb;
+      padding: 0.7rem 1rem;
+      font-weight: 700; font-size: 0.9rem;
+      color: #2c3461;
+      border-bottom: 1px solid #e0e4f0;
+    }
+    .trouble-body { padding: 0.9rem 1rem; font-size: 0.9rem; }
+    .trouble-body dt { font-weight: 700; color: #3a4878; margin-top: 0.5rem; }
+    .trouble-body dd { margin-left: 1rem; margin-bottom: 0.6rem; }
+
+    /* Glossary */
+    .glossary dt { font-weight: 700; color: #1a2150; margin-top: 0.9rem; font-size: 0.9rem; }
+    .glossary dd { margin-left: 1.2rem; font-size: 0.875rem; color: #3a4060; margin-bottom: 0.2rem; }
+
+    /* Section anchor spacing */
+    section { padding-top: 1rem; }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem; padding-top: 1.5rem;
+      border-top: 1px solid #d0d5e8;
+      font-size: 0.8rem; color: #8090b0;
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ════════════════ SIDEBAR ════════════════ -->
+<nav id="sidebar">
+  <div class="brand">
+    <span class="icon">🔐</span>
+    Threat Modeler
+  </div>
+
+  <div class="nav-section">Getting Started</div>
+  <a href="#overview">1 · Tool Overview</a>
+  <a href="#pipeline" class="sub">Nine-Agent Pipeline</a>
+  <a href="#hitl-model" class="sub">HITL Governance</a>
+  <a href="#install">2 · Installation &amp; Setup</a>
+  <a href="#install-prereqs" class="sub">Prerequisites</a>
+  <a href="#install-steps" class="sub">Setup Steps</a>
+
+  <div class="nav-section">Screens &amp; Workflows</div>
+  <a href="#workflow">3 · Primary Analyst Workflow</a>
+  <a href="#scr004" class="sub">SCR-004 Input Entry Form</a>
+  <a href="#scr001" class="sub">SCR-001 Run Dashboard</a>
+  <a href="#scr002" class="sub">SCR-002 Role Selection</a>
+  <a href="#scr003" class="sub">SCR-003 Configuration</a>
+
+  <div class="nav-section">HITL Gates</div>
+  <a href="#gates">4 · Gate Interaction Guide</a>
+  <a href="#gate0" class="sub">Gate 0 · Input Integrity</a>
+  <a href="#gate1" class="sub">Gate 1 · Scope Confirmation</a>
+  <a href="#gate2" class="sub">Gate 2 · Boundary Approval</a>
+  <a href="#gate3" class="sub">Gate 3 · STRIDE Calibration</a>
+  <a href="#gate4" class="sub">Gate 4 · Threat Plausibility</a>
+  <a href="#gate5" class="sub">Gate 5 · Mitigation Adequacy</a>
+  <a href="#gate6" class="sub">Gate 6 · Merge Conflicts</a>
+  <a href="#gate7" class="sub">Gate 7 · Export Consistency</a>
+
+  <div class="nav-section">Reference</div>
+  <a href="#config">5 · Configuration Reference</a>
+  <a href="#roles">6 · Role-Based Access</a>
+  <a href="#export">7 · Results Export</a>
+  <a href="#troubleshoot">8 · Troubleshooting</a>
+  <a href="#glossary">9 · Glossary</a>
+</nav>
+
+<!-- ════════════════ MAIN ════════════════ -->
+<main>
+
+  <h1>Multi-Agent LLM Threat Modeler</h1>
+  <p class="subtitle">
+    <span>User Manual</span> &nbsp;·&nbsp; Sprint 2026-06 &nbsp;·&nbsp;
+    Audience: Security analysts, threat modeling practitioners, and project administrators
+  </p>
+
+  <!-- ═══════════════════════════════════════
+       1. TOOL OVERVIEW
+  ════════════════════════════════════════ -->
+  <section id="overview">
+    <h2>1 · Tool Overview</h2>
+
+    <p>
+      The <strong>Multi-Agent LLM Threat Modeler</strong> automates structured threat modeling
+      of complex systems using a sequential pipeline of nine specialised AI agents. It accepts
+      a system description as input — narrative text, an interface control document (ICD)
+      spreadsheet, or both — and produces four classes of output artifact:
+    </p>
+
+    <ul>
+      <li><strong>Canonical Threat Model Graph (JSON)</strong> — a schema-validated document
+        encoding the system hierarchy (system → subsystems → components → interfaces), STRIDE
+        assessments, concrete threats with MITRE ATT&amp;CK / CAPEC / CWE mappings, and
+        mitigation controls with residual risk ratings.</li>
+      <li><strong>STIX 2.1 Bundle</strong> — machine-readable threat intelligence objects
+        (<code>attack-pattern</code> + <code>course-of-action</code> + <code>mitigates</code>
+        relationships) suitable for ingestion by SIEMs and threat intelligence platforms.</li>
+      <li><strong>Mermaid Architecture Diagram</strong> — a text-based flowchart source
+        showing the system topology with trust-boundary crossings annotated.</li>
+      <li><strong>Human-Readable Markdown Report</strong> — an executive-quality document
+        with summary, system scope, trust boundary analysis, STRIDE findings, top threats,
+        and mitigation mapping.</li>
+    </ul>
+
+    <section id="pipeline">
+      <h3>The Nine-Agent Pipeline</h3>
+      <p>
+        Each agent is a stateless processing stage. Agents receive the shared
+        <code>FrameworkState</code> object, call the configured LLM (or read a deterministic
+        fixture in offline mode), update the state, and pass it to the next stage. The
+        pipeline runs sequentially in the order below.
+      </p>
+
+      <table>
+        <thead>
+          <tr><th>Stage ID</th><th>Agent Name</th><th>Responsibility</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>agent_01</td><td>Input Normalizer</td><td>Parses and normalises raw text and spreadsheet tables into a consistent structure. Populates <code>state.tables</code> and sanitises <code>state.raw_text</code>.</td></tr>
+          <tr><td>agent_02</td><td>Context Builder</td><td>Builds a hierarchical system context graph from normalised input. Populates subsystems, components, and functions in the canonical graph.</td></tr>
+          <tr><td>agent_03</td><td>Trust Boundary Validator</td><td>Identifies interfaces that cross trust boundaries, assigns boundary names, and sets <code>trust_boundary_crossing</code> flags on each interface.</td></tr>
+          <tr><td>agent_04</td><td>STRIDE Scorer</td><td>Applies STRIDE (Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege) categories and scores (0–5) to each interface.</td></tr>
+          <tr><td>agent_05</td><td>Threat Generator</td><td>Generates concrete threats for each interface, with MITRE ATT&amp;CK technique IDs, CAPEC IDs, CWE IDs, likelihood (1–5), and impact (1–5).</td></tr>
+          <tr><td>agent_06</td><td>STIX Packager</td><td>Packages all threats into a STIX 2.1 bundle and stores it in <code>state.stix_bundle</code>.</td></tr>
+          <tr><td>agent_07</td><td>Mitigation Generator</td><td>Maps technical and administrative mitigation controls to each threat, with control IDs (e.g. NIST SP 800-53) and residual risk ratings.</td></tr>
+          <tr><td>agent_08</td><td>Diagram Generator</td><td>Emits Mermaid flowchart source (one diagram per model level) stored in <code>state.mermaid_diagrams</code>.</td></tr>
+          <tr><td>agent_09</td><td>Report Writer</td><td>Renders the final human-readable markdown threat model report and stores it in <code>state.final_report</code>.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="hitl-model">
+      <h3>HITL Governance Model</h3>
+      <p>
+        Human-in-the-loop (HITL) <em>gates</em> pause the pipeline at defined decision
+        points and require analyst action before execution continues. This ensures human
+        oversight at every consequential stage of the threat modeling process.
+      </p>
+      <p>Gates are classified as:</p>
+      <ul>
+        <li><strong>Mandatory</strong> — always trigger regardless of artifact content (Gates 1–5).</li>
+        <li><strong>Conditional</strong> — trigger only when artifact metrics exceed configured
+          thresholds (Gates 6–7).</li>
+      </ul>
+
+      <h4>Gate Decision Options</h4>
+      <table class="decision-table">
+        <thead>
+          <tr><th>Decision</th><th>Effect</th><th>Use when…</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Accept As-Is</td>
+            <td>Approves the artifact exactly as produced. Pipeline resumes immediately.</td>
+            <td>The artifact is correct and complete with no changes needed.</td>
+          </tr>
+          <tr>
+            <td>Accept Changes</td>
+            <td>Submits an edited version of the artifact. The diff is recorded in the audit log. Pipeline resumes with the revised artifact.</td>
+            <td>Minor corrections are needed but the artifact is fundamentally sound.</td>
+          </tr>
+          <tr>
+            <td>Save Draft</td>
+            <td>Pauses the gate with intent to return later. Pipeline remains paused.</td>
+            <td>The analyst needs more time, information, or a second opinion before deciding.</td>
+          </tr>
+          <tr>
+            <td>Reject</td>
+            <td>Rejects the artifact. Pipeline halts with a <code>GateRejectedError</code> and records the rejection. A new run must be initiated.</td>
+            <td>The artifact is fundamentally incorrect or the input data must be corrected before proceeding.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       2. INSTALLATION AND SETUP
+  ════════════════════════════════════════ -->
+  <section id="install">
+    <h2>2 · Installation and Setup</h2>
+
+    <section id="install-prereqs">
+      <h3>Prerequisites</h3>
+      <table>
+        <thead><tr><th>Requirement</th><th>Minimum Version</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Python</td><td>3.11</td><td>3.12 also supported</td></tr>
+          <tr><td>pip</td><td>24.0</td><td>Bundled with Python 3.11+</td></tr>
+          <tr><td>Windows 10/11 or Linux</td><td>—</td><td>macOS also supported</td></tr>
+          <tr><td>Internet access</td><td>—</td><td>Required for hybrid (xAI Grok) mode only; not needed for offline/fixture mode</td></tr>
+          <tr><td>XAI_API_KEY env variable</td><td>—</td><td>Required for hybrid mode only; obtain from <a href="https://x.ai">x.ai</a></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="install-steps">
+      <h3>Setup Steps</h3>
+
+      <h4>Step 1 — Clone the repository</h4>
+      <pre><code>git clone &lt;repository-url&gt;
+cd "Multi Agent Threat Modeler"</code></pre>
+
+      <h4>Step 2 — Create and activate the virtual environment</h4>
+      <p><strong>Windows (PowerShell):</strong></p>
+      <pre><code>python -m venv .venv
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
+.venv\Scripts\Activate.ps1</code></pre>
+      <p><strong>Linux / macOS:</strong></p>
+      <pre><code>python3.11 -m venv .venv
+source .venv/bin/activate</code></pre>
+
+      <h4>Step 3 — Install dependencies</h4>
+      <pre><code>pip install -r requirements.txt</code></pre>
+      <p>This installs Streamlit, OpenAI SDK (for xAI Grok), ChromaDB (retrieval), and
+      STIX2 (export).</p>
+
+      <h4>Step 4 — Configure the model provider</h4>
+      <p><strong>Offline / fixture mode</strong> (no API key required):</p>
+      <div class="callout success">
+        No extra configuration needed. The application defaults to
+        <code>provider=unconfigured</code>, which uses deterministic pre-recorded
+        fixture outputs for all nine agents. This is the recommended mode for
+        initial setup verification and automated testing.
+      </div>
+
+      <p><strong>Hybrid mode</strong> (xAI Grok — live LLM calls):</p>
+      <pre><code># Windows PowerShell
+$env:XAI_API_KEY = "xai-your-key-here"
+
+# Linux / macOS
+export XAI_API_KEY="xai-your-key-here"</code></pre>
+      <p>Then select <strong>xai</strong> as the provider on the Configuration screen
+      (SCR-003) and enter <code>grok-beta</code> (or the current model name) in the
+      Model Name field.</p>
+
+      <h4>Step 5 — Launch the Streamlit application</h4>
+      <pre><code>streamlit run src/threat_modeler/ui/app.py</code></pre>
+      <p>
+        The application opens automatically at
+        <code>http://localhost:8501</code> in your default browser. The sidebar displays
+        the navigation menu. Select your role first (SCR-002), then proceed to the
+        Configuration screen (SCR-003) before starting a run.
+      </p>
+    </section>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       3. PRIMARY ANALYST WORKFLOW
+  ════════════════════════════════════════ -->
+  <section id="workflow">
+    <h2>3 · Primary Analyst Workflow</h2>
+    <p>
+      The typical end-to-end workflow for an analyst running the threat modeler from
+      a fresh session is:
+    </p>
+    <ol class="steps">
+      <li><strong>Enter system inputs</strong> — navigate to <strong>Input Entry</strong> (SCR-004)
+        in the sidebar.  Enter a system name, upload one or more architecture files (CSV, XLSX,
+        MD, TXT, YAML), and click <strong>▶ Start Threat Model Run</strong>.  The application
+        parses the files and switches to the Run Dashboard.</li>
+      <li><strong>Select your role</strong> — navigate to Role Selection (SCR-002) in the sidebar
+        and confirm which analyst role you are performing for this session.</li>
+      <li><strong>Configure the pipeline</strong> — navigate to Pipeline Configuration (SCR-003)
+        and set the LLM provider, model, stage selection, and HITL gate preferences.</li>
+      <li><strong>Monitor progress</strong> — the Run Dashboard (SCR-001) updates stage status in
+        real time. Each stage shows its completion state.</li>
+      <li><strong>Action HITL gates</strong> — when the pipeline pauses at a gate, a review
+        panel appears. Review the artifact and choose Accept, Accept Changes, Save Draft,
+        or Reject.</li>
+      <li><strong>Retrieve artifacts</strong> — after all stages complete and all gates are
+        resolved, the four output artifacts are available for download or further processing.</li>
+    </ol>
+
+    <!-- SCR-004 -->
+    <section id="scr004">
+      <h3>SCR-004 — Input Entry Form</h3>
+      <p>
+        The Input Entry Form is the starting point for every new threat model run.
+        Navigate to <strong>Input Entry</strong> in the sidebar to reach this screen.
+      </p>
+
+      <h4>Fields</h4>
+      <dl>
+        <dt>System name <em>(required)</em></dt>
+        <dd>A short, unique identifier for the system under analysis.
+          This name is used in all output artifacts (report title, STIX bundle,
+          Mermaid diagram header).</dd>
+
+        <dt>System description <em>(optional)</em></dt>
+        <dd>Supplementary context describing the system's purpose and operational
+          environment.  This is concatenated with uploaded narrative text before
+          being passed to agents.  Can be omitted when a detailed narrative file
+          is uploaded.</dd>
+
+        <dt>Architecture files <em>(required unless raw text is pasted)</em></dt>
+        <dd>
+          Upload one or more files that describe the system.  Accepted formats:
+          <ul>
+            <li><strong>CSV / XLSX</strong> — interface control document (ICD)
+              spreadsheets.  First row must be a header row.  Each subsequent row
+              becomes one entity in the canonical graph.</li>
+            <li><strong>MD / TXT / YAML / YML</strong> — narrative or structured
+              text descriptions.  File contents are concatenated into the
+              <code>raw_text</code> field of the pipeline state.</li>
+          </ul>
+          Up to 10 files may be uploaded in a single run.
+        </dd>
+
+        <dt>Paste raw architecture text <em>(optional)</em></dt>
+        <dd>An expandable text area for pasting architecture text directly
+          when file upload is not practical.  The pasted text is merged with
+          any uploaded narrative files.</dd>
+      </dl>
+
+      <h4>Model Connection Banner</h4>
+      <p>
+        A status banner at the top of the form indicates the current model
+        connection state:
+      </p>
+      <ul>
+        <li><strong>Offline / fixture mode</strong> (blue info banner) — the pipeline
+          will use pre-recorded agent outputs.  No live LLM API calls are made.
+          This is the default when no provider is configured on the Pipeline
+          Configuration screen.</li>
+        <li><strong>Connected</strong> (green success banner) — a live provider and
+          model name are configured.  Agents will make real LLM calls during
+          the run.</li>
+      </ul>
+
+      <h4>Starting a Run</h4>
+      <ol>
+        <li>Enter a <strong>System name</strong>.</li>
+        <li>Upload at least one architecture file <em>or</em> paste raw text.</li>
+        <li>Click <strong>▶ Start Threat Model Run</strong>.
+          The button is disabled until both conditions are met.</li>
+        <li>The application parses the uploaded files, constructs an initial
+          <code>FrameworkState</code>, assigns a unique run ID, and switches the
+          navigation to the <strong>Home</strong> (Run Dashboard) screen.</li>
+      </ol>
+      <p>
+        To discard all inputs and start over, click <strong>Clear</strong>.
+      </p>
+
+      <figure class="screenshot">
+        <img src="screenshots/scr_004_input_entry.png"
+             alt="Input Entry Form screen showing system name field, file uploader, and Start Threat Model Run button"
+             loading="lazy"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+        <figcaption style="display:none;padding:2em;background:#1e1e2e;color:#cdd6f4;border-radius:6px;text-align:center;">
+          Screenshot not yet available — run the Streamlit app and navigate to Input Entry.
+        </figcaption>
+        <figcaption>Figure: SCR-004 Input Entry Form</figcaption>
+      </figure>
+    </section>
+
+    <!-- SCR-001 -->
+    <section id="scr001">
+      <h3>SCR-001 — Run Dashboard</h3>
+      <p>
+        The Run Dashboard is the primary control surface. It is the default landing page
+        and shows the current run state at a glance.
+      </p>
+
+      <figure class="screenshot">
+        <div class="placeholder" id="ph-scr001" style="display:none">
+          <div class="ph-icon">📊</div>
+          <div class="ph-label">
+            <strong>SCR-001 · Run Dashboard</strong><br/>
+            Screenshot not yet captured. Run the app and save to
+            <code>docs/user_manual/screenshots/scr_001_run_dashboard.png</code>.
+          </div>
+        </div>
+        <img src="screenshots/scr_001_run_dashboard.png" alt="SCR-001 Run Dashboard"
+             style="display:block;width:100%;height:auto"
+             onerror="this.style.display='none';document.getElementById('ph-scr001').style.display='flex'" />
+        <figcaption>
+          <strong>SCR-001 — Run Dashboard.</strong>
+          Displays the active run ID, a per-stage progress table with status icons
+          (⬜ pending, 🔄 running, ✅ complete, ⏸️ awaiting HITL, 🛑 halted), and
+          the HITL gate states panel. A <em>Refresh</em> button triggers a re-render.
+        </figcaption>
+      </figure>
+
+      <h4>Stage Progress Table</h4>
+      <p>
+        The stage progress table lists all nine pipeline agents in execution order.
+        Each row shows the stage label and its current status icon. Status is derived
+        from <code>st.session_state["pipeline_state"].messages</code>: stages whose
+        <code>stage_id</code> appears in the messages list are marked <em>Complete</em>;
+        all others remain <em>Pending</em>.
+      </p>
+      <table>
+        <thead><tr><th>Icon</th><th>Status</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>⬜</td><td>Pending</td><td>Stage has not yet executed</td></tr>
+          <tr><td>🔄</td><td>Running</td><td>Stage is currently executing</td></tr>
+          <tr><td>✅</td><td>Complete</td><td>Stage finished successfully</td></tr>
+          <tr><td>⏸️</td><td>Awaiting</td><td>Pipeline paused at a HITL gate after this stage</td></tr>
+          <tr><td>🛑</td><td>Halted</td><td>Pipeline halted by a validation error or gate rejection</td></tr>
+        </tbody>
+      </table>
+
+      <h4>HITL Gate Status Panel</h4>
+      <p>
+        When <code>st.session_state["gate_states"]</code> contains entries, the gate panel
+        renders below the stage table. Each gate ID and its current status (e.g.
+        <em>Open</em>, <em>Approved</em>, <em>Rejected</em>) is listed. When a gate is open,
+        the analyst should navigate to the gate review interface to action it.
+      </p>
+
+      <h4>Active Run ID</h4>
+      <p>
+        The run ID uniquely identifies the current pipeline execution. It is displayed
+        in an info banner at the top of the page. If no run is active, the banner
+        instructs the analyst to start a run from the Configuration screen.
+      </p>
+    </section>
+
+    <!-- SCR-002 -->
+    <section id="scr002">
+      <h3>SCR-002 — Role Selection</h3>
+      <p>
+        Every session begins with a role selection. The selected role is stored in
+        <code>st.session_state["role"]</code> and displayed in the sidebar header throughout
+        the session. Roles determine which gate actions are available.
+      </p>
+
+      <figure class="screenshot">
+        <div class="placeholder" id="ph-scr002" style="display:none">
+          <div class="ph-icon">👤</div>
+          <div class="ph-label">
+            <strong>SCR-002 · Role Selection</strong><br/>
+            Screenshot not yet captured. Run the app and save to
+            <code>docs/user_manual/screenshots/scr_002_role_select.png</code>.
+          </div>
+        </div>
+        <img src="screenshots/scr_002_role_select.png" alt="SCR-002 Role Selection"
+             style="display:block;width:100%;height:auto"
+             onerror="this.style.display='none';document.getElementById('ph-scr002').style.display='flex'" />
+        <figcaption>
+          <strong>SCR-002 — Role Selection.</strong>
+          Three roles are available. Selecting a role and clicking <em>Confirm Role</em>
+          persists the selection to session state and updates the sidebar caption.
+          The current role and its description are shown above the radio group when
+          a role has already been selected.
+        </figcaption>
+      </figure>
+
+      <h4>Available Roles</h4>
+      <table>
+        <thead><tr><th>Role</th><th>Description</th><th>Typical actions</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="role-chip chip-author">Author</span></td>
+            <td>Creates and submits the architecture description for analysis. Initiates pipeline runs and supplies input data.</td>
+            <td>Submit input, start run, monitor progress</td>
+          </tr>
+          <tr>
+            <td><span class="role-chip chip-reviewer">Reviewer</span></td>
+            <td>Reviews pipeline outputs and HITL gate artifacts. Approves or rejects trust boundary decisions and threat assessments.</td>
+            <td>Review artifacts, action gates, annotate findings</td>
+          </tr>
+          <tr>
+            <td><span class="role-chip chip-approver">Approver</span></td>
+            <td>Has final approval authority over the completed threat model and any associated release decisions.</td>
+            <td>Final gate approval, sign-off on report, release authorisation</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Note:</strong> Role-gating of UI elements is enabled in future sprints.
+        In Sprint 2026-06 all three screens are accessible regardless of selected role,
+        but the role value is enforced by the backend gate engine on every gate action.
+      </div>
+
+      <h4>Changing Your Role</h4>
+      <p>
+        If a role is already selected, the current role and its description are displayed
+        above the radio group. Select a different role and click <strong>Confirm Role</strong>
+        to update. The sidebar caption updates immediately on confirmation.
+      </p>
+    </section>
+
+    <!-- SCR-003 -->
+    <section id="scr003">
+      <h3>SCR-003 — Pipeline Configuration</h3>
+      <p>
+        The Configuration screen is used before starting a run to set the LLM provider,
+        model, enabled stages, and pipeline behaviour. Settings are stored in
+        <code>st.session_state["settings_override"]</code> as a <code>RuntimeSettings</code>
+        object and applied when the pipeline is initiated.
+      </p>
+
+      <figure class="screenshot">
+        <div class="placeholder" id="ph-scr003" style="display:none">
+          <div class="ph-icon">⚙️</div>
+          <div class="ph-label">
+            <strong>SCR-003 · Pipeline Configuration</strong><br/>
+            Screenshot not yet captured. Run the app and save to
+            <code>docs/user_manual/screenshots/scr_003_configuration.png</code>.
+          </div>
+        </div>
+        <img src="screenshots/scr_003_configuration.png" alt="SCR-003 Pipeline Configuration"
+             style="display:block;width:100%;height:auto"
+             onerror="this.style.display='none';document.getElementById('ph-scr003').style.display='flex'" />
+        <figcaption>
+          <strong>SCR-003 — Pipeline Configuration.</strong>
+          A single Streamlit form with two sections: <em>Model Selection</em> (provider,
+          model name, offline toggle) and <em>Pipeline Settings</em> (enabled stages
+          multiselect, stop-on-error toggle, HITL gate toggle). Clicking
+          <em>Apply Settings</em> saves to session state.
+        </figcaption>
+      </figure>
+
+      <h4>Model Selection Section</h4>
+      <table>
+        <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>Provider</td><td><code>unconfigured</code></td><td>Set to <code>xai</code> to enable live Grok calls. Any other value activates fixture mode.</td></tr>
+          <tr><td>Model name</td><td><code>fixture</code></td><td>Passed verbatim to the LLM adapter. For Grok use <code>grok-beta</code> or <code>grok-3-mini</code>.</td></tr>
+          <tr><td>Offline / fixture mode</td><td>✅ checked</td><td>When checked, the <code>FixtureAdapter</code> is used and no API key is required. Uncheck only when a valid <code>XAI_API_KEY</code> is set.</td></tr>
+        </tbody>
+      </table>
+
+      <h4>Pipeline Settings Section</h4>
+      <table>
+        <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td>Enabled stages</td><td>All 9 stages</td><td>Multiselect of agent stage IDs. Deselect stages to skip them. Useful for partial runs during development or debugging.</td></tr>
+          <tr><td>Stop on validation error</td><td>✅ checked</td><td>When checked, the pipeline halts with a <code>ValidationHaltError</code> if any stage produces a state that fails canonical graph schema validation.</td></tr>
+          <tr><td>Require HITL gates</td><td>✅ checked</td><td>When checked, mandatory gates 1–5 are enforced and conditional gates 6–7 are evaluated. Uncheck for automated testing or demonstration runs.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout warn">
+        <strong>Warning:</strong> Unchecking <em>Require HITL gates</em> bypasses all
+        mandatory human review checkpoints. Only do this in controlled test environments.
+      </div>
+    </section>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       4. HITL GATE INTERACTION GUIDE
+  ════════════════════════════════════════ -->
+  <section id="gates">
+    <h2>4 · HITL Gate Interaction Guide</h2>
+    <p>
+      When the pipeline reaches a gate, a <code>GatePausedError</code> is raised by the
+      gate engine and caught by the orchestrator. The pipeline halts, <code>state.hitl_paused_at_gate</code>
+      is set to the gate ID, and the gate checkpoint is recorded. The analyst must action
+      the gate before the pipeline can resume.
+    </p>
+
+    <section id="gate0">
+      <div class="gate-card">
+        <div class="gate-header">
+          <span class="gate-badge conditional">Conditional</span>
+          <span class="gate-id" id="gate0">Gate 0 — Input Integrity</span>
+        </div>
+        <p><strong>Fires after:</strong> before agent_01 (pre-pipeline)</p>
+        <p><strong>Trigger condition:</strong> <code>parse_error_count &gt; 0</code> OR
+          <code>source_provenance_complete == false</code>.</p>
+        <p><strong>Analyst action:</strong> Review the ingested input summary displayed in
+          the gate panel. If the input looks correct, choose <strong>Accept As-Is</strong>.
+          If the input is malformed or incomplete, choose <strong>Reject</strong> and resubmit
+          with a corrected input file.</p>
+        <p><strong>Common triggers:</strong> Empty <code>raw_text</code> with no tables, or
+          spreadsheet upload that failed to parse any rows.</p>
+      </div>
+    </section>
+
+    <section id="gate1">
+      <div class="gate-card">
+        <div class="gate-header">
+          <span class="gate-badge mandatory">Mandatory</span>
+          <span class="gate-id" id="gate1">Gate 1 — Scope Confirmation</span>
+        </div>
+        <p><strong>Fires after:</strong> agent_02 (Context Builder)</p>
+        <p><strong>Trigger condition:</strong> Always fires when HITL gates are enabled.</p>
+        <p><strong>Artifact shown:</strong> The canonical graph as built so far: system name,
+          subsystem list, component list, and function list.</p>
+        <p><strong>Analyst action:</strong> Verify the system context graph is correct.
+          Confirm the system name, subsystem decomposition, and component inventory match
+          the architecture under analysis.  If changes are needed (e.g. a subsystem is
+          missing), choose <strong>Accept Changes</strong> and submit the corrected artifact.</p>
+      </div>
+    </section>
+
+    <section id="gate2">
+      <div class="gate-card">
+        <div class="gate-header">
+          <span class="gate-badge mandatory">Mandatory</span>
+          <span class="gate-id" id="gate2">Gate 2 — Trust Boundary Approval</span>
+        </div>
+        <p><strong>Fires after:</strong> agent_03 (Trust Boundary Validator)</p>
+        <p><strong>Trigger condition:</strong> Always fires when HITL gates are enabled.</p>
+        <p><strong>Artifact shown:</strong> All interfaces with <code>trust_boundary_crossing=true</code>
+          and their assigned <code>trust_boundary_name</code> values.</p>
+        <p><strong>Analyst action:</strong> Review identified trust boundary crossings.
+          Add, remove, or rename crossings as needed. Incorrect trust boundaries will
+          cause the STRIDE scorer and threat generator to produce inaccurate results.</p>
+      </div>
+    </section>
+
+    <section id="gate3">
+      <div class="gate-card">
+        <div class="gate-header">
+          <span class="gate-badge mandatory">Mandatory</span>
+          <span class="gate-id" id="gate3">Gate 3 — STRIDE Calibration</span>
+        </div>
+        <p><strong>Fires after:</strong> agent_04 (STRIDE Scorer)</p>
+        <p><strong>Trigger condition:</strong> Always fires when HITL gates are enabled.</p>
+        <p><strong>Artifact shown:</strong> STRIDE scores (0–5) and justifications for
+          each interface.</p>
+        <p><strong>Analyst action:</strong> Review STRIDE scores against your domain knowledge.
+          Adjust scores that appear too high or too low. STRIDE calibration directly influences
+          the threat generator's output in the next stage.</p>
+      </div>
+    </section>
+
+    <section id="gate4">
+      <div class="gate-card">
+        <div class="gate-header">
+          <span class="gate-badge mandatory">Mandatory</span>
+          <span class="gate-id" id="gate4">Gate 4 — Threat Plausibility</span>
+        </div>
+        <p><strong>Fires after:</strong> agent_05 (Threat Generator)</p>
+        <p><strong>Trigger condition:</strong> Always fires when HITL gates are enabled.</p>
+        <p><strong>Artifact shown:</strong> All generated threats with MITRE ATT&amp;CK /
+          CAPEC / CWE identifiers, likelihood, and impact scores.</p>
+        <p><strong>Analyst action:</strong> Review each threat for plausibility in context.
+          Remove threats that are not applicable to the system under analysis. Add any
+          significant threats the model missed. Adjusted threats flow into the mitigation
+          generator in the next stage.</p>
+      </div>
+    </section>
+
+    <section id="gate5">
+      <div class="gate-card">
+        <div class="gate-header">
+          <span class="gate-badge mandatory">Mandatory</span>
+          <span class="gate-id" id="gate5">Gate 5 — Mitigation Adequacy</span>
+        </div>
+        <p><strong>Fires after:</strong> agent_07 (Mitigation Generator)</p>
+        <p><strong>Trigger condition:</strong> Always fires when HITL gates are enabled.</p>
+        <p><strong>Artifact shown:</strong> All mitigation controls (technical and administrative)
+          with control IDs, titles, descriptions, and residual risk ratings.</p>
+        <p><strong>Analyst action:</strong> Verify mitigation coverage is adequate for each
+          threat. Ensure residual risk ratings are realistic. Add missing controls before
+          the artifact proceeds to STIX packaging and report generation.</p>
+      </div>
+    </section>
+
+    <section id="gate6">
+      <div class="gate-card">
+        <div class="gate-header">
+          <span class="gate-badge conditional">Conditional</span>
+          <span class="gate-id" id="gate6">Gate 6 — Merge Conflict Resolution</span>
+        </div>
+        <p><strong>Fires after:</strong> agent_02 (Context Builder)</p>
+        <p><strong>Trigger condition:</strong> Fires when any of the following thresholds
+          are exceeded:</p>
+        <ul>
+          <li><code>merge_conflict_count ≥ 5</code></li>
+          <li><code>approved_artifact_conflict_count ≥ 1</code> (any conflict on a previously
+            approved artifact)</li>
+          <li><code>critical_field_conflict_count ≥ 1</code></li>
+          <li><code>conflict_severity_max ≥ "high"</code></li>
+        </ul>
+        <p><strong>Analyst action:</strong> Review the conflicting fields listed in the gate
+          panel and resolve each conflict by selecting the correct value before the context
+          graph proceeds to trust boundary validation.</p>
+      </div>
+    </section>
+
+    <section id="gate7">
+      <div class="gate-card">
+        <div class="gate-header">
+          <span class="gate-badge conditional">Conditional</span>
+          <span class="gate-id" id="gate7">Gate 7 — Export Consistency</span>
+        </div>
+        <p><strong>Fires after:</strong> agent_09 (Report Writer) — before final publication</p>
+        <p><strong>Trigger condition:</strong> Fires when any consistency error is detected
+          between the canonical graph and the STIX / report outputs:</p>
+        <ul>
+          <li><code>canonical_stix_error_count &gt; 0</code></li>
+          <li><code>canonical_report_error_count &gt; 0</code></li>
+          <li><code>diagram_reference_error_count &gt; 0</code></li>
+          <li><code>consistency_warning_count &gt; 10</code></li>
+        </ul>
+        <p><strong>Analyst action:</strong> Review the listed inconsistencies. Accept the
+          existing outputs if the discrepancies are acceptable, or reject to trigger a
+          corrective re-run of the affected stages.</p>
+      </div>
+    </section>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       5. CONFIGURATION REFERENCE
+  ════════════════════════════════════════ -->
+  <section id="config">
+    <h2>5 · Configuration Reference</h2>
+    <p>
+      Configuration is managed via SCR-003 or programmatically through
+      <code>src/threat_modeler/config.py</code>. The root configuration object is
+      <code>RuntimeSettings</code>, composed of <code>ModelSelection</code> and
+      <code>PipelineSettings</code>.
+    </p>
+
+    <h3>ModelSelection</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>provider</code></td><td>str</td><td><code>"unconfigured"</code></td><td>LLM provider identifier. <code>"xai"</code> activates Grok; any other value activates fixture mode.</td></tr>
+        <tr><td><code>model_name</code></td><td>str</td><td><code>"fixture"</code></td><td>Model name passed to the provider (e.g. <code>"grok-beta"</code>).</td></tr>
+        <tr><td><code>offline_only</code></td><td>bool</td><td><code>True</code></td><td>When <code>True</code>, forces fixture mode regardless of provider setting.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>PipelineSettings</h3>
+    <table>
+      <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>execution_mode</code></td><td>str</td><td><code>"langgraph-compatible"</code></td><td>Pipeline execution strategy. Use <code>"langgraph-compatible"</code> for full HITL gate support.</td></tr>
+        <tr><td><code>require_hitl_gates</code></td><td>bool</td><td><code>True</code></td><td>Enable mandatory and conditional HITL gates.</td></tr>
+        <tr><td><code>stop_on_validation_error</code></td><td>bool</td><td><code>True</code></td><td>Halt on canonical graph schema validation failure.</td></tr>
+        <tr><td><code>enabled_stage_ids</code></td><td>list[str]</td><td>All 9 stages</td><td>Ordered list of agent stage IDs to execute.</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Offline vs. Hybrid Profiles</h3>
+    <table>
+      <thead><tr><th>Profile</th><th><code>provider</code></th><th><code>offline_only</code></th><th>API key required</th></tr></thead>
+      <tbody>
+        <tr><td>Offline (fixture)</td><td><code>unconfigured</code></td><td><code>True</code></td><td>No</td></tr>
+        <tr><td>Hybrid (Grok)</td><td><code>xai</code></td><td><code>False</code></td><td>Yes — <code>XAI_API_KEY</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>HITL Trigger Rules</h3>
+    <p>
+      Conditional gate thresholds are configured in
+      <code>Tests/fixtures/inputs/hitl/trigger_rules_default.json</code>.
+      Override the path by passing <code>rules_path</code> to
+      <code>HitlService.load_trigger_rules()</code>. The schema for this file is at
+      <code>docs/schemas/hitl_trigger_rules.schema.json</code>.
+    </p>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       6. ROLE-BASED ACCESS
+  ════════════════════════════════════════ -->
+  <section id="roles">
+    <h2>6 · Role-Based Access</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th class="center"><span class="role-chip chip-author">Author</span></th>
+          <th class="center"><span class="role-chip chip-reviewer">Reviewer</span></th>
+          <th class="center"><span class="role-chip chip-approver">Approver</span></th>
+          <th class="center"><span class="role-chip chip-admin">Admin</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Submit input / start run</td><td class="center">✅</td><td class="center">❌</td><td class="center">❌</td><td class="center">✅</td></tr>
+        <tr><td>Monitor pipeline progress</td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td></tr>
+        <tr><td>Respond to HITL gates</td><td class="center">❌</td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td></tr>
+        <tr><td>Approve gate decisions</td><td class="center">❌</td><td class="center">❌</td><td class="center">✅</td><td class="center">✅</td></tr>
+        <tr><td>Reject artifact at gate</td><td class="center">❌</td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td></tr>
+        <tr><td>Download export artifacts</td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td><td class="center">✅</td></tr>
+        <tr><td>Edit agent prompts</td><td class="center">❌</td><td class="center">❌</td><td class="center">❌</td><td class="center">✅</td></tr>
+        <tr><td>Modify configuration</td><td class="center">✅</td><td class="center">❌</td><td class="center">❌</td><td class="center">✅</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>Note:</strong> Role enforcement is stored in
+      <code>st.session_state["role"]</code> and validated by the backend gate engine
+      on every gate action (the <code>actor</code> dict passed to gate decisions must
+      include the role). Full UI-level role gating is planned for Sprint 2026-07.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       7. RESULTS EXPORT
+  ════════════════════════════════════════ -->
+  <section id="export">
+    <h2>7 · Results Export</h2>
+    <p>
+      After all nine stages complete and all HITL gates are resolved, four artifact
+      types are available. All exporters are importable from
+      <code>threat_modeler.exports</code>.
+    </p>
+
+    <table>
+      <thead><tr><th>Artifact</th><th>Format</th><th>Exporter</th><th>State field</th></tr></thead>
+      <tbody>
+        <tr><td>Canonical Threat Model Graph</td><td>JSON string</td><td><code>export_json(graph)</code></td><td><code>state.canonical_graph</code></td></tr>
+        <tr><td>STIX 2.1 Bundle</td><td><code>stix2.Bundle</code></td><td><code>export_stix(graph)</code></td><td><code>state.canonical_graph</code></td></tr>
+        <tr><td>Architecture Diagram</td><td>Mermaid source text</td><td><code>export_mermaid(graph)</code></td><td><code>state.canonical_graph</code></td></tr>
+        <tr><td>Threat Model Report</td><td>Markdown string</td><td><code>export_report(state)</code></td><td><code>state.final_report</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Programmatic Export</h3>
+    <pre><code>from threat_modeler.exports import export_json, export_stix, export_mermaid, export_report
+
+# After a pipeline run:
+json_str    = export_json(state.canonical_graph)     # → JSON string
+stix_bundle = export_stix(state.canonical_graph)     # → stix2.Bundle object
+mermaid_src = export_mermaid(state.canonical_graph)  # → Mermaid flowchart string
+report_md   = export_report(state)                   # → markdown string</code></pre>
+
+    <h3>Rendering the Mermaid Diagram</h3>
+    <p>Paste the Mermaid source string into any of the following renderers:</p>
+    <ul>
+      <li><a href="https://mermaid.live">mermaid.live</a> — online live editor</li>
+      <li>VS Code — <em>Markdown Preview Mermaid Support</em> extension</li>
+      <li>GitHub / GitLab markdown — fenced code block with <code>mermaid</code> tag</li>
+    </ul>
+
+    <h3>STIX Bundle Usage</h3>
+    <p>
+      The <code>stix2.Bundle</code> object returned by <code>export_stix()</code> contains:
+    </p>
+    <ul>
+      <li>One <code>attack-pattern</code> per threat in the canonical graph.</li>
+      <li>One <code>course-of-action</code> per mitigation (technical and administrative).</li>
+      <li>One <code>relationship</code> of type <code>mitigates</code> linking each
+        <code>course-of-action</code> to its parent <code>attack-pattern</code>.</li>
+    </ul>
+    <pre><code># Serialise to JSON for SIEM ingest
+import json
+bundle_json = stix_bundle.serialize(pretty=True)
+with open("threat_model.stix.json", "w") as f:
+    f.write(bundle_json)</code></pre>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       8. TROUBLESHOOTING
+  ════════════════════════════════════════ -->
+  <section id="troubleshoot">
+    <h2>8 · Troubleshooting</h2>
+
+    <div class="trouble">
+      <div class="trouble-header">Scenario 1 — Gate 0 triggers unexpectedly at run start</div>
+      <div class="trouble-body">
+        <dl>
+          <dt>Symptom</dt>
+          <dd>Pipeline pauses at <code>gate_0_input_integrity</code> immediately after starting.</dd>
+          <dt>Cause</dt>
+          <dd>The pipeline state has no <code>raw_text</code> and no <code>tables</code>. This
+            happens when the run is initiated without providing input data.</dd>
+          <dt>Resolution</dt>
+          <dd>Provide input text in the Run Dashboard input field before starting the pipeline,
+            or populate <code>state.raw_text</code> programmatically before calling
+            <code>orchestrator.run_planned_stages(state)</code>.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="trouble">
+      <div class="trouble-header">Scenario 2 — ValidationHaltError stops the pipeline mid-run</div>
+      <div class="trouble-body">
+        <dl>
+          <dt>Symptom</dt>
+          <dd>Pipeline stops mid-run; Run Dashboard shows a stage with status 🛑.
+            <code>ValidationHaltError</code> is raised.</dd>
+          <dt>Cause</dt>
+          <dd>An agent produced a <code>FrameworkState</code> that failed canonical graph
+            schema validation. Common causes: agent fixture returning malformed JSON,
+            or an LLM response that could not be deserialised.</dd>
+          <dt>Resolution</dt>
+          <dd>
+            <ol>
+              <li>Check <code>state.messages</code> for the failing stage.</li>
+              <li>In fixture mode, verify <code>Tests/fixtures/agents/agentXX_output.json</code>
+                is valid JSON conforming to the canonical graph schema
+                (<code>docs/schemas/canonical_graph.schema.json</code>).</li>
+              <li>Set <em>Stop on validation error</em> to unchecked in SCR-003 to bypass
+                the halt for debugging.</li>
+            </ol>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="trouble">
+      <div class="trouble-header">Scenario 3 — ModuleNotFoundError: chromadb or stix2</div>
+      <div class="trouble-body">
+        <dl>
+          <dt>Symptom</dt>
+          <dd>Application fails to start with <code>ModuleNotFoundError</code> for
+            <code>chromadb</code> or <code>stix2</code>.</dd>
+          <dt>Cause</dt>
+          <dd>Dependencies were not installed, or the virtual environment is not activated.</dd>
+          <dt>Resolution</dt>
+          <dd><pre><code># Activate the venv first, then:
+pip install -r requirements.txt</code></pre></dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="trouble">
+      <div class="trouble-header">Scenario 4 — Streamlit error when provider="xai" and no API key</div>
+      <div class="trouble-body">
+        <dl>
+          <dt>Symptom</dt>
+          <dd>Error on pipeline start: API key not found or connection refused to
+            <code>https://api.x.ai/v1</code>.</dd>
+          <dt>Cause</dt>
+          <dd><code>XAI_API_KEY</code> environment variable is not set, or the
+            <em>Offline / fixture mode</em> checkbox is still checked in SCR-003.</dd>
+          <dt>Resolution</dt>
+          <dd>
+            Set the environment variable before launching Streamlit:
+            <pre><code># Windows PowerShell
+$env:XAI_API_KEY = "xai-your-key-here"
+streamlit run src/threat_modeler/ui/app.py</code></pre>
+            Alternatively, switch to offline mode: set <em>Provider</em> to
+            <code>unconfigured</code> and check <em>Offline / fixture mode</em> in SCR-003.
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="trouble">
+      <div class="trouble-header">Scenario 5 — Pipeline paused at gate but no action buttons visible</div>
+      <div class="trouble-body">
+        <dl>
+          <dt>Symptom</dt>
+          <dd><code>state.hitl_paused_at_gate</code> is set and the Run Dashboard shows a gate
+            as open, but there are no Approve / Reject buttons available.</dd>
+          <dt>Cause</dt>
+          <dd>The currently selected role does not have gate response permissions.
+            (Author role cannot action gates.)</dd>
+          <dt>Resolution</dt>
+          <dd>Navigate to SCR-002, switch to the <strong>Reviewer</strong> or
+            <strong>Approver</strong> role, confirm, then return to the Run Dashboard.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="trouble">
+      <div class="trouble-header">Scenario 6 — STIX export bundle is empty</div>
+      <div class="trouble-body">
+        <dl>
+          <dt>Symptom</dt>
+          <dd><code>export_stix()</code> returns a bundle with no objects.</dd>
+          <dt>Cause</dt>
+          <dd>The canonical graph has no interfaces with threats populated. This occurs
+            when the pipeline was run with only early stages (e.g. agent_01 and agent_02)
+            or when agent_05 produced no threats.</dd>
+          <dt>Resolution</dt>
+          <dd>Run the full nine-stage pipeline, or ensure at minimum agents 03–05 have
+            executed so that threats are attached to interfaces in the canonical graph.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="trouble">
+      <div class="trouble-header">Scenario 7 — GateRejectedError — pipeline halted by analyst</div>
+      <div class="trouble-body">
+        <dl>
+          <dt>Symptom</dt>
+          <dd>A HITL gate was actioned with <strong>Reject</strong> and the pipeline stopped.
+            <code>state.hitl_rejected_at_gate</code> is set.</dd>
+          <dt>Cause</dt>
+          <dd>This is intentional behaviour. Rejection records that the artifact was
+            unacceptable and prevents downstream stages from operating on bad data.</dd>
+          <dt>Resolution</dt>
+          <dd>Review the rejection reason (check <code>state.hitl_rejected_at_gate</code>
+            and the HITL audit log). Correct the upstream input or agent configuration
+            and initiate a new pipeline run.</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       9. GLOSSARY
+  ════════════════════════════════════════ -->
+  <section id="glossary">
+    <h2>9 · Glossary</h2>
+    <dl class="glossary">
+      <dt>Agent</dt>
+      <dd>One of nine specialised LLM-backed processing stages in the pipeline. Each agent receives the shared <code>FrameworkState</code>, calls the LLM or reads a fixture, updates state, and returns it.</dd>
+
+      <dt>Attack Pattern</dt>
+      <dd>A STIX 2.1 object type (<code>attack-pattern</code>) representing a threat technique. Maps one-to-one with a threat entry in the canonical graph.</dd>
+
+      <dt>Canonical Graph</dt>
+      <dd>The central, schema-validated JSON document produced by the pipeline. Encodes the system hierarchy, interfaces, STRIDE scores, threats, and mitigations. Schema: <code>docs/schemas/canonical_graph.schema.json</code>.</dd>
+
+      <dt>CAPEC</dt>
+      <dd>Common Attack Pattern Enumeration and Classification. Used to tag threat techniques with a community-standard identifier (e.g. <code>CAPEC-66</code>).</dd>
+
+      <dt>Course of Action</dt>
+      <dd>A STIX 2.1 object type (<code>course-of-action</code>) representing a mitigation control.</dd>
+
+      <dt>CWE</dt>
+      <dd>Common Weakness Enumeration. A software weakness taxonomy used to classify the root cause of threats (e.g. <code>CWE-89</code> — SQL Injection).</dd>
+
+      <dt>Fixture mode</dt>
+      <dd>Execution mode in which agents return deterministic pre-recorded outputs from <code>Tests/fixtures/agents/</code> instead of calling a live LLM. Requires no API key and produces consistent outputs for testing.</dd>
+
+      <dt>FrameworkState</dt>
+      <dd>The shared Python dataclass passed between pipeline stages. Contains <code>raw_text</code>, <code>tables</code>, <code>canonical_graph</code>, <code>stix_bundle</code>, <code>mermaid_diagrams</code>, <code>final_report</code>, and HITL checkpoint fields.</dd>
+
+      <dt>Gate</dt>
+      <dd>A HITL pause point in the pipeline. The gate engine raises a <code>GatePausedError</code> and records the gate state; the analyst must action the gate before the pipeline resumes.</dd>
+
+      <dt>GatePausedError</dt>
+      <dd>Python exception raised by the gate engine when a mandatory or conditional gate opens. Caught by the orchestrator; sets <code>state.hitl_paused_at_gate</code>.</dd>
+
+      <dt>GateRejectedError</dt>
+      <dd>Python exception raised when an analyst rejects an artifact at a HITL gate. Caught by the orchestrator; sets <code>state.hitl_rejected_at_gate</code> and halts the pipeline.</dd>
+
+      <dt>HITL</dt>
+      <dd>Human-In-The-Loop. The governance model requiring human review and approval at defined pipeline checkpoints (gates) before execution continues.</dd>
+
+      <dt>ICD</dt>
+      <dd>Interface Control Document. A spreadsheet or structured document defining system interfaces, protocols, data items, and trust boundary crossings. Accepted as pipeline input alongside narrative text.</dd>
+
+      <dt>Mermaid</dt>
+      <dd>A text-based diagramming language. The pipeline produces Mermaid <code>flowchart LR</code> source showing system topology; renderable in VS Code, GitHub, and mermaid.live.</dd>
+
+      <dt>MITRE ATT&amp;CK</dt>
+      <dd>A globally accessible knowledge base of adversary tactics, techniques, and procedures. Threat entries in the canonical graph are tagged with ATT&amp;CK technique IDs (e.g. <code>T1190</code>).</dd>
+
+      <dt>Run ID</dt>
+      <dd>A unique string identifier for a single end-to-end pipeline execution. Used to scope HITL audit records and gate checkpoints.</dd>
+
+      <dt>SCR</dt>
+      <dd>Screen inventory identifier from the HMI Architecture Blueprint. SCR-001 = Run Dashboard, SCR-002 = Role Selection, SCR-003 = Configuration.</dd>
+
+      <dt>STIX 2.1</dt>
+      <dd>Structured Threat Information Expression version 2.1. An open standard for representing and sharing cyber threat intelligence. The pipeline produces a STIX Bundle containing attack-patterns, courses-of-action, and mitigates relationships.</dd>
+
+      <dt>STRIDE</dt>
+      <dd>Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege. A threat categorisation framework applied per interface by agent_04. Each category is scored 0–5.</dd>
+
+      <dt>Trust Boundary</dt>
+      <dd>A boundary across which data flows between zones of different trust levels (e.g. Internet to DMZ). Crossings are flagged by agent_03 and require Gate 2 analyst approval.</dd>
+
+      <dt>ValidationHaltError</dt>
+      <dd>Exception raised when a pipeline stage produces a <code>FrameworkState</code> that fails canonical graph schema validation. Halts the pipeline at that stage when <code>stop_on_validation_error=True</code>.</dd>
+
+      <dt>xAI Grok</dt>
+      <dd>The LLM provider used in hybrid mode. Uses an OpenAI-compatible API endpoint (<code>https://api.x.ai/v1</code>). Requires <code>XAI_API_KEY</code> environment variable.</dd>
+    </dl>
+  </section>
+
+  <footer>
+    Multi-Agent LLM Threat Modeler · User Manual · Sprint 2026-06 ·
+    To capture screenshots, launch <code>streamlit run src/threat_modeler/ui/app.py</code>,
+    navigate to each screen, and save images to <code>docs/user_manual/screenshots/</code>
+    matching the filenames referenced in each figure above.
+  </footer>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,277 @@
+{
+  "metadata": {
+    "generation_timestamp": "2026-05-03T00:00:00Z",
+    "model_level": "system"
+  },
+  "system": {
+    "name": "Multi-Agent LLM Threat Modeler",
+    "description": "Initial normalised graph extracted from the architecture description. Represents the Multi-Agent LLM Threat Modeler with its agent pipeline, LLM integration layer, supply chain, and development environment.",
+    "mission_criticality": "medium",
+    "safety_criticality": "low"
+  },
+  "subsystems": [
+    {
+      "id": "ss-01",
+      "name": "Agent Pipeline",
+      "description": "FrameworkOrchestrator and 9 sequential LLM-driven analysis agents sharing a CanonicalGraph state object.",
+      "parent_system": "Multi-Agent LLM Threat Modeler"
+    },
+    {
+      "id": "ss-02",
+      "name": "LLM Integration Layer",
+      "description": "Adapters that translate agent prompts into calls to remote LLMs (XaiAdapter) or local fixture files (FixtureAdapter).",
+      "parent_system": "Multi-Agent LLM Threat Modeler"
+    },
+    {
+      "id": "ss-03",
+      "name": "Supply Chain and Development Environment",
+      "description": "GitHub repository, PyPI package index, developer workstations (Windows 11 or Linux), and CI pipeline used to build, test, and distribute the tool. Includes all contributors, whose accounts represent a potential insider-threat surface.",
+      "parent_system": "Multi-Agent LLM Threat Modeler"
+    }
+  ],
+  "components": [
+    {
+      "id": "cmp-01",
+      "name": "FrameworkOrchestrator",
+      "parent_subsystem": "ss-01",
+      "hardware": "host OS process (Windows or Linux)",
+      "software_modules": [
+        "orchestrator.py",
+        "validation.py"
+      ],
+      "description": "Sequences all 9 agent stages, enforces schema-validation gates at each boundary, and manages HITL checkpoints."
+    },
+    {
+      "id": "cmp-02",
+      "name": "Agent Registry and BaseAgent",
+      "parent_subsystem": "ss-01",
+      "hardware": "host OS process",
+      "software_modules": [
+        "agents/__init__.py",
+        "agents/base.py"
+      ],
+      "description": "Maintains the ordered agent map and dispatches run() calls. BaseAgent handles prompt loading and adapter selection."
+    },
+    {
+      "id": "cmp-03",
+      "name": "Canonical Graph and State",
+      "parent_subsystem": "ss-01",
+      "hardware": "host OS memory",
+      "software_modules": [
+        "models/canonical.py",
+        "state.py"
+      ],
+      "description": "In-memory Python dataclass holding the evolving threat model graph (subsystems, components, interfaces, STRIDE, threats, mitigations) passed between agents."
+    },
+    {
+      "id": "cmp-04",
+      "name": "XaiAdapter",
+      "parent_subsystem": "ss-02",
+      "hardware": "host OS process",
+      "software_modules": [
+        "llm/xai_adapter.py"
+      ],
+      "description": "OpenAI-SDK-compatible HTTPS client targeting the xAI Grok inference API. Reads XAI_API_KEY from the environment at call time."
+    },
+    {
+      "id": "cmp-05",
+      "name": "FixtureAdapter",
+      "parent_subsystem": "ss-02",
+      "hardware": "host OS filesystem",
+      "software_modules": [
+        "llm/base.py"
+      ],
+      "description": "Reads pre-generated JSON/text fixture files from disk instead of making live LLM calls. Used for CI and offline testing."
+    },
+    {
+      "id": "cmp-06",
+      "name": "GitHub Repository",
+      "parent_subsystem": "ss-03",
+      "hardware": "GitHub cloud infrastructure (external)",
+      "software_modules": [
+        "bnorth12/Multi-Agent-LLM-Threat-Modeling"
+      ],
+      "description": "Remote Git repository hosting source code, agent prompt files, GitHub Actions workflow definitions, and issue tracking."
+    },
+    {
+      "id": "cmp-07",
+      "name": "Developer Workstation",
+      "parent_subsystem": "ss-03",
+      "hardware": "Windows 11 or Linux workstation",
+      "software_modules": [
+        "git",
+        "python3",
+        "vscode",
+        "venv"
+      ],
+      "description": "Local machine where the tool is authored, tested, and run. May also serve as the primary deployment host for local threat modeling sessions."
+    },
+    {
+      "id": "cmp-08",
+      "name": "Python venv and pip",
+      "parent_subsystem": "ss-03",
+      "hardware": "host OS filesystem",
+      "software_modules": [
+        "pip",
+        "requirements.txt"
+      ],
+      "description": "Isolated Python virtual environment and package installer. Resolves and downloads dependencies from PyPI and executes their setup scripts."
+    }
+  ],
+  "functions": [
+    {
+      "id": "fn-01",
+      "name": "Pipeline Execution",
+      "parent_component": "cmp-01",
+      "description": "Sequences all 9 agent stages, validates canonical graph at each boundary, and pauses at HITL gates."
+    },
+    {
+      "id": "fn-02",
+      "name": "LLM Completion",
+      "parent_component": "cmp-04",
+      "description": "Serialises the system-prompt and user-message (architecture JSON), sends them to the xAI Grok API over HTTPS, and returns the LLM response text."
+    },
+    {
+      "id": "fn-03",
+      "name": "Source Code Commit and Push",
+      "parent_component": "cmp-07",
+      "description": "Developer commits code locally and pushes to the GitHub repository over SSH or HTTPS."
+    },
+    {
+      "id": "fn-04",
+      "name": "Dependency Installation",
+      "parent_component": "cmp-08",
+      "description": "Resolves and downloads Python packages from PyPI and executes their setup scripts inside the virtual environment."
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "if-01",
+      "name": "XaiAdapter to xAI Grok API",
+      "description": "HTTPS REST calls from XaiAdapter to the remote xAI Grok inference endpoint. Carries system prompts, user messages containing architecture JSON, and LLM responses. XAI_API_KEY is transmitted as a Bearer token.",
+      "from_node": "cmp-04",
+      "to_node": "xAI Grok API (external)",
+      "interface_type": "component-external",
+      "protocol": "HTTPS/REST",
+      "data_items": [
+        "system_prompt",
+        "user_message_json",
+        "llm_response_text",
+        "XAI_API_KEY"
+      ],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 0,
+        "S_justification": "Not scored yet.",
+        "T": 0,
+        "T_justification": "Not scored yet.",
+        "R": 0,
+        "R_justification": "Not scored yet.",
+        "I": 0,
+        "I_justification": "Not scored yet.",
+        "D": 0,
+        "D_justification": "Not scored yet.",
+        "E": 0,
+        "E_justification": "Not scored yet."
+      },
+      "threats": []
+    },
+    {
+      "id": "if-02",
+      "name": "Developer Workstation to GitHub",
+      "description": "SSH or HTTPS Git operations (push, pull, clone) between the developer workstation and the GitHub-hosted repository. Carries source code, configuration files, and GitHub Actions workflow definitions.",
+      "from_node": "cmp-07",
+      "to_node": "cmp-06",
+      "interface_type": "component-component",
+      "protocol": "SSH/HTTPS",
+      "data_items": [
+        "source_code",
+        "workflow_yaml",
+        "commit_metadata",
+        "git_credentials"
+      ],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 0,
+        "S_justification": "Not scored yet.",
+        "T": 0,
+        "T_justification": "Not scored yet.",
+        "R": 0,
+        "R_justification": "Not scored yet.",
+        "I": 0,
+        "I_justification": "Not scored yet.",
+        "D": 0,
+        "D_justification": "Not scored yet.",
+        "E": 0,
+        "E_justification": "Not scored yet."
+      },
+      "threats": []
+    },
+    {
+      "id": "if-03",
+      "name": "pip to PyPI Package Index",
+      "description": "HTTPS requests from pip to PyPI to resolve and download Python packages listed in requirements.txt. Package archives are extracted and setup scripts executed with local user privileges during installation.",
+      "from_node": "cmp-08",
+      "to_node": "PyPI (external)",
+      "interface_type": "component-external",
+      "protocol": "HTTPS",
+      "data_items": [
+        "package_names",
+        "version_specifiers",
+        "package_archives",
+        "setup_scripts"
+      ],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 0,
+        "S_justification": "Not scored yet.",
+        "T": 0,
+        "T_justification": "Not scored yet.",
+        "R": 0,
+        "R_justification": "Not scored yet.",
+        "I": 0,
+        "I_justification": "Not scored yet.",
+        "D": 0,
+        "D_justification": "Not scored yet.",
+        "E": 0,
+        "E_justification": "Not scored yet."
+      },
+      "threats": []
+    },
+    {
+      "id": "if-04",
+      "name": "Contributor to GitHub Repository",
+      "description": "Git push operations from individual contributors (including potential insider threats) to the shared repository. Any contributor with write access can modify source code, agent prompt files, or CI workflow definitions.",
+      "from_node": "contributor_account",
+      "to_node": "cmp-06",
+      "interface_type": "human-component",
+      "protocol": "SSH/HTTPS Git",
+      "data_items": [
+        "source_code_commits",
+        "pr_content",
+        "workflow_changes",
+        "agent_prompt_files"
+      ],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 0,
+        "S_justification": "Not scored yet.",
+        "T": 0,
+        "T_justification": "Not scored yet.",
+        "R": 0,
+        "R_justification": "Not scored yet.",
+        "I": 0,
+        "I_justification": "Not scored yet.",
+        "D": 0,
+        "D_justification": "Not scored yet.",
+        "E": 0,
+        "E_justification": "Not scored yet."
+      },
+      "threats": []
+    }
+  ]
+}

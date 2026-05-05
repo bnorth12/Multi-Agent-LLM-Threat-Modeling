@@ -8,12 +8,19 @@ Acceptance Criteria:
 
 import pytest
 
+from threat_modeler.agents import MockAgent
 from threat_modeler.config import PipelineSettings, RuntimeSettings, ModelSelection
 from threat_modeler.models import CanonicalThreatModelGraph
 from threat_modeler.models.canonical import SystemContext, GraphMetadata
 from threat_modeler.orchestrator import FrameworkOrchestrator
 from threat_modeler.state import FrameworkState
 from threat_modeler.validation import ValidationHaltError, CanonicalGraphValidator, ValidationSeverity
+
+
+def _inject_mock_agents(orchestrator):
+    """Replace all agents with no-op MockAgents so state stays unpopulated."""
+    for k in list(orchestrator.agents.keys()):
+        orchestrator.agents[k] = MockAgent(display_name=k)
 
 
 class TestValidationHaltBehavior:
@@ -30,6 +37,7 @@ class TestValidationHaltBehavior:
             ),
         )
         orchestrator = FrameworkOrchestrator(settings)
+        _inject_mock_agents(orchestrator)
         state = orchestrator.initialize_state()
 
         # State starts with canonical_graph=None (invalid)
@@ -52,6 +60,7 @@ class TestValidationHaltBehavior:
             ),
         )
         orchestrator = FrameworkOrchestrator(settings)
+        _inject_mock_agents(orchestrator)
         state = orchestrator.initialize_state()
 
         # Invalid state (missing canonical graph)
@@ -125,6 +134,7 @@ class TestHaltConditionalBehavior:
             ),
         )
         orchestrator = FrameworkOrchestrator(settings)
+        _inject_mock_agents(orchestrator)
         state = orchestrator.initialize_state()
 
         # Should raise ValidationHaltError
@@ -188,6 +198,7 @@ class TestAcceptanceCriteriaCoverage:
             ),
         )
         orchestrator = FrameworkOrchestrator(settings)
+        _inject_mock_agents(orchestrator)
         state = orchestrator.initialize_state()  # Invalid state
 
         halted = False
@@ -233,6 +244,7 @@ class TestAcceptanceCriteriaCoverage:
             ),
         )
         orchestrator = FrameworkOrchestrator(settings)
+        _inject_mock_agents(orchestrator)
         state2 = orchestrator.initialize_state()
 
         scenario2_halts = False

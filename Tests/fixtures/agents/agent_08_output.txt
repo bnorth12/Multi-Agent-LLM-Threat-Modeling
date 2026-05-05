@@ -1,0 +1,56 @@
+MERMAID_LEVEL0
+```mermaid
+flowchart TD
+    Analyst["Analyst / User"]
+    MATM["Multi-Agent LLM Threat Modeler"]
+    xAI["xAI Grok API (Internet)"]
+    GitHub["GitHub Repository (Internet)"]
+    PyPI["PyPI Package Index (Internet)"]
+    Contrib["Contributor"]
+    Analyst -->|"Architecture description"| MATM
+    MATM -->|"if-01 HTTPS [Internet API Boundary]"| xAI
+    MATM -->|"if-02 SSH/HTTPS [Internet VCS Boundary]"| GitHub
+    MATM -->|"if-03 HTTPS [Supply Chain Boundary]"| PyPI
+    Contrib -->|"if-04 Git [Contributor Trust Boundary]"| GitHub
+    xAI -->|"LLM responses"| MATM
+    classDef boundary fill:#ffeeba,stroke:#856404
+    class xAI,GitHub,PyPI boundary
+```
+
+MERMAID_LEVEL1
+```mermaid
+flowchart TD
+    SS01["Agent Pipeline (ss-01)"]
+    SS02["LLM Integration Layer (ss-02)"]
+    SS03["Supply Chain and Dev Env (ss-03)"]
+    xAI_ext["xAI Grok API (external)"]
+    GitHub_ext["GitHub (external)"]
+    PyPI_ext["PyPI (external)"]
+    SS01 -->|"LLM adapter calls"| SS02
+    SS02 -->|"if-01 HTTPS [Internet API Boundary]"| xAI_ext
+    SS03 -->|"if-02 SSH/HTTPS [Internet VCS Boundary]"| GitHub_ext
+    SS03 -->|"if-03 HTTPS [Supply Chain Boundary]"| PyPI_ext
+    Contrib["Contributor"] -->|"if-04 Git [Contributor Trust Boundary]"| GitHub_ext
+    classDef boundary fill:#ffeeba,stroke:#856404
+    class xAI_ext,GitHub_ext,PyPI_ext boundary
+```
+
+MERMAID_LEVEL2
+```mermaid
+flowchart TD
+    XAI["XaiAdapter (cmp-04)"]
+    GrokAPI["xAI Grok API (external)"]
+    DevWS["Developer Workstation (cmp-07)"]
+    GitHub["GitHub Repository (cmp-06)"]
+    PipVenv["Python venv and pip (cmp-08)"]
+    PyPI["PyPI (external)"]
+    Contrib["Contributor Account"]
+    XAI -->|"if-01 HTTPS REST [S:3 T:4 I:4 E:4]"| GrokAPI
+    DevWS -->|"if-02 SSH/HTTPS [S:4 T:3 E:3]"| GitHub
+    PipVenv -->|"if-03 HTTPS [S:4 T:5 E:5]"| PyPI
+    Contrib -->|"if-04 Git [S:4 T:5 E:4]"| GitHub
+    classDef high fill:#f8d7da,stroke:#721c24
+    classDef external fill:#ffeeba,stroke:#856404
+    class XAI,DevWS,PipVenv,Contrib high
+    class GrokAPI,PyPI external
+```
