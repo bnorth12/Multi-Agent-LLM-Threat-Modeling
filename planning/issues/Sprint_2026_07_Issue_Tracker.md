@@ -39,7 +39,7 @@ Issues discovered during sprint work that are not in the original 8 workstreams.
 
 | ID | GitHub Issue | Description | Severity | Status | Notes |
 |----|--------------|-------------|----------|--------|-------|
-| — | — | — | — | — | — |
+| DI-S07-01 | GH #35 | Provider model catalogs + editable connection profiles (commercial + custom/intranet): provider-specific editable model dropdowns, explicit URL/auth/API settings management in Pipeline Configuration | Medium | Open | Discovered at S07 closeout; proposed disposition: deferred-to-sprint-2026-08 |
 
 ## 4. Sprint Definition of Done
 
