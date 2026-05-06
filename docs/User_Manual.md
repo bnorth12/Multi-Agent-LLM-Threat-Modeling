@@ -156,12 +156,16 @@ Navigate to **Role Select** in the left sidebar.  Choose your role:
 Navigate to **Configuration** in the sidebar.  Set:
 
 - **LLM Provider** — `fixture` (offline) or a live provider (`xai`, `openai`, `anthropic`, `azure`, `ollama`, `custom`).
-- **Model name** — e.g. `grok-beta`.
+- **Model catalog** and **Custom model name** override — for latest provider models and intranet-specific model IDs.
+- **Connection URL** — endpoint/base URL (required for some providers, optional override for others).
 - **API key** (for providers that require one) — masked input, stored in session only.
+- **Endpoint mode** — `chat_completions`, `responses`, or `multi_agent` (for non-completions-style endpoints).
 - **Enabled stages** — select which of the nine agents to run.
 - **HITL gates** — enable or disable mandatory gates.
 
 Click **Apply Settings**, then run **Validate Connection** in SCR-014.
+
+All commercial and custom/intranet connection settings are edited on this **Pipeline Configuration** page.
 
 > ![SCR-003 Configuration](screenshots/scr_003_configuration.png)
 > *SCR-003: Model and Pipeline Configuration form.*

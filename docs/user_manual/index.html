@@ -320,7 +320,7 @@
 
   <h1>Multi-Agent LLM Threat Modeler</h1>
   <p class="subtitle">
-    <span>User Manual</span> &nbsp;·&nbsp; Sprint 2026-06 &nbsp;·&nbsp;
+    <span>User Manual</span> &nbsp;·&nbsp; Sprint 2026-07 (in-progress) &nbsp;·&nbsp;
     Audience: Security analysts, threat modeling practitioners, and project administrators
   </p>
 
@@ -462,14 +462,14 @@ source .venv/bin/activate</code></pre>
 
       <h4>Step 3 — Install dependencies</h4>
       <pre><code>pip install -r requirements.txt</code></pre>
-      <p>This installs Streamlit, OpenAI SDK (for xAI Grok), ChromaDB (retrieval), and
-      STIX2 (export).</p>
+      <p>This installs Streamlit, retrieval dependencies, and export dependencies required
+      by the pipeline.</p>
 
       <h4>Step 4 — Configure the model provider</h4>
       <p><strong>Offline / fixture mode</strong> (no API key required):</p>
       <div class="callout success">
         No extra configuration needed. The application defaults to
-        <code>provider=unconfigured</code>, which uses deterministic pre-recorded
+        <code>provider=fixture</code>, which uses deterministic pre-recorded
         fixture outputs for all nine agents. This is the recommended mode for
         initial setup verification and automated testing.
       </div>
@@ -481,8 +481,9 @@ $env:XAI_API_KEY = "xai-your-key-here"
 # Linux / macOS
 export XAI_API_KEY="xai-your-key-here"</code></pre>
       <p>Then select <strong>xai</strong> as the provider on the Configuration screen
-      (SCR-003) and enter <code>grok-beta</code> (or the current model name) in the
-      Model Name field.</p>
+  (SCR-003), choose a model from <strong>Model catalog</strong> (or enter
+  <strong>Custom model name</strong>), set <strong>Endpoint mode</strong> as needed,
+  and validate the connection before running.</p>
 
       <h4>Step 5 — Launch the Streamlit application</h4>
       <pre><code>streamlit run src/threat_modeler/ui/app.py</code></pre>
@@ -738,7 +739,7 @@ export XAI_API_KEY="xai-your-key-here"</code></pre>
       <h3>SCR-003 — Pipeline Configuration</h3>
       <p>
         The Configuration screen is used before starting a run to set the LLM provider,
-        model, enabled stages, and pipeline behaviour. Settings are stored in
+        model/endpoint connection details, enabled stages, and pipeline behaviour. Settings are stored in
         <code>st.session_state["settings_override"]</code> as a <code>RuntimeSettings</code>
         object and applied when the pipeline is initiated.
       </p>
@@ -757,9 +758,10 @@ export XAI_API_KEY="xai-your-key-here"</code></pre>
              onerror="this.style.display='none';document.getElementById('ph-scr003').style.display='flex'" />
         <figcaption>
           <strong>SCR-003 — Pipeline Configuration.</strong>
-          A single Streamlit form with two sections: <em>Model Selection</em> (provider,
-          model name, offline toggle) and <em>Pipeline Settings</em> (enabled stages
-          multiselect, stop-on-error toggle, HITL gate toggle). Clicking
+          A single Streamlit form with model and connection controls (provider,
+          model catalog/custom override, API key, connection URL, endpoint mode,
+          offline toggle) plus pipeline settings (enabled stages multiselect,
+          stop-on-error toggle, HITL gate toggle). Clicking
           <em>Apply Settings</em> saves to session state.
         </figcaption>
       </figure>
@@ -768,9 +770,13 @@ export XAI_API_KEY="xai-your-key-here"</code></pre>
       <table>
         <thead><tr><th>Field</th><th>Default</th><th>Description</th></tr></thead>
         <tbody>
-          <tr><td>Provider</td><td><code>unconfigured</code></td><td>Set to <code>xai</code> to enable live Grok calls. Any other value activates fixture mode.</td></tr>
-          <tr><td>Model name</td><td><code>fixture</code></td><td>Passed verbatim to the LLM adapter. For Grok use <code>grok-beta</code> or <code>grok-3-mini</code>.</td></tr>
-          <tr><td>Offline / fixture mode</td><td>✅ checked</td><td>When checked, the <code>FixtureAdapter</code> is used and no API key is required. Uncheck only when a valid <code>XAI_API_KEY</code> is set.</td></tr>
+          <tr><td>Provider</td><td><code>fixture</code></td><td>Select from <code>fixture</code>, <code>openai</code>, <code>anthropic</code>, <code>xai</code>, <code>azure</code>, <code>ollama</code>, or <code>custom</code>.</td></tr>
+          <tr><td>Model catalog</td><td>Provider default</td><td>Provider-specific list of known models; choose <code>&lt;Custom model&gt;</code> for manual entry.</td></tr>
+          <tr><td>Custom model name</td><td>Empty</td><td>Editable override for newly released or intranet-specific model IDs.</td></tr>
+          <tr><td>API key</td><td>Session-only</td><td>Masked field for live providers. Can be supplied here or via provider environment variable.</td></tr>
+          <tr><td>Connection URL</td><td>Provider default or blank</td><td>Required for some providers (for example custom/intranet endpoints); optional override for others.</td></tr>
+          <tr><td>Endpoint mode</td><td><code>chat_completions</code></td><td>Choose <code>chat_completions</code>, <code>responses</code>, or <code>multi_agent</code> depending on provider endpoint style.</td></tr>
+          <tr><td>Offline / fixture mode</td><td>✅ checked</td><td>When checked, fixture execution is used and no live API call is made.</td></tr>
         </tbody>
       </table>
 

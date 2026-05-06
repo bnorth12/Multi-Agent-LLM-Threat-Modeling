@@ -103,7 +103,7 @@ class FrameworkOrchestrator:
         self.settings = settings
         self.validator = validator or CanonicalGraphValidator()
         self.hitl_service = hitl_service or HitlService()
-        self.agents = build_default_agents()
+        self.agents = build_default_agents(settings)
         self._run_id = run_id
         self.hitl_service.initialise(run_id)
 

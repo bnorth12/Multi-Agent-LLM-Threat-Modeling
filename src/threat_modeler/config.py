@@ -64,6 +64,7 @@ class ModelSelection:
     model_name: str
     offline_only: bool = True
     connection_url: str = ""  # For Azure, Ollama, Custom/Intranet providers
+    endpoint_mode: str = "chat_completions"  # chat_completions | responses | multi_agent
 
 
 @dataclass(frozen=True)
@@ -99,5 +100,6 @@ def build_default_settings() -> RuntimeSettings:
             model_name="fixture-placeholder",
             offline_only=True,
             connection_url="",
+            endpoint_mode="chat_completions",
         )
     )

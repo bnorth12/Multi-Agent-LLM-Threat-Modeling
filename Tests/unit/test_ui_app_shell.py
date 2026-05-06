@@ -196,6 +196,27 @@ class TestConfigPageDefaults:
         assert "ANTHROPIC_API_KEY" in text
         assert "XAI_API_KEY" in text
 
+    def test_config_screen_contains_model_catalog_controls(self):
+        from pathlib import Path
+        text = Path("src/threat_modeler/ui/screens/config.py").read_text(encoding="utf-8")
+        assert "Model catalog" in text
+        assert "<Custom model>" in text
+        assert "Custom model name" in text
+
+    def test_config_screen_contains_endpoint_mode_control(self):
+        from pathlib import Path
+        text = Path("src/threat_modeler/ui/screens/config.py").read_text(encoding="utf-8")
+        assert "Endpoint mode" in text
+        assert "chat_completions" in text
+        assert "responses" in text
+        assert "multi_agent" in text
+
+    def test_model_selection_has_endpoint_mode_field(self):
+        from threat_modeler.config import ModelSelection
+        m = ModelSelection(provider="xai", model_name="grok-3", offline_only=False)
+        assert hasattr(m, "endpoint_mode")
+        assert m.endpoint_mode == "chat_completions"
+
 
 # ---------------------------------------------------------------------------
 # Role constants

@@ -55,6 +55,18 @@ _API_KEY_ENV_VARS = {
     "fixture": "",
 }
 
+_PROVIDER_MODEL_CATALOGS = {
+    "fixture": ["fixture-placeholder"],
+    "openai": ["gpt-4.1", "gpt-4.1-mini", "gpt-4o", "gpt-4o-mini", "o4-mini", "o3"],
+    "anthropic": ["claude-sonnet-4-20250514", "claude-opus-4-20250514", "claude-3-5-haiku-20241022"],
+    "xai": ["grok-3", "grok-3-mini", "grok-3-reasoning"],
+    "azure": ["gpt-4.1", "gpt-4o", "o4-mini"],
+    "ollama": ["llama3.1:8b", "llama3.1:70b", "qwen2.5:14b", "mistral:latest"],
+    "custom": ["<Custom model>"],
+}
+
+_ENDPOINT_MODES = ["chat_completions", "responses", "multi_agent"]
+
 
 def _api_key_env_var(provider: str) -> str:
     return _API_KEY_ENV_VARS.get(provider, f"{provider.upper()}_API_KEY")
@@ -74,60 +86,116 @@ def render() -> None:
 
     defaults = _defaults()
 
+    # ===== SCR-012: Model Provider Selection =====
+    st.subheader("SCR-012 — Model Provider Selection")
+    st.write("Choose an LLM provider to use for this threat modeling run.")
+
+    provider_options = {prov_key: f"{meta['label']}" for prov_key, meta in PROVIDER_MATRIX.items()}
+    provider_keys = list(PROVIDER_MATRIX.keys())
+    default_provider = st.session_state.get("config_selected_provider", defaults.model.provider)
+    if default_provider not in PROVIDER_MATRIX:
+        default_provider = provider_keys[0]
+
+    selected_provider = st.selectbox(
+        "Provider",
+        options=provider_keys,
+        key="config_selected_provider",
+        format_func=lambda x: provider_options[x],
+        index=provider_keys.index(default_provider),
+        help="Select the LLM provider to use.",
+    )
+
+    # Show provider description
+    provider_info = PROVIDER_MATRIX.get(selected_provider, {})
+    if provider_info:
+        st.info(f"**{provider_info['label']}**: {provider_info['description']}")
+
     api_key_input = ""
     with st.form("pipeline_config_form"):
-        # ===== SCR-012: Model Provider Selection =====
-        st.subheader("SCR-012 — Model Provider Selection")
-        st.write("Choose an LLM provider to use for this threat modeling run.")
+        # Model name selector + editable override
+        model_catalog = list(_PROVIDER_MODEL_CATALOGS.get(selected_provider, []))
+        default_model = defaults.model.model_name.strip() or provider_info.get("default_model", "")
 
-        provider_options = {prov_key: f"{meta['label']}" for prov_key, meta in PROVIDER_MATRIX.items()}
-        selected_provider = st.selectbox(
-            "Provider",
-            options=list(PROVIDER_MATRIX.keys()),
-            format_func=lambda x: provider_options[x],
-            index=list(PROVIDER_MATRIX.keys()).index(defaults.model.provider)
-            if defaults.model.provider in PROVIDER_MATRIX
-            else 0,
-            help="Select the LLM provider to use.",
+        if default_model and default_model not in model_catalog and "<Custom model>" not in model_catalog:
+            model_catalog.append("<Custom model>")
+
+        if not model_catalog:
+            model_catalog = [default_model or provider_info.get("default_model", ""), "<Custom model>"]
+
+        model_select_options = model_catalog
+        if default_model in model_select_options:
+            model_index = model_select_options.index(default_model)
+        elif "<Custom model>" in model_select_options:
+            model_index = model_select_options.index("<Custom model>")
+        else:
+            model_index = 0
+
+        selected_model_catalog = st.selectbox(
+            "Model catalog",
+            options=model_select_options,
+            index=model_index,
+            help="Select a known model for this provider or choose <Custom model>.",
         )
 
-        # Show provider description
-        provider_info = PROVIDER_MATRIX.get(selected_provider, {})
-        if provider_info:
-            st.info(f"**{provider_info['label']}**: {provider_info['description']}")
-
-        # Model name (use provider default, allow override)
-        model_name = st.text_input(
-            "Model name",
-            value=defaults.model.model_name,
-            help=f"Model identifier for the provider. Default: {provider_info.get('default_model', 'N/A')}",
-        )
+        model_name = selected_model_catalog
+        if selected_model_catalog == "<Custom model>":
+            model_name = st.text_input(
+                "Custom model name",
+                value=default_model if default_model not in ("", "<Custom model>") else "",
+                placeholder="e.g., grok-3-reasoning or intranet-agent-v2",
+                help="Editable override for custom/intranet or newly released models.",
+            )
 
         # ===== SCR-013: Connection Details =====
         st.subheader("SCR-013 — Connection Details")
 
-        connection_url = ""
-        if provider_info.get("requires_url", False):
+        connection_url = defaults.model.connection_url
+        if selected_provider != "fixture":
             connection_url = st.text_input(
                 "Connection URL",
                 value=defaults.model.connection_url,
-                placeholder="e.g., https://api.azure.com/v1 or http://localhost:11434",
-                help=f"Connection URL or endpoint for {provider_info['label']}.",
+                placeholder=(
+                    "Required endpoint URL"
+                    if provider_info.get("requires_url", False)
+                    else "Optional base URL override (leave blank for provider default)"
+                ),
+                help=f"Connection URL or endpoint for {provider_info['label']} (including intranet endpoints).",
             )
             st.caption("This URL is used to connect to the LLM provider. It will be securely stored in session state.")
 
-        if provider_info.get("requires_api_key", False):
-            api_key_input = st.text_input(
-                "API key",
-                value=st.session_state.get("model_api_key", ""),
-                type="password",
-                placeholder="Enter API key for the selected provider",
-                help="Session-only secret used for live LLM calls and connection validation.",
-            )
+        endpoint_mode = st.selectbox(
+            "Endpoint mode",
+            options=_ENDPOINT_MODES,
+            index=_ENDPOINT_MODES.index(getattr(defaults.model, "endpoint_mode", "chat_completions"))
+            if getattr(defaults.model, "endpoint_mode", "chat_completions") in _ENDPOINT_MODES
+            else 0,
+            help=(
+                "chat_completions: OpenAI-style /chat/completions. "
+                "responses: modern reasoning endpoint. "
+                "multi_agent: non-completions orchestration endpoint (mapped via Responses API flow)."
+            ),
+        )
+
+        api_key_required = provider_info.get("requires_api_key", False)
+        api_key_input = st.text_input(
+            "API key",
+            value=st.session_state.get("model_api_key", ""),
+            type="password",
+            placeholder=(
+                "Enter API key for the selected provider"
+                if api_key_required
+                else "Not required for selected provider"
+            ),
+            disabled=not api_key_required,
+            help="Session-only secret used for live LLM calls and connection validation.",
+        )
+        if api_key_required:
             st.caption(
                 "API key is kept in session state only (never written to repository files). "
                 "You may also provide the key via environment variable."
             )
+        else:
+            st.caption("API key is optional/not required for the selected provider.")
 
         offline_mode_checkbox = st.checkbox(
             "Offline/Fixture mode (no live LLM calls)",
@@ -179,7 +247,8 @@ def render() -> None:
                     provider=selected_provider,
                     model_name=model_name.strip(),
                     offline_only=offline_mode_checkbox,
-                    connection_url=connection_url.strip() if provider_info.get("requires_url", False) else "",
+                    connection_url=connection_url.strip(),
+                    endpoint_mode=endpoint_mode,
                 ),
                 pipeline=PipelineSettings(
                     enabled_stage_ids=tuple(enabled_stages),
@@ -232,7 +301,8 @@ def render() -> None:
         )
 
         stored_key = st.session_state.get("model_api_key", "")
-        if provider_info.get("requires_api_key", False):
+        active_provider_info = PROVIDER_MATRIX.get(active.model.provider, {})
+        if active_provider_info.get("requires_api_key", False):
             if stored_key.strip():
                 st.caption("API key found in current session for selected provider.")
             else:
@@ -280,6 +350,7 @@ def render() -> None:
         st.metric("Model", active.model.model_name)
         st.metric("Offline mode", str(active.model.offline_only))
     with cols[1]:
+        st.metric("Endpoint mode", getattr(active.model, "endpoint_mode", "chat_completions"))
         st.metric("Stop on error", str(active.pipeline.stop_on_validation_error))
         st.metric("Require HITL", str(active.pipeline.require_hitl_gates))
-        st.metric("Enabled stages", len(active.pipeline.enabled_stage_ids))
+    st.metric("Enabled stages", len(active.pipeline.enabled_stage_ids))
