@@ -180,6 +180,22 @@ class TestConfigPageDefaults:
             assert "requires_api_key" in metadata, f"{prov_key} missing 'requires_api_key'"
             assert "default_model" in metadata, f"{prov_key} missing 'default_model'"
 
+    def test_config_screen_contains_api_key_field(self):
+        """SCR-013 must expose an API key field in Pipeline Configuration."""
+        from pathlib import Path
+        text = Path("src/threat_modeler/ui/screens/config.py").read_text(encoding="utf-8")
+        assert '"API key"' in text
+        assert "model_api_key" in text
+
+    def test_config_screen_resolves_provider_api_key_env_var(self):
+        """Validation path should map provider to provider-specific API-key env var."""
+        from pathlib import Path
+        text = Path("src/threat_modeler/ui/screens/config.py").read_text(encoding="utf-8")
+        assert "_api_key_env_var" in text
+        assert "OPENAI_API_KEY" in text
+        assert "ANTHROPIC_API_KEY" in text
+        assert "XAI_API_KEY" in text
+
 
 # ---------------------------------------------------------------------------
 # Role constants
@@ -487,6 +503,14 @@ class TestSessionOfflineOverrideKey:
             session_mod.init_session_state()
         assert "offline_override_active" in st_stub.session_state
         assert st_stub.session_state["offline_override_active"] is False
+
+    def test_model_api_key_in_defaults(self):
+        st_stub = _make_st_stub()
+        import threat_modeler.ui.session as session_mod
+        with patch.object(session_mod, "st", st_stub):
+            session_mod.init_session_state()
+        assert "model_api_key" in st_stub.session_state
+        assert st_stub.session_state["model_api_key"] == ""
 
 
 # ---------------------------------------------------------------------------

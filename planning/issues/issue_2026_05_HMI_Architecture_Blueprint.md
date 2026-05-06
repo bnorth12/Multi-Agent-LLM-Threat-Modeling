@@ -1,22 +1,29 @@
 # Issue: Sprint 2026-05 HMI Architecture Blueprint
 
 ## Sprint
+
 2026-05
 
 ## Issue ID
+
 S05-10
 
 ## GitHub Issue
+
 GH #17
 
 ## Owner Role
+
 HMI Architect and Documentation Owner
 
 ## Description
+
 Consolidate all GUI requirements (GUI-001 through GUI-014) into a unified HMI architecture blueprint that defines the overall look, feel, navigation model, shared component library, and role-based screen visibility before HITL gate UI implementation begins. This issue was added 2026-05-03 after recognizing that major new requirements (model provider configuration GUI-012–014, agent prompt editor GUI-009–010, HITL gate screens GUI-002, export interfaces GUI-006–008) collectively define an HMI that must be architected holistically before individual screens are built.
 
 ## Background
+
 The following GUI requirements have been defined and require consolidation into a coherent HMI design:
+
 - GUI-001: Input Entry Form
 - GUI-002: HITL Gate Screens (multiple gates)
 - GUI-003: Pipeline Status Dashboard
@@ -33,6 +40,7 @@ The following GUI requirements have been defined and require consolidation into 
 - GUI-014: Model Connection Validation (new)
 
 ## Scope
+
 - Define the overall HMI application structure: primary navigation (tabs, drawers, or pages), screen hierarchy, and transition flows.
 - Identify shared UI components used across multiple screens (e.g., status banners, decision action bars, artifact viewers, export controls, role-gated button states).
 - Define role-based screen visibility and action availability consistent with INT-013 and GUI-011.
@@ -46,6 +54,7 @@ The following GUI requirements have been defined and require consolidation into 
 - Define state management model: which HMI data comes from pipeline API, which is local UI state.
 
 ## Acceptance Criteria
+
 - HMI architecture blueprint document exists at docs/HMI_Architecture_Blueprint.md.
 - Blueprint contains a screen inventory table mapping all GUI-001 through GUI-014 to their location in the HMI.
 - Blueprint defines primary navigation structure with at least one Mermaid flow diagram.
@@ -55,6 +64,7 @@ The following GUI requirements have been defined and require consolidation into 
 - Requirements/10_GUI_Requirements.md and docs/INDEX.md are updated to reference the blueprint.
 
 ## Requirement Links
+
 - PRJ-006 (HITL Governance)
 - PRJ-008 (Configurable Model Selection)
 - PRJ-012 (Role-Based Access)
@@ -66,14 +76,17 @@ The following GUI requirements have been defined and require consolidation into 
 - GUI-001 through GUI-014
 
 ## Blocking Relationships
+
 - **Blocks:** S05-04 (HITL Gate Set 1) — gate screens must conform to HMI framework
 - **Extends:** S05-06 (Documentation Synchronization) — blueprint is part of S05-06 deliverables
 - **Depends on:** Requirements/10_GUI_Requirements.md complete (done)
 
 ## Status
+
 - [ ] Not started
 - [ ] In progress
 - [x] Completed
 
 ## Progress Notes
+
 2026-05-03 BN: docs/HMI_Architecture_Blueprint.md created (v0.1). Covers §1 Purpose, §2 Technology (Streamlit MVP), §3 Application Structure (sidebar nav), §4 Screen Inventory (SCR-001 to SCR-014), §5 Navigation Flows (3 Mermaid diagrams), §6 Shared Components (6 patterns), §7 Role-Based Access, §8 State Management, §9 Wireframes, §10 S05-04 implementation notes, §11 Requirements cross-reference. docs/INDEX.md and Requirements/10_GUI_Requirements.md updated to reference blueprint.

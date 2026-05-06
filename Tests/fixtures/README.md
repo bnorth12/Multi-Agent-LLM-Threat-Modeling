@@ -27,6 +27,7 @@ Describes entities and interfaces. Each row has an `entity_type` column with one
 CSV files use a flat single-sheet layout. XLSX files may use two sheets: `Entities` (subsystems, components, functions) and `Interfaces`.
 
 Current fixtures:
+
 - `inputs/icd/icd_alpha_v1.csv` — Alpha system, 7 entities + 5 interfaces
 - `inputs/icd/icd_bravo_v2.csv` — Bravo system, minimal entities
 - `inputs/icd/icd_charlie_v1.xlsx` — Charlie system, multi-sheet XLSX format
@@ -36,6 +37,7 @@ Current fixtures:
 Describes the system, subsystems, and components in prose. Parsed separately by the narrative parser.
 
 Current fixtures:
+
 - `inputs/descriptions/description_alpha.md` — Alpha system narrative
 - `inputs/descriptions/description_charlie.txt` — Charlie system narrative
 

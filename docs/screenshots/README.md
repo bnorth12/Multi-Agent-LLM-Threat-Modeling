@@ -4,7 +4,7 @@ This directory holds annotated screenshot evidence for HMI screens delivered in 
 
 Each entry maps a screenshot file to its **business logic screen ID** (Blueprint SCR-xxx per docs/HMI_Architecture_Blueprint.md), GUI requirement ID, and the sprint issue that delivered or is developing the screen.
 
-Captured: 2026-05-04 by BN from Streamlit app running at http://localhost:8502.
+Captured: 2026-05-04 by BN from Streamlit app running at <http://localhost:8502>.
 
 ---
 
@@ -43,16 +43,18 @@ Captured: 2026-05-04 by BN from Streamlit app running at http://localhost:8502.
 ### For Delivered Screens
 
 1. Activate the virtual environment:
+
    ```
    .venv\Scripts\Activate.ps1
    ```
-2. Launch the Streamlit app:
+1. Launch the Streamlit app:
+
    ```
    streamlit run src/threat_modeler/ui/app.py
    ```
-3. Navigate to the screen.
-4. Take a full-window screenshot and save it with the filename listed in the table above.
-5. Annotate each screenshot (arrows/labels) to highlight the key UI elements that satisfy the GUI requirement acceptance criteria.
+1. Navigate to the screen.
+1. Take a full-window screenshot and save it with the filename listed in the table above.
+1. Annotate each screenshot (arrows/labels) to highlight the key UI elements that satisfy the GUI requirement acceptance criteria.
 
 ### For S07 Development
 
@@ -63,11 +65,13 @@ Screenshots for S07 screens will be captured and added to this directory as deve
 ## Sprint Closeout Evidence Reference
 
 **Sprint 2026-06 (S06-07) closed with the following evidence:**
+
 - 4 screenshots (scr_001–scr_004) mapping to 4 delivered screens
 - Test summary: 240 tests passing (unit + integration + E2E)
 - Full test logs in planning/Test_Execution_Summary_Sprint_2026_06.md
 
 **Sprint 2026-07 evidence will be collected incrementally:**
+
 - S07-02 screenshots added when Model Provider/Connection screens complete
 - S07-05/06 screenshots added when Results/Export screens complete
 - Final test and screenshot evidence compiled in planning/Test_Execution_Summary_Sprint_2026_07.md

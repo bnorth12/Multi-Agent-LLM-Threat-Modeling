@@ -1,24 +1,31 @@
 # Issue: Sprint 2026-06 User Manual
 
 ## Sprint
+
 2026-06
 
 ## Issue ID
+
 S06-06
 
 ## GitHub Issue
+
 TBD
 
 ## Owner Role
+
 Documentation Owner and HMI Architect
 
 ## Description
+
 Write and publish the end-user manual for the Multi-Agent LLM Threat Modeler tool. The manual must be usable by analysts who have no prior knowledge of the codebase and must cover all delivered functionality through Sprint 2026-06, including the Streamlit HMI screens, pipeline execution flow, HITL gate interaction workflow, results export, and model/prompt configuration.
 
 ## Background
+
 Sprint 2026-05 delivered the HMI Architecture Blueprint defining screen inventory, navigation, shared components, and role-based access. Sprint 2026-06 (S06-01 through S06-05) delivers the first runnable pipeline and Streamlit screens. The user manual depends on those deliverables being functional and is the final documentation artifact required for operational readiness.
 
 ## Scope
+
 - Tool overview: what the threat modeler does, the 9-agent pipeline, HITL governance model, and output artifacts (STIX bundle, Mermaid diagram, human report).
 - Installation and setup: prerequisites, virtual environment, offline vs. hybrid model profiles, first-run configuration.
 - Step-by-step workflow walkthrough:
@@ -36,6 +43,7 @@ Sprint 2026-05 delivered the HMI Architecture Blueprint defining screen inventor
 - Glossary: threat modeling terms, STRIDE categories, HITL gate terminology, STIX terminology.
 
 ## Acceptance Criteria
+
 - User manual exists at `docs/User_Manual.md`.
 - Manual contains a tool overview section explaining the 9-agent pipeline and HITL governance model.
 - Manual contains installation and setup instructions reproducible by a new analyst from a clean environment.
@@ -48,6 +56,7 @@ Sprint 2026-05 delivered the HMI Architecture Blueprint defining screen inventor
 - `docs/INDEX.md` is updated to reference the manual.
 
 ## Requirement Links
+
 - PRJ-006 (HITL Governance)
 - PRJ-009 (Operational Runbook)
 - PRJ-012 (Role-Based Access)
@@ -55,16 +64,19 @@ Sprint 2026-05 delivered the HMI Architecture Blueprint defining screen inventor
 - GUI-001 through GUI-014
 
 ## Blocking Relationships
+
 - **Depends on:** S06-01 (Agent Pipeline Completeness) — pipeline must be runnable to document
 - **Depends on:** S06-02 (HITL Gate Set 2) — HITL screens must exist to document and screenshot
 - **Depends on:** S06-05 (Release & Operational Readiness) — screenshots must be captured before manual is finalized
 
 ## Status
+
 - [ ] Not started
 - [ ] In progress
 - [x] Completed
 
 ## Completion Evidence
+
 - Date: 2026-05-04
 - Initials: BN
 - HTML user manual delivered at `docs/user_manual/index.html` (primary — styled, sidebar nav, per-screen descriptions, HITL gate guide, glossary).

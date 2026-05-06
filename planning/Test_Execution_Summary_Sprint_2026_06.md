@@ -128,7 +128,7 @@
 
 | AC | Status | Evidence |
 |----|--------|----------|
-| App launches without error | ✅ | Running at http://localhost:8502 |
+| App launches without error | ✅ | Running at <http://localhost:8502> |
 | Navigation sidebar present, links to all delivered screens | ✅ | Screenshot: scr_001_home_run_dashboard.png |
 | Role selection appears on first load, persists in session state | ✅ | test_ui_app_shell.py + scr_002_role_selection.png |
 | Pipeline Configuration renders defaults, accepts edits | ✅ | test_ui_app_shell.py + scr_003_pipeline_configuration.png |
@@ -142,7 +142,7 @@
 ## 4. Screenshot Evidence
 
 Visual acceptance criteria evidence captured 2026-05-04 by BN from Streamlit app at
-http://localhost:8502 (Default theme, fixture mode).
+<http://localhost:8502> (Default theme, fixture mode).
 
 | Screenshot | Screen | GUI Req | Demonstrates |
 |------------|--------|---------|--------------|

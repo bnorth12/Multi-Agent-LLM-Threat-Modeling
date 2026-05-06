@@ -9,14 +9,14 @@
 ## Table of Contents
 
 1. [Tool Overview](#1-tool-overview)
-2. [Installation and Setup](#2-installation-and-setup)
-3. [Primary Analyst Workflow](#3-primary-analyst-workflow)
-4. [HITL Gate Interaction Guide](#4-hitl-gate-interaction-guide)
-5. [Configuration Reference](#5-configuration-reference)
-6. [Role-Based Access](#6-role-based-access)
-7. [Results Export](#7-results-export)
-8. [Troubleshooting](#8-troubleshooting)
-9. [Glossary](#9-glossary)
+1. [Installation and Setup](#2-installation-and-setup)
+1. [Primary Analyst Workflow](#3-primary-analyst-workflow)
+1. [HITL Gate Interaction Guide](#4-hitl-gate-interaction-guide)
+1. [Configuration Reference](#5-configuration-reference)
+1. [Role-Based Access](#6-role-based-access)
+1. [Results Export](#7-results-export)
+1. [Troubleshooting](#8-troubleshooting)
+1. [Glossary](#9-glossary)
 
 ---
 
@@ -111,7 +111,7 @@ pip install -r requirements.txt
 
 **Offline / fixture mode** (no API key required):
 
-No extra configuration needed.  The application defaults to `provider=unconfigured`
+No extra configuration needed.  The application defaults to `provider=fixture`
 which uses deterministic fixture outputs for all nine agents.
 
 **Hybrid mode** (xAI Grok):
@@ -123,6 +123,10 @@ $env:XAI_API_KEY = "xai-your-key-here"
 ```
 
 Then select `xai` as the provider in the Configuration screen (SCR-003).
+You can provide the key either:
+
+- In **Pipeline Configuration (SCR-013)** via the **API key** field (masked, session-only), or
+- Via environment variable (for unattended/CI workflows).
 
 ### Step 5 — Launch the Streamlit application
 
@@ -151,12 +155,13 @@ Navigate to **Role Select** in the left sidebar.  Choose your role:
 
 Navigate to **Configuration** in the sidebar.  Set:
 
-- **LLM Provider** — `unconfigured` (offline) or `xai` (Grok).
+- **LLM Provider** — `fixture` (offline) or a live provider (`xai`, `openai`, `anthropic`, `azure`, `ollama`, `custom`).
 - **Model name** — e.g. `grok-beta`.
+- **API key** (for providers that require one) — masked input, stored in session only.
 - **Enabled stages** — select which of the nine agents to run.
 - **HITL gates** — enable or disable mandatory gates.
 
-Click **Save Configuration** to apply.
+Click **Apply Settings**, then run **Validate Connection** in SCR-014.
 
 > ![SCR-003 Configuration](screenshots/scr_003_configuration.png)
 > *SCR-003: Model and Pipeline Configuration form.*
@@ -250,8 +255,9 @@ through `src/threat_modeler/config.py`.
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `provider` | string | `unconfigured` | LLM provider: `unconfigured` (offline) or `xai` |
+| `provider` | string | `fixture` | LLM provider: `fixture` (offline) or one of live providers |
 | `model_name` | string | `fixture` | Model identifier passed to the provider |
+| `model_api_key` | string | `""` | Session-only API key used for providers requiring authentication |
 | `offline_only` | bool | `true` | Force fixture mode regardless of provider |
 | `execution_mode` | string | `langgraph-compatible` | Pipeline execution strategy |
 | `require_hitl_gates` | bool | `true` | Enable/disable mandatory HITL gates |
@@ -262,7 +268,7 @@ through `src/threat_modeler/config.py`.
 
 | Profile | `provider` | `offline_only` | API key required |
 |---------|-----------|----------------|-----------------|
-| Offline (fixture) | `unconfigured` | `true` | No |
+| Offline (fixture) | `fixture` | `true` | No |
 | Hybrid (Grok) | `xai` | `false` | Yes — `XAI_API_KEY` |
 
 ---
@@ -338,9 +344,9 @@ be deserialised.
 **Resolution:**
 
 1. Check `state.messages` for the stage that failed.
-2. In fixture mode, verify the fixture file at `Tests/fixtures/agents/agentXX_output.json`
+1. In fixture mode, verify the fixture file at `Tests/fixtures/agents/agentXX_output.json`
    is valid JSON conforming to the canonical graph schema.
-3. Set `stop_on_validation_error=False` in Configuration to continue past the error
+1. Set `stop_on_validation_error=False` in Configuration to continue past the error
    (useful for debugging).
 
 ---
@@ -368,7 +374,8 @@ $env:XAI_API_KEY = "xai-your-key-here"
 streamlit run src/threat_modeler/ui/app.py
 ```
 
-Alternatively, switch to offline mode by setting `provider=unconfigured` in SCR-003.
+Alternatively, enter the key directly in **Pipeline Configuration → SCR-013 API key**,
+or switch to offline mode by setting `provider=fixture` in SCR-003.
 
 ---
 

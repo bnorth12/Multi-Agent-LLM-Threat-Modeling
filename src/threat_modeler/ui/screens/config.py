@@ -9,6 +9,8 @@ The resulting RuntimeSettings is stored in st.session_state["settings_override"]
 and connection validation state is stored in st.session_state["model_connection_valid"].
 """
 
+import os
+
 import streamlit as st
 
 from threat_modeler.config import (
@@ -43,6 +45,20 @@ _STAGE_LABELS = {
     "agent_09": "09 · Report Writer",
 }
 
+_API_KEY_ENV_VARS = {
+    "openai": "OPENAI_API_KEY",
+    "anthropic": "ANTHROPIC_API_KEY",
+    "xai": "XAI_API_KEY",
+    "azure": "AZURE_OPENAI_API_KEY",
+    "custom": "CUSTOM_API_KEY",
+    "ollama": "OLLAMA_API_KEY",
+    "fixture": "",
+}
+
+
+def _api_key_env_var(provider: str) -> str:
+    return _API_KEY_ENV_VARS.get(provider, f"{provider.upper()}_API_KEY")
+
 
 def _defaults() -> RuntimeSettings:
     override = st.session_state.get("settings_override")
@@ -58,6 +74,7 @@ def render() -> None:
 
     defaults = _defaults()
 
+    api_key_input = ""
     with st.form("pipeline_config_form"):
         # ===== SCR-012: Model Provider Selection =====
         st.subheader("SCR-012 — Model Provider Selection")
@@ -98,6 +115,19 @@ def render() -> None:
                 help=f"Connection URL or endpoint for {provider_info['label']}.",
             )
             st.caption("This URL is used to connect to the LLM provider. It will be securely stored in session state.")
+
+        if provider_info.get("requires_api_key", False):
+            api_key_input = st.text_input(
+                "API key",
+                value=st.session_state.get("model_api_key", ""),
+                type="password",
+                placeholder="Enter API key for the selected provider",
+                help="Session-only secret used for live LLM calls and connection validation.",
+            )
+            st.caption(
+                "API key is kept in session state only (never written to repository files). "
+                "You may also provide the key via environment variable."
+            )
 
         offline_mode_checkbox = st.checkbox(
             "Offline/Fixture mode (no live LLM calls)",
@@ -158,6 +188,17 @@ def render() -> None:
                 ),
             )
             st.session_state["settings_override"] = new_settings
+            st.session_state["model_connection_valid"] = False
+            st.session_state["offline_override_active"] = False
+
+            if provider_info.get("requires_api_key", False):
+                key_value = api_key_input.strip()
+                st.session_state["model_api_key"] = key_value
+                if key_value:
+                    env_var = _api_key_env_var(selected_provider)
+                    if env_var:
+                        os.environ[env_var] = key_value
+
             st.success(f"✅ Settings applied. Provider: {provider_info['label']}, Model: {model_name.strip()}")
 
     # ===== SCR-014: Connection Validation =====
@@ -190,13 +231,14 @@ def render() -> None:
             "**Validate Connection** to confirm the endpoint is reachable before running."
         )
 
-        api_key_input = st.text_input(
-            "API key (optional — leave blank to use environment variable)",
-            type="password",
-            key="api_key_input",
-            help="Provide the API key here, or set the appropriate environment variable "
-                 "(e.g. OPENAI_API_KEY). The key is held in session state only and never persisted.",
-        )
+        stored_key = st.session_state.get("model_api_key", "")
+        if provider_info.get("requires_api_key", False):
+            if stored_key.strip():
+                st.caption("API key found in current session for selected provider.")
+            else:
+                st.caption(
+                    "No API key stored in session. Set it in SCR-013 or via environment variable."
+                )
 
         col_validate, col_override = st.columns(2)
         with col_validate:
@@ -204,9 +246,8 @@ def render() -> None:
                 from threat_modeler.ui.connection_validator import validate_connection  # noqa: PLC0415
 
                 # Resolve API key: UI input first, then environment
-                import os  # noqa: PLC0415
-                env_var = active.model.provider.upper() + "_API_KEY"
-                resolved_key = api_key_input.strip() or os.environ.get(env_var, "")
+                env_var = _api_key_env_var(active.model.provider)
+                resolved_key = stored_key.strip() or os.environ.get(env_var, "")
 
                 with st.spinner("Checking connection…"):
                     result = validate_connection(active.model, api_key=resolved_key)

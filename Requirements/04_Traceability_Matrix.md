@@ -46,7 +46,7 @@ Project to component and interface mapping:
 | GUI-010 | Prompt Version History | SCR-011 | **Deferred S07** | ⏳ S07-04 | Prompt version history and rollback deferred |
 | GUI-011 | Input Entry Validation Banner | — | **Deferred S07** | ⏳ S07-03 | Validation gate guidance banner deferred |
 | GUI-012 | Model Provider Selection | SCR-012 | **S07-02** | ⏳ Active | Provider dropdown (Custom/Intranet support) |
-| GUI-013 | Model Connection Details | SCR-013 | **S07-02** | ⏳ Active | Connection string/URL input |
+| GUI-013 | Model Connection Details | SCR-013 | **S07-02** | ⏳ Active | Connection URL plus masked API-key input (session-only) for authenticated providers |
 | GUI-014 | Model Connection Validation | SCR-014 | **S07-03** | ⏳ Active | Connection test and validation gate |
 
 ---

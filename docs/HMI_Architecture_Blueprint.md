@@ -289,6 +289,7 @@ Roles (ordered lowest to highest privilege): `Viewer` < `Analyst` < `PromptEdito
 | SCR-014 Conn Validation | Admin | — | — | — | — | Admin |
 
 **Rules:**
+
 - Nav section items are hidden entirely if the authenticated user has no role granting view access to any screen in the section.
 - Individual actions within a screen are rendered as disabled (not hidden) for insufficient role, per RoleGatedButton pattern.
 - Session role is set at login and stored in `st.session_state["user_role"]`. It is not modifiable by the user during the session.
@@ -409,11 +410,11 @@ See [Model_Configuration_Design_Specification.md](Model_Configuration_Design_Spe
 When implementing S05-04, the following constraints from this blueprint apply:
 
 1. Each HITL gate screen SHALL be an instance of SCR-005 parameterized by `gate_id`.
-2. The ActionBar component (§6.2) SHALL be used for all approve/edit/override actions.
-3. The ArtifactViewer component (§6.3) SHALL render the gate's stage output artifact.
-4. Role gating SHALL use RoleGatedButton (§6.4) — Analyst minimum for approve/edit; no lower.
-5. HITL audit trail (SCR-006) SHALL be populated from the pipeline's decision log, not from local session state.
-6. Status after gate decision SHALL update the StatusIndicator (§6.1) on SCR-002 in real time.
+1. The ActionBar component (§6.2) SHALL be used for all approve/edit/override actions.
+1. The ArtifactViewer component (§6.3) SHALL render the gate's stage output artifact.
+1. Role gating SHALL use RoleGatedButton (§6.4) — Analyst minimum for approve/edit; no lower.
+1. HITL audit trail (SCR-006) SHALL be populated from the pipeline's decision log, not from local session state.
+1. Status after gate decision SHALL update the StatusIndicator (§6.1) on SCR-002 in real time.
 
 ---
 
