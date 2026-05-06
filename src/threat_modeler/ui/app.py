@@ -13,6 +13,11 @@ from threat_modeler.ui.screens.home import render as render_home
 from threat_modeler.ui.screens.role_select import render as render_role_select
 from threat_modeler.ui.screens.config import render as render_config
 from threat_modeler.ui.screens.input_entry import render as render_input_entry
+from threat_modeler.ui.screens.prompt_editor import render as render_prompt_editor
+from threat_modeler.ui.screens.stage_results import render as render_stage_results
+from threat_modeler.ui.screens.threat_review import render as render_threat_review
+from threat_modeler.ui.screens.results_export import render as render_results_export
+from threat_modeler.ui.screens.snapshot_manager import render as render_snapshot_manager
 from threat_modeler.ui.session import init_session_state
 from threat_modeler.ui.theme import apply_theme
 
@@ -42,6 +47,11 @@ _PAGES = {
     "Input Entry": render_input_entry,
     "Role Selection": render_role_select,
     "Pipeline Configuration": render_config,
+    "Prompt Editor": render_prompt_editor,
+    "Stage Results": render_stage_results,
+    "Threat Review": render_threat_review,
+    "Results Export": render_results_export,
+    "Snapshot Manager": render_snapshot_manager,
 }
 
 # ---------------------------------------------------------------------------

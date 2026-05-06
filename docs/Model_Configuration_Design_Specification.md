@@ -9,6 +9,7 @@ Status: Design for Next Sprint Implementation
 This document specifies the design of the model provider configuration system that enables analysts to select and configure model providers (local, cloud-hosted, commercial LLMs) through a GUI without requiring code changes.
 
 Scope:
+
 - GUI screens for provider selection and connection configuration
 - Backend services for model connection management and validation
 - Secure credential storage strategy
@@ -33,13 +34,23 @@ Scope:
 **Purpose:** Maintain a list of available model providers and their configuration requirements.
 
 **Responsibilities:**
-- Define available providers: local (ollama), OpenAI, Azure OpenAI, Anthropic Claude, Google Vertex, open-source endpoints, custom endpoints
+
+- Define available providers:
+  - Local or Fixture (offline test mode)
+  - OpenAI
+  - Anthropic
+  - xAI or Grok
+  - Azure OpenAI
+  - Ollama
+  - Custom or Intranet (OpenAI-compatible self-hosted endpoint)
 - For each provider: required fields, optional fields, default values, authentication method
 - Provide provider metadata to GUI for form generation
 
 **Design Decisions:**
+
 - Store provider definitions in a JSON config file: `src/threat_modeler/config/model_providers.json`
 - Each provider entry includes:
+
   ```json
   {
     "provider_name": "openai",
@@ -52,6 +63,7 @@ Scope:
     "connection_timeout_seconds": 10
   }
   ```
+
 - Registry is loaded at application startup and cached
 
 ### Component 2: Connection Configuration Service
@@ -59,6 +71,7 @@ Scope:
 **Purpose:** Manage, validate, and persist model connection configurations.
 
 **Responsibilities:**
+
 - Accept provider name and connection parameters from GUI
 - Validate configuration format and required fields
 - Test connectivity to configured model endpoint
@@ -67,6 +80,7 @@ Scope:
 - Support multiple stored configurations (switch between providers/instances)
 
 **Design Decisions:**
+
 - Configuration persisted to `~/.threat_modeler/config/model_connections.json` (user home directory)
 - Credentials encrypted using system keyring (Windows: Credential Manager, Linux: pass/secretservice, macOS: Keychain)
 - API keys never logged or written to plaintext files
@@ -103,6 +117,7 @@ class ModelConnectionManager:
 **Purpose:** Allow analysts to view, select, and activate a configured model provider.
 
 **Responsibilities:**
+
 - Display list of saved model provider configurations
 - Show provider name, endpoint, model name, and validation status
 - Support "Add New Configuration" button
@@ -112,6 +127,7 @@ class ModelConnectionManager:
 - Support "Delete Configuration" action (with confirmation)
 
 **Layout:**
+
 ```
 ╔════════════════════════════════════════════════════════════╗
 ║ MODEL PROVIDER CONFIGURATION                              ║
@@ -141,6 +157,7 @@ class ModelConnectionManager:
 **Purpose:** Collect and validate model connection details without exposing credentials in plaintext.
 
 **Responsibilities:**
+
 - Present provider-specific form fields (generated from registry metadata)
 - Mask/hide API key inputs
 - Support configuration save/update operations
@@ -150,13 +167,20 @@ class ModelConnectionManager:
 - Clear indication of required vs. optional fields
 
 **Form Generation Logic:**
+
+- For Local or Fixture: no API key required; offline mode enabled
 - For OpenAI: API Key (required, masked), Model Name (required, dropdown), Organization ID (optional)
-- For Azure OpenAI: Endpoint URL (required), API Key (required, masked), Deployment Name (required), Model Name (required)
 - For Anthropic: API Key (required, masked), Model Name (required)
-- For Ollama: Base URL (required, default: http://localhost:11434), Model Name (required, readonly if offline)
-- For custom endpoints: Endpoint URL (required), Auth Method (dropdown), Credentials (conditional)
+- For xAI or Grok: API Key (required, masked), Model Name (required), Base URL default `https://api.x.ai/v1`
+- For Azure OpenAI: Endpoint URL (required), API Key (required, masked), Deployment Name (required), API Version (required), Model Name (optional display)
+- For Ollama: Base URL (required, default: `http://localhost:11434`), Model Name (required), API Key optional
+- For Custom or Intranet: Endpoint URL (required), API Key (usually required), Model Name (required), Auth Method (dropdown)
+
+Most enterprise self-hosted providers use commercial-compatible APIs with internal base URLs;
+the Custom or Intranet provider exists specifically for this case.
 
 **Layout Example (Azure OpenAI):**
+
 ```
 ╔════════════════════════════════════════════════════════════╗
 ║ ADD MODEL PROVIDER CONFIGURATION                          ║
@@ -192,6 +216,7 @@ class ModelConnectionManager:
 **Purpose:** Verify model endpoint connectivity and credentials before pipeline execution.
 
 **Responsibilities:**
+
 - Accept configuration and initiate test connection
 - Show progress/spinner during test
 - Return human-readable success or error message
@@ -200,20 +225,23 @@ class ModelConnectionManager:
 - Support pre-run and standalone validation
 
 **Test Process:**
+
 1. Construct authentication headers based on auth_method and credentials
-2. Call lightweight model list endpoint (e.g., GET /v1/models for OpenAI)
-3. Verify HTTP 200 response
-4. Parse response to confirm model availability
-5. Record timestamp and status
-6. Return result to GUI
+1. Call lightweight model list endpoint (e.g., GET /v1/models for OpenAI)
+1. Verify HTTP 200 response
+1. Parse response to confirm model availability
+1. Record timestamp and status
+1. Return result to GUI
 
 **Error Message Examples:**
+
 - ✓ Connection successful. Model 'gpt-4' is available.
 - ✗ Connection failed: 401 Unauthorized. Check API key and endpoint.
 - ✗ Connection timeout after 10 seconds. Check endpoint URL and network connectivity.
 - ✗ Model 'gpt-5' not found. Available models: gpt-4, gpt-3.5-turbo. Check deployment name.
 
 **Pre-Run Validation:**
+
 - If stop_on_validation_error=True and connection invalid, display error modal and prevent "Start Run" button
 - If stop_on_validation_error=False (offline mode), warn but allow continuation
 
@@ -222,6 +250,7 @@ class ModelConnectionManager:
 **Rationale:** API keys and authentication credentials must never be stored in plaintext config files or logged.
 
 **Design:**
+
 - Use system credential manager where available:
   - Windows: `python-keyring` with DPAPI backend (native Windows encryption)
   - Linux: `python-keyring` with pass or secretservice backend
@@ -257,26 +286,30 @@ class CredentialManager:
 ### 1. Runtime Settings Update
 
 Extend `RuntimeSettings` dataclass to include:
+
 - `active_model_config_name: str` (name of active configuration)
 - `model_provider_override: ModelConnectionConfig` (optional, for programmatic override)
 
 ### 2. LLM Client Initialization
 
 Update LLM client factory to:
+
 1. Read active configuration from ModelConnectionManager
-2. Build client with configured endpoint and credentials
-3. Log configuration name but not credentials
-4. Support fallback chain: explicit config → active config → environment variables → local ollama
+1. Build client with configured endpoint and credentials
+1. Log configuration name but not credentials
+1. Support fallback chain: explicit config → active config → environment variables → local ollama
 
 ### 3. Pipeline State
 
 Update `FrameworkState` to include:
+
 - `model_config_name: str` (records which config was used for this run)
 - `model_connection_validation_status: str` (valid/invalid at run start)
 
 ### 4. HITL Gates
 
 Extend HITL approval to allow model re-configuration before rerun:
+
 - Gate question: "Re-use model provider or reconfigure?"
 - If reconfigure: show provider selection screen before rerun
 - Snapshot includes model configuration used
@@ -292,14 +325,14 @@ Extend HITL approval to allow model re-configuration before rerun:
    - Validation of required fields
    - Duplicate configuration name handling
 
-2. **Connection Validation Tests:**
+1. **Connection Validation Tests:**
    - Valid endpoint returns success
    - Invalid endpoint returns connectivity error
    - Invalid credentials return 401 error
    - Timeout handling (10-second default)
    - Model availability checks
 
-3. **Configuration Parsing Tests:**
+1. **Configuration Parsing Tests:**
    - Provider registry loads correctly
    - Form field generation matches provider metadata
    - Required field validation before submission
@@ -312,14 +345,14 @@ Extend HITL approval to allow model re-configuration before rerun:
    - Verify active config persists across app restart
    - Delete configuration and verify removal
 
-2. **GUI Connection Test Flow:**
+1. **GUI Connection Test Flow:**
    - Enter valid connection details
    - Click "Test Connection" and verify success message
    - Modify endpoint to invalid URL
    - Click "Test Connection" and verify error message
    - Verify pipeline blocked if validation fails (when stop_on_validation_error=True)
 
-3. **End-to-End Pipeline Flow:**
+1. **End-to-End Pipeline Flow:**
    - Configure model provider through GUI
    - Start pipeline run
    - Verify LLM client uses configured endpoint
@@ -330,19 +363,19 @@ Extend HITL approval to allow model re-configuration before rerun:
 ### Security Tests
 
 1. Credentials never appear in logs (grep logs for API keys)
-2. Credentials stored in encrypted keyring (verify keyring backend active)
-3. Config file does not contain credentials (inspect JSON)
-4. Credential references are unique per config (no cross-contamination)
+1. Credentials stored in encrypted keyring (verify keyring backend active)
+1. Config file does not contain credentials (inspect JSON)
+1. Credential references are unique per config (no cross-contamination)
 
 ## Future Enhancements (Post-Sprint)
 
 1. **Model Provider Auto-Discovery:** Detect locally available Ollama models and cloud endpoints
-2. **Connection Pooling:** Maintain connection pool for frequently used endpoints
-3. **Multi-Provider Failover:** Define fallback provider chain if primary is unavailable
-4. **Rate Limiting Configuration:** Per-provider rate limit settings (tokens/min, requests/min)
-5. **Cost Tracking:** Log token usage per provider for cost analysis
-6. **Provider-Specific Tuning:** Temperature, max_tokens, safety settings per provider
-7. **Proxy Configuration:** HTTP/HTTPS proxy settings for restricted networks
+1. **Connection Pooling:** Maintain connection pool for frequently used endpoints
+1. **Multi-Provider Failover:** Define fallback provider chain if primary is unavailable
+1. **Rate Limiting Configuration:** Per-provider rate limit settings (tokens/min, requests/min)
+1. **Cost Tracking:** Log token usage per provider for cost analysis
+1. **Provider-Specific Tuning:** Temperature, max_tokens, safety settings per provider
+1. **Proxy Configuration:** HTTP/HTTPS proxy settings for restricted networks
 
 ## References
 
@@ -350,4 +383,4 @@ Extend HITL approval to allow model re-configuration before rerun:
 - INT-012 and INT-015: Provider configuration contracts (Requirements/02_Interface_Requirements.md)
 - GUI-012, GUI-013, GUI-014: Model configuration GUI requirements (Requirements/10_GUI_Requirements.md)
 - config.py: RuntimeSettings and ModelSelection dataclasses
-- Python keyring documentation: https://keyring.readthedocs.io/
+- Python keyring documentation: <https://keyring.readthedocs.io/>

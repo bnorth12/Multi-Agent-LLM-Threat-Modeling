@@ -8,9 +8,9 @@ across four trust-boundary-crossing interfaces:
 
 1. **LLM Prompt Injection** (if-01, T=4, E=4): Adversarial LLM responses inject false data
    into the canonical threat graph, causing the tool to produce a misleading threat model.
-2. **PyPI Supply Chain Substitution** (if-03, T=5, E=5): A malicious or compromised PyPI
+1. **PyPI Supply Chain Substitution** (if-03, T=5, E=5): A malicious or compromised PyPI
    package executes arbitrary code with local user privileges during installation.
-3. **Insider Contributor Backdoor** (if-04, T=5, E=4): A compromised or malicious contributor
+1. **Insider Contributor Backdoor** (if-04, T=5, E=4): A compromised or malicious contributor
    injects a backdoor into agent logic or CI workflows that passes superficial code review.
 
 Six controls (three technical, three administrative) reduce residual risk to acceptable levels.

@@ -1,0 +1,53 @@
+# Sprint 2026-07 Issue Tracker
+
+This tracker is the canonical in-repo status view for sprint issues defined in the implementation plan.
+
+## 1. Tracking Rules
+
+- Update the status checkbox in each issue file first.
+- Then update this tracker status table in the same commit.
+- Every status change should include the date and initials in the Notes column.
+- Use a single feature branch per sprint and keep all sprint issue changes on that branch.
+- Link all GitHub issue numbers in the Notes column as GH #NNN.
+
+## 2. Sprint 2026-07 (Workstreams A–F + Closeout)
+
+| ID | GitHub Issue | Workstream | Owner Role | Status | Notes |
+|----|--------------|-----------|------------|--------|-------|
+| S07-01 | GH #26 | A | Documentation Owner | Completed | Reconciled SCR naming across blueprint/manual/tracker/screenshots; updated README (S06 baseline, 240 tests); Traceability Matrix now has GUI Delivery Status table; screenshots README clarifies Blueprint vs Implementation SCRs; Implementation Plan links to GH issues #26–#33; 2026-05-04 BN commit e7c7fc5 |
+| S07-02 | GH #27 | B | HMI Architect and Orchestrator Engineer | Completed | Model Provider Selection (SCR-012) and Connection Details (SCR-013) HMI. Added PROVIDER_MATRIX with 7 providers (fixture, OpenAI, Anthropic, xAI, Azure, Ollama, Custom/Intranet). Dropdown UI, connection URL input for non-fixture providers, session state for model_connection_valid. 242 tests passing. 2026-05-04 BN commit 3d9ab6d. S07-03 will use validation gate. |
+| S07-03 | GH #28 | C | Validation and Schema Engineer | Completed | SCR-014 connection validation gate implemented. New connection_validator.py module: fixture/offline auto-pass, API-key fast-fail, HTTP HEAD reachability check. Config screen SCR-014 section: real validate_connection() call, session-only API key input, offline override button, re-validate flow. input_entry.py banner: 3 distinct states (fixture/offline, offline-override, validated-live). session.py: offline_override_active key added. 12 new unit tests. 254 tests passing. 2026-05-05 BN commit 0bebd80. |
+| S07-04 | GH #29 | D | Orchestrator Engineer and HMI Architect | Completed | SCR-010/011 Prompt Editor and Version History. New prompt_store.py: session-scoped get/set/revert/temperature/is_modified API, append-only VersionEntry history, 9 agents with default prompts. New screens/prompt_editor.py: SCR-010 editor (text_area, temperature slider, save/reset/diff), SCR-011 version history with rollback; Author-role guard. Wired into app.py _PAGES. 22 new tests. 276 tests passing. 2026-05-05 BN commit 4c791a1. |
+| S07-05 | GH #30 | E (part 1) | HMI Architect and Test Lead | Completed | Added Stage Results Viewer (SCR-003) and Threat Review screen (SCR-004). New screens: stage_results.py (stage completion, message table, artifact snapshot) and threat_review.py (flattened threat/mitigation table, risk filter, per-threat review decisions). app.py navigation now includes Stage Results and Threat Review. Added helper/module/nav tests for both screens. 285 tests passing. 2026-05-05 BN commit fd5a0e9. |
+| S07-06 | GH #31 | E (part 2) | HMI Architect and Data and Parsing Engineer | Completed | Added Results Export (SCR-007) and Snapshot Manager (SCR-008/009) screens. New runtime_io.py helper module for FrameworkState serialization/deserialization, artifact export (canonical JSON, STIX JSON, report markdown, Mermaid markdown), and snapshot payload schema. Snapshot manager supports session save/delete, JSON download, upload restore. app.py navigation includes Results Export and Snapshot Manager. Added runtime I/O, module, and nav tests. 300 tests passing. 2026-05-05 BN commit f2274c4. |
+| S07-07 | GH #32 | F | Test Lead and DevOps Engineer | Completed | CI gate expansion implemented in .github/workflows/ci.yml: split non-live jobs for unit, integration, and e2e; aggregate full non-live suite gate; llm_live remains isolated to main-only and depends on non-live gate success. Local validation mirrors CI commands: unit 166 passed, integration 99 passed, e2e non-live 34 passed (1 deselected), aggregate non-live 299 passed (1 deselected). 2026-05-05 BN commit 3ec5c0f. |
+| S07-08 | GH #33 | Closeout | Product Owner and Technical Lead | Completed | Required online llm_live gate executed successfully. Date: 2026-05-05. Performer: BN. Scenario: `pytest Tests/e2e/test_artifact_generation.py -m "llm_live"`. Outcome: 1 passed, 34 deselected. Evidence links: GH issue #33 comment <https://github.com/bnorth12/Multi-Agent-LLM-Threat-Modeling/issues/33#issuecomment-4384295084> and GH PR #34 (S07 summary PR). 2026-05-05 BN commit ceb260f. |
+
+## 3. Completion Gate
+
+A sprint issue can be marked Completed only when all of the following are true:
+
+- Acceptance criteria in the GitHub issue are met.
+- Tests are added or updated and passing.
+- Requirement links are verified.
+- Documentation changes are merged if behavior changed.
+- Sprint issue status updated in this tracker with date and initials.
+
+## 3. Discovered Issues (During Sprint Execution)
+
+Issues discovered during sprint work that are not in the original 8 workstreams. Track here to prevent loss of scope if work is deferred.
+
+| ID | GitHub Issue | Description | Severity | Status | Notes |
+|----|--------------|-------------|----------|--------|-------|
+| DI-S07-01 | GH #35 | Provider model catalogs + editable connection profiles (commercial + custom/intranet): provider-specific editable model dropdowns, explicit URL/auth/API settings management in Pipeline Configuration | Medium | Open | Discovered at S07 closeout; proposed disposition: deferred-to-sprint-2026-08 |
+| DI-S07-02 | GH #36 | xAI provider baseline should use Grok-4 models (not Grok-3): update catalog/default, preserve legacy aliases, and sync docs/tests | Medium | Open | Discovered post-S07 closeout; disposition: deferred-to-sprint-2026-08 S08-1 |
+
+## 4. Sprint Definition of Done
+
+- All 8 workstream issues completed and passed completion gate.
+- Non-live CI tests passing (all markers except llm_live).
+- At least one online llm_live end-to-end validation run completed and evidenced.
+- User manual and traceability matrix updated.
+- Feature branch merged to main via PR with all issue links verified.
+- All GitHub issues closed with Completion evidence.
+- Discovered issues logged with GH issue numbers; deferred issues marked `deferred-to-sprint-2026-08`.

@@ -46,18 +46,18 @@ Minimal config example:
 
 ```json
 {
-	"version": "1.0",
-	"gates": {
-		"input_integrity": {
-			"enabled": true,
-			"thresholds": {
-				"parse_error_count_gt": 0,
-				"required_field_missing_count_gt": 0,
-				"schema_validation_pass_rate_lt": 1.0,
-				"source_provenance_complete_required": true
-			}
-		}
-	}
+ "version": "1.0",
+ "gates": {
+  "input_integrity": {
+   "enabled": true,
+   "thresholds": {
+    "parse_error_count_gt": 0,
+    "required_field_missing_count_gt": 0,
+    "schema_validation_pass_rate_lt": 1.0,
+    "source_provenance_complete_required": true
+   }
+  }
+ }
 }
 ```
 

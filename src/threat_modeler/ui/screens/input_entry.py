@@ -81,32 +81,36 @@ def _parse_uploaded_files(uploaded_files: list[Any]) -> tuple[str, list[dict]]:
     return "\n\n".join(raw_parts), tables
 
 
-def _model_connection_banner() -> bool:
-    """Render the model-connection banner.  Returns True if model is configured."""
+def _model_connection_banner() -> None:
+    """Render the model-connection status banner (informational only)."""
     settings = st.session_state.get("settings_override")
-    if settings is not None:
-        provider = getattr(getattr(settings, "model", None), "provider", "unconfigured")
-        offline = getattr(getattr(settings, "model", None), "offline_only", True)
-    else:
-        provider = "unconfigured"
-        offline = True
+    provider = getattr(getattr(settings, "model", None), "provider", "fixture")
+    offline = getattr(getattr(settings, "model", None), "offline_only", True)
+    model_name = getattr(getattr(settings, "model", None), "model_name", "—")
+    is_validated = st.session_state.get("model_connection_valid", False)
+    offline_override = st.session_state.get("offline_override_active", False)
 
-    if provider == "unconfigured" or offline:
+    if offline or provider == "fixture":
         st.info(
-            "ℹ️ **Offline / fixture mode** — the pipeline will use pre-recorded agent "
-            "outputs (no live LLM calls).  To switch to a live model, go to "
-            "**Pipeline Configuration** and set Provider and Model Name.",
-            icon=None,
+            "ℹ️ **Offline / Fixture mode** — pipeline uses deterministic fixture data "
+            "(no live LLM calls). Go to **Pipeline Configuration** to select a live provider."
         )
-        return False
-    else:
+    elif offline_override:
+        st.warning(
+            "⚠️ **Offline Override active** — connection was not validated against a live "
+            f"endpoint. Provider: `{provider}` / `{model_name}`. Results may not reflect "
+            "live model behaviour."
+        )
+    elif is_validated:
         st.success(
-            f"✅ **Connected:** {provider} / "
-            f"{getattr(getattr(settings, 'model', None), 'model_name', '—')}  "
-            f"— Live LLM calls will be made during the run.",
-            icon=None,
+            f"✅ **Validated:** `{provider}` / `{model_name}` — live LLM calls will be "
+            "made during the run."
         )
-        return True
+    else:
+        st.error(
+            "🔒 **Connection not validated** — go to **Pipeline Configuration → "
+            "SCR-014 Connection Validation** to validate before starting a run."
+        )
 
 
 def render() -> None:
@@ -201,10 +205,28 @@ def render() -> None:
     # ── Validation and submit ────────────────────────────────────────────
     can_submit = bool(system_name.strip()) and (bool(uploaded_files) or bool(raw_text_paste.strip()))
 
+    # SCR-011: Check model connection validation gate
+    model_valid = st.session_state.get("model_connection_valid", False)
+    settings = st.session_state.get("settings_override")
+    is_fixture_mode = (
+        settings is None
+        or getattr(getattr(settings, "model", None), "offline_only", True)
+        or getattr(getattr(settings, "model", None), "provider", "fixture") in ("unconfigured", "fixture")
+        or st.session_state.get("offline_override_active", False)
+    )
+
+    # Allow submit if: (1) inputs valid AND (2) either fixture mode OR live mode with validation
+    can_submit = can_submit and (is_fixture_mode or model_valid)
+
     if not system_name.strip():
         st.warning("⚠️ Enter a **System name** before starting a run.")
     elif not uploaded_files and not raw_text_paste.strip():
         st.warning("⚠️ Upload at least one architecture file **or** paste raw text before starting a run.")
+    elif not is_fixture_mode and not model_valid:
+        st.error(
+            "🔒 **Model connection required** — Go to **Pipeline Configuration** to configure and validate your LLM connection before starting a run.",
+            icon="🔒"
+        )
 
     col_btn, col_clear = st.columns([3, 1])
     with col_btn:

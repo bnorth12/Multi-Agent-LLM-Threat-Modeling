@@ -135,10 +135,12 @@ class TestConfigPageDefaults:
         s = build_default_settings()
         assert isinstance(s, RuntimeSettings)
 
-    def test_default_provider_is_unconfigured(self):
+    def test_default_provider_is_fixture(self):
+        """Verify default provider is 'fixture' (offline mode)."""
         from threat_modeler.config import build_default_settings
         s = build_default_settings()
-        assert s.model.provider == "unconfigured"
+        assert s.model.provider == "fixture"
+        assert s.model.offline_only is True
 
     def test_default_all_nine_stages_enabled(self):
         from threat_modeler.config import build_default_settings
@@ -160,6 +162,60 @@ class TestConfigPageDefaults:
         fake_state["settings_override"] = settings
         assert isinstance(fake_state["settings_override"], RuntimeSettings)
         assert fake_state["settings_override"].model.provider == "xai"
+
+    def test_provider_matrix_has_required_providers(self):
+        """Verify PROVIDER_MATRIX includes all required providers."""
+        from threat_modeler.config import PROVIDER_MATRIX
+        required_providers = ["fixture", "openai", "anthropic", "xai", "azure", "ollama", "custom"]
+        for prov in required_providers:
+            assert prov in PROVIDER_MATRIX, f"Provider '{prov}' missing from PROVIDER_MATRIX"
+
+    def test_provider_matrix_entries_complete(self):
+        """Verify each provider has required metadata."""
+        from threat_modeler.config import PROVIDER_MATRIX
+        for prov_key, metadata in PROVIDER_MATRIX.items():
+            assert "label" in metadata, f"{prov_key} missing 'label'"
+            assert "description" in metadata, f"{prov_key} missing 'description'"
+            assert "requires_url" in metadata, f"{prov_key} missing 'requires_url'"
+            assert "requires_api_key" in metadata, f"{prov_key} missing 'requires_api_key'"
+            assert "default_model" in metadata, f"{prov_key} missing 'default_model'"
+
+    def test_config_screen_contains_api_key_field(self):
+        """SCR-013 must expose an API key field in Pipeline Configuration."""
+        from pathlib import Path
+        text = Path("src/threat_modeler/ui/screens/config.py").read_text(encoding="utf-8")
+        assert '"API key"' in text
+        assert "model_api_key" in text
+
+    def test_config_screen_resolves_provider_api_key_env_var(self):
+        """Validation path should map provider to provider-specific API-key env var."""
+        from pathlib import Path
+        text = Path("src/threat_modeler/ui/screens/config.py").read_text(encoding="utf-8")
+        assert "_api_key_env_var" in text
+        assert "OPENAI_API_KEY" in text
+        assert "ANTHROPIC_API_KEY" in text
+        assert "XAI_API_KEY" in text
+
+    def test_config_screen_contains_model_catalog_controls(self):
+        from pathlib import Path
+        text = Path("src/threat_modeler/ui/screens/config.py").read_text(encoding="utf-8")
+        assert "Model catalog" in text
+        assert "<Custom model>" in text
+        assert "Custom model name" in text
+
+    def test_config_screen_contains_endpoint_mode_control(self):
+        from pathlib import Path
+        text = Path("src/threat_modeler/ui/screens/config.py").read_text(encoding="utf-8")
+        assert "Endpoint mode" in text
+        assert "chat_completions" in text
+        assert "responses" in text
+        assert "multi_agent" in text
+
+    def test_model_selection_has_endpoint_mode_field(self):
+        from threat_modeler.config import ModelSelection
+        m = ModelSelection(provider="xai", model_name="grok-3", offline_only=False)
+        assert hasattr(m, "endpoint_mode")
+        assert m.endpoint_mode == "chat_completions"
 
 
 # ---------------------------------------------------------------------------
@@ -362,3 +418,534 @@ class TestAppNavIncludesInputEntry:
             for node in ast.walk(tree)
         ]
         assert "Input Entry" in strings, "app.py _PAGES dict must include 'Input Entry'"
+
+
+# ---------------------------------------------------------------------------
+# S07-03 — Connection validator unit tests
+# ---------------------------------------------------------------------------
+
+class TestConnectionValidatorFixtureMode:
+    """Fixture and offline-only modes always validate without network I/O."""
+
+    def test_fixture_provider_auto_passes(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="fixture", model_name="fixture", offline_only=True)
+        result = validate_connection(model)
+        assert result.ok is True
+        assert "offline" in result.message.lower() or "fixture" in result.message.lower()
+
+    def test_offline_only_flag_auto_passes(self):
+        """offline_only=True should bypass network regardless of provider."""
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="openai", model_name="gpt-4o", offline_only=True)
+        result = validate_connection(model)
+        assert result.ok is True
+
+    def test_unknown_provider_fails_gracefully(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="nonexistent", model_name="x", offline_only=False)
+        result = validate_connection(model)
+        assert result.ok is False
+        assert "nonexistent" in result.message or "Unknown" in result.message
+
+
+class TestConnectionValidatorApiKeyCheck:
+    """Providers that require_api_key fail fast when no key is supplied."""
+
+    def test_openai_fails_without_api_key(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="openai", model_name="gpt-4o", offline_only=False)
+        result = validate_connection(model, api_key="")
+        assert result.ok is False
+        assert "API key" in result.message
+
+    def test_anthropic_fails_without_api_key(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="anthropic", model_name="claude-3-5-sonnet", offline_only=False)
+        result = validate_connection(model, api_key="")
+        assert result.ok is False
+
+    def test_api_key_hint_mentions_env_var(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="openai", model_name="gpt-4o", offline_only=False)
+        result = validate_connection(model, api_key="")
+        assert "OPENAI_API_KEY" in result.detail
+
+
+class TestConnectionValidatorUrlCheck:
+    """Providers that require_url fail fast when URL is blank."""
+
+    def test_ollama_fails_without_url(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="ollama", model_name="llama3", offline_only=False, connection_url="")
+        result = validate_connection(model, api_key="")
+        assert result.ok is False
+        assert "URL" in result.message or "url" in result.message.lower()
+
+    def test_custom_fails_without_url(self):
+        from threat_modeler.ui.connection_validator import validate_connection
+        from threat_modeler.config import ModelSelection
+        model = ModelSelection(provider="custom", model_name="my-model", offline_only=False, connection_url="")
+        result = validate_connection(model, api_key="")
+        assert result.ok is False
+
+
+class TestConnectionValidatorResult:
+    """ValidationResult named-tuple contract."""
+
+    def test_result_has_ok_message_detail(self):
+        from threat_modeler.ui.connection_validator import ValidationResult
+        r = ValidationResult(ok=True, message="OK")
+        assert r.ok is True
+        assert r.message == "OK"
+        assert r.detail == ""  # default
+
+    def test_failed_result_carries_detail(self):
+        from threat_modeler.ui.connection_validator import ValidationResult
+        r = ValidationResult(ok=False, message="Failed", detail="some detail")
+        assert r.ok is False
+        assert r.detail == "some detail"
+
+
+class TestSessionOfflineOverrideKey:
+    """offline_override_active key exists in session defaults."""
+
+    def test_offline_override_active_in_defaults(self):
+        st_stub = _make_st_stub()
+        import threat_modeler.ui.session as session_mod
+        with patch.object(session_mod, "st", st_stub):
+            session_mod.init_session_state()
+        assert "offline_override_active" in st_stub.session_state
+        assert st_stub.session_state["offline_override_active"] is False
+
+    def test_model_api_key_in_defaults(self):
+        st_stub = _make_st_stub()
+        import threat_modeler.ui.session as session_mod
+        with patch.object(session_mod, "st", st_stub):
+            session_mod.init_session_state()
+        assert "model_api_key" in st_stub.session_state
+        assert st_stub.session_state["model_api_key"] == ""
+
+
+# ---------------------------------------------------------------------------
+# S07-04 — Prompt store unit tests
+# ---------------------------------------------------------------------------
+
+class TestPromptStoreConstants:
+    """AGENT_IDS and AGENT_LABELS cover all nine agents."""
+
+    def test_nine_agent_ids(self):
+        from threat_modeler.ui.prompt_store import AGENT_IDS
+        assert len(AGENT_IDS) == 9
+
+    def test_agent_ids_sequential(self):
+        from threat_modeler.ui.prompt_store import AGENT_IDS
+        for i, aid in enumerate(AGENT_IDS, start=1):
+            assert aid == f"agent_0{i}", f"Expected agent_0{i}, got {aid}"
+
+    def test_labels_cover_all_agents(self):
+        from threat_modeler.ui.prompt_store import AGENT_IDS, AGENT_LABELS
+        for agent_id in AGENT_IDS:
+            assert agent_id in AGENT_LABELS, f"{agent_id} missing from AGENT_LABELS"
+            assert len(AGENT_LABELS[agent_id]) > 5
+
+    def test_default_prompts_non_empty(self):
+        from threat_modeler.ui.prompt_store import AGENT_IDS, get_default_prompt
+        for agent_id in AGENT_IDS:
+            assert len(get_default_prompt(agent_id)) > 20, f"{agent_id} default prompt too short"
+
+
+class TestPromptStoreGetSet:
+    """get_prompt / set_prompt / get_history round-trip."""
+
+    def _make_st(self):
+        return _make_st_stub()
+
+    def test_get_prompt_returns_default_initially(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = self._make_st()
+        with patch.object(ps, "st", st_stub):
+            default = ps.get_default_prompt("agent_01")
+            current = ps.get_prompt("agent_01")
+        assert current == default
+
+    def test_set_prompt_updates_current(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = self._make_st()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_01", "New prompt text", actor="Author")
+            assert ps.get_prompt("agent_01") == "New prompt text"
+
+    def test_set_prompt_appends_history(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = self._make_st()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_01", "Version 2 text", actor="Author")
+            history = ps.get_history("agent_01")
+        # Seed v1 (default) + v2 (just saved)
+        assert len(history) == 2
+        assert history[-1].text == "Version 2 text"
+        assert history[-1].actor == "Author"
+        assert history[-1].version == 2
+
+    def test_history_version_numbers_increment(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = self._make_st()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_02", "A", actor="Author")
+            ps.set_prompt("agent_02", "B", actor="Author")
+            history = ps.get_history("agent_02")
+        versions = [e.version for e in history]
+        assert versions == list(range(1, len(versions) + 1))
+
+    def test_unknown_agent_raises_key_error(self):
+        import pytest
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = self._make_st()
+        with patch.object(ps, "st", st_stub):
+            with pytest.raises(KeyError):
+                ps.get_prompt("agent_99")
+
+
+class TestPromptStoreRevert:
+    """revert_to restores a prior version and records a new entry."""
+
+    def test_revert_restores_text(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            original = ps.get_prompt("agent_03")
+            ps.set_prompt("agent_03", "Changed text", actor="Author")
+            ps.revert_to("agent_03", 0, actor="Author")  # index 0 = initial default
+            assert ps.get_prompt("agent_03") == original
+
+    def test_revert_creates_new_history_entry(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_03", "Changed", actor="Author")
+            before_len = len(ps.get_history("agent_03"))
+            ps.revert_to("agent_03", 0, actor="Author")
+            after_len = len(ps.get_history("agent_03"))
+        assert after_len == before_len + 1
+
+    def test_revert_out_of_range_raises(self):
+        import pytest
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            with pytest.raises(IndexError):
+                ps.revert_to("agent_03", 999, actor="Author")
+
+
+class TestPromptStoreTemperature:
+    """get_temperature / set_temperature round-trip and validation."""
+
+    def test_default_temperature_is_0_2(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            assert ps.get_temperature("agent_01") == 0.2
+
+    def test_set_temperature_persists(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            ps.set_temperature("agent_01", 0.8)
+            assert abs(ps.get_temperature("agent_01") - 0.8) < 0.001
+
+    def test_temperature_out_of_range_raises(self):
+        import pytest
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            with pytest.raises(ValueError):
+                ps.set_temperature("agent_01", 2.5)
+
+    def test_temperature_boundary_values_accepted(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            ps.set_temperature("agent_01", 0.0)
+            assert ps.get_temperature("agent_01") == 0.0
+            ps.set_temperature("agent_01", 2.0)
+            assert ps.get_temperature("agent_01") == 2.0
+
+
+class TestPromptStoreIsModified:
+    """is_modified returns False for default prompt, True after edit."""
+
+    def test_not_modified_initially(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            assert ps.is_modified("agent_04") is False
+
+    def test_modified_after_set(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_04", "Something different", actor="Author")
+            assert ps.is_modified("agent_04") is True
+
+    def test_not_modified_after_reset(self):
+        import threat_modeler.ui.prompt_store as ps
+        st_stub = _make_st_stub()
+        with patch.object(ps, "st", st_stub):
+            ps.set_prompt("agent_04", "Something different", actor="Author")
+            ps.reset_to_default("agent_04", actor="Author")
+            assert ps.is_modified("agent_04") is False
+
+
+class TestPromptEditorModuleStructure:
+    """prompt_editor.py exports a render() function."""
+
+    def test_module_importable(self):
+        import threat_modeler.ui.screens.prompt_editor  # noqa: F401
+
+    def test_render_function_exists(self):
+        from threat_modeler.ui.screens.prompt_editor import render
+        assert callable(render)
+
+
+class TestAppNavIncludesPromptEditor:
+    """app.py _PAGES registry includes 'Prompt Editor'."""
+
+    def test_prompt_editor_in_pages(self):
+        import ast
+        from pathlib import Path
+        tree = ast.parse(Path("src/threat_modeler/ui/app.py").read_text(encoding="utf-8"))
+        strings = [
+            node.s if isinstance(node, ast.Constant) and isinstance(node.s, str) else None
+            for node in ast.walk(tree)
+        ]
+        assert "Prompt Editor" in strings, "app.py _PAGES must include 'Prompt Editor'"
+
+
+class TestStageResultsModuleStructure:
+    def test_module_importable(self):
+        import threat_modeler.ui.screens.stage_results  # noqa: F401
+
+    def test_render_function_exists(self):
+        from threat_modeler.ui.screens.stage_results import render
+        assert callable(render)
+
+
+class TestStageResultsHelpers:
+    def test_stage_rows_marks_completed_stages(self):
+        from threat_modeler.ui.screens.stage_results import _stage_rows
+
+        class _State:
+            messages = [
+                {"stage_id": "agent_01", "text": "done"},
+                {"stage_id": "agent_02", "text": "done"},
+            ]
+
+        rows = _stage_rows(_State())
+        by_id = {r["Stage ID"]: r["Status"] for r in rows}
+        assert by_id["agent_01"] == "Complete"
+        assert by_id["agent_02"] == "Complete"
+        assert by_id["agent_03"] == "Pending"
+
+    def test_message_rows_flattens_messages(self):
+        from threat_modeler.ui.screens.stage_results import _message_rows
+
+        class _State:
+            messages = [
+                {"stage_id": "agent_01", "text": "first"},
+                {"stage_id": "agent_02", "text": "second"},
+            ]
+
+        rows = _message_rows(_State())
+        assert len(rows) == 2
+        assert rows[0]["Stage ID"] == "agent_01"
+        assert rows[0]["Message"] == "first"
+
+
+class TestThreatReviewModuleStructure:
+    def test_module_importable(self):
+        import threat_modeler.ui.screens.threat_review  # noqa: F401
+
+    def test_render_function_exists(self):
+        from threat_modeler.ui.screens.threat_review import render
+        assert callable(render)
+
+
+class TestThreatReviewHelpers:
+    def test_extract_threat_rows_empty_without_graph(self):
+        from threat_modeler.ui.screens.threat_review import _extract_threat_rows
+
+        class _State:
+            canonical_graph = None
+
+        rows = _extract_threat_rows(_State())
+        assert rows == []
+
+    def test_extract_threat_rows_from_interface_threats(self):
+        from threat_modeler.models.canonical import (
+            CanonicalThreatModelGraph,
+            Interface,
+            Mitigation,
+            Threat,
+        )
+        from threat_modeler.ui.screens.threat_review import _extract_threat_rows
+
+        t = Threat(
+            name="Spoofed command",
+            description="Attacker injects command",
+            likelihood=4,
+            impact=5,
+            mitigations_technical=[
+                Mitigation(control_id="M-1", title="Auth", description="Enable auth")
+            ],
+            mitigations_administrative=[
+                Mitigation(control_id="M-2", title="Policy", description="Operator policy")
+            ],
+        )
+        interface = Interface(
+            id="if_cmd",
+            name="Command Link",
+            description="Ground to flight controller",
+            from_node="ground",
+            to_node="flight",
+            threats=[t],
+        )
+        graph = CanonicalThreatModelGraph(interfaces=[interface])
+
+        class _State:
+            canonical_graph = graph
+
+        rows = _extract_threat_rows(_State())
+        assert len(rows) == 1
+        row = rows[0]
+        assert row["Threat"] == "Spoofed command"
+        assert row["Risk Score"] == "20"
+        assert row["Tech Mitigations"] == "1"
+        assert row["Admin Mitigations"] == "1"
+
+
+class TestAppNavIncludesS0705Pages:
+    def test_stage_results_and_threat_review_in_pages(self):
+        import ast
+        from pathlib import Path
+
+        tree = ast.parse(Path("src/threat_modeler/ui/app.py").read_text(encoding="utf-8"))
+        strings = [
+            node.s if isinstance(node, ast.Constant) and isinstance(node.s, str) else None
+            for node in ast.walk(tree)
+        ]
+        assert "Stage Results" in strings
+        assert "Threat Review" in strings
+
+
+class TestRuntimeIoSerialization:
+    def test_framework_state_to_dict_empty(self):
+        from threat_modeler.state import FrameworkState
+        from threat_modeler.ui.runtime_io import framework_state_to_dict
+
+        state = FrameworkState()
+        payload = framework_state_to_dict(state)
+        assert payload["raw_text"] == ""
+        assert payload["tables"] == []
+        assert payload["messages"] == []
+
+    def test_framework_state_round_trip(self):
+        from threat_modeler.state import FrameworkState
+        from threat_modeler.ui.runtime_io import framework_state_from_dict, framework_state_to_dict
+
+        state = FrameworkState(raw_text="abc", tables=[{"id": 1}], messages=[{"stage_id": "agent_01", "text": "ok"}])
+        d = framework_state_to_dict(state)
+        rebuilt = framework_state_from_dict(d)
+        assert rebuilt.raw_text == "abc"
+        assert rebuilt.tables == [{"id": 1}]
+        assert rebuilt.messages[0]["stage_id"] == "agent_01"
+
+    def test_build_snapshot_payload_shape(self):
+        from threat_modeler.state import FrameworkState
+        from threat_modeler.ui.runtime_io import build_snapshot_payload
+
+        snap = build_snapshot_payload("run-1", FrameworkState(), {"g1": {"status": "pending"}})
+        assert snap["schema_version"] == "s07-snapshot-v1"
+        assert snap["run_id"] == "run-1"
+        assert "pipeline_state" in snap
+        assert "gate_states" in snap
+
+    def test_snapshot_json_parse_rejects_non_object(self):
+        import pytest
+        from threat_modeler.ui.runtime_io import snapshot_payload_from_json
+
+        with pytest.raises(ValueError):
+            snapshot_payload_from_json("[]")
+
+    def test_snapshot_json_parse_rejects_missing_pipeline_state(self):
+        import pytest
+        from threat_modeler.ui.runtime_io import snapshot_payload_from_json
+
+        with pytest.raises(ValueError):
+            snapshot_payload_from_json('{"run_id":"x"}')
+
+
+class TestRuntimeIoExports:
+    def test_export_canonical_json_empty_state(self):
+        from threat_modeler.ui.runtime_io import export_canonical_json
+        assert export_canonical_json(None).strip() == "{}"
+
+    def test_export_stix_json_empty_state(self):
+        from threat_modeler.ui.runtime_io import export_stix_json
+        assert export_stix_json(None).strip() == "{}"
+
+    def test_export_report_markdown_default(self):
+        from threat_modeler.ui.runtime_io import export_report_markdown
+        out = export_report_markdown(None)
+        assert "No report generated yet" in out
+
+    def test_export_mermaid_markdown_default(self):
+        from threat_modeler.ui.runtime_io import export_mermaid_markdown
+        out = export_mermaid_markdown(None)
+        assert "No diagrams generated yet" in out
+
+    def test_export_mermaid_markdown_with_diagrams(self):
+        from threat_modeler.state import FrameworkState
+        from threat_modeler.ui.runtime_io import export_mermaid_markdown
+
+        state = FrameworkState(mermaid_diagrams={"MERMAID_LEVEL1": "graph TD\nA-->B"})
+        out = export_mermaid_markdown(state)
+        assert "```mermaid" in out
+        assert "A-->B" in out
+
+
+class TestS0706ScreenModules:
+    def test_results_export_module_importable(self):
+        import threat_modeler.ui.screens.results_export  # noqa: F401
+
+    def test_snapshot_manager_module_importable(self):
+        import threat_modeler.ui.screens.snapshot_manager  # noqa: F401
+
+    def test_results_export_render_exists(self):
+        from threat_modeler.ui.screens.results_export import render
+        assert callable(render)
+
+    def test_snapshot_manager_render_exists(self):
+        from threat_modeler.ui.screens.snapshot_manager import render
+        assert callable(render)
+
+
+class TestAppNavIncludesS0706Pages:
+    def test_results_export_and_snapshot_manager_in_pages(self):
+        import ast
+        from pathlib import Path
+
+        tree = ast.parse(Path("src/threat_modeler/ui/app.py").read_text(encoding="utf-8"))
+        strings = [
+            node.s if isinstance(node, ast.Constant) and isinstance(node.s, str) else None
+            for node in ast.walk(tree)
+        ]
+        assert "Results Export" in strings
+        assert "Snapshot Manager" in strings
