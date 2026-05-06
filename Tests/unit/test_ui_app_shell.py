@@ -682,3 +682,119 @@ class TestAppNavIncludesPromptEditor:
             for node in ast.walk(tree)
         ]
         assert "Prompt Editor" in strings, "app.py _PAGES must include 'Prompt Editor'"
+
+
+class TestStageResultsModuleStructure:
+    def test_module_importable(self):
+        import threat_modeler.ui.screens.stage_results  # noqa: F401
+
+    def test_render_function_exists(self):
+        from threat_modeler.ui.screens.stage_results import render
+        assert callable(render)
+
+
+class TestStageResultsHelpers:
+    def test_stage_rows_marks_completed_stages(self):
+        from threat_modeler.ui.screens.stage_results import _stage_rows
+
+        class _State:
+            messages = [
+                {"stage_id": "agent_01", "text": "done"},
+                {"stage_id": "agent_02", "text": "done"},
+            ]
+
+        rows = _stage_rows(_State())
+        by_id = {r["Stage ID"]: r["Status"] for r in rows}
+        assert by_id["agent_01"] == "Complete"
+        assert by_id["agent_02"] == "Complete"
+        assert by_id["agent_03"] == "Pending"
+
+    def test_message_rows_flattens_messages(self):
+        from threat_modeler.ui.screens.stage_results import _message_rows
+
+        class _State:
+            messages = [
+                {"stage_id": "agent_01", "text": "first"},
+                {"stage_id": "agent_02", "text": "second"},
+            ]
+
+        rows = _message_rows(_State())
+        assert len(rows) == 2
+        assert rows[0]["Stage ID"] == "agent_01"
+        assert rows[0]["Message"] == "first"
+
+
+class TestThreatReviewModuleStructure:
+    def test_module_importable(self):
+        import threat_modeler.ui.screens.threat_review  # noqa: F401
+
+    def test_render_function_exists(self):
+        from threat_modeler.ui.screens.threat_review import render
+        assert callable(render)
+
+
+class TestThreatReviewHelpers:
+    def test_extract_threat_rows_empty_without_graph(self):
+        from threat_modeler.ui.screens.threat_review import _extract_threat_rows
+
+        class _State:
+            canonical_graph = None
+
+        rows = _extract_threat_rows(_State())
+        assert rows == []
+
+    def test_extract_threat_rows_from_interface_threats(self):
+        from threat_modeler.models.canonical import (
+            CanonicalThreatModelGraph,
+            Interface,
+            Mitigation,
+            Threat,
+        )
+        from threat_modeler.ui.screens.threat_review import _extract_threat_rows
+
+        t = Threat(
+            name="Spoofed command",
+            description="Attacker injects command",
+            likelihood=4,
+            impact=5,
+            mitigations_technical=[
+                Mitigation(control_id="M-1", title="Auth", description="Enable auth")
+            ],
+            mitigations_administrative=[
+                Mitigation(control_id="M-2", title="Policy", description="Operator policy")
+            ],
+        )
+        interface = Interface(
+            id="if_cmd",
+            name="Command Link",
+            description="Ground to flight controller",
+            from_node="ground",
+            to_node="flight",
+            threats=[t],
+        )
+        graph = CanonicalThreatModelGraph(interfaces=[interface])
+
+        class _State:
+            canonical_graph = graph
+
+        rows = _extract_threat_rows(_State())
+        assert len(rows) == 1
+        row = rows[0]
+        assert row["Threat"] == "Spoofed command"
+        assert row["Risk Score"] == "20"
+        assert row["Tech Mitigations"] == "1"
+        assert row["Admin Mitigations"] == "1"
+
+
+class TestAppNavIncludesS0705Pages:
+    def test_stage_results_and_threat_review_in_pages(self):
+        import ast
+        from pathlib import Path
+
+        tree = ast.parse(Path("src/threat_modeler/ui/app.py").read_text(encoding="utf-8"))
+        strings = [
+            node.s if isinstance(node, ast.Constant) and isinstance(node.s, str) else None
+            for node in ast.walk(tree)
+        ]
+        assert "Stage Results" in strings
+        assert "Threat Review" in strings
