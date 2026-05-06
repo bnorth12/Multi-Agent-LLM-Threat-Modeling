@@ -798,3 +798,109 @@ class TestAppNavIncludesS0705Pages:
         ]
         assert "Stage Results" in strings
         assert "Threat Review" in strings
+
+
+class TestRuntimeIoSerialization:
+    def test_framework_state_to_dict_empty(self):
+        from threat_modeler.state import FrameworkState
+        from threat_modeler.ui.runtime_io import framework_state_to_dict
+
+        state = FrameworkState()
+        payload = framework_state_to_dict(state)
+        assert payload["raw_text"] == ""
+        assert payload["tables"] == []
+        assert payload["messages"] == []
+
+    def test_framework_state_round_trip(self):
+        from threat_modeler.state import FrameworkState
+        from threat_modeler.ui.runtime_io import framework_state_from_dict, framework_state_to_dict
+
+        state = FrameworkState(raw_text="abc", tables=[{"id": 1}], messages=[{"stage_id": "agent_01", "text": "ok"}])
+        d = framework_state_to_dict(state)
+        rebuilt = framework_state_from_dict(d)
+        assert rebuilt.raw_text == "abc"
+        assert rebuilt.tables == [{"id": 1}]
+        assert rebuilt.messages[0]["stage_id"] == "agent_01"
+
+    def test_build_snapshot_payload_shape(self):
+        from threat_modeler.state import FrameworkState
+        from threat_modeler.ui.runtime_io import build_snapshot_payload
+
+        snap = build_snapshot_payload("run-1", FrameworkState(), {"g1": {"status": "pending"}})
+        assert snap["schema_version"] == "s07-snapshot-v1"
+        assert snap["run_id"] == "run-1"
+        assert "pipeline_state" in snap
+        assert "gate_states" in snap
+
+    def test_snapshot_json_parse_rejects_non_object(self):
+        import pytest
+        from threat_modeler.ui.runtime_io import snapshot_payload_from_json
+
+        with pytest.raises(ValueError):
+            snapshot_payload_from_json("[]")
+
+    def test_snapshot_json_parse_rejects_missing_pipeline_state(self):
+        import pytest
+        from threat_modeler.ui.runtime_io import snapshot_payload_from_json
+
+        with pytest.raises(ValueError):
+            snapshot_payload_from_json('{"run_id":"x"}')
+
+
+class TestRuntimeIoExports:
+    def test_export_canonical_json_empty_state(self):
+        from threat_modeler.ui.runtime_io import export_canonical_json
+        assert export_canonical_json(None).strip() == "{}"
+
+    def test_export_stix_json_empty_state(self):
+        from threat_modeler.ui.runtime_io import export_stix_json
+        assert export_stix_json(None).strip() == "{}"
+
+    def test_export_report_markdown_default(self):
+        from threat_modeler.ui.runtime_io import export_report_markdown
+        out = export_report_markdown(None)
+        assert "No report generated yet" in out
+
+    def test_export_mermaid_markdown_default(self):
+        from threat_modeler.ui.runtime_io import export_mermaid_markdown
+        out = export_mermaid_markdown(None)
+        assert "No diagrams generated yet" in out
+
+    def test_export_mermaid_markdown_with_diagrams(self):
+        from threat_modeler.state import FrameworkState
+        from threat_modeler.ui.runtime_io import export_mermaid_markdown
+
+        state = FrameworkState(mermaid_diagrams={"MERMAID_LEVEL1": "graph TD\nA-->B"})
+        out = export_mermaid_markdown(state)
+        assert "```mermaid" in out
+        assert "A-->B" in out
+
+
+class TestS0706ScreenModules:
+    def test_results_export_module_importable(self):
+        import threat_modeler.ui.screens.results_export  # noqa: F401
+
+    def test_snapshot_manager_module_importable(self):
+        import threat_modeler.ui.screens.snapshot_manager  # noqa: F401
+
+    def test_results_export_render_exists(self):
+        from threat_modeler.ui.screens.results_export import render
+        assert callable(render)
+
+    def test_snapshot_manager_render_exists(self):
+        from threat_modeler.ui.screens.snapshot_manager import render
+        assert callable(render)
+
+
+class TestAppNavIncludesS0706Pages:
+    def test_results_export_and_snapshot_manager_in_pages(self):
+        import ast
+        from pathlib import Path
+
+        tree = ast.parse(Path("src/threat_modeler/ui/app.py").read_text(encoding="utf-8"))
+        strings = [
+            node.s if isinstance(node, ast.Constant) and isinstance(node.s, str) else None
+            for node in ast.walk(tree)
+        ]
+        assert "Results Export" in strings
+        assert "Snapshot Manager" in strings
