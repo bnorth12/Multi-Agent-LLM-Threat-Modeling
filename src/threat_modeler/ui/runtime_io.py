@@ -83,6 +83,7 @@ def build_snapshot_payload(
     run_id: str | None,
     pipeline_state: FrameworkState | None,
     gate_states: dict[str, Any] | None,
+    markdown_edits: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Build stable snapshot payload for save/restore workflows."""
     return {
@@ -90,6 +91,7 @@ def build_snapshot_payload(
         "run_id": run_id,
         "pipeline_state": framework_state_to_dict(pipeline_state),
         "gate_states": _to_builtin(gate_states or {}),
+        "markdown_edits": _to_builtin(markdown_edits or {}),
     }
 
 

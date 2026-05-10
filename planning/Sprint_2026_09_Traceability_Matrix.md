@@ -29,7 +29,7 @@ This matrix tracks bidirectional traceability between requirements, issues, code
 | 7 | GUI-024 | Component and File Version Visibility | D-S09-006 | Open | TBD | Tests/integration/test_version_inventory_visibility.py | Pending | Version inventories shown in Results Export and Snapshot Manager |
 | 8 | PRJ-021 | Component Semantic Version Authority | D-S09-006 | Open | TBD | Tests/integration/test_component_version_manifest.py | Pending | RC evidence includes component semantic version manifest |
 | 9 | PRJ-022 | Component File Version Traceability | D-S09-006 | Open | TBD | Tests/integration/test_component_file_version_inventory.py | Pending | RC evidence includes deterministic file-level version inventory |
-| 10 | GUI-025 | Markdown Viewer and Editor | D-S09-009 | Open | TBD | Tests/integration/test_markdown_viewer_editor.py | Pending | In-app markdown open/edit/preview/save flow for tool-managed files |
+| 10 | GUI-025 | Markdown Viewer and Editor | D-S09-009 | In Progress | BN | Tests/integration/test_markdown_viewer_editor.py | 14 tests passing | Implementation: markdown display, edit, preview, export, snapshot integration complete |
 
 ## Release Documentation Workstream
 

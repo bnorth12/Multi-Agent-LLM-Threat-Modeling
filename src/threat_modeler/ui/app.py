@@ -20,6 +20,7 @@ from threat_modeler.ui.screens.prompt_editor import render as render_prompt_edit
 from threat_modeler.ui.screens.stage_results import render as render_stage_results
 from threat_modeler.ui.screens.threat_review import render as render_threat_review
 from threat_modeler.ui.screens.results_export import render as render_results_export
+from threat_modeler.ui.screens.markdown_viewer import render as render_markdown_viewer
 from threat_modeler.ui.screens.token_usage import render as render_token_usage
 from threat_modeler.ui.screens.last_prompt import render as render_last_prompt
 from threat_modeler.ui.screens.snapshot_manager import render as render_snapshot_manager
@@ -68,6 +69,7 @@ _PAGES = {
     "Token Usage": render_token_usage,
     "Last Prompt": render_last_prompt,
     "Results Export": render_results_export,
+    "Markdown Viewer": render_markdown_viewer,
     "Snapshot Manager": render_snapshot_manager,
 }
 
