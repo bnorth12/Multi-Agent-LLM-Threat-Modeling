@@ -9,8 +9,16 @@ from threat_modeler.ui.runtime_io import (
     export_canonical_json,
     export_mermaid_markdown,
     export_report_markdown,
+    export_stride_csv,
+    export_stride_json,
     export_stix_json,
     export_token_usage_json,
+)
+from threat_modeler.ui.version_governance import (
+    generate_component_file_inventory,
+    generate_component_version_manifest,
+    inventory_to_json,
+    manifest_to_json,
 )
 
 
@@ -28,7 +36,7 @@ def render() -> None:
         return
 
     st.subheader("Export Artifacts")
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         canonical_json = export_canonical_json(state)
@@ -78,6 +86,54 @@ def render() -> None:
             use_container_width=True,
         )
 
+    with col4:
+        stride_json = export_stride_json(state)
+        st.download_button(
+            "Download STRIDE JSON",
+            data=stride_json,
+            file_name=f"{run_id}_stride.json",
+            mime="application/json",
+            use_container_width=True,
+        )
+
+        stride_csv = export_stride_csv(state)
+        st.download_button(
+            "Download STRIDE CSV",
+            data=stride_csv,
+            file_name=f"{run_id}_stride.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
+
+    st.subheader("Version Governance Artifacts")
+    version_manifest = generate_component_version_manifest()
+    file_inventory = generate_component_file_inventory()
+    version_manifest_json = manifest_to_json(version_manifest)
+    file_inventory_json = inventory_to_json(file_inventory)
+
+    col_v1, col_v2 = st.columns(2)
+    with col_v1:
+        st.download_button(
+            "Download Component Version Manifest",
+            data=version_manifest_json,
+            file_name=f"{run_id}_component_version_manifest.json",
+            mime="application/json",
+            use_container_width=True,
+        )
+    with col_v2:
+        st.download_button(
+            "Download Component File Inventory",
+            data=file_inventory_json,
+            file_name=f"{run_id}_component_file_inventory.json",
+            mime="application/json",
+            use_container_width=True,
+        )
+
+    st.caption(
+        f"Component manifest entries: {len(version_manifest.get('components', []))} | "
+        f"File inventory rows: {file_inventory.get('row_count', 0)}"
+    )
+
     st.divider()
     st.subheader("Quick Preview")
 
@@ -95,3 +151,12 @@ def render() -> None:
 
     with st.expander("Token Usage JSON", expanded=False):
         st.code(token_usage_json[:20000], language="json")
+
+    with st.expander("STRIDE JSON", expanded=False):
+        st.code(stride_json[:20000], language="json")
+
+    with st.expander("Component Version Manifest", expanded=False):
+        st.code(version_manifest_json[:20000], language="json")
+
+    with st.expander("Component File Inventory", expanded=False):
+        st.code(file_inventory_json[:20000], language="json")

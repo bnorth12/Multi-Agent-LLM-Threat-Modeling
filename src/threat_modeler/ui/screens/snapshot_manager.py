@@ -13,6 +13,10 @@ from threat_modeler.ui.runtime_io import (
     snapshot_payload_from_json,
     snapshot_payload_to_json,
 )
+from threat_modeler.ui.version_governance import (
+    generate_component_file_inventory,
+    generate_component_version_manifest,
+)
 
 
 def render() -> None:
@@ -55,6 +59,13 @@ def render() -> None:
             mime="application/json",
             use_container_width=True,
         )
+
+    st.divider()
+    st.subheader("Version Governance Visibility")
+    manifest = generate_component_version_manifest()
+    inventory = generate_component_file_inventory()
+    st.table(manifest.get("components", []))
+    st.caption(f"Component file inventory rows: {inventory.get('row_count', 0)}")
 
     st.divider()
     st.subheader("Restore Snapshot")

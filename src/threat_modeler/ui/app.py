@@ -21,6 +21,9 @@ from threat_modeler.ui.screens.stage_results import render as render_stage_resul
 from threat_modeler.ui.screens.threat_review import render as render_threat_review
 from threat_modeler.ui.screens.results_export import render as render_results_export
 from threat_modeler.ui.screens.stix_viewer import render as render_stix_viewer
+from threat_modeler.ui.screens.canonical_graph_viewer import render as render_canonical_graph_viewer
+from threat_modeler.ui.screens.mermaid_viewer import render as render_mermaid_viewer
+from threat_modeler.ui.screens.stride_viewer import render as render_stride_viewer
 from threat_modeler.ui.screens.markdown_viewer import render as render_markdown_viewer
 from threat_modeler.ui.screens.token_usage import render as render_token_usage
 from threat_modeler.ui.screens.last_prompt import render as render_last_prompt
@@ -68,6 +71,9 @@ _PAGES = {
     "Stage Results": render_stage_results,
     "Threat Review": render_threat_review,
     "STIX Viewer": render_stix_viewer,
+    "Canonical Graph Viewer": render_canonical_graph_viewer,
+    "Mermaid Viewer": render_mermaid_viewer,
+    "STRIDE Viewer": render_stride_viewer,
     "Token Usage": render_token_usage,
     "Last Prompt": render_last_prompt,
     "Results Export": render_results_export,
