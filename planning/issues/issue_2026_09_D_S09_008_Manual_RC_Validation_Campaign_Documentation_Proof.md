@@ -47,10 +47,16 @@ Medium - RC publication control and release evidence requirement.
 
 ## Status
 
-Open
+In Progress
 
 ## Metadata
 
 - Sprint: 2026-09
 - Created: 2026-05-09
 - Source: RC sequencing policy requiring automated clean pass before manual validation, plus documentation-proof requirement
+
+## Progress Notes (2026-05-10)
+
+- Automated prerequisite completed and recorded in `planning/Test_Execution_Summary_Sprint_2026_09.md`.
+- Sweep evidence: `406 passed, 11 deselected` for `pytest Tests/unit Tests/integration Tests/e2e -m "not llm_live"`.
+- Manual RC campaign execution remains pending user-driven test run and evidence capture.

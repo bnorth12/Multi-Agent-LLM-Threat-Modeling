@@ -15,9 +15,9 @@ from datetime import datetime
 from typing import Dict, List, Any, Optional
 from unittest.mock import patch, MagicMock
 
-from threat_modeler.framework import FrameworkOrchestrator
+from threat_modeler.orchestrator import FrameworkOrchestrator
 from threat_modeler.config import RuntimeSettings, build_default_settings, ModelSelection
-from threat_modeler.llm.openai_compatible_adapter import OpenAICompatibleAdapter
+from threat_modeler.llm.openai_compatible_adapter import OpenAiCompatibleAdapter as OpenAICompatibleAdapter
 
 
 class LiveLLMValidator:

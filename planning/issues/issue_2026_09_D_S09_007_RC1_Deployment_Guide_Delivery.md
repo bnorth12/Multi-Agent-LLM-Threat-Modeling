@@ -22,10 +22,10 @@ Medium - Required release documentation deliverable.
 
 ## Acceptance Criteria
 
-- [ ] Deployment guide created and stored in Releases directory.
-- [ ] Guide includes installation, configuration, validation, rollback, and sign-off sections.
-- [ ] RC1 validation sequencing policy is clearly documented.
-- [ ] Guide is included in release artifact checklist and readiness review.
+- [x] Deployment guide created and stored in Releases directory.
+- [x] Guide includes installation, configuration, validation, rollback, and sign-off sections.
+- [x] RC1 validation sequencing policy is clearly documented.
+- [x] Guide is included in release artifact checklist and readiness review.
 
 ## Verification Evidence
 
@@ -39,7 +39,13 @@ Medium - Required release documentation deliverable.
 
 ## Status
 
-Open
+Resolved
+
+## Implementation Notes (2026-05-10)
+
+- Updated `Releases/Deployment_Guide_v1.0.0-rc1.md` to enforce automated-pass prerequisite before manual RC validation.
+- Included automated entry-gate command and recorded result: `406 passed, 11 deselected`.
+- Deployment guide now covers install, configuration, validation, rollback, and sign-off sections.
 
 ## Metadata
 

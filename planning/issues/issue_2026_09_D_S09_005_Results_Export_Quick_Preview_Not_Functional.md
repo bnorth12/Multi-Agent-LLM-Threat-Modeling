@@ -22,10 +22,10 @@ Low - Usability defect deferred from S08 closeout to S09.
 
 ## Acceptance Criteria
 
-- [ ] All quick preview expanders open and render expected content for active run artifacts.
-- [ ] Preview content reflects current run and is not stale.
-- [ ] Preview behavior is consistent after screen navigation and browser refresh.
-- [ ] Regression test added for quick preview rendering path.
+- [x] All quick preview expanders open and render expected content for active run artifacts.
+- [x] Preview content reflects current run and is not stale.
+- [x] Preview behavior is consistent after screen navigation and browser refresh.
+- [x] Regression test added for quick preview rendering path.
 
 ## Verification Evidence
 
@@ -41,7 +41,13 @@ Low - Usability defect deferred from S08 closeout to S09.
 
 ## Status
 
-Open
+Resolved
+
+## Implementation Notes (2026-05-10)
+
+- Expanded Results Export previews to include STRIDE and version governance artifacts.
+- Added correctness test: `Tests/integration/test_results_export_quick_preview.py`.
+- Verified in automated non-manual sweep: `406 passed, 11 deselected`.
 
 ## Metadata
 

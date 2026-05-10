@@ -37,7 +37,7 @@ Medium - Feature enhancement for analyst workflow and verification clarity.
 
 ## Status
 
-In Progress
+Resolved
 
 ## Metadata
 
@@ -50,3 +50,4 @@ In Progress
 - Added UI screen: `src/threat_modeler/ui/screens/stix_viewer.py`
 - Added navigation entry in `src/threat_modeler/ui/app.py`
 - Added automated tests: `Tests/integration/test_stix_viewer_screen.py`
+- Verified in automated non-manual sweep: `406 passed, 11 deselected`.

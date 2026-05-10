@@ -23,11 +23,11 @@ Medium - Release traceability and auditability requirement for RC and GA.
 
 ## Acceptance Criteria
 
-- [ ] Component semantic version manifest generated for RC1.
-- [ ] Deterministic component-file version inventory generated for RC1.
-- [ ] Mapping between file inventory and component manifest is complete.
-- [ ] GUI displays component/file versions for active run evidence contexts.
-- [ ] Release evidence includes both version artifacts.
+- [x] Component semantic version manifest generated for RC1.
+- [x] Deterministic component-file version inventory generated for RC1.
+- [x] Mapping between file inventory and component manifest is complete.
+- [x] GUI displays component/file versions for active run evidence contexts.
+- [x] Release evidence includes both version artifacts.
 
 ## Verification Evidence
 
@@ -45,7 +45,14 @@ Medium - Release traceability and auditability requirement for RC and GA.
 
 ## Status
 
-Open
+Resolved
+
+## Implementation Notes (2026-05-10)
+
+- Added generator module: `src/threat_modeler/ui/version_governance.py`.
+- Added version inventory visibility in `src/threat_modeler/ui/screens/results_export.py` and `src/threat_modeler/ui/screens/snapshot_manager.py`.
+- Added correctness tests: `Tests/integration/test_component_version_manifest.py`, `Tests/integration/test_component_file_version_inventory.py`, `Tests/integration/test_version_inventory_visibility.py`.
+- Verified in automated non-manual sweep: `406 passed, 11 deselected`.
 
 ## Metadata
 

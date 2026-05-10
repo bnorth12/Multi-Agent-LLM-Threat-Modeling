@@ -6,9 +6,9 @@ This guide defines deployment steps for Release Candidate 1 (v1.0.0-rc1), includ
 
 ## 2. RC1 Release Policy
 
-- RC1 uses **manual validation gating**.
-- Automated test execution is **not required** for RC1 release approval.
-- If automated tests are run, results are informational evidence only.
+- RC1 uses a **two-stage validation gate**.
+- Stage 1: clean automated pass across RC-included features is required before manual RC campaign starts.
+- Stage 2: manual RC validation campaign is release-gating after automated pass.
 
 ## 3. Deployment Preconditions
 
@@ -59,6 +59,16 @@ Expected output: `1.0.0-rc1` (or equivalent rc version string used in package me
 3. Validate connection from configuration screen before run.
 
 ## 7. Manual RC Validation Checklist
+
+Automated entry gate (must pass before checklist execution):
+
+- [x] Run automated non-manual sweep:
+
+```powershell
+.venv\Scripts\python.exe -m pytest Tests/unit Tests/integration Tests/e2e -m "not llm_live" -q --tb=short
+```
+
+- [x] Latest result: `406 passed, 11 deselected` (2026-05-10)
 
 The following checks are release-gating for RC1:
 
@@ -115,5 +125,5 @@ Validation loop target:
 ---
 
 **Document Owner**: Release Manager
-**Last Updated**: 2026-05-09
-**Status**: Draft for S09 completion
+**Last Updated**: 2026-05-10
+**Status**: Draft (automated entry gate complete; manual RC campaign pending)

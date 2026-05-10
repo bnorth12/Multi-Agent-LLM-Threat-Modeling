@@ -38,12 +38,12 @@ S09 baseline requirements/features that must remain in scope tracking:
 ## 2. RC1 Readiness Criteria
 
 ### ✅ Feature Completeness (from S09)
-- [ ] GUI-018: STIX Threat Model Viewer (fully functional in Results Export)
-- [ ] GUI-019: Canonical Graph Viewer (fully functional in Results Export)
-- [ ] GUI-020: Mermaid Diagram Viewer (fully functional in Results Export)
-- [ ] GUI-021: STRIDE Threat Model Viewer & Export (with standalone artifact)
-- [ ] GUI-022/023: Quick Preview defect fixed and verified
-- [ ] GUI-025: Markdown Viewer and Editor functional for tool-managed markdown files
+- [x] GUI-018: STIX Threat Model Viewer (fully functional in Results Export)
+- [x] GUI-019: Canonical Graph Viewer (fully functional in Results Export)
+- [x] GUI-020: Mermaid Diagram Viewer (fully functional in Results Export)
+- [x] GUI-021: STRIDE Threat Model Viewer & Export (with standalone artifact)
+- [x] GUI-022/023: Quick Preview defect fixed and verified
+- [x] GUI-025: Markdown Viewer and Editor functional for tool-managed markdown files
 
 **Acceptance**: All S09 GUI features functional end-to-end with live LLM execution
 
@@ -68,7 +68,7 @@ S09 baseline requirements/features that must remain in scope tracking:
 **Acceptance**: Zero critical bugs, manual validation evidence complete, traceability closure gate passes
 
 ### ✅ RC1 Validation Sequencing Policy
-- [ ] Clean automated test pass completed for all RC-included S09 features before manual RC start
+- [x] Clean automated test pass completed for all RC-included S09 features before manual RC start
 - [ ] Manual validation evidence bundle archived with release artifacts
 - [ ] Manual RC validation campaign completed within bounded defect-fix iterations (target <= 2 validation loops)
 - [ ] RC1 decision record includes automated pass evidence reference and manual campaign evidence reference
@@ -148,7 +148,7 @@ docs/user_manual/screenshots/ (new)
 ### Regression Testing
 - [ ] Manual regression walkthrough completed for all S09 acceptance criteria
 - [ ] Manual bug triage completed for all open RC1 blockers
-- [ ] Optional automated checks (if run) recorded as informational evidence
+- [x] Automated non-manual gate completed and recorded (`406 passed, 11 deselected`)
 - [ ] Full manual release candidate validation completed and signed off
 
 ### Documentation Validation

@@ -23,11 +23,11 @@ Medium - Required for in-workflow documentation maintenance and reduced context 
 
 ## Acceptance Criteria
 
-- [ ] User can open supported markdown files from within GUI.
-- [ ] User can edit markdown content and save changes.
-- [ ] Rendered preview reflects current saved content.
-- [ ] UI indicates unsaved changes and save outcome.
-- [ ] Reopen confirms persisted updates.
+- [x] User can open supported markdown files from within GUI.
+- [x] User can edit markdown content and save changes.
+- [x] Rendered preview reflects current saved content.
+- [x] UI indicates unsaved changes and save outcome.
+- [x] Reopen confirms persisted updates.
 
 ## Verification Evidence
 
@@ -43,7 +43,14 @@ Medium - Required for in-workflow documentation maintenance and reduced context 
 
 ## Status
 
-Open
+Resolved
+
+## Implementation Notes (2026-05-10)
+
+- Added UI screen: `src/threat_modeler/ui/screens/markdown_viewer.py`.
+- Added snapshot persistence for markdown edits in `src/threat_modeler/ui/runtime_io.py` and `src/threat_modeler/ui/screens/snapshot_manager.py`.
+- Added correctness tests: `Tests/integration/test_markdown_viewer_editor.py`.
+- Verified in automated non-manual sweep: `406 passed, 11 deselected`.
 
 ## Metadata
 
