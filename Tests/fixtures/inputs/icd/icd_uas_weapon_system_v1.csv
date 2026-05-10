@@ -1,0 +1,14 @@
+entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
+segment,SEG-ALPHA-01,UAS Air Vehicle,Airborne ISR platform carrying sensor payload and autonomous flight control,UAS Weapon System,,,,,,,,
+segment,SEG-BRAVO-01,Mission Processing Ground Station,Fixed-site facility for ISR data processing storage and intelligence dissemination,UAS Weapon System,,,,,,,,
+segment,SEG-CHARLIE-01,Satellite Communications Terminal,Ground-based satellite modem and AES-256-GCM encryption gateway for all air-to-ground relay,UAS Weapon System,,,,,,,,
+segment,SEG-DELTA-01,Ground Maintenance System,Diagnostic test and software-loading equipment for ground servicing of the Alpha air vehicle,UAS Weapon System,,,,,,,,
+data_flow,DF-WS-001,,Telemetry and Sensor Data Downlink,,,,SEG-ALPHA-01,SEG-CHARLIE-01,Encrypted RF (AES-256-GCM),telemetry_frame|sensor_data|health_status,true,Satellite Link Boundary
+data_flow,DF-WS-002,,Command and Control Uplink,,,,SEG-CHARLIE-01,SEG-ALPHA-01,Encrypted RF (AES-256-GCM),command_message|auth_token|session_nonce,true,Satellite Link Boundary
+data_flow,DF-WS-003,,Processed Mission Data Forward,,,,SEG-CHARLIE-01,SEG-BRAVO-01,HTTPS TLS 1.3,decrypted_sensor_frame|metadata|link_status,true,Ops Network Boundary
+data_flow,DF-WS-004,,Mission Tasking and Retasking,,,,SEG-BRAVO-01,SEG-CHARLIE-01,HTTPS TLS 1.3,mission_task|waypoint_update|payload_mode,true,Ops Network Boundary
+data_flow,DF-WS-005,,Maintenance Diagnostic Query,,,,SEG-DELTA-01,SEG-ALPHA-01,MIL-STD-1553,bit_command|lru_status_request|session_token,true,Maintenance Bus Boundary
+data_flow,DF-WS-006,,Post-Flight HUMS Download,,,,SEG-ALPHA-01,SEG-DELTA-01,MIL-STD-1553,hums_data|fault_codes|flight_log,true,Maintenance Bus Boundary
+data_flow,DF-WS-007,,Software Load Transfer,,,,SEG-DELTA-01,SEG-ALPHA-01,RS-422,software_package|checksum|load_command,true,Maintenance Bus Boundary
+data_flow,DF-WS-008,,Software Package Distribution,,,,SEG-BRAVO-01,SEG-DELTA-01,Ethernet (LAN),signed_software_package|digital_signature|baseline_manifest,true,Maintenance LAN Boundary
+data_flow,DF-WS-009,,Maintenance Log Sync,,,,SEG-DELTA-01,SEG-BRAVO-01,Ethernet (LAN),maintenance_session_log|bit_results|load_verification_record,true,Maintenance LAN Boundary

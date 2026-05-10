@@ -1,0 +1,67 @@
+{
+    "type": "bundle",
+    "id": "bundle--a50a5acd-122b-4cc7-bed6-48320129b2f1",
+    "objects": [
+        {
+            "type": "attack-pattern",
+            "spec_version": "2.1",
+            "id": "attack-pattern--07f29926-7140-4105-8a17-70ce807b8a88",
+            "created": "2026-05-07T02:21:47.266503Z",
+            "modified": "2026-05-07T02:21:47.266503Z",
+            "name": "Route Spoofing via Unauthenticated ACARS Uplink",
+            "description": "An adversary transmits a forged ACARS uplink to alter the active flight route in the FMS without aircrew awareness.",
+            "external_references": [
+                {
+                    "source_name": "mitre-attack",
+                    "external_id": "T0856"
+                },
+                {
+                    "source_name": "capec",
+                    "external_id": "CAPEC-194"
+                },
+                {
+                    "source_name": "cwe",
+                    "external_id": "CWE-290"
+                }
+            ]
+        },
+        {
+            "type": "course-of-action",
+            "spec_version": "2.1",
+            "id": "course-of-action--ad8cf179-f2c8-457f-ac03-58883077776d",
+            "created": "2026-05-07T02:21:47.26902Z",
+            "modified": "2026-05-07T02:21:47.26902Z",
+            "name": "ACARS Message Authentication",
+            "description": "Implement HMAC-based message authentication for all ACARS uplinks. Reject messages without valid authentication tags."
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--9da55af9-e97c-48dc-84a4-24f18aea7db0",
+            "created": "2026-05-07T02:21:47.272031Z",
+            "modified": "2026-05-07T02:21:47.272031Z",
+            "relationship_type": "mitigates",
+            "source_ref": "course-of-action--ad8cf179-f2c8-457f-ac03-58883077776d",
+            "target_ref": "attack-pattern--07f29926-7140-4105-8a17-70ce807b8a88"
+        },
+        {
+            "type": "course-of-action",
+            "spec_version": "2.1",
+            "id": "course-of-action--afff75f7-ad8d-4ef6-9247-08339b56878c",
+            "created": "2026-05-07T02:21:47.273377Z",
+            "modified": "2026-05-07T02:21:47.273377Z",
+            "name": "Ground Station Access Control Review",
+            "description": "Periodic review of authorised ACARS ground station identifiers and access credentials."
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--a0ec45cc-e74e-4a53-83cb-6f0e91ef5a56",
+            "created": "2026-05-07T02:21:47.273377Z",
+            "modified": "2026-05-07T02:21:47.273377Z",
+            "relationship_type": "mitigates",
+            "source_ref": "course-of-action--afff75f7-ad8d-4ef6-9247-08339b56878c",
+            "target_ref": "attack-pattern--07f29926-7140-4105-8a17-70ce807b8a88"
+        }
+    ]
+}

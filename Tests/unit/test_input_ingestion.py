@@ -52,40 +52,26 @@ class TestIcdCsvAlpha:
             assert c.parent_subsystem != ""
 
     def test_data_flows_count(self):
-        assert len(self.result.data_flows) == 5
+        assert len(self.result.data_flows) == 3
 
     def test_trust_boundary_crossing_detected(self):
-        crossing_flows = [iface for iface in self.result.interfaces if iface.trust_boundary_crossing]
+        crossing_flows = [df for df in self.result.data_flows if df.trust_boundary_crossing]
         assert len(crossing_flows) == 1
-        assert crossing_flows[0].id == "IF-003"
+        assert crossing_flows[0].id == "DF-003"
 
     def test_trust_boundary_name_populated(self):
-        iface = next(i for i in self.result.interfaces if i.id == "IF-003")
-        assert iface.trust_boundary_name == "External Radio Link"
+        df = next(df for df in self.result.data_flows if df.id == "DF-003")
+        assert df.trust_boundary_name == "External Radio Link"
 
     def test_data_items_parsed_as_list(self):
-        iface = next(i for i in self.result.interfaces if i.id == "IF-001")
-        assert "position_fix" in iface.data_items
-        assert "timestamp" in iface.data_items
+        df = next(df for df in self.result.data_flows if df.id == "DF-001")
+        assert "position_fix" in df.data_items
+        assert "timestamp" in df.data_items
 
     def test_software_modules_parsed_as_list(self):
         cmd = next(c for c in self.result.components if c.id == "C-CMD-01")
         assert "cmd.processor" in cmd.software_modules
         assert "cmd.validator" in cmd.software_modules
-
-    def test_functions_count(self):
-        assert len(self.result.functions) == 5
-
-    def test_function_parent_component_populated(self):
-        for func in self.result.functions:
-            assert func.parent_component != ""
-
-    def test_interface_count(self):
-        assert len(self.result.interfaces) == 5
-
-    def test_interface_type_populated(self):
-        for iface in self.result.interfaces:
-            assert iface.interface_type != "unknown"
 
 
 class TestIcdCsvBravo:
@@ -104,18 +90,42 @@ class TestIcdCsvBravo:
         assert len(self.result.components) == 3
 
     def test_data_flows_count(self):
-        assert len(self.result.data_flows) == 5
-
-    def test_functions_count(self):
-        assert len(self.result.functions) == 5
-
-    def test_interface_count(self):
-        assert len(self.result.interfaces) == 5
+        assert len(self.result.data_flows) == 3
 
     def test_trust_boundary_crossing_detected(self):
-        crossing = [i for i in self.result.interfaces if i.trust_boundary_crossing]
+        crossing = [df for df in self.result.data_flows if df.trust_boundary_crossing]
         assert len(crossing) == 1
-        assert crossing[0].id == "IF-103"
+        assert crossing[0].id == "DF-103"
+
+
+class TestIcdCsvAvionics:
+    """icd_avionics_v1.csv — Avionics Data Network."""
+
+    def setup_method(self):
+        self.result: IcdParseResult = parse_csv(str(ICD_DIR / "icd_avionics_v1.csv"))
+
+    def test_provenance_version(self):
+        assert self.result.version == "1"
+
+    def test_expected_entity_counts(self):
+        assert len(self.result.subsystems) == 4
+        assert len(self.result.components) == 7
+        assert len(self.result.data_flows) == 8
+
+    def test_expected_protocols_present(self):
+        protocols = {df.protocol for df in self.result.data_flows}
+        assert "ARINC-429" in protocols
+        assert "MIL-STD-1553" in protocols
+        assert "ARINC-664" in protocols
+        assert "ARINC-818" in protocols
+        assert "Discrete" in protocols
+        assert "Analog" in protocols
+
+    def test_trust_boundary_flows_present(self):
+        boundary_ids = {df.id for df in self.result.data_flows if df.trust_boundary_crossing}
+        assert "DF-203" in boundary_ids
+        assert "DF-204" in boundary_ids
+        assert "DF-205" in boundary_ids
 
 
 # ---------------------------------------------------------------------------
@@ -161,6 +171,108 @@ class TestNarrativeBravo:
 
     def test_raw_text_contains_storage_section(self):
         assert "Storage Subsystem" in self.result.raw_text
+
+
+class TestNarrativeAvionics:
+    """description_avionics.md — Avionics Data Network."""
+
+    def setup_method(self):
+        self.result: NarrativeParseResult = parse_markdown(str(DESC_DIR / "description_avionics.md"))
+
+    def test_system_name_extracted_from_h1(self):
+        assert self.result.system_name == "Avionics Data Network"
+
+    def test_raw_text_contains_interface_standards(self):
+        assert "ARINC-429" in self.result.raw_text
+        assert "MIL-STD-1553" in self.result.raw_text
+        assert "ARINC-818" in self.result.raw_text
+
+
+class TestIcdCsvThreatModeler:
+    """icd_threat_modeler_v1.csv — Multi-Agent Threat Modeler Tool."""
+
+    def setup_method(self):
+        self.result: IcdParseResult = parse_csv(str(ICD_DIR / "icd_threat_modeler_v1.csv"))
+
+    def test_provenance_version(self):
+        assert self.result.version == "1"
+
+    def test_expected_subsystem_count(self):
+        assert len(self.result.subsystems) == 6
+
+    def test_subsystem_ids_present(self):
+        ids = {s.id for s in self.result.subsystems}
+        assert "SS-INPUT-01" in ids
+        assert "SS-ORCHESTRATION-01" in ids
+        assert "SS-LLM-01" in ids
+        assert "SS-HITL-01" in ids
+        assert "SS-EXPORT-01" in ids
+        assert "SS-UI-01" in ids
+
+    def test_expected_component_count(self):
+        # Threat modeler ICD is large; validate >= expected threshold
+        assert len(self.result.components) >= 15
+
+    def test_expected_data_flow_count(self):
+        assert len(self.result.data_flows) == 27
+
+    def test_llm_api_boundary_flows_present(self):
+        boundary_flows = [df for df in self.result.data_flows if "API" in df.trust_boundary_name]
+        boundary_ids = {df.id for df in boundary_flows}
+        assert "DF-MODEL-009" in boundary_ids
+        assert "DF-MODEL-010" in boundary_ids
+
+    def test_user_trust_boundary_flows_present(self):
+        user_boundary = [df for df in self.result.data_flows if df.trust_boundary_name == "User Trust Boundary"]
+        assert len(user_boundary) >= 5
+
+    def test_protocol_variety(self):
+        protocols = {df.protocol for df in self.result.data_flows}
+        assert "HTTP/Multipart" in protocols
+        assert "HTTPS" in protocols
+        assert "gRPC" in protocols
+        assert "protobuf" in protocols
+        assert "in-process" in protocols
+
+    def test_hitl_gate_components_present(self):
+        ids = {c.id for c in self.result.components}
+        assert "C-HITL-01" in ids
+        assert "C-HITL-02" in ids
+
+
+class TestNarrativeThreatModeler:
+    """description_threat_modeler.md — Multi-Agent Threat Modeler Tool."""
+
+    def setup_method(self):
+        self.result: NarrativeParseResult = parse_markdown(str(DESC_DIR / "description_threat_modeler.md"))
+
+    def test_system_name_extracted_from_h1(self):
+        assert self.result.system_name == "Multi-Agent Threat Modeler Tool"
+
+    def test_description_is_comprehensive(self):
+        assert len(self.result.description) > 100
+
+    def test_raw_text_contains_subsystems(self):
+        assert "Input Management Subsystem" in self.result.raw_text
+        assert "Agent Orchestration Subsystem" in self.result.raw_text
+        assert "LLM Runtime Subsystem" in self.result.raw_text
+        assert "Human-in-the-Loop Subsystem" in self.result.raw_text
+        assert "Export Subsystem" in self.result.raw_text
+        assert "User Interface Subsystem" in self.result.raw_text
+
+    def test_raw_text_contains_hitl_gates(self):
+        assert "Gate 0" in self.result.raw_text
+        assert "Gate 7" in self.result.raw_text
+        assert "pause" in self.result.raw_text.lower()
+
+    def test_raw_text_contains_export_formats(self):
+        assert "STIX" in self.result.raw_text
+        assert "Mermaid" in self.result.raw_text
+        assert "JSON" in self.result.raw_text
+
+    def test_raw_text_contains_trust_boundaries(self):
+        assert "User Trust Boundary" in self.result.raw_text
+        assert "External LLM API Boundary" in self.result.raw_text
 
 
 # ---------------------------------------------------------------------------

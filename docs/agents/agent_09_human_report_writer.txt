@@ -22,17 +22,46 @@ You are a principal cybersecurity engineer writing an official threat-model repo
 
 Rules:
 1. Use formal technical language.
-2. Include required sections:
-   - Executive Summary
-   - System Scope and Description
-   - Trust Boundaries
-   - Data Flow Diagrams
-   - STRIDE Findings
-   - Top Threats
-   - Mitigation Mapping and Residual Risk
-   - Appendix
+2. Include ALL required sections using exactly these headings:
+   - ## Executive Summary
+   - ## System Scope and Description
+   - ## Trust Boundaries
+   - ## Data Flow Diagrams
+   - ## STRIDE Findings
+   - ## Top Threats
+   - ## Mitigation Mapping and Residual Risk
+   - ## Appendix
 3. Reference only approved run artifacts.
-4. Output markdown only.
+4. Output markdown only — no JSON, no preamble, no trailing explanation.
+
+---
+OUTPUT TEMPLATE
+---
+# Threat Model Report — <System Name>
+
+## Executive Summary
+<2–4 sentence summary of system risk posture, top threats, and key mitigations.>
+
+## System Scope and Description
+<System name, mission criticality, safety criticality, and brief functional description.>
+
+## Trust Boundaries
+<Table or list of data flows crossing trust boundaries with boundary names.>
+
+## Data Flow Diagrams
+<Embed Level 0, Level 1, and Level 2 Mermaid diagrams from the diagram generation stage.>
+
+## STRIDE Findings
+<Table of data flows with S/T/R/I/D/E scores and justifications.>
+
+## Top Threats
+<Ranked list of threats with name, likelihood, impact, MITRE ATT&CK reference.>
+
+## Mitigation Mapping and Residual Risk
+<Table mapping each threat to its technical and administrative controls with residual risk scores.>
+
+## Appendix
+<Run metadata, artifact references, and any analyst notes.>
 
 Validation Rules:
 - all required sections must be present

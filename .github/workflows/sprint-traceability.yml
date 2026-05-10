@@ -1,0 +1,232 @@
+name: Sprint Traceability Enforcement
+
+# Trigger on PRs and commits to main
+on:
+  pull_request:
+    paths:
+      - 'planning/issues/**'
+      - 'Requirements/**'
+      - 'src/**'
+      - 'Tests/**'
+      - 'scripts/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'planning/issues/**'
+      - 'Requirements/**'
+      - 'src/**'
+      - 'Tests/**'
+
+jobs:
+  verify-traceability:
+    name: Verify Requirements-Issue-Code Traceability
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Full history for commit message analysis
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -q pathlib re argparse
+
+      - name: Extract active sprint
+        id: sprint
+        run: |
+          # Prefer active sprint from issue tracker naming: planning/issues/Sprint_YYYY_MM_Issue_Tracker.md
+          SPRINT=$(ls -1 planning/issues/Sprint_2*_Issue_Tracker.md 2>/dev/null | tail -1 | sed 's/.*Sprint_//;s/_Issue_Tracker.*//')
+
+          # Fallback: sprint traceability matrix naming
+          if [ -z "$SPRINT" ]; then
+            SPRINT=$(ls -1 planning/Sprint_2*_Traceability_Matrix.md 2>/dev/null | tail -1 | sed 's/.*Sprint_//;s/_Traceability.*//')
+          fi
+
+          if [ -z "$SPRINT" ]; then
+            # Fallback: extract from date
+            YEAR=$(date +%Y)
+            MONTH=$(date +%m)
+            SPRINT="${YEAR}_$(printf "%02d" $((10#$MONTH)))"
+          fi
+          echo "sprint=${SPRINT}" >> $GITHUB_OUTPUT
+          echo "🎯 Active Sprint: ${SPRINT}"
+
+      - name: Verify commit message references issue
+        if: github.event_name == 'pull_request'
+        run: |
+          # Check PR commits for issue references
+          echo "🔍 Checking commit messages for issue references..."
+
+          COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --format=%B)
+
+          # Pattern: D-S08-020, D-S09-001, HITL-012, etc.
+          if ! echo "$COMMITS" | grep -qE '\b(D-S|HITL|PRJ|INT|GUI|SCR)-[0-9]+[A-Z]?'; then
+            echo "❌ FAIL: No issue ID found in commit messages"
+            echo ""
+            echo "Commits must reference an issue ID in format:"
+            echo "  - Fix D-S08-020: Description"
+            echo "  - Implements HITL-012: Description"
+            echo "  - Refs: GH #123"
+            echo ""
+            echo "Recent commits:"
+            git log origin/${{ github.base_ref }}..HEAD --oneline | head -5
+            exit 1
+          fi
+
+          echo "✅ PASS: Commit messages reference issue IDs"
+
+      - name: Verify issue has requirement link
+        run: |
+          echo "🔍 Checking issues have requirement links..."
+
+          # Run verification script for current sprint
+          python scripts/verify_sprint_traceability.py --sprint ${{ steps.sprint.outputs.sprint }}
+
+          if [ $? -ne 0 ]; then
+            echo "❌ FAIL: Traceability verification failed"
+            exit 1
+          fi
+
+          echo "✅ PASS: All issues have requirement links"
+
+      - name: Enforce sprint closure prerequisites
+        if: github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Sprint Closure') || contains(github.event.pull_request.title, 'sprint closure') || contains(github.event.pull_request.body, '[sprint-closure]'))
+        run: |
+          echo "🔍 Sprint closure PR detected; enforcing closure prerequisites..."
+          python scripts/verify_sprint_traceability.py --sprint ${{ steps.sprint.outputs.sprint }} --audit --closure
+
+          if [ $? -ne 0 ]; then
+            echo "❌ FAIL: Sprint closure prerequisites not satisfied"
+            exit 1
+          fi
+
+          echo "✅ PASS: Sprint closure prerequisites satisfied"
+
+      - name: Verify test files referenced
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "🔍 Checking issue files reference test files..."
+
+          # Get changed issue files
+          CHANGED_ISSUES=$(git diff origin/${{ github.base_ref }}...HEAD --name-only | grep 'planning/issues/.*\.md' || true)
+
+          if [ -n "$CHANGED_ISSUES" ]; then
+            for issue_file in $CHANGED_ISSUES; do
+              if ! grep -q "Tests/" "$issue_file"; then
+                echo "❌ FAIL: $issue_file does not reference test file(s)"
+                echo "Add a 'Test File' or 'Tests' section to the issue"
+                exit 1
+              fi
+            done
+            echo "✅ PASS: All changed issues reference test files"
+          fi
+
+      - name: Verify code changes reference issues
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "🔍 Checking code changes reference issues..."
+
+          # Get list of changed source files (not tests)
+          CHANGED_SRC=$(git diff origin/${{ github.base_ref }}...HEAD --name-only | grep -E 'src/.*\.py$' || true)
+
+          if [ -n "$CHANGED_SRC" ]; then
+            # At least one commit should reference an issue
+            COMMITS=$(git log origin/${{ github.base_ref }}..HEAD --format=%B)
+
+            if ! echo "$COMMITS" | grep -qE '\b(D-S|HITL|PRJ|INT|GUI|SCR)-[0-9]+[A-Z]?'; then
+              echo "❌ FAIL: Code changes don't reference issue(s)"
+              exit 1
+            fi
+
+            echo "✅ PASS: Code changes properly referenced"
+          fi
+
+      - name: Enforce requirement issue test artifacts for code changes
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "🔍 Enforcing governance artifact trio for code changes..."
+
+          CHANGED_FILES=$(git diff origin/${{ github.base_ref }}...HEAD --name-only)
+          CHANGED_SRC=$(echo "$CHANGED_FILES" | grep -E '^src/.*\.(py|md)$' || true)
+
+          if [ -z "$CHANGED_SRC" ]; then
+            echo "✅ No source files changed; trio enforcement not required"
+            exit 0
+          fi
+
+          CHANGED_REQUIREMENTS=$(echo "$CHANGED_FILES" | grep -E '^Requirements/.*\.md$' || true)
+          CHANGED_ISSUES=$(echo "$CHANGED_FILES" | grep -E '^planning/issues/issue_.*\.md$' || true)
+          CHANGED_TESTS=$(echo "$CHANGED_FILES" | grep -E '^Tests/.*\.(py|md)$' || true)
+
+          if [ -z "$CHANGED_REQUIREMENTS" ]; then
+            echo "❌ FAIL: Source changes detected but no Requirements/*.md file was updated"
+            echo "Add or update a requirement linked to this change."
+            exit 1
+          fi
+
+          if [ -z "$CHANGED_ISSUES" ]; then
+            echo "❌ FAIL: Source changes detected but no planning/issues/issue_*.md file was updated"
+            echo "Create or update a sprint issue file for this change."
+            exit 1
+          fi
+
+          if [ -z "$CHANGED_TESTS" ]; then
+            echo "❌ FAIL: Source changes detected but no Tests/* file was updated"
+            echo "Add or update regression/feature tests for this change."
+            exit 1
+          fi
+
+          echo "✅ PASS: Governance trio present (requirements, issue, tests)"
+
+      - name: Audit mode - Full closure check
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "📋 Running full traceability audit..."
+
+          python scripts/verify_sprint_traceability.py --sprint ${{ steps.sprint.outputs.sprint }} --audit
+
+          if [ $? -ne 0 ]; then
+            echo ""
+            echo "⚠️  Audit warnings detected (not blocking merge)"
+            echo "Please review before sprint closure"
+          fi
+
+      - name: Summary
+        if: success()
+        run: |
+          echo "✅ All traceability checks passed!"
+          echo ""
+          echo "Requirements enforced:"
+          echo "  ✓ Commit messages reference issue IDs"
+          echo "  ✓ Issues link to requirements"
+          echo "  ✓ Issues reference test files"
+          echo "  ✓ Code changes traced to issues"
+          echo ""
+          echo "This ensures requirements → issues → code → tests traceability"
+
+  fail-on-error:
+    name: Report Traceability Failures
+    runs-on: ubuntu-latest
+    needs: verify-traceability
+    if: failure()
+
+    steps:
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `❌ **Traceability Check Failed**\n\nYour PR does not meet traceability requirements. Please verify:\n\n- [ ] Commit message references an issue ID (e.g., \`Fix D-S08-020: ...\`)\n- [ ] Issue links to a requirement (REQ ID in title/description)\n- [ ] Issue references test file(s) in description\n- [ ] Code changes properly traced\n\nSee: [Requirements & Issues Policy](../../blob/main/docs/process/Requirements_and_Issues_Policy.md)`
+            })

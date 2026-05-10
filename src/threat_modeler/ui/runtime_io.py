@@ -39,6 +39,10 @@ def framework_state_to_dict(state: FrameworkState | None) -> dict[str, Any]:
         "trust_boundary_review_needed": bool(state.trust_boundary_review_needed),
         "stride_complete": bool(state.stride_complete),
         "threats_generated": bool(state.threats_generated),
+        "llm_usage_by_stage": _to_builtin(state.llm_usage_by_stage),
+        "llm_attempts_by_stage": _to_builtin(state.llm_attempts_by_stage),
+        "llm_prompts_by_stage": _to_builtin(state.llm_prompts_by_stage),
+        "llm_prompt_history": _to_builtin(state.llm_prompt_history),
         "hitl_gate_checkpoint": _to_builtin(state.hitl_gate_checkpoint),
         "hitl_paused_at_gate": state.hitl_paused_at_gate,
         "hitl_rejected_at_gate": state.hitl_rejected_at_gate,
@@ -65,6 +69,10 @@ def framework_state_from_dict(data: dict[str, Any]) -> FrameworkState:
         trust_boundary_review_needed=bool(data.get("trust_boundary_review_needed", False)),
         stride_complete=bool(data.get("stride_complete", False)),
         threats_generated=bool(data.get("threats_generated", False)),
+        llm_usage_by_stage=dict(data.get("llm_usage_by_stage", {})),
+        llm_attempts_by_stage=dict(data.get("llm_attempts_by_stage", {})),
+        llm_prompts_by_stage=dict(data.get("llm_prompts_by_stage", {})),
+        llm_prompt_history=list(data.get("llm_prompt_history", [])),
         hitl_gate_checkpoint=data.get("hitl_gate_checkpoint"),
         hitl_paused_at_gate=data.get("hitl_paused_at_gate"),
         hitl_rejected_at_gate=data.get("hitl_rejected_at_gate"),
@@ -134,3 +142,19 @@ def export_mermaid_markdown(state: FrameworkState | None) -> str:
         lines.append("```")
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
+
+
+def export_token_usage_json(state: FrameworkState | None) -> str:
+    """Export per-stage and aggregate token usage as JSON."""
+    if state is None:
+        return "{}\n"
+
+    payload = {
+        "llm_usage_by_stage": _to_builtin(getattr(state, "llm_usage_by_stage", {})),
+        "llm_attempts_by_stage": _to_builtin(getattr(state, "llm_attempts_by_stage", {})),
+        "llm_prompts_by_stage": _to_builtin(getattr(state, "llm_prompts_by_stage", {})),
+        "llm_prompt_history": _to_builtin(getattr(state, "llm_prompt_history", [])),
+        "attempt_totals": _to_builtin(state.llm_attempt_totals() if hasattr(state, "llm_attempt_totals") else {}),
+        "totals": _to_builtin(state.llm_usage_totals() if hasattr(state, "llm_usage_totals") else {}),
+    }
+    return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"

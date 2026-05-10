@@ -21,10 +21,14 @@ progress.
 from __future__ import annotations
 
 import io
+import traceback
 import uuid
 from typing import Any
 
 import streamlit as st
+
+from threat_modeler.ui.debug import log_exception, validate_settings, log_state_change, show_debug_panel
+from threat_modeler.ui.execution import start_pipeline_execution, is_execution_active, get_active_run_id
 
 # Accepted MIME types / extensions for the file uploader.
 _ACCEPTED_EXTENSIONS = ["csv", "xlsx", "md", "txt", "yaml", "yml"]
@@ -55,10 +59,14 @@ def _parse_uploaded_files(uploaded_files: list[Any]) -> tuple[str, list[dict]]:
         elif ext == "csv":
             import csv as csv_mod
 
-            content = uf.read().decode("utf-8", errors="replace")
-            reader = csv_mod.DictReader(io.StringIO(content))
-            for row in reader:
-                tables.append(dict(row))
+            try:
+                content = uf.read().decode("utf-8", errors="replace")
+                reader = csv_mod.DictReader(io.StringIO(content))
+                for row in reader:
+                    tables.append(dict(row))
+            except Exception as e:
+                st.warning(f"⚠️ Failed to parse CSV '{uf.name}': {str(e)}")
+                continue
 
         elif ext == "xlsx":
             try:
@@ -230,11 +238,15 @@ def render() -> None:
 
     col_btn, col_clear = st.columns([3, 1])
     with col_btn:
+        # Disable button if a run is already active
+        is_run_active = is_execution_active()
+        btn_label = "⏳ Running — see Run Dashboard" if is_run_active else "▶ Start Threat Model Run"
         start_clicked = st.button(
-            "▶ Start Threat Model Run",
+            btn_label,
             type="primary",
-            disabled=not can_submit,
+            disabled=not can_submit or is_run_active,
             use_container_width=True,
+            help="A run is already in progress — navigate to Home to monitor" if is_run_active else None,
         )
     with col_clear:
         clear_clicked = st.button(
@@ -243,6 +255,11 @@ def render() -> None:
             use_container_width=True,
             help="Clear all inputs and start over.",
         )
+
+    # Show warning if run is active
+    if is_run_active:
+        active_run = get_active_run_id()
+        st.warning(f"⏳ A run is already in progress: **{active_run[:8]}…**\n\nNavigate to **Home** or **Stage Results** to monitor progress.")
 
     # ── Handle clear ────────────────────────────────────────────────────
     if clear_clicked:
@@ -260,7 +277,12 @@ def render() -> None:
         st.session_state["input_raw_text_paste"] = raw_text_paste.strip()
 
         # Parse uploaded files
-        file_raw_text, file_tables = _parse_uploaded_files(list(uploaded_files or []))
+        try:
+            file_raw_text, file_tables = _parse_uploaded_files(list(uploaded_files or []))
+            log_state_change("file_tables", f"{len(file_tables)} rows parsed")
+        except Exception as e:
+            log_exception(e, context="File parsing failed", show_traceback=True)
+            st.stop()
 
         # Merge raw text: pasted + uploaded narrative
         combined_raw = "\n\n".join(
@@ -286,8 +308,54 @@ def render() -> None:
         st.session_state["pipeline_state"] = initial_state
         st.session_state["gate_states"] = {}
 
-        # Switch nav to Home / Run Dashboard
-        st.session_state["nav_selection"] = "Home"
+        # Execute pipeline immediately after form submission (GUI-001A requirement)
+        try:
+            from threat_modeler.orchestrator import FrameworkOrchestrator  # noqa: PLC0415
+            from threat_modeler.config import RuntimeSettings  # noqa: PLC0415
+            from threat_modeler.backend.runtime_state import get_last_settings  # noqa: PLC0415
+
+            # Get runtime settings from session (SCR-003), fall back to backend store if missing.
+            # This ensures settings persist across session resets and browser navigation.
+            settings = st.session_state.get("settings_override")
+            if not isinstance(settings, RuntimeSettings):
+                settings = get_last_settings()
+                if isinstance(settings, RuntimeSettings):
+                    st.session_state["settings_override"] = settings
+                else:
+                    st.error(
+                        "❌ Runtime settings are missing. Run halted to prevent implicit fallback to Local/Fixture mode. "
+                        "Open Pipeline Configuration and configure an LLM provider."
+                    )
+                    st.stop()
+
+            # Validate settings before pipeline execution
+            is_valid, validation_msg = validate_settings(settings, "Pre-pipeline validation")
+            st.info(validation_msg)
+            if not is_valid:
+                st.error("Cannot start pipeline with invalid settings.")
+                st.stop()
+
+            log_state_change("settings", f"provider={settings.model.provider}, model={settings.model.model_name}")
+
+            # Start pipeline execution in background thread (non-blocking)
+            # This allows user to navigate to monitoring screens while pipeline runs
+            start_pipeline_execution(
+                run_id=run_id,
+                initial_state=initial_state,
+                settings=settings,
+            )
+            log_state_change("execution", "started in background")
+
+        except Exception as e:
+            # Error during pipeline startup (not during execution)
+            error_context = f"Failed to start pipeline execution"
+            log_exception(e, context=error_context, show_traceback=True, severity="error")
+            st.session_state["pipeline_execution_error"] = f"{type(e).__name__}: {str(e)}"
+            show_debug_panel()
+            st.stop()
+
+        # Flag to navigate after rerun (avoid modifying session_state after widget instantiation)
+        st.session_state["_navigate_to_home_after_rerun"] = True
 
         st.success(
             f"✅ Run **{run_id[:8]}…** initialised with {len(file_tables)} ICD rows "

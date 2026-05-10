@@ -50,3 +50,36 @@ Validation Rules:
 
 Failure Handling:
 - if Level 2 cannot be determined, choose highest-risk subsystem by computed risk score and emit note
+
+---
+ONE-SHOT EXAMPLE
+---
+Emit exactly this structure (three sections, each with a mermaid block):
+
+MERMAID_LEVEL0
+```mermaid
+flowchart TD
+  FMS["Flight Management System"]
+  EXT["External GPS Constellation"]
+  EXT -->|"ARINC 429 / trust boundary"| FMS
+```
+
+MERMAID_LEVEL1
+```mermaid
+flowchart TD
+  subgraph FMS["Flight Management System"]
+    NAV["Navigation Subsystem"]
+    CORE["Core Processing"]
+  end
+  GPS["GPS Receiver"] -->|"ARINC 429 S:3 T:4"| FMS_CORE["FMC"]
+```
+
+MERMAID_LEVEL2
+```mermaid
+flowchart TD
+  subgraph NAV["Navigation Subsystem — highest risk"]
+    GPS["COMP-001 GPS Receiver"]
+  end
+  GPS -->|"DF-001 ARINC 429 max-STRIDE:4"| FMC["COMP-002 FMC"]
+  style GPS fill:#ff9999
+```

@@ -1,4 +1,4 @@
-# Issue: Sprint 2026-08 xAI Grok-4 Model Catalog and Defaults
+﻿# Issue: Sprint 2026-08 xAI Grok-4 Model Catalog and Defaults
 
 ## Sprint
 
@@ -11,6 +11,11 @@ S08-1
 ## GitHub Issue
 
 GH #36
+
+## Tracker Mapping
+
+- Tracker Workstream ID: S08-1
+- Sprint tracker file: `planning/issues/Sprint_2026_08_Issue_Tracker.md`
 
 ## Owner Role
 
@@ -55,11 +60,36 @@ Sprint 2026-07 introduced provider model catalogs, editable model override contr
 
 ## Status
 
-- [x] Not started
+- [ ] Not started
 - [ ] In progress
-- [ ] Completed
+- [x] Completed
+
+## Verification Evidence
+
+### Test Command
+
+```powershell
+.venv\Scripts\pytest.exe Tests/ -v
+.venv\Scripts\python.exe -m pytest Tests/e2e/test_artifact_generation.py -m llm_live -q --tb=short
+```
+
+### Result
+
+- Unit and regression suites passed for Sprint 2026-08 baseline.
+- Live endpoint validation passed for selected Grok model configurations.
 
 ## Notes
 
 - Created to align local planning issue tracking 1:1 with GH #36.
 - Disposition from Sprint 2026-07 discovered issue log: deferred-to-sprint-2026-08 S08-1.
+## Closure Evidence Template
+
+Use this block for future closure updates.
+
+- Resolution date:
+- Implementation commit or PR:
+- Verification command(s):
+- Verification result summary (include pass counts):
+- Evidence artifact path(s):
+- Reviewer or approver initials:
+

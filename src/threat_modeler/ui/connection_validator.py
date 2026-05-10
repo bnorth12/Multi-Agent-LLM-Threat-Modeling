@@ -96,6 +96,7 @@ def _check_url_reachable(url: str) -> ValidationResult:
     """Attempt an HTTP HEAD request to verify the URL is reachable."""
     try:
         import urllib.request  # stdlib — no extra deps required
+        from urllib.error import HTTPError
 
         req = urllib.request.Request(url, method="HEAD")  # noqa: S310
         req.add_header("User-Agent", "ThreatModeler/1.0 connection-check")
@@ -108,6 +109,18 @@ def _check_url_reachable(url: str) -> ValidationResult:
                 message=f"Endpoint returned HTTP {status}.",
                 detail=f"URL: {url}",
             )
+    except HTTPError as exc:
+        if 400 <= exc.code < 500:
+            return ValidationResult(
+                ok=True,
+                message=f"Endpoint reachable (HTTP {exc.code}).",
+                detail=f"URL: {url}",
+            )
+        return ValidationResult(
+            ok=False,
+            message=f"Could not reach endpoint: HTTPError",
+            detail=str(exc),
+        )
     except Exception as exc:  # noqa: BLE001
         return ValidationResult(
             ok=False,
@@ -131,7 +144,7 @@ def _env_var_hint(provider: str) -> str:
     _ENV_VARS: dict[str, str] = {
         "openai": "OPENAI_API_KEY",
         "anthropic": "ANTHROPIC_API_KEY",
-        "xai": "XAI_API_KEY",
+        "xai": "GROK_API or XAI_API_KEY",
         "azure": "AZURE_OPENAI_API_KEY",
         "custom": "CUSTOM_API_KEY (or provider-specific)",
     }

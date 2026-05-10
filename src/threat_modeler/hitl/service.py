@@ -226,3 +226,21 @@ class HitlService:
 
     def checkpoint_state(self) -> dict[str, Any]:
         return self.engine.checkpoint_state()
+
+    def restore_checkpoint_state(self, checkpoint: dict[str, Any]) -> None:
+        """Restore gate and audit state from a serialized checkpoint snapshot."""
+        run_id = str(checkpoint.get("run_id", "")).strip()
+        if not run_id:
+            raise ValueError("Checkpoint missing run_id.")
+
+        self.initialise(run_id)
+
+        gates_raw = checkpoint.get("gates", {})
+        if isinstance(gates_raw, dict):
+            for gate_id, gate_data in gates_raw.items():
+                if gate_id in self.engine._gates and isinstance(gate_data, dict):
+                    self.engine._gates[gate_id] = HitlGateRecord.from_dict(gate_data)
+
+        audit_raw = checkpoint.get("audit_log", {})
+        if isinstance(audit_raw, dict):
+            self.engine.audit_log = HitlAuditLog.from_dict(audit_raw)

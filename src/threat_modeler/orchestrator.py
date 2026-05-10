@@ -241,7 +241,13 @@ class FrameworkOrchestrator:
 
     def run_stage(self, state: FrameworkState, stage_id: str) -> StageExecutionResult:
         agent = self.agents[stage_id]
-        updated_state = agent.run(state)
+        try:
+            updated_state = agent.run(state)
+        except Exception as exc:
+            state.record_message(stage_id, f"{agent.display_name} failed: {type(exc).__name__}: {exc}")
+            raise RuntimeError(
+                f"Stage {stage_id} ({agent.display_name}) failed: {type(exc).__name__}: {exc}"
+            ) from exc
         state.next_stage_id = updated_state.next_stage_id
         return StageExecutionResult(stage_id=stage_id, success=True)
 

@@ -384,7 +384,21 @@ class TestNegativePathE2E:
 class TestLlmLiveSprintValidation:
     """Sprint validation gate: real Grok API call (excluded from CI with -m 'not llm_live')."""
 
-    def test_agent_01_and_02_real_grok(self):
+    _GROK_LIVE_MATRIX = [
+        ("grok-4.3", "chat_completions"),
+        ("grok-4.20-multi-agent-0309", "multi_agent"),
+        ("grok-4.20-0309-reasoning", "responses"),
+        ("grok-4.20-0309-non-reasoning", "responses"),
+        ("grok-4-1-fast-reasoning", "responses"),
+        ("grok-4-1-fast-non-reasoning", "chat_completions"),
+    ]
+
+    @pytest.mark.parametrize(
+        "model_name, endpoint_mode",
+        _GROK_LIVE_MATRIX,
+        ids=[f"{model_name}:{endpoint_mode}" for model_name, endpoint_mode in _GROK_LIVE_MATRIX],
+    )
+    def test_full_9_stage_real_grok_matrix(self, model_name, endpoint_mode):
         import os
 
         api_key = os.environ.get("GROK_API") or os.environ.get("XAI_API_KEY")
@@ -392,24 +406,53 @@ class TestLlmLiveSprintValidation:
             pytest.skip("GROK_API not set; skipping live LLM test.")
 
         settings = RuntimeSettings(
-            model=ModelSelection(provider="xai", model_name="grok-beta", offline_only=False),
+            model=ModelSelection(
+                provider="xai",
+                model_name=model_name,
+                offline_only=False,
+                endpoint_mode=endpoint_mode,
+            ),
             pipeline=PipelineSettings(
                 execution_mode="langgraph-compatible",
                 require_hitl_gates=False,
                 stop_on_validation_error=False,
-                enabled_stage_ids=["agent_01", "agent_02"],
             ),
         )
-        orchestrator = FrameworkOrchestrator(settings=settings, run_id="live-sprint-validation")
+        orchestrator = FrameworkOrchestrator(
+            settings=settings,
+            run_id=f"live-sprint-validation-9-stage-{model_name}-{endpoint_mode}",
+        )
         state = orchestrator.initialize_state()
         state.raw_text = (
             "System: Payment Processing API. "
             "Component: CardProcessor. "
-            "Interface: Client → CardProcessor over HTTPS. "
-            "Trust boundary: Internet to DMZ."
+            "Interface: Client to CardProcessor over HTTPS. "
+            "Trust boundary: Internet to DMZ. "
+            "Critical assets: PAN, auth tokens, transaction ledger."
         )
 
-        result = orchestrator.run_planned_stages(state)
-        # Must deserialise into a valid FrameworkState with canonical_graph populated
+        try:
+            result = orchestrator.run_planned_stages(state)
+        except RuntimeError as exc:
+            message = str(exc).lower()
+            if "service temporarily unavailable" in message or "model is at capacity" in message:
+                pytest.xfail(
+                    f"xAI capacity constraint for model={model_name} endpoint_mode={endpoint_mode}: {exc}"
+                )
+            raise
+
+        # 9-stage live run must produce canonical graph plus downstream stage artifacts.
         assert isinstance(result, FrameworkState)
         assert result.canonical_graph is not None
+        assert result.stix_bundle is not None
+        assert isinstance(result.mermaid_diagrams, dict)
+        assert len(result.mermaid_diagrams) > 0
+        assert isinstance(result.final_report, str)
+        assert len(result.final_report.strip()) > 0
+
+        # Validate output format expectations from prompt-driven stages.
+        exported = json.loads(export_json(result.canonical_graph))
+        assert isinstance(exported.get("system"), dict)
+        assert isinstance(exported.get("subsystems"), list)
+        assert isinstance(exported.get("components"), list)
+        assert isinstance(exported.get("interfaces"), list)

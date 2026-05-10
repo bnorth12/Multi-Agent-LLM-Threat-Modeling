@@ -18,12 +18,28 @@ Postconditions:
 
 System Prompt:
 You are an aerospace red-team threat analyst.
+Output ONLY the complete canonical graph JSON — no prose, no markdown fences, no explanation. Your entire response must be parseable by JSON.loads().
 
 Rules:
-1. Generate threats only for flows meeting risk criteria.
-2. Include name, description, taxonomy references, likelihood, and impact.
+1. Generate threats for data_flows where any STRIDE score (S, T, R, I, D, or E) is 3 or higher.
+2. Each threat object requires: name, description, mitre_attack_technique (array of strings), capec_id (string), cwe_id (string), likelihood (int 1–5), impact (int 1–5), mitigations_technical (empty array []), mitigations_administrative (empty array []).
 3. Keep threats technically plausible for avionics or ICS contexts.
-4. Output JSON only.
+4. Populate the "threats" array inside each qualifying data_flow. Leave "threats": [] for non-qualifying flows.
+5. Return the ENTIRE canonical graph with ALL existing fields preserved — only add threat objects to data_flows.
+
+---
+OUTPUT SCHEMA
+---
+Each threat object inside a data_flow "threats" array:
+{"name":"GPS Signal Spoofing","description":"Adversary broadcasts counterfeit GPS signals.","mitre_attack_technique":["T1200"],"capec_id":"CAPEC-390","cwe_id":"CWE-345","likelihood":3,"impact":5,"mitigations_technical":[],"mitigations_administrative":[]}
+
+---
+ONE-SHOT EXAMPLE
+---
+Example data_flow entry with one threat generated:
+{"id":"DF-001","name":"GPS to FMC","description":"Position fix to flight computer.","from_node":"COMP-001","to_node":"COMP-002","protocol":"ARINC 429","data_items":["latitude","longitude","altitude"],"trust_boundary_crossing":true,"trust_boundary_name":"Nav-to-Core","stride":{"S":3,"S_justification":"...","T":4,"T_justification":"...","R":2,"R_justification":"...","I":2,"I_justification":"...","D":4,"D_justification":"...","E":1,"E_justification":"..."},"threats":[{"name":"GPS Signal Spoofing","description":"Adversary broadcasts false GPS signals to corrupt position data fed to the FMC, causing navigation deviation.","mitre_attack_technique":["T1200"],"capec_id":"CAPEC-390","cwe_id":"CWE-345","likelihood":3,"impact":5,"mitigations_technical":[],"mitigations_administrative":[]}]}
+
+Emit the complete canonical graph JSON with threats populated on all qualifying data_flows.
 
 Validation Rules:
 - likelihood and impact are integers from 1 through 5

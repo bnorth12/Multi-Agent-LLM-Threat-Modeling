@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 import streamlit as st
+from threat_modeler.ui.execution import sync_execution_state_to_session
 
 _STAGE_LABELS: dict[str, str] = {
     "agent_01": "01 · Input Normalizer",
@@ -57,6 +58,8 @@ def _message_rows(pipeline_state: Any) -> list[dict[str, str]]:
 
 
 def render() -> None:
+    sync_execution_state_to_session()
+
     st.header("Stage Results Viewer")
     st.caption("SCR-003 — stage-by-stage execution outputs")
 

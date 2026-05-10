@@ -19,19 +19,34 @@ from ..models.canonical import (
 )
 
 
+def _coerce_int(value: Any, default: int = 0) -> int:
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, (int, float, str)):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return default
+    if isinstance(value, dict):
+        for key in ("score", "value", "rating"):
+            if key in value:
+                return _coerce_int(value.get(key), default)
+    return default
+
+
 def _dict_to_stride(d: dict[str, Any]) -> StrideAssessment:
     return StrideAssessment(
-        S=int(d.get("S", 0)),
+        S=_coerce_int(d.get("S", 0)),
         S_justification=d.get("S_justification", ""),
-        T=int(d.get("T", 0)),
+        T=_coerce_int(d.get("T", 0)),
         T_justification=d.get("T_justification", ""),
-        R=int(d.get("R", 0)),
+        R=_coerce_int(d.get("R", 0)),
         R_justification=d.get("R_justification", ""),
-        I=int(d.get("I", 0)),
+        I=_coerce_int(d.get("I", 0)),
         I_justification=d.get("I_justification", ""),
-        D=int(d.get("D", 0)),
+        D=_coerce_int(d.get("D", 0)),
         D_justification=d.get("D_justification", ""),
-        E=int(d.get("E", 0)),
+        E=_coerce_int(d.get("E", 0)),
         E_justification=d.get("E_justification", ""),
     )
 
@@ -41,7 +56,7 @@ def _dict_to_mitigation(d: dict[str, Any]) -> Mitigation:
         control_id=d.get("control_id", ""),
         title=d.get("title", ""),
         description=d.get("description", ""),
-        residual_risk_after_control=int(d.get("residual_risk_after_control", 3)),
+        residual_risk_after_control=_coerce_int(d.get("residual_risk_after_control", 3), 3),
     )
 
 
@@ -52,8 +67,8 @@ def _dict_to_threat(d: dict[str, Any]) -> Threat:
         mitre_attack_technique=d.get("mitre_attack_technique", []),
         capec_id=d.get("capec_id", ""),
         cwe_id=d.get("cwe_id", ""),
-        likelihood=int(d.get("likelihood", 1)),
-        impact=int(d.get("impact", 1)),
+        likelihood=_coerce_int(d.get("likelihood", 1), 1),
+        impact=_coerce_int(d.get("impact", 1), 1),
         mitigations_technical=[_dict_to_mitigation(m) for m in d.get("mitigations_technical", [])],
         mitigations_administrative=[_dict_to_mitigation(m) for m in d.get("mitigations_administrative", [])],
     )

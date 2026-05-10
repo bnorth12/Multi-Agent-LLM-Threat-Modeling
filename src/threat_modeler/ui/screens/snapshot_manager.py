@@ -6,6 +6,7 @@ import datetime
 
 import streamlit as st
 
+from threat_modeler.ui.execution import sync_execution_state_to_session
 from threat_modeler.ui.runtime_io import (
     build_snapshot_payload,
     framework_state_from_dict,
@@ -17,6 +18,8 @@ from threat_modeler.ui.runtime_io import (
 def render() -> None:
     st.header("Snapshot Manager")
     st.caption("SCR-008/009 — save and restore run snapshots")
+
+    sync_execution_state_to_session()
 
     run_id = st.session_state.get("run_id")
     pipeline_state = st.session_state.get("pipeline_state")

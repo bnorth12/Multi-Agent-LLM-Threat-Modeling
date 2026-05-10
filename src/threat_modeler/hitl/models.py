@@ -48,6 +48,26 @@ class HitlDecision:
             "artifact_diff": self.artifact_diff,
         }
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "HitlDecision":
+        timestamp_raw = data.get("timestamp")
+        timestamp = datetime.datetime.utcnow()
+        if isinstance(timestamp_raw, str) and timestamp_raw.strip():
+            try:
+                timestamp = datetime.datetime.fromisoformat(timestamp_raw)
+            except ValueError:
+                timestamp = datetime.datetime.utcnow()
+
+        return cls(
+            gate_id=str(data.get("gate_id", "")),
+            actor=str(data.get("actor", "")),
+            role=str(data.get("role", "")),
+            action=GateAction(str(data.get("action", GateAction.ACCEPT_AS_IS.value))),
+            rationale=str(data.get("rationale", "")),
+            timestamp=timestamp,
+            artifact_diff=data.get("artifact_diff"),
+        )
+
 
 @dataclass
 class HitlGateRecord:
@@ -102,6 +122,19 @@ class HitlGateRecord:
             "decision": self.decision.to_dict() if self.decision else None,
         }
 
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "HitlGateRecord":
+        decision_data = data.get("decision")
+        return cls(
+            gate_id=str(data.get("gate_id", "")),
+            gate_name=str(data.get("gate_name", "")),
+            stage_id=str(data.get("stage_id", "")),
+            status=GateStatus(str(data.get("status", GateStatus.PENDING.value))),
+            artifact_snapshot=data.get("artifact_snapshot"),
+            draft_artifact=data.get("draft_artifact"),
+            decision=HitlDecision.from_dict(decision_data) if isinstance(decision_data, dict) else None,
+        )
+
 
 @dataclass
 class HitlAuditLog:
@@ -121,3 +154,13 @@ class HitlAuditLog:
             "run_id": self.run_id,
             "entries": [e.to_dict() for e in self.entries],
         }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "HitlAuditLog":
+        entries_raw = data.get("entries", [])
+        entries = [
+            HitlDecision.from_dict(entry)
+            for entry in entries_raw
+            if isinstance(entry, dict)
+        ]
+        return cls(run_id=str(data.get("run_id", "")), entries=entries)

@@ -18,13 +18,28 @@ Postconditions:
 
 System Prompt:
 You are an aerospace cybersecurity controls engineer.
+Output ONLY the complete canonical graph JSON — no prose, no markdown fences, no explanation. Your entire response must be parseable by JSON.loads().
 
 Rules:
-1. Propose technical and administrative controls for each approved threat.
-2. Include control ID, title, implementation rationale, and residual risk.
-3. Store controls under each threat as mitigations_technical and mitigations_administrative arrays.
-4. Keep control mapping threat-specific.
-5. Output JSON only.
+1. For each threat object inside every data_flow, populate both mitigations_technical and mitigations_administrative arrays.
+2. Each mitigation object requires: control_id (e.g. "CTRL-001"), title (short label), description (implementation rationale), residual_risk_after_control (integer 1–5).
+3. Propose at least one technical control and one administrative control per threat.
+4. Return the ENTIRE canonical graph with ALL existing fields preserved — only populate mitigation arrays on threats.
+
+---
+OUTPUT SCHEMA
+---
+Each threat object mitigation arrays:
+"mitigations_technical":[{"control_id":"CTRL-001","title":"GPS Anti-Spoofing Filter","description":"Deploy RAIM and cryptographic signal authentication to reject spoofed GPS signals.","residual_risk_after_control":2}]
+"mitigations_administrative":[{"control_id":"CTRL-002","title":"GPS Degradation Crew Procedure","description":"Crew procedure to switch to IRS navigation on GPS degradation alert.","residual_risk_after_control":3}]
+
+---
+ONE-SHOT EXAMPLE
+---
+Example threat object with mitigations fully populated:
+{"name":"GPS Signal Spoofing","description":"Adversary broadcasts false GPS signals.","mitre_attack_technique":["T1200"],"capec_id":"CAPEC-390","cwe_id":"CWE-345","likelihood":3,"impact":5,"mitigations_technical":[{"control_id":"CTRL-001","title":"GPS Anti-Spoofing Filter","description":"Deploy RAIM and cryptographic signal authentication to reject spoofed signals.","residual_risk_after_control":2}],"mitigations_administrative":[{"control_id":"CTRL-002","title":"GPS Degradation Crew Procedure","description":"Crew switches to IRS navigation on GPS degradation alert.","residual_risk_after_control":3}]}
+
+Emit the complete canonical graph JSON with all threat mitigation arrays populated.
 
 Validation Rules:
 - control IDs must be present

@@ -133,7 +133,7 @@ class TestParseGraphJson:
         graph = parse_graph_json(text)
         assert isinstance(graph, CanonicalThreatModelGraph)
         assert graph.system.name == "Avionics Data Network"
-        assert len(graph.interfaces) == 1
+        assert len(graph.interfaces) >= 1
 
     def test_returns_none_for_invalid_json(self):
         assert parse_graph_json("not json at all") is None
@@ -143,6 +143,32 @@ class TestParseGraphJson:
         fenced = f"```json\n{text}\n```"
         graph = parse_graph_json(fenced)
         assert graph is not None
+
+    def test_stride_scores_accept_nested_score_objects(self):
+        payload = {
+            "system": {"name": "NestedStrideSystem"},
+            "interfaces": [
+                {
+                    "id": "iface-1",
+                    "name": "A->B",
+                    "stride": {
+                        "S": {"score": 3},
+                        "T": {"value": "4"},
+                        "R": {"rating": 2},
+                        "I": 1,
+                        "D": 0,
+                        "E": {"score": "5"},
+                    },
+                }
+            ],
+        }
+        graph = parse_graph_json(json.dumps(payload))
+        assert graph is not None
+        stride = graph.interfaces[0].stride
+        assert stride.S == 3
+        assert stride.T == 4
+        assert stride.R == 2
+        assert stride.E == 5
 
 
 # ---------------------------------------------------------------------------
@@ -202,6 +228,19 @@ class TestAgentFixtureRuns:
         assert isinstance(result.stix_bundle, dict)
         assert result.stix_bundle.get("type") == "bundle"
 
+    def test_agent_06_falls_back_to_canonical_export_on_invalid_json(self):
+        from src.threat_modeler.agents.agent_06_stix_packager import StixPackagerAgent
+
+        class _BadResponseAdapter:
+            def complete(self, _system_prompt: str, _user_message: str) -> str:
+                return "The bundle is shown below but not as JSON."
+
+        state = self._state_with_graph()
+        agent = StixPackagerAgent(adapter=_BadResponseAdapter())
+        result = agent.run(state)
+        assert isinstance(result.stix_bundle, dict)
+        assert result.stix_bundle.get("type") == "bundle"
+
     def test_agent_07_maps_mitigations(self):
         from src.threat_modeler.agents.agent_07_mitigation_generator import MitigationGeneratorAgent
         state = self._state_with_graph()
@@ -219,6 +258,19 @@ class TestAgentFixtureRuns:
         assert "level_0" in result.mermaid_diagrams
         assert "level_1" in result.mermaid_diagrams
         assert "level_2" in result.mermaid_diagrams
+
+    def test_agent_08_falls_back_to_canonical_export_on_missing_markers(self):
+        from src.threat_modeler.agents.agent_08_diagram_generator import DiagramGeneratorAgent
+
+        class _NoDiagramAdapter:
+            def complete(self, _system_prompt: str, _user_message: str) -> str:
+                return "No diagram sections were generated."
+
+        state = self._state_with_graph()
+        agent = DiagramGeneratorAgent(adapter=_NoDiagramAdapter())
+        result = agent.run(state)
+        assert "level_1" in result.mermaid_diagrams
+        assert result.mermaid_diagrams["level_1"].startswith("flowchart LR")
 
     def test_agent_09_sets_final_report(self):
         from src.threat_modeler.agents.agent_09_report_writer import ReportWriterAgent

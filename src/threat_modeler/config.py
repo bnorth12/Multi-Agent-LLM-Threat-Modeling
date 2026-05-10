@@ -4,6 +4,10 @@ from dataclasses import dataclass, field
 from typing import Sequence
 
 
+LIVE_LLM_DEFAULT_TIMEOUT_SECONDS = 180
+LIVE_LLM_DEFAULT_MAX_ATTEMPTS = 3
+
+
 # Provider enumeration for model selection UI
 PROVIDER_MATRIX = {
     "fixture": {
@@ -32,7 +36,7 @@ PROVIDER_MATRIX = {
         "description": "xAI Grok API",
         "requires_url": False,
         "requires_api_key": True,
-        "default_model": "grok-3-mini",
+        "default_model": "grok-4",
     },
     "azure": {
         "label": "Azure OpenAI",
@@ -65,6 +69,8 @@ class ModelSelection:
     offline_only: bool = True
     connection_url: str = ""  # For Azure, Ollama, Custom/Intranet providers
     endpoint_mode: str = "chat_completions"  # chat_completions | responses | multi_agent
+    request_timeout_seconds: int = LIVE_LLM_DEFAULT_TIMEOUT_SECONDS
+    request_max_attempts: int = LIVE_LLM_DEFAULT_MAX_ATTEMPTS
 
 
 @dataclass(frozen=True)
@@ -101,5 +107,7 @@ def build_default_settings() -> RuntimeSettings:
             offline_only=True,
             connection_url="",
             endpoint_mode="chat_completions",
+            request_timeout_seconds=LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
+            request_max_attempts=LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
         )
     )

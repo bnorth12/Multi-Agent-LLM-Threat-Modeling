@@ -156,7 +156,7 @@ Navigate to **Role Select** in the left sidebar.  Choose your role:
 Navigate to **Configuration** in the sidebar.  Set:
 
 - **LLM Provider** — `fixture` (offline) or a live provider (`xai`, `openai`, `anthropic`, `azure`, `ollama`, `custom`).
-- **Model catalog** and **Custom model name** override — for latest provider models and intranet-specific model IDs.
+- **Model catalog** and **Custom model name** override — for latest provider models and intranet-specific model IDs. For `xai`, use Grok-4 family values (for example, `grok-4`).
 - **Connection URL** — endpoint/base URL (required for some providers, optional override for others).
 - **API key** (for providers that require one) — masked input, stored in session only.
 - **Endpoint mode** — `chat_completions`, `responses`, or `multi_agent` (for non-completions-style endpoints).
@@ -260,9 +260,10 @@ through `src/threat_modeler/config.py`.
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
 | `provider` | string | `fixture` | LLM provider: `fixture` (offline) or one of live providers |
-| `model_name` | string | `fixture` | Model identifier passed to the provider |
+| `model_name` | string | `fixture-placeholder` | Model identifier passed to the provider (for xAI use Grok-4 family values such as `grok-4`) |
 | `model_api_key` | string | `""` | Session-only API key used for providers requiring authentication |
 | `offline_only` | bool | `true` | Force fixture mode regardless of provider |
+| `endpoint_mode` | string | `chat_completions` | Endpoint style: `chat_completions`, `responses`, or `multi_agent` |
 | `execution_mode` | string | `langgraph-compatible` | Pipeline execution strategy |
 | `require_hitl_gates` | bool | `true` | Enable/disable mandatory HITL gates |
 | `stop_on_validation_error` | bool | `true` | Halt pipeline on canonical graph validation failure |
@@ -273,7 +274,7 @@ through `src/threat_modeler/config.py`.
 | Profile | `provider` | `offline_only` | API key required |
 |---------|-----------|----------------|-----------------|
 | Offline (fixture) | `fixture` | `true` | No |
-| Hybrid (Grok) | `xai` | `false` | Yes — `XAI_API_KEY` |
+| Hybrid (Grok-4) | `xai` | `false` | Yes — `XAI_API_KEY` |
 
 ---
 

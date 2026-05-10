@@ -14,11 +14,18 @@ import os
 import streamlit as st
 
 from threat_modeler.config import (
+    LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
+    LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
     PROVIDER_MATRIX,
     ModelSelection,
     PipelineSettings,
     RuntimeSettings,
     build_default_settings,
+)
+from threat_modeler.backend.runtime_state import (
+    get_last_settings,
+    remember_settings,
+    remember_validation_state,
 )
 
 _ALL_STAGES = [
@@ -48,18 +55,30 @@ _STAGE_LABELS = {
 _API_KEY_ENV_VARS = {
     "openai": "OPENAI_API_KEY",
     "anthropic": "ANTHROPIC_API_KEY",
-    "xai": "XAI_API_KEY",
+    "xai": "GROK_API",
     "azure": "AZURE_OPENAI_API_KEY",
     "custom": "CUSTOM_API_KEY",
     "ollama": "OLLAMA_API_KEY",
     "fixture": "",
 }
 
+_API_KEY_ENV_CANDIDATES = {
+    "xai": ("GROK_API", "XAI_API_KEY"),
+}
+
 _PROVIDER_MODEL_CATALOGS = {
     "fixture": ["fixture-placeholder"],
     "openai": ["gpt-4.1", "gpt-4.1-mini", "gpt-4o", "gpt-4o-mini", "o4-mini", "o3"],
     "anthropic": ["claude-sonnet-4-20250514", "claude-opus-4-20250514", "claude-3-5-haiku-20241022"],
-    "xai": ["grok-3", "grok-3-mini", "grok-3-reasoning"],
+    "xai": [
+        "grok-4",
+        "grok-4.3",
+        "grok-4.20-multi-agent-0309",
+        "grok-4.20-0309-reasoning",
+        "grok-4.20-0309-non-reasoning",
+        "grok-4-1-fast-reasoning",
+        "grok-4-1-fast-non-reasoning",
+    ],
     "azure": ["gpt-4.1", "gpt-4o", "o4-mini"],
     "ollama": ["llama3.1:8b", "llama3.1:70b", "qwen2.5:14b", "mistral:latest"],
     "custom": ["<Custom model>"],
@@ -72,11 +91,48 @@ def _api_key_env_var(provider: str) -> str:
     return _API_KEY_ENV_VARS.get(provider, f"{provider.upper()}_API_KEY")
 
 
+def _api_key_env_candidates(provider: str) -> tuple[str, ...]:
+    return _API_KEY_ENV_CANDIDATES.get(provider, (_api_key_env_var(provider),))
+
+
 def _defaults() -> RuntimeSettings:
     override = st.session_state.get("settings_override")
+    recovered = get_last_settings()
     if isinstance(override, RuntimeSettings):
+        if isinstance(recovered, RuntimeSettings):
+            override_live = not override.model.offline_only and override.model.provider != "fixture"
+            recovered_live = not recovered.model.offline_only and recovered.model.provider != "fixture"
+            if recovered_live and not override_live:
+                st.session_state["settings_override"] = recovered
+                return recovered
         return override
+    if isinstance(recovered, RuntimeSettings):
+        st.session_state["settings_override"] = recovered
+        return recovered
     return build_default_settings()
+
+
+def _provider_scoped_model_defaults(
+    defaults: RuntimeSettings,
+    selected_provider: str,
+) -> tuple[str, str, str, bool, int, int]:
+    if defaults.model.provider == selected_provider:
+        return (
+            defaults.model.model_name.strip(),
+            defaults.model.connection_url,
+            getattr(defaults.model, "endpoint_mode", "chat_completions"),
+            defaults.model.offline_only,
+            max(1, int(getattr(defaults.model, "request_timeout_seconds", LIVE_LLM_DEFAULT_TIMEOUT_SECONDS))),
+            max(1, int(getattr(defaults.model, "request_max_attempts", LIVE_LLM_DEFAULT_MAX_ATTEMPTS))),
+        )
+    return (
+        str(PROVIDER_MATRIX.get(selected_provider, {}).get("default_model", "")).strip(),
+        "",
+        "chat_completions",
+        False,
+        LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
+        LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
+    )
 
 
 def render() -> None:
@@ -92,17 +148,24 @@ def render() -> None:
 
     provider_options = {prov_key: f"{meta['label']}" for prov_key, meta in PROVIDER_MATRIX.items()}
     provider_keys = list(PROVIDER_MATRIX.keys())
-    default_provider = st.session_state.get("config_selected_provider", defaults.model.provider)
-    if default_provider not in PROVIDER_MATRIX:
-        default_provider = provider_keys[0]
+    provider_widget_key = "config_selected_provider"
+    desired_provider = defaults.model.provider if defaults.model.provider in PROVIDER_MATRIX else provider_keys[0]
+    current_provider = st.session_state.get(provider_widget_key)
+    if current_provider not in PROVIDER_MATRIX:
+        st.session_state[provider_widget_key] = desired_provider
+
+    default_provider = st.session_state.get(provider_widget_key, desired_provider)
 
     selected_provider = st.selectbox(
         "Provider",
         options=provider_keys,
-        key="config_selected_provider",
+        key=provider_widget_key,
         format_func=lambda x: provider_options[x],
         index=provider_keys.index(default_provider),
         help="Select the LLM provider to use.",
+    )
+    st.caption(
+        "Provider selection updates the draft form immediately. Click Apply Settings to commit changes to backend state."
     )
 
     # Show provider description
@@ -111,10 +174,21 @@ def render() -> None:
         st.info(f"**{provider_info['label']}**: {provider_info['description']}")
 
     api_key_input = ""
+    (
+        scoped_model_name,
+        scoped_connection_url,
+        scoped_endpoint_mode,
+        scoped_offline_only,
+        scoped_timeout_seconds,
+        scoped_max_attempts,
+    ) = _provider_scoped_model_defaults(
+        defaults,
+        selected_provider,
+    )
     with st.form("pipeline_config_form"):
         # Model name selector + editable override
         model_catalog = list(_PROVIDER_MODEL_CATALOGS.get(selected_provider, []))
-        default_model = defaults.model.model_name.strip() or provider_info.get("default_model", "")
+        default_model = scoped_model_name or provider_info.get("default_model", "")
 
         if default_model and default_model not in model_catalog and "<Custom model>" not in model_catalog:
             model_catalog.append("<Custom model>")
@@ -142,18 +216,18 @@ def render() -> None:
             model_name = st.text_input(
                 "Custom model name",
                 value=default_model if default_model not in ("", "<Custom model>") else "",
-                placeholder="e.g., grok-3-reasoning or intranet-agent-v2",
+                placeholder="e.g., grok-4-reasoning or intranet-agent-v2",
                 help="Editable override for custom/intranet or newly released models.",
             )
 
         # ===== SCR-013: Connection Details =====
         st.subheader("SCR-013 — Connection Details")
 
-        connection_url = defaults.model.connection_url
+        connection_url = scoped_connection_url
         if selected_provider != "fixture":
             connection_url = st.text_input(
                 "Connection URL",
-                value=defaults.model.connection_url,
+                value=scoped_connection_url,
                 placeholder=(
                     "Required endpoint URL"
                     if provider_info.get("requires_url", False)
@@ -166,8 +240,8 @@ def render() -> None:
         endpoint_mode = st.selectbox(
             "Endpoint mode",
             options=_ENDPOINT_MODES,
-            index=_ENDPOINT_MODES.index(getattr(defaults.model, "endpoint_mode", "chat_completions"))
-            if getattr(defaults.model, "endpoint_mode", "chat_completions") in _ENDPOINT_MODES
+            index=_ENDPOINT_MODES.index(scoped_endpoint_mode)
+            if scoped_endpoint_mode in _ENDPOINT_MODES
             else 0,
             help=(
                 "chat_completions: OpenAI-style /chat/completions. "
@@ -197,10 +271,38 @@ def render() -> None:
         else:
             st.caption("API key is optional/not required for the selected provider.")
 
+        force_offline_fixture = selected_provider == "fixture"
         offline_mode_checkbox = st.checkbox(
             "Offline/Fixture mode (no live LLM calls)",
-            value=defaults.model.offline_only,
-            help="When checked, uses deterministic fixture data instead of calling a live LLM.",
+            value=True if force_offline_fixture else scoped_offline_only,
+            disabled=force_offline_fixture,
+            help=(
+                "Local/Fixture provider always runs offline. Select a live provider above to enable live LLM mode."
+                if force_offline_fixture
+                else "When checked, uses deterministic fixture data instead of calling a live LLM."
+            ),
+        )
+        if force_offline_fixture:
+            st.caption("Local/Fixture is always offline. Choose a live provider above, then click Apply Settings.")
+
+        st.subheader("Live Request Reliability")
+        request_timeout_seconds = st.number_input(
+            "Request timeout per attempt (seconds)",
+            min_value=30,
+            max_value=900,
+            step=30,
+            value=int(scoped_timeout_seconds),
+            help="Maximum wait time for one provider request attempt before retry/failure.",
+            disabled=selected_provider == "fixture",
+        )
+        request_max_attempts = st.number_input(
+            "Max retry attempts",
+            min_value=1,
+            max_value=6,
+            step=1,
+            value=int(scoped_max_attempts),
+            help="How many total attempts are made before failing a stage request.",
+            disabled=selected_provider == "fixture",
         )
 
         # ===== Pipeline Settings =====
@@ -237,6 +339,8 @@ def render() -> None:
             errors.append(f"Connection URL is required for {provider_info['label']}.")
         if not enabled_stages:
             errors.append("At least one stage must be enabled.")
+        if selected_provider == "fixture" and not offline_mode_checkbox:
+            errors.append("Local/Fixture provider must run in offline mode. Select a live provider to enable live LLM mode.")
 
         if errors:
             for err in errors:
@@ -249,6 +353,8 @@ def render() -> None:
                     offline_only=offline_mode_checkbox,
                     connection_url=connection_url.strip(),
                     endpoint_mode=endpoint_mode,
+                    request_timeout_seconds=int(request_timeout_seconds),
+                    request_max_attempts=int(request_max_attempts),
                 ),
                 pipeline=PipelineSettings(
                     enabled_stage_ids=tuple(enabled_stages),
@@ -257,22 +363,30 @@ def render() -> None:
                 ),
             )
             st.session_state["settings_override"] = new_settings
+            remember_settings(new_settings)
             st.session_state["model_connection_valid"] = False
             st.session_state["offline_override_active"] = False
+            remember_validation_state(False, offline_override=False)
 
             if provider_info.get("requires_api_key", False):
                 key_value = api_key_input.strip()
                 st.session_state["model_api_key"] = key_value
                 if key_value:
-                    env_var = _api_key_env_var(selected_provider)
-                    if env_var:
-                        os.environ[env_var] = key_value
+                    for env_var in _api_key_env_candidates(selected_provider):
+                        if env_var:
+                            os.environ[env_var] = key_value
 
             st.success(f"✅ Settings applied. Provider: {provider_info['label']}, Model: {model_name.strip()}")
 
     # ===== SCR-014: Connection Validation =====
     st.divider()
     st.subheader("SCR-014 — Connection Validation")
+
+    if selected_provider != defaults.model.provider:
+        st.info(
+            f"Pending draft provider: {provider_options.get(selected_provider, selected_provider)}. "
+            "Click Apply Settings before validating or starting a run."
+        )
 
     active = _defaults()
     is_fixture = active.model.offline_only or active.model.provider == "fixture"
@@ -285,6 +399,8 @@ def render() -> None:
         )
         # Fixture mode is always considered valid
         st.session_state["model_connection_valid"] = True
+        st.session_state["offline_override_active"] = False
+        remember_validation_state(True, offline_override=False)
     elif is_valid:
         active_info = PROVIDER_MATRIX.get(active.model.provider, {})
         st.success(
@@ -293,6 +409,8 @@ def render() -> None:
         )
         if st.button("Re-validate", key="revalidate_btn"):
             st.session_state["model_connection_valid"] = False
+            st.session_state["offline_override_active"] = False
+            remember_validation_state(False, offline_override=False)
             st.rerun()
     else:
         st.warning(
@@ -315,15 +433,21 @@ def render() -> None:
             if st.button("Validate Connection", type="primary", key="validate_connection_btn"):
                 from threat_modeler.ui.connection_validator import validate_connection  # noqa: PLC0415
 
-                # Resolve API key: UI input first, then environment
-                env_var = _api_key_env_var(active.model.provider)
-                resolved_key = stored_key.strip() or os.environ.get(env_var, "")
+                # Resolve API key: UI input first, then environment.
+                resolved_key = stored_key.strip()
+                if not resolved_key:
+                    for env_var in _api_key_env_candidates(active.model.provider):
+                        resolved_key = os.environ.get(env_var, "").strip()
+                        if resolved_key:
+                            break
 
                 with st.spinner("Checking connection…"):
                     result = validate_connection(active.model, api_key=resolved_key)
 
                 if result.ok:
                     st.session_state["model_connection_valid"] = True
+                    st.session_state["offline_override_active"] = False
+                    remember_validation_state(True, offline_override=False)
                     st.rerun()
                 else:
                     st.error(f"❌ {result.message}")
@@ -338,11 +462,13 @@ def render() -> None:
             ):
                 st.session_state["model_connection_valid"] = True
                 st.session_state["offline_override_active"] = True
+                remember_validation_state(True, offline_override=True)
                 st.rerun()
 
     # Show active settings summary
     st.divider()
-    st.subheader("Active Settings")
+    st.subheader("Applied Backend Settings")
+    st.caption("These values show the settings currently committed to backend state.")
     active = _defaults()
     cols = st.columns(2)
     with cols[0]:

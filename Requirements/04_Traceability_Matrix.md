@@ -16,7 +16,7 @@ Project to component and interface mapping:
 - PRJ-005 -> C04-A03-001, C05-A04-001, C06-A05-001, C07-A06-001, C08-A07-001, C09-A08-001, C10-A09-001
 - PRJ-006 -> C12-HITL-001, C12-HITL-002, HITL-001 to HITL-006, INT-006
 - PRJ-007 -> C01-STATE-002, C12-HITL-003, C12-HITL-004, INT-014
-- PRJ-008 -> C11-LLM-001, C11-LLM-003, INT-012, INT-015, **GUI-012 (Delivered S07-02), GUI-013 (Delivered S07-02), GUI-014 (Delivered S07-03)**
+- PRJ-008 -> C11-LLM-001, C11-LLM-003, INT-012, INT-015, **GUI-012 (Delivered S07-02), GUI-013 (Delivered S07-02), GUI-014 (Delivered S07-03), GUI-015 (Delivered S08)**
 - PRJ-009 -> C11-LLM-002, INT-012
 - PRJ-010 -> C06-A05-002, C08-A07-003, INT-008
 - PRJ-011 -> C07-A06-001, C09-A08-001, C10-A09-001, INT-10, INT-11, **GUI-006 (Deferred to S07-06), GUI-007 (Deferred to S07-06)**
@@ -24,9 +24,11 @@ Project to component and interface mapping:
 - PRJ-013 -> C03-A02-001, C01-STATE-002, C12-HITL-004
 - PRJ-014 -> C09-A08-003, INT-007
 - PRJ-015 -> C01-STATE-003, C04-A03-002
-- PRJ-016 -> **GUI-001 (Delivered S06-07), GUI-002 (Delivered S06-07), GUI-003 (Delivered S06-07), GUI-004 (Deferred to S07-05), GUI-005 (Deferred to S07-05), GUI-006 (Deferred to S07-06), GUI-011 (Deferred to S07-03), GUI-012 (Delivered S07-02), GUI-013 (Delivered S07-02), GUI-014 (Delivered S07-03)**, docs/HMI_Architecture_Blueprint.md
+- PRJ-016 -> **GUI-001 (Delivered S06-07), GUI-002 (Delivered S06-07), GUI-002B (Delivered S08), GUI-003 (Delivered S06-07), GUI-003B (Delivered S08), GUI-003C (Delivered S08), GUI-004 (Deferred to S07-05), GUI-005 (Deferred to S07-05), GUI-006 (Deferred to S07-06), GUI-011 (Deferred to S07-03), GUI-012 (Delivered S07-02), GUI-013 (Delivered S07-02), GUI-014 (Delivered S07-03), GUI-015 (Delivered S08)**, docs/HMI_Architecture_Blueprint.md
 - PRJ-017 -> **GUI-007 (Deferred to S07-06), GUI-008 (Deferred to S07-06)**
 - PRJ-018 -> **GUI-009 (Deferred to S07-04), GUI-010 (Deferred to S07-04)**
+- PRJ-019 -> C01-ORCH-001, C01-STATE-002, INT-005, **GUI-016 (Planned S08 hotfix stream)**
+- PRJ-020 -> C01-STATE-003, C11-LLM-003, INT-012, **GUI-017 (Planned S08 hotfix stream)**
 
 ---
 
@@ -36,7 +38,10 @@ Project to component and interface mapping:
 |--------|-------------|---------------|--------|--------|-------|
 | GUI-001 | Input Entry Form | SCR-001 | S06-07 | ✅ Delivered | `src/threat_modeler/ui/screens/input_entry.py`; shown in screenshot scr_004 |
 | GUI-002 | HITL Gate Screen | SCR-005 | S06-07 | ✅ Delivered | Backend implemented in S05-04; GUI screens pending S07 implementation |
+| GUI-002B | Non-Blocking HITL Gate Resume | SCR-005 / execution.py | S08 | ✅ Delivered S08 | Resume wired to `resume_pipeline_execution()` background thread; D-S08-012 fix |
 | GUI-003 | Home/Dashboard | SCR-002 | S06-07 | ✅ Delivered | Pipeline status view; shown in screenshot scr_001 |
+| GUI-003B | Screen-Level Execution State Synchronization | All screens | S08 | ✅ Delivered S08 | `sync_execution_state_to_session()` added to results_export.py, snapshot_manager.py; D-S08-013/014 fix |
+| GUI-003C | Cross-Screen State Coherence | All artifact screens | S08 | ✅ Delivered S08 | Coherence guaranteed by GUI-003B sync call at top of each screen render(); D-S08-013/014 |
 | GUI-004 | Stage Results Viewer | SCR-003 | **Deferred S07** | ⏳ S07-05 | GUI-004 spec in HMI blueprint; stage output inspection deferred |
 | GUI-005 | Threat and Mitigation Review | SCR-004 | **Deferred S07** | ⏳ S07-05 | Threat/mitigation analyst review deferred |
 | GUI-006 | Results Export | SCR-007 | **Deferred S07** | ⏳ S07-06 | Export JSON/STIX/Mermaid/report GUI deferred |
@@ -48,6 +53,9 @@ Project to component and interface mapping:
 | GUI-012 | Model Provider Selection | SCR-012 | **S07-02** | ⏳ Active | Provider dropdown (Custom/Intranet support) |
 | GUI-013 | Model Connection Details | SCR-013 | **S07-02** | ⏳ Active | Connection URL plus masked API-key input (session-only) for authenticated providers |
 | GUI-014 | Model Connection Validation | SCR-014 | **S07-03** | ⏳ Active | Connection test and validation gate |
+| GUI-015 | Token Usage Telemetry Dashboard and Export | SCR-014A | S08 | ✅ Delivered S08 | Token usage captured per stage from live provider responses and exposed in Token Usage screen plus Results Export JSON artifact |
+| GUI-016 | Backend Runtime State Projection | SCR-002/SCR-003 runtime projection | S08 | 🔄 In Progress | Backend async runtime state as authority; GUI consumes projected state only |
+| GUI-017 | Live Mode Failover Hard-Stop Visibility | SCR-014B | S08 | 🔄 In Progress | Live-intent runs must fail hard if fallback to fixture/offline occurs |
 
 ---
 

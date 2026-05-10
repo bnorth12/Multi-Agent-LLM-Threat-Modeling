@@ -2,10 +2,10 @@
 
 CSV format uses a flat entity-per-row layout with columns:
   entity_type, id, name, description, parent, hardware,
-  software_modules, from_node, to_node, interface_type, protocol,
-  data_items, trust_boundary_crossing, trust_boundary_name
+  from_node, to_node, protocol, data_items, trust_boundary_crossing,
+  trust_boundary_name
 
-entity_type values: subsystem | component | function | interface
+entity_type values: subsystem | component | data_flow
 """
 
 import csv
@@ -14,7 +14,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from threat_modeler.models.canonical import Component, Function, Interface, Subsystem
+from threat_modeler.models.canonical import Component, DataFlow, Subsystem
 
 
 @dataclass
@@ -25,13 +25,7 @@ class IcdParseResult:
     version: str
     subsystems: list[Subsystem] = field(default_factory=list)
     components: list[Component] = field(default_factory=list)
-    functions: list[Function] = field(default_factory=list)
-    interfaces: list[Interface] = field(default_factory=list)
-
-    # Backward compatibility
-    @property
-    def data_flows(self) -> list[Interface]:
-        return self.interfaces
+    data_flows: list[DataFlow] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -77,42 +71,17 @@ def _parse_rows(rows: list[dict[str, Any]], source_file: str, version: str) -> I
                     description=row.get("description", "").strip(),
                 )
             )
-        elif etype == "function":
-            result.functions.append(
-                Function(
-                    id=row.get("id", "").strip(),
-                    name=row.get("name", "").strip(),
-                    parent_component=row.get("parent", "").strip(),
-                    description=row.get("description", "").strip(),
-                )
-            )
-        elif etype == "interface":
-            items_raw = row.get("data_items", "").strip()
-            result.interfaces.append(
-                Interface(
-                    id=row.get("id", "").strip(),
-                    name=row.get("name", "").strip(),
-                    description=row.get("description", "").strip(),
-                    from_node=row.get("from_node", "").strip(),
-                    to_node=row.get("to_node", "").strip(),
-                    interface_type=row.get("interface_type", "unknown").strip(),
-                    protocol=row.get("protocol", "unknown").strip(),
-                    data_items=[i.strip() for i in items_raw.split("|") if i.strip()],
-                    trust_boundary_crossing=_to_bool(row.get("trust_boundary_crossing", "false")),
-                    trust_boundary_name=row.get("trust_boundary_name", "").strip(),
-                )
-            )
         elif etype == "data_flow":
-            # Backward compatibility: treat data_flow as interface
             items_raw = row.get("data_items", "").strip()
-            result.interfaces.append(
-                Interface(
+            flow_name = row.get("name", "").strip() or row.get("id", "").strip()
+            flow_description = row.get("description", "").strip() or flow_name
+            result.data_flows.append(
+                DataFlow(
                     id=row.get("id", "").strip(),
-                    name=row.get("name", "").strip(),
-                    description="Legacy data flow",
+                    name=flow_name,
+                    description=flow_description,
                     from_node=row.get("from_node", "").strip(),
                     to_node=row.get("to_node", "").strip(),
-                    interface_type="unknown",
                     protocol=row.get("protocol", "unknown").strip(),
                     data_items=[i.strip() for i in items_raw.split("|") if i.strip()],
                     trust_boundary_crossing=_to_bool(row.get("trust_boundary_crossing", "false")),

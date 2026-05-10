@@ -12,6 +12,10 @@ class LlmAdapter:
     def complete(self, system_prompt: str, user_message: str) -> str:
         raise NotImplementedError
 
+    def usage_snapshot(self) -> dict[str, int | str]:
+        """Return usage details from the most recent request, if available."""
+        return {}
+
 
 class FixtureAdapter(LlmAdapter):
     """Returns a pre-recorded fixture response for the given agent stage.
@@ -29,3 +33,7 @@ class FixtureAdapter(LlmAdapter):
                 f"Fixture file not found: {self._fixture_path}"
             )
         return self._fixture_path.read_text(encoding="utf-8")
+
+    def usage_snapshot(self) -> dict[str, int | str]:
+        # Fixture mode is offline and does not consume provider tokens.
+        return {}

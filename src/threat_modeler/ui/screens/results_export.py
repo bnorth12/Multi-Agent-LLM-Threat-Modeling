@@ -4,17 +4,21 @@ from __future__ import annotations
 
 import streamlit as st
 
+from threat_modeler.ui.execution import sync_execution_state_to_session
 from threat_modeler.ui.runtime_io import (
     export_canonical_json,
     export_mermaid_markdown,
     export_report_markdown,
     export_stix_json,
+    export_token_usage_json,
 )
 
 
 def render() -> None:
     st.header("Results Export")
     st.caption("SCR-007 — export generated artifacts")
+
+    sync_execution_state_to_session()
 
     run_id = st.session_state.get("run_id") or "no-run"
     state = st.session_state.get("pipeline_state")
@@ -24,7 +28,7 @@ def render() -> None:
         return
 
     st.subheader("Export Artifacts")
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         canonical_json = export_canonical_json(state)
@@ -64,6 +68,16 @@ def render() -> None:
             use_container_width=True,
         )
 
+    with col3:
+        token_usage_json = export_token_usage_json(state)
+        st.download_button(
+            "Download Token Usage JSON",
+            data=token_usage_json,
+            file_name=f"{run_id}_token_usage.json",
+            mime="application/json",
+            use_container_width=True,
+        )
+
     st.divider()
     st.subheader("Quick Preview")
 
@@ -78,3 +92,6 @@ def render() -> None:
 
     with st.expander("Mermaid Markdown", expanded=False):
         st.code(mermaid_md[:20000], language="markdown")
+
+    with st.expander("Token Usage JSON", expanded=False):
+        st.code(token_usage_json[:20000], language="json")

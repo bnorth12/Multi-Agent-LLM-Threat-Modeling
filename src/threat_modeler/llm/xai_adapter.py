@@ -7,7 +7,7 @@ import os
 from .base import LlmAdapter
 
 _XAI_BASE_URL = "https://api.x.ai/v1"
-_DEFAULT_MODEL = "grok-3-mini"
+_DEFAULT_MODEL = "grok-4"
 
 
 class XaiAdapter(LlmAdapter):

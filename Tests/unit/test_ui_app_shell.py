@@ -79,7 +79,7 @@ class TestSessionInit:
             from threat_modeler.ui.session import init_session_state
             init_session_state()
 
-        assert st_stub.session_state["theme"] == "Default"
+        assert st_stub.session_state["theme"] == "Dark"
 
 
 # ---------------------------------------------------------------------------
@@ -151,7 +151,7 @@ class TestConfigPageDefaults:
         """Verify RuntimeSettings can be constructed and stored (logic layer only)."""
         from threat_modeler.config import ModelSelection, PipelineSettings, RuntimeSettings
         settings = RuntimeSettings(
-            model=ModelSelection(provider="xai", model_name="grok-3-mini", offline_only=False),
+            model=ModelSelection(provider="xai", model_name="grok-4", offline_only=False),
             pipeline=PipelineSettings(
                 enabled_stage_ids=("agent_01", "agent_02"),
                 stop_on_validation_error=True,
@@ -213,7 +213,7 @@ class TestConfigPageDefaults:
 
     def test_model_selection_has_endpoint_mode_field(self):
         from threat_modeler.config import ModelSelection
-        m = ModelSelection(provider="xai", model_name="grok-3", offline_only=False)
+        m = ModelSelection(provider="xai", model_name="grok-4", offline_only=False)
         assert hasattr(m, "endpoint_mode")
         assert m.endpoint_mode == "chat_completions"
 

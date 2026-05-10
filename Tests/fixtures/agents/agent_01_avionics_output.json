@@ -5,60 +5,256 @@
   },
   "system": {
     "name": "Avionics Data Network",
-    "description": "Sample avionics data network for threat modeling fixture.",
+    "description": "Integrated avionics network with GPS/INS, fly-by-wire control, and cockpit displays.",
     "mission_criticality": "high",
     "safety_criticality": "high"
   },
   "subsystems": [
     {
-      "id": "ss-01",
-      "name": "Flight Management Subsystem",
-      "description": "Manages flight planning and navigation.",
+      "id": "ss-nav",
+      "name": "Navigation and Guidance Subsystem",
+      "description": "Provides position fixes, inertial reference, and route guidance commands.",
       "parent_system": "Avionics Data Network"
     },
     {
-      "id": "ss-02",
-      "name": "Ground Data Link Subsystem",
-      "description": "Handles communication with ground stations.",
+      "id": "ss-fcs",
+      "name": "Fly-By-Wire Flight Control Subsystem",
+      "description": "Implements closed-loop flight stability and surface actuation.",
+      "parent_system": "Avionics Data Network"
+    },
+    {
+      "id": "ss-vmc",
+      "name": "Vehicle Management and Mission Computing Subsystem",
+      "description": "Aggregates avionics status and publishes display products.",
+      "parent_system": "Avionics Data Network"
+    },
+    {
+      "id": "ss-disp",
+      "name": "Flight Deck Display Subsystem",
+      "description": "Primary and multifunction displays for pilots.",
       "parent_system": "Avionics Data Network"
     }
   ],
   "components": [
     {
-      "id": "cmp-01",
-      "name": "FMS Core",
-      "parent_subsystem": "ss-01",
-      "hardware": "Embedded processor",
-      "software_modules": ["nav_engine", "route_planner"],
-      "description": "Core flight management computer."
+      "id": "cmp-gps-01",
+      "name": "GPS Receiver",
+      "parent_subsystem": "ss-nav",
+      "hardware": "GNSS receiver module",
+      "software_modules": ["gps_filter", "integrity_monitor"],
+      "description": "Produces position fixes, time, and velocity vectors."
     },
     {
-      "id": "cmp-02",
-      "name": "VHF Data Radio",
-      "parent_subsystem": "ss-02",
-      "hardware": "VHF transceiver",
-      "software_modules": ["acars_stack"],
-      "description": "VHF data radio for ACARS communication."
+      "id": "cmp-imu-01",
+      "name": "INS/IMU Unit",
+      "parent_subsystem": "ss-nav",
+      "hardware": "Embedded processor",
+      "software_modules": ["gyro_fusion", "accelerometer_fusion"],
+      "description": "Three gyros and three accelerometers provide inertial reference data."
+    },
+    {
+      "id": "cmp-fd-01",
+      "name": "Flight Director",
+      "parent_subsystem": "ss-nav",
+      "hardware": "Guidance computer",
+      "software_modules": ["waypoint_manager", "guidance_law"],
+      "description": "Uses waypoint plans to generate guidance commands."
+    },
+    {
+      "id": "cmp-fcc-01",
+      "name": "Flight Control Computer",
+      "parent_subsystem": "ss-fcs",
+      "hardware": "Redundant FBW controller",
+      "software_modules": ["stability_loop", "control_allocator"],
+      "description": "Computes closed-loop control commands for servo actuators."
+    },
+    {
+      "id": "cmp-servo-01",
+      "name": "Servo Actuator Cluster",
+      "parent_subsystem": "ss-fcs",
+      "hardware": "Electro-hydraulic servo pack",
+      "software_modules": ["servo_driver"],
+      "description": "Drives aileron/elevator/rudder surfaces and returns position feedback."
+    },
+    {
+      "id": "cmp-vmc-01",
+      "name": "Vehicle Management Computer",
+      "parent_subsystem": "ss-vmc",
+      "hardware": "IMA compute module",
+      "software_modules": ["data_concentrator", "display_compositor"],
+      "description": "Combines data from avionics systems and generates display content."
+    },
+    {
+      "id": "cmp-pfd-01",
+      "name": "Primary Flight Display",
+      "parent_subsystem": "ss-disp",
+      "hardware": "LCD cockpit display",
+      "software_modules": ["render_engine"],
+      "description": "Renders synthetic flight symbology and status overlays."
     }
   ],
   "functions": [
     {
-      "id": "fn-01",
-      "name": "Route Upload",
-      "parent_component": "cmp-01",
-      "description": "Receives and validates uplinked route data."
+      "id": "fn-nav-01",
+      "name": "Position and Inertial Fusion",
+      "parent_component": "cmp-imu-01",
+      "description": "Fuses gyro and accelerometer measurements into inertial attitude and rates."
+    },
+    {
+      "id": "fn-guid-01",
+      "name": "Waypoint Guidance",
+      "parent_component": "cmp-fd-01",
+      "description": "Computes route-following commands from waypoint plans."
+    },
+    {
+      "id": "fn-fbw-01",
+      "name": "Closed-Loop Flight Stability",
+      "parent_component": "cmp-fcc-01",
+      "description": "Runs control loops that command servos and consume feedback sensors."
+    },
+    {
+      "id": "fn-disp-01",
+      "name": "Display Composition",
+      "parent_component": "cmp-vmc-01",
+      "description": "Builds ARINC 818 video and ancillary data for cockpit displays."
     }
   ],
   "interfaces": [
     {
       "id": "if-01",
-      "name": "Ground to FMS Route Uplink",
-      "description": "ACARS uplink carrying route amendments from ground to FMS.",
-      "from_node": "cmp-02",
-      "to_node": "cmp-01",
+      "name": "GPS to Flight Director Position Feed",
+      "description": "Position fixes, UTC, and velocity vectors from GPS receiver to flight director.",
+      "from_node": "cmp-gps-01",
+      "to_node": "cmp-fd-01",
       "interface_type": "component-component",
-      "protocol": "ACARS",
-      "data_items": ["route_amendment", "weather_data"],
+      "protocol": "ARINC 429",
+      "data_items": ["position_fix", "velocity_vector", "gps_time"],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 0, "S_justification": "Not scored yet.",
+        "T": 0, "T_justification": "Not scored yet.",
+        "R": 0, "R_justification": "Not scored yet.",
+        "I": 0, "I_justification": "Not scored yet.",
+        "D": 0, "D_justification": "Not scored yet.",
+        "E": 0, "E_justification": "Not scored yet."
+      },
+      "threats": []
+    },
+    {
+      "id": "if-02",
+      "name": "IMU to Flight Control Inertial Feed",
+      "description": "Body rates and accelerations from INS/IMU to FBW control laws.",
+      "from_node": "cmp-imu-01",
+      "to_node": "cmp-fcc-01",
+      "interface_type": "component-component",
+      "protocol": "MIL-STD-1553",
+      "data_items": ["gyro_rates", "accelerometer_axes", "attitude_reference"],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 0, "S_justification": "Not scored yet.",
+        "T": 0, "T_justification": "Not scored yet.",
+        "R": 0, "R_justification": "Not scored yet.",
+        "I": 0, "I_justification": "Not scored yet.",
+        "D": 0, "D_justification": "Not scored yet.",
+        "E": 0, "E_justification": "Not scored yet."
+      },
+      "threats": []
+    },
+    {
+      "id": "if-03",
+      "name": "Flight Director to FCC Guidance Commands",
+      "description": "Guidance setpoints and waypoint commands published to FBW controller.",
+      "from_node": "cmp-fd-01",
+      "to_node": "cmp-fcc-01",
+      "interface_type": "component-component",
+      "protocol": "ARINC 664",
+      "data_items": ["lateral_setpoint", "vertical_setpoint", "mode_annunciation"],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Guidance-Control Partition Boundary",
+      "stride": {
+        "S": 0, "S_justification": "Not scored yet.",
+        "T": 0, "T_justification": "Not scored yet.",
+        "R": 0, "R_justification": "Not scored yet.",
+        "I": 0, "I_justification": "Not scored yet.",
+        "D": 0, "D_justification": "Not scored yet.",
+        "E": 0, "E_justification": "Not scored yet."
+      },
+      "threats": []
+    },
+    {
+      "id": "if-04",
+      "name": "FCC to Servo Actuator Commands",
+      "description": "Discrete fly-by-wire command lines to electro-hydraulic servo actuators.",
+      "from_node": "cmp-fcc-01",
+      "to_node": "cmp-servo-01",
+      "interface_type": "component-component",
+      "protocol": "Discrete I/O",
+      "data_items": ["aileron_cmd", "elevator_cmd", "rudder_cmd", "engage_bits"],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Digital-Actuation Boundary",
+      "stride": {
+        "S": 0, "S_justification": "Not scored yet.",
+        "T": 0, "T_justification": "Not scored yet.",
+        "R": 0, "R_justification": "Not scored yet.",
+        "I": 0, "I_justification": "Not scored yet.",
+        "D": 0, "D_justification": "Not scored yet.",
+        "E": 0, "E_justification": "Not scored yet."
+      },
+      "threats": []
+    },
+    {
+      "id": "if-05",
+      "name": "Servo Feedback to FCC",
+      "description": "Analog position and rate feedback from control surface actuators.",
+      "from_node": "cmp-servo-01",
+      "to_node": "cmp-fcc-01",
+      "interface_type": "component-component",
+      "protocol": "Analog",
+      "data_items": ["surface_position", "surface_rate", "actuator_health"],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Actuation-Sensing Boundary",
+      "stride": {
+        "S": 0, "S_justification": "Not scored yet.",
+        "T": 0, "T_justification": "Not scored yet.",
+        "R": 0, "R_justification": "Not scored yet.",
+        "I": 0, "I_justification": "Not scored yet.",
+        "D": 0, "D_justification": "Not scored yet.",
+        "E": 0, "E_justification": "Not scored yet."
+      },
+      "threats": []
+    },
+    {
+      "id": "if-06",
+      "name": "Vehicle Management Video to Displays",
+      "description": "Composited flight/degradation symbology and data overlays to cockpit displays.",
+      "from_node": "cmp-vmc-01",
+      "to_node": "cmp-pfd-01",
+      "interface_type": "component-component",
+      "protocol": "ARINC 818",
+      "data_items": ["video_frames", "annunciations", "flight_path_marker"],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 0, "S_justification": "Not scored yet.",
+        "T": 0, "T_justification": "Not scored yet.",
+        "R": 0, "R_justification": "Not scored yet.",
+        "I": 0, "I_justification": "Not scored yet.",
+        "D": 0, "D_justification": "Not scored yet.",
+        "E": 0, "E_justification": "Not scored yet."
+      },
+      "threats": []
+    },
+    {
+      "id": "if-07",
+      "name": "FCC Health and States to VMC",
+      "description": "Control law modes, failover status, and servo health reports.",
+      "from_node": "cmp-fcc-01",
+      "to_node": "cmp-vmc-01",
+      "interface_type": "component-component",
+      "protocol": "ARINC 664",
+      "data_items": ["fcc_mode", "fault_flags", "servo_summary"],
       "trust_boundary_crossing": false,
       "trust_boundary_name": "",
       "stride": {

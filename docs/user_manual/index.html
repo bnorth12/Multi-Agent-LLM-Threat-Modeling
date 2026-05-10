@@ -313,6 +313,7 @@
   <a href="#export">7 · Results Export</a>
   <a href="#troubleshoot">8 · Troubleshooting</a>
   <a href="#glossary">9 · Glossary</a>
+  <a href="#validation">10 · Live Grok Validation</a>
 </nav>
 
 <!-- ════════════════ MAIN ════════════════ -->
@@ -969,9 +970,10 @@ export XAI_API_KEY="xai-your-key-here"</code></pre>
     <table>
       <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td><code>provider</code></td><td>str</td><td><code>"unconfigured"</code></td><td>LLM provider identifier. <code>"xai"</code> activates Grok; any other value activates fixture mode.</td></tr>
-        <tr><td><code>model_name</code></td><td>str</td><td><code>"fixture"</code></td><td>Model name passed to the provider (e.g. <code>"grok-beta"</code>).</td></tr>
+        <tr><td><code>provider</code></td><td>str</td><td><code>"fixture"</code></td><td>LLM provider identifier. <code>"xai"</code> activates Grok live calls; <code>"fixture"</code> keeps deterministic offline execution.</td></tr>
+        <tr><td><code>model_name</code></td><td>str</td><td><code>"fixture-placeholder"</code></td><td>Model name passed to the provider (for xAI, use Grok-4 family values such as <code>"grok-4"</code>).</td></tr>
         <tr><td><code>offline_only</code></td><td>bool</td><td><code>True</code></td><td>When <code>True</code>, forces fixture mode regardless of provider setting.</td></tr>
+        <tr><td><code>endpoint_mode</code></td><td>str</td><td><code>"chat_completions"</code></td><td>Endpoint style: <code>chat_completions</code>, <code>responses</code>, or <code>multi_agent</code>.</td></tr>
       </tbody>
     </table>
 
@@ -990,7 +992,7 @@ export XAI_API_KEY="xai-your-key-here"</code></pre>
     <table>
       <thead><tr><th>Profile</th><th><code>provider</code></th><th><code>offline_only</code></th><th>API key required</th></tr></thead>
       <tbody>
-        <tr><td>Offline (fixture)</td><td><code>unconfigured</code></td><td><code>True</code></td><td>No</td></tr>
+        <tr><td>Offline (fixture)</td><td><code>fixture</code></td><td><code>True</code></td><td>No</td></tr>
         <tr><td>Hybrid (Grok)</td><td><code>xai</code></td><td><code>False</code></td><td>Yes — <code>XAI_API_KEY</code></td></tr>
       </tbody>
     </table>
@@ -1178,7 +1180,7 @@ pip install -r requirements.txt</code></pre></dd>
 $env:XAI_API_KEY = "xai-your-key-here"
 streamlit run src/threat_modeler/ui/app.py</code></pre>
             Alternatively, switch to offline mode: set <em>Provider</em> to
-            <code>unconfigured</code> and check <em>Offline / fixture mode</em> in SCR-003.
+            <code>fixture</code> and check <em>Offline / fixture mode</em> in SCR-003.
           </dd>
         </dl>
       </div>
@@ -1309,6 +1311,113 @@ streamlit run src/threat_modeler/ui/app.py</code></pre>
       <dt>xAI Grok</dt>
       <dd>The LLM provider used in hybrid mode. Uses an OpenAI-compatible API endpoint (<code>https://api.x.ai/v1</code>). Requires <code>XAI_API_KEY</code> environment variable.</dd>
     </dl>
+  </section>
+
+  <section id="validation">
+    <h2>10 · Live Grok LLM Validation</h2>
+
+    <p><strong>Status:</strong> VALIDATED | <strong>Date:</strong> May 6, 2026 | <strong>Scope:</strong> Full end-to-end pipeline with xAI Grok API</p>
+
+    <h3>Executive Summary</h3>
+    <p>
+      Live Grok validation now executes all 9 stages (<code>agent_01</code>..<code>agent_09</code>) in
+      <code>pytest -m llm_live</code> across the Grok model/endpoint matrix. An initial live run found 3 failures
+      (STRIDE numeric shape parsing, STIX non-JSON response handling, and Mermaid marker drift), and a rerun after
+      remediation passed 6/6 live matrix cases.
+    </p>
+
+    <table>
+      <thead>
+        <tr><th>Test Type</th><th>Result</th><th>Evidence</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Live API Connection</td><td>PASS</td><td>Endpoint validated in UI</td></tr>
+        <tr><td>Grok Model Matrix</td><td>PASS</td><td>6 model variants executed</td></tr>
+        <tr><td>Credential Resolution</td><td>PASS</td><td>GROK_API loading confirmed</td></tr>
+        <tr><td>Artifact Generation</td><td>PASS</td><td>JSON, STIX, Mermaid, Markdown produced</td></tr>
+        <tr><td>Export Validation</td><td>PASS</td><td>Schema/content checks passed</td></tr>
+        <tr><td>HITL Gate Flow</td><td>PASS</td><td>Pause/resume and audit behavior confirmed</td></tr>
+      </tbody>
+    </table>
+    <p><em>Mode boundary:</em> Live evidence is from the 9-stage <code>llm_live</code> matrix. UI/HITL walkthrough and manual export screenshots remain fixture-mode evidence.</p>
+
+    <h3>Live Test Evidence</h3>
+    <p><strong>Command:</strong> <code>pytest Tests/e2e/test_artifact_generation.py -m llm_live -v --tb=short</code></p>
+    <pre><code>Initial run: 3 failed, 3 passed, 34 deselected in 915.92s (0:15:15)
+Final run after fixes: 6 passed, 34 deselected in 975.86s (0:16:15)</code></pre>
+
+    <p><strong>Models validated:</strong></p>
+    <ul>
+      <li>grok-4.3 (chat_completions)</li>
+      <li>grok-4.20-multi-agent-0309 (multi_agent)</li>
+      <li>grok-4.20-0309-reasoning (responses)</li>
+      <li>grok-4.20-0309-non-reasoning (responses)</li>
+      <li>grok-4-1-fast-reasoning (responses)</li>
+      <li>grok-4-1-fast-non-reasoning (chat_completions)</li>
+    </ul>
+
+    <h3>Integration Validation (Fixture Mode)</h3>
+    <p><strong>Command:</strong> <code>pytest Tests/integration/ -k "avionics" -v --tb=line</code></p>
+    <pre><code>2 passed (including full 9-stage artifact expectations and HITL pause/resume flow)</code></pre>
+
+    <h3>Export Validation Summary (Fixture Mode)</h3>
+    <ul>
+      <li><strong>Canonical JSON:</strong> validated at <code>exports_for_manual/canonical_graph.json</code> with 2 subsystems, 2 components, 1 interface, and 1 threat.</li>
+      <li><strong>STIX 2.1:</strong> validated at <code>exports_for_manual/threat_model.stix2</code> as <code>bundle</code> with 5 objects (1 attack-pattern, 2 course-of-action, 2 relationship).</li>
+      <li><strong>Mermaid:</strong> validated at <code>exports_for_manual/diagrams.md</code> as a valid <code>flowchart LR</code> diagram.</li>
+      <li><strong>Markdown report:</strong> validated at <code>exports_for_manual/report.md</code> with executive summary, STRIDE findings, top threat, and mitigation mapping sections.</li>
+    </ul>
+
+    <h3>UI Evidence Checklist</h3>
+    <ul>
+      <li>Pipeline Configuration screen captured with validated runtime settings.</li>
+      <li>Input Entry with avionics CSV and markdown description loaded.</li>
+      <li>Run Dashboard stage progression and completion status.</li>
+      <li>HITL review panel with populated artifact review actions.</li>
+      <li>Results Export controls for JSON, STIX, Mermaid, and Markdown outputs.</li>
+    </ul>
+
+    <h3>Captured Screenshots (Fixture Mode)</h3>
+    <figure class="screenshot">
+      <img src="screenshots/scr_003_configuration_validated.png"
+           alt="Pipeline configuration screen showing validated settings"
+           loading="lazy"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <figcaption style="display:none">Screenshot unavailable: Pipeline configuration validation</figcaption>
+      <figcaption>Pipeline Configuration with provider/model settings.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <img src="screenshots/scr_001_dashboard_hitl_paused.png"
+           alt="Run dashboard showing pipeline paused at HITL gate"
+           loading="lazy"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <figcaption style="display:none">Screenshot unavailable: Run dashboard HITL pause state</figcaption>
+      <figcaption>Run Dashboard paused at Gate 1 with stage completion status.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <img src="screenshots/scr_005_threat_review_hitl.png"
+           alt="Threat review screen with populated HITL gate review data"
+           loading="lazy"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <figcaption style="display:none">Screenshot unavailable: Threat review HITL data</figcaption>
+      <figcaption>Threat Review screen with populated HITL gate artifact checks and reviewer actions.</figcaption>
+    </figure>
+
+    <figure class="screenshot">
+      <img src="screenshots/scr_006_results_export_populated.png"
+           alt="Results export screen with download controls for all artifacts"
+           loading="lazy"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <figcaption style="display:none">Screenshot unavailable: Results export controls</figcaption>
+      <figcaption>Results Export screen showing JSON, STIX, Markdown, and Mermaid download actions.</figcaption>
+    </figure>
+
+    <p>
+      For detailed run evidence and expanded artifact samples, see
+      <code>docs/LIVE_GROK_VALIDATION.md</code>.
+    </p>
   </section>
 
   <footer>

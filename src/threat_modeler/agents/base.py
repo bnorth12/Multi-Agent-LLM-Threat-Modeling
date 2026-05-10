@@ -30,6 +30,7 @@ class BaseAgent:
     display_name: str
     stage_id: str
     adapter: LlmAdapter | None = None
+    require_live_adapter: bool = False
 
     # Subclasses must set these class-level attributes.
     _prompt_filename: str = ""
@@ -44,6 +45,11 @@ class BaseAgent:
     def _get_adapter(self) -> LlmAdapter:
         if self.adapter is not None:
             return self.adapter
+        if self.require_live_adapter:
+            raise RuntimeError(
+                f"Live adapter required for {self.stage_id} ({self.display_name}) but adapter is missing. "
+                "Execution halted to prevent fallback to fixture mode."
+            )
         # Default: fixture mode
         fixture_path = _FIXTURES_DIR / self._fixture_filename
         return FixtureAdapter(fixture_path)
@@ -160,7 +166,58 @@ class BaseAgent:
         adapter = self._get_adapter()
         system_prompt = self._load_system_prompt()
         user_message = self._build_user_message(state)
-        response = adapter.complete(system_prompt, user_message)
+        endpoint_mode = str(getattr(adapter, "_endpoint_mode", ""))
+        model_name = str(getattr(adapter, "_model", ""))
+        state.record_llm_prompt(
+            self.stage_id,
+            {
+                "provider": str(getattr(adapter, "__class__", type(adapter)).__name__),
+                "endpoint_mode": endpoint_mode,
+                "model": model_name,
+                "system_prompt": system_prompt,
+                "user_message": user_message,
+                "system_prompt_chars": len(system_prompt),
+                "user_message_chars": len(user_message),
+            },
+        )
+        state.record_llm_attempt(
+            self.stage_id,
+            {
+                "status": "submitted",
+                "provider": str(getattr(adapter, "__class__", type(adapter)).__name__),
+                "endpoint_mode": endpoint_mode,
+                "model": model_name,
+            },
+        )
+        try:
+            response = adapter.complete(system_prompt, user_message)
+        except Exception as exc:
+            state.record_llm_attempt(
+                self.stage_id,
+                {
+                    "status": "failed",
+                    "provider": str(getattr(adapter, "__class__", type(adapter)).__name__),
+                    "endpoint_mode": endpoint_mode,
+                    "model": model_name,
+                    "error_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+            )
+            raise
+
+        state.record_llm_attempt(
+            self.stage_id,
+            {
+                "status": "completed",
+                "provider": str(getattr(adapter, "__class__", type(adapter)).__name__),
+                "endpoint_mode": endpoint_mode,
+                "model": model_name,
+            },
+        )
+
+        usage = adapter.usage_snapshot() if hasattr(adapter, "usage_snapshot") else {}
+        if usage:
+            state.record_llm_usage(self.stage_id, usage)
         state = self._apply(state, response)
         state.record_message(self.stage_id, f"{self.display_name} completed.")
         return state
