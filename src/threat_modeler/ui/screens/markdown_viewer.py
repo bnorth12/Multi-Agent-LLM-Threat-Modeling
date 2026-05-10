@@ -7,7 +7,6 @@ and edit safeguards for analyst-driven documentation updates.
 from __future__ import annotations
 
 import streamlit as st
-from markdown import markdown
 
 from threat_modeler.ui.execution import sync_execution_state_to_session
 from threat_modeler.ui.runtime_io import export_report_markdown
@@ -41,7 +40,7 @@ def render() -> None:
     current_markdown = st.session_state["markdown_edits"][run_id]
 
     # UI tabs for view, edit, and preview
-    tab_view, tab_edit, tab_preview = st.tabs(["📖 View", "✏️ Edit", "👁️ Preview"])
+    tab_view, tab_edit, tab_preview = st.tabs(["View", "Edit", "Preview"])
 
     # -----------------------------------------------------------------------
     # VIEW TAB: Read-only display of markdown
@@ -87,18 +86,18 @@ def render() -> None:
 
         with col_save:
             if st.button(
-                "💾 Save Changes",
+                "Save Changes",
                 type="primary" if has_changes else "secondary",
                 use_container_width=True,
                 disabled=not has_changes,
                 help="Save edits to snapshot state"
             ):
                 st.session_state["markdown_edits"][run_id] = edited_markdown
-                st.success("✓ Markdown changes saved to snapshot state.")
+                st.success("Markdown changes saved to snapshot state.")
 
         with col_discard:
             if st.button(
-                "🔄 Discard Changes",
+                "Discard Changes",
                 use_container_width=True,
                 disabled=not has_changes,
                 help="Revert to last saved version"
@@ -109,9 +108,9 @@ def render() -> None:
 
         # Display save state indicator
         if has_changes:
-            st.warning("⚠️ Unsaved changes detected. Click 'Save Changes' to persist edits.")
+            st.warning("Unsaved changes detected. Click 'Save Changes' to persist edits.")
         else:
-            st.success("✓ All changes saved.")
+            st.success("All changes saved.")
 
     # -----------------------------------------------------------------------
     # PREVIEW TAB: Rendered HTML preview
@@ -122,20 +121,14 @@ def render() -> None:
         if not current_markdown.strip():
             st.info("No markdown content to preview.")
         else:
-            try:
-                # Convert markdown to HTML and display
-                html_content = markdown(current_markdown)
-                st.markdown(current_markdown)
+            st.markdown(current_markdown)
 
-                # Show character and line count
-                col_stats1, col_stats2 = st.columns(2)
-                with col_stats1:
-                    st.metric("Characters", len(current_markdown))
-                with col_stats2:
-                    st.metric("Lines", len(current_markdown.split("\n")))
-
-            except Exception as e:
-                st.error(f"Preview error: {e}")
+            # Show character and line count
+            col_stats1, col_stats2 = st.columns(2)
+            with col_stats1:
+                st.metric("Characters", len(current_markdown))
+            with col_stats2:
+                st.metric("Lines", len(current_markdown.split("\n")))
 
     # -----------------------------------------------------------------------
     # EXPORT SECTION: Download edited markdown

@@ -20,7 +20,7 @@ This matrix tracks bidirectional traceability between requirements, issues, code
 
 | # | Requirement ID | Requirement Name | Issue ID | Issue Status | Assigned To | Test File | Verification Status | Notes |
 |---|---|---|---|---|---|---|---|---|
-| 1 | GUI-018 | STIX Threat Model Viewer | D-S09-001 | Open | TBD | Tests/integration/test_stix_viewer_screen.py | Pending | New S09 UI viewer feature |
+| 1 | GUI-018 | STIX Threat Model Viewer | D-S09-001 | In Progress | BN | Tests/integration/test_stix_viewer_screen.py | 8 tests passing | Implemented dedicated STIX viewer with grouped objects, counts, and filter/search |
 | 2 | GUI-019 | Canonical Graph Viewer | D-S09-002 | Open | TBD | Tests/integration/test_canonical_graph_viewer.py | Pending | New S09 UI viewer feature |
 | 3 | GUI-020 | Mermaid Diagram Viewer | D-S09-003 | Open | TBD | Tests/integration/test_mermaid_viewer_screen.py | Pending | New S09 UI viewer feature |
 | 4 | GUI-021 | STRIDE Threat Model Viewer | D-S09-004 | Open | TBD | Tests/integration/test_stride_viewer_screen.py | Pending | New S09 UI viewer feature |
@@ -36,7 +36,7 @@ This matrix tracks bidirectional traceability between requirements, issues, code
 | # | Requirement ID | Requirement Name | Issue ID | Issue Status | Assigned To | Test File | Verification Status | Notes |
 |---|---|---|---|---|---|---|---|---|
 | R1 | PRJ-011 | Export Artifact Set | D-S09-007 | Open | TBD | Tests/e2e/test_release_deployment_guide_presence.py | Pending | RC1 deployment guide included as release artifact deliverable |
-| R2 | VS-008 | Manual RC Validation Campaign | D-S09-008 | Open | TBD | planning/Test_Execution_Summary_Sprint_2026_09.md | Pending | Full manual validation evidence includes functionality and documentation checks without automation gating |
+| R2 | VS-008 | Manual RC Validation Campaign | D-S09-008 | Open | TBD | planning/Test_Execution_Summary_Sprint_2026_09.md | Pending | Full manual validation evidence runs after clean automated pass for all RC-included features |
 
 ---
 

@@ -67,13 +67,13 @@ S09 baseline requirements/features that must remain in scope tracking:
 
 **Acceptance**: Zero critical bugs, manual validation evidence complete, traceability closure gate passes
 
-### ✅ RC1 Automation Policy
-- [ ] RC1 candidate sign-off confirms test automation is excluded from release gating
+### ✅ RC1 Validation Sequencing Policy
+- [ ] Clean automated test pass completed for all RC-included S09 features before manual RC start
 - [ ] Manual validation evidence bundle archived with release artifacts
-- [ ] Any automated test output collected is marked informational-only and not release-blocking
 - [ ] Manual RC validation campaign completed within bounded defect-fix iterations (target <= 2 validation loops)
+- [ ] RC1 decision record includes automated pass evidence reference and manual campaign evidence reference
 
-**Acceptance**: RC1 decision record explicitly documents manual-only release gating
+**Acceptance**: RC1 decision record explicitly documents automated-pass prerequisite and manual campaign completion
 
 ### ✅ Governance & Traceability
 - [ ] S09 Sprint closure checklist complete
@@ -159,9 +159,9 @@ docs/user_manual/screenshots/ (new)
 - [ ] Product documentation set reviewed for release consistency (Requirements, process docs, and release notes)
 - [ ] Deployment guide walkthrough executed end-to-end in a clean environment
 
-## 4.1 Manual RC Validation Campaign (No Automation Gate)
+### 4.1 Manual RC Validation Campaign (After Automated Clean Pass)
 
-RC1 SHALL run a complete manual validation campaign to prove release functionality without automation gating.
+RC1 SHALL run a complete manual validation campaign after a clean automated pass across all RC-included S09 features.
 
 Required campaign scope:
 

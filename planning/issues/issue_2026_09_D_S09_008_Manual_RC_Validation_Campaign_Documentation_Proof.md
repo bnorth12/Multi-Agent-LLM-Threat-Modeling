@@ -2,7 +2,7 @@
 
 ## Issue Summary
 
-S09 RC1 requires a full manual release-candidate validation campaign to prove product functionality without automation gating. The campaign must include documentation verification for user manual, product documentation set, and deployment guide.
+S09 RC1 requires a full manual release-candidate validation campaign after a clean automated pass across all RC-included features. The campaign must include documentation verification for user manual, product documentation set, and deployment guide.
 
 ## Related Requirements
 
@@ -43,7 +43,7 @@ Medium - RC publication control and release evidence requirement.
 
 ### Expected Result
 
-- RC1 decision is backed by complete manual functional and documentation validation evidence without automation-gating dependency.
+- RC1 decision is backed by complete manual functional and documentation validation evidence executed after clean automated validation of RC-included features.
 
 ## Status
 
@@ -53,4 +53,4 @@ Open
 
 - Sprint: 2026-09
 - Created: 2026-05-09
-- Source: Manual-only RC gating policy and documentation-proof requirement
+- Source: RC sequencing policy requiring automated clean pass before manual validation, plus documentation-proof requirement

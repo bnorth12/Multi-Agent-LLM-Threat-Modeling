@@ -16,7 +16,7 @@ Medium - Required release documentation deliverable.
 ## Scope
 
 1. Produce deployment guide for v1.0.0-rc1.
-2. Include manual-only RC validation policy (automation non-blocking for RC1).
+2. Include RC validation sequencing policy: manual RC campaign starts only after clean automated pass across all RC-included features.
 3. Define rollback and post-deployment monitoring steps.
 4. Package deployment guide with release artifacts.
 
@@ -24,7 +24,7 @@ Medium - Required release documentation deliverable.
 
 - [ ] Deployment guide created and stored in Releases directory.
 - [ ] Guide includes installation, configuration, validation, rollback, and sign-off sections.
-- [ ] RC1 manual validation gating policy is clearly documented.
+- [ ] RC1 validation sequencing policy is clearly documented.
 - [ ] Guide is included in release artifact checklist and readiness review.
 
 ## Verification Evidence

@@ -4,7 +4,7 @@
 
 Define the release-candidate manual validation procedure and supporting automated coverage strategy for the multi-agent threat modeling workflow.
 
-This plan is the execution authority for manual RC testing when automation is non-blocking for release gating.
+This plan is the execution authority for manual RC testing after a clean automated pass across all RC-included S09 features.
 
 ## 2. Scope
 
@@ -24,13 +24,13 @@ Out of scope:
 
 ## 3. Test Levels
 
-### 3.1 Automated (Informational for RC)
+### 3.1 Automated (Manual-RC Entry Gate)
 
 - Unit: parser, schema, utility, agent contract checks
 - Integration: stage transitions, recovery, HITL pause/resume
 - E2E: fixture and live validation suites
 
-### 3.2 Manual (Release-Gating for RC)
+### 3.2 Manual (Release-Gating for RC, Starts After Automated Clean Pass)
 
 - full run workflow with 9 stages and 7 HITL gates
 - results export and viewer validation
@@ -324,8 +324,8 @@ Steps:
 Expected: Claims accurately reflect implemented S09 scope.
 2. Check requirements and traceability references for S09 entries.
 Expected: IDs, issue links, and verification references are consistent.
-3. Check manual-only RC policy is consistent across release docs.
-Expected: No conflicting statements about automation gating.
+3. Check RC validation sequencing policy is consistent across release docs.
+Expected: Manual RC campaign is documented as starting only after a clean automated pass.
 
 Collect artifacts:
 
