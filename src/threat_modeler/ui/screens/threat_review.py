@@ -33,6 +33,9 @@ _GATE_LABELS = {
     "gate_7_export_consistency": "Gate 7 · Export Consistency",
 }
 
+_RAW_PREVIEW_CHAR_LIMIT = 20000
+_RAW_PREVIEW_HEIGHT = 220
+
 
 def _active_gate_ids(gate_states: dict[str, Any]) -> list[str]:
     active: list[str] = []
@@ -314,8 +317,28 @@ def _render_gate_review() -> None:
 
     _render_gate_specific_summary(selected_gate, snapshot)
 
-    with st.expander("Raw gate artifact", expanded=False):
-        st.code(json.dumps(snapshot, indent=2, ensure_ascii=False)[:20000], language="json")
+    show_raw = st.toggle(
+        "Show raw gate artifact",
+        key=f"show_raw_gate_artifact_{selected_gate}",
+        value=False,
+        help="Scroll-safe raw payload preview. Toggle off to collapse.",
+    )
+    if show_raw:
+        if not snapshot:
+            st.info("No raw gate artifact data is available for this gate in the current run state.")
+        else:
+            raw_payload = json.dumps(snapshot, indent=2, ensure_ascii=False)
+            st.text_area(
+                "Raw gate artifact payload",
+                value=raw_payload[:_RAW_PREVIEW_CHAR_LIMIT],
+                height=_RAW_PREVIEW_HEIGHT,
+                disabled=True,
+                key=f"raw_gate_payload_{selected_gate}",
+            )
+            if len(raw_payload) > _RAW_PREVIEW_CHAR_LIMIT:
+                st.caption(
+                    f"Showing first {_RAW_PREVIEW_CHAR_LIMIT} characters of raw payload."
+                )
 
     rationale_key = f"gate_rationale_{selected_gate}"
     if rationale_key not in st.session_state:

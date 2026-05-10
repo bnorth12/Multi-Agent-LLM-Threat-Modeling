@@ -22,6 +22,31 @@ from threat_modeler.ui.version_governance import (
 )
 
 
+_PREVIEW_CHAR_LIMIT = 20000
+_PREVIEW_HEIGHT = 220
+
+
+def _render_preview_block(label: str, content: str, key_suffix: str) -> None:
+    show = st.toggle(
+        f"Show {label}",
+        key=f"preview_toggle_{key_suffix}",
+        value=False,
+        help="Scroll-safe quick preview. Toggle off to collapse.",
+    )
+    if not show:
+        return
+
+    st.text_area(
+        f"{label} preview",
+        value=(content or "")[:_PREVIEW_CHAR_LIMIT],
+        height=_PREVIEW_HEIGHT,
+        disabled=True,
+        key=f"preview_text_{key_suffix}",
+    )
+    if content and len(content) > _PREVIEW_CHAR_LIMIT:
+        st.caption(f"Showing first {_PREVIEW_CHAR_LIMIT} characters.")
+
+
 def render() -> None:
     st.header("Results Export")
     st.caption("SCR-007 — export generated artifacts")
@@ -136,27 +161,11 @@ def render() -> None:
 
     st.divider()
     st.subheader("Quick Preview")
-
-    with st.expander("Canonical Graph JSON", expanded=False):
-        st.code(canonical_json[:20000], language="json")
-
-    with st.expander("STIX Bundle JSON", expanded=False):
-        st.code(stix_json[:20000], language="json")
-
-    with st.expander("Final Report Markdown", expanded=False):
-        st.code(report_md[:20000], language="markdown")
-
-    with st.expander("Mermaid Markdown", expanded=False):
-        st.code(mermaid_md[:20000], language="markdown")
-
-    with st.expander("Token Usage JSON", expanded=False):
-        st.code(token_usage_json[:20000], language="json")
-
-    with st.expander("STRIDE JSON", expanded=False):
-        st.code(stride_json[:20000], language="json")
-
-    with st.expander("Component Version Manifest", expanded=False):
-        st.code(version_manifest_json[:20000], language="json")
-
-    with st.expander("Component File Inventory", expanded=False):
-        st.code(file_inventory_json[:20000], language="json")
+    _render_preview_block("Canonical Graph JSON", canonical_json, "canonical_graph")
+    _render_preview_block("STIX Bundle JSON", stix_json, "stix_bundle")
+    _render_preview_block("Final Report Markdown", report_md, "final_report")
+    _render_preview_block("Mermaid Markdown", mermaid_md, "mermaid")
+    _render_preview_block("Token Usage JSON", token_usage_json, "token_usage")
+    _render_preview_block("STRIDE JSON", stride_json, "stride")
+    _render_preview_block("Component Version Manifest", version_manifest_json, "version_manifest")
+    _render_preview_block("Component File Inventory", file_inventory_json, "file_inventory")
