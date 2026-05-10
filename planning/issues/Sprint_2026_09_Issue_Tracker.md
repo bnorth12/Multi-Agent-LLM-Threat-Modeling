@@ -2,6 +2,14 @@
 
 This tracker is the canonical in-repo status view for Sprint 2026-09 planning and execution.
 
+## 0. Execution Start Record
+
+- S09 kickoff date: 2026-05-09
+- Functional baseline tag: `baseline-s08-functional-2026-05-09`
+- S09 branch: `feature/sprint-2026-09-kickoff`
+- S09 kickoff PR: #37
+- Execution mode: autonomous S09 implementation after planning baseline merge
+
 ## 1. Tracking Rules
 
 - Update issue file status checkboxes first.
