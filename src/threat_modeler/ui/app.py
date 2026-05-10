@@ -61,13 +61,13 @@ apply_theme()
 
 # ---------------------------------------------------------------------------
 # Navigation registry — order determines sidebar display order
+# Ordered by typical user workflow: setup → input → analysis → review → export → tools
 # ---------------------------------------------------------------------------
 _PAGES = {
     "Home": render_home,
-    "Input Entry": render_input_entry,
     "Role Selection": render_role_select,
     "Pipeline Configuration": render_config,
-    "Prompt Editor": render_prompt_editor,
+    "Input Entry": render_input_entry,
     "Stage Results": render_stage_results,
     "Threat Review": render_threat_review,
     "STIX Viewer": render_stix_viewer,
@@ -77,8 +77,9 @@ _PAGES = {
     "Token Usage": render_token_usage,
     "Last Prompt": render_last_prompt,
     "Results Export": render_results_export,
-    "Markdown Viewer": render_markdown_viewer,
     "Snapshot Manager": render_snapshot_manager,
+    "Markdown Viewer": render_markdown_viewer,
+    "Prompt Editor": render_prompt_editor,
 }
 
 # ---------------------------------------------------------------------------

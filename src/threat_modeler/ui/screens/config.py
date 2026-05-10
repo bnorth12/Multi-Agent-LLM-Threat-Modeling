@@ -308,9 +308,10 @@ def render() -> None:
         # ===== Pipeline Settings =====
         st.subheader("Pipeline Settings")
 
-        default_enabled = list(defaults.pipeline.enabled_stage_ids)
+        # Always show all stages enabled by default in the form
+        default_enabled = list(_ALL_STAGES)
         st.write("**Enabled stages** — Check which pipeline stages to execute:")
-        st.caption("Select at least one stage to run. Unchecked stages will be skipped.")
+        st.caption("All stages are enabled by default. Uncheck to skip any stage during the run.")
 
         # Display stages in 3-column layout for better readability
         cols = st.columns(3)
