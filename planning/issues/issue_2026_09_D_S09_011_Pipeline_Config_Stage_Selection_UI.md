@@ -82,5 +82,13 @@ Resolved
 ### Deployment
 
 - Feature branch: `feature/sprint-2026-09-kickoff`
-- Commit: [to be pushed]
+- Commit: `b7466d0` (Fixes D-S09-011: Replace pipeline stage selection multiselect with checkbox-based UI)
+- Pushed to origin: 2026-05-10
 - Manual RC validation (D-S09-008) can now proceed safely
+
+### User Verification Complete
+
+- ✅ Pipeline Configuration screen accessed and verified
+- ✅ All 9 stages visible with checkbox controls and human-readable labels
+- ✅ 3-column layout renders cleanly and accessibly
+- ✅ Stage selection controls are interactive and ready for manual testing
