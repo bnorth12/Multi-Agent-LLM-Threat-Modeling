@@ -279,11 +279,13 @@ class TestJsonPersistence:
             path.unlink(missing_ok=True)
 
     def test_missing_file_handled_gracefully(self):
-        path = Path(tempfile.mktemp(suffix=".json"))
-        # File does not exist — should initialise with defaults.
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as f:
+            path = Path(f.name)
+        path.unlink()  # Remove so the store sees a genuinely missing file.
+        # Store should initialise with defaults without raising.
         ps = PromptStore(store_path=path)
         assert ps.get_prompt("agent_01") == get_default_prompt("agent_01")
-        # Clean up file written by set_prompt if any.
+        # Clean up any file the store may have written on set_prompt.
         path.unlink(missing_ok=True)
 
 
