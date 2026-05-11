@@ -300,19 +300,33 @@ Roles (ordered lowest to highest privilege): `Viewer` < `Analyst` < `PromptEdito
 
 ### 8.1 API-Sourced State (Pipeline State)
 
-The following data is owned by the pipeline backend and fetched by the HMI layer. The HMI SHALL NOT maintain its own copy except as a display cache.
+The following data is owned by the pipeline **backend** and consumed by the HMI layer as
+read projections.  The HMI SHALL NOT maintain its own copy except as a display cache.
+
+**Authority module: `src/threat_modeler/backend/run_manager.py`**
+
+The `run_manager` module owns:
+
+- The process-level `_RUN_REGISTRY` (in-memory, thread-safe).
+- Background thread lifecycle for `submit_run()` and `resume_run()`.
+- JSON persistence of run metadata to `~/.multi_agent_threat_modeler_runs.json`.
+
+The Streamlit UI layer reads backend state via `sync_execution_state_to_session()` in
+`ui/execution.py`, which calls `backend.run_manager.get_run_status(run_id)` and mirrors
+keys into `st.session_state`.  Screens MUST NOT access `_RUN_REGISTRY` directly.
 
 | State Item | Source | HMI Cache Key |
 |---|---|---|
-| Current run ID | Pipeline API | `session_state["run_id"]` |
-| Stage execution status per stage | Pipeline API (polled or streamed) | `session_state["stage_statuses"]` |
-| Stage output artifacts | Pipeline API (on demand) | `session_state["stage_artifacts"][stage_id]` |
-| HITL gate open/closed state | Pipeline API | `session_state["hitl_gates"]` |
-| Canonical threat model graph | Pipeline API | `session_state["canonical_graph"]` |
+| Current run ID | `run_manager.get_run_status()` | `session_state["run_id"]` |
+| Stage execution status per stage | `run_manager.get_run_status()` | `session_state["stage_statuses"]` |
+| Stage output artifacts | `run_manager.get_run_status()` | `session_state["stage_artifacts"][stage_id]` |
+| HITL gate open/closed state | `run_manager.get_run_status()` | `session_state["hitl_gates"]` |
+| Canonical threat model graph | `run_manager.get_run_status()` → `result_state` | `session_state["canonical_graph"]` |
 
 ### 8.2 Local UI State (Session State)
 
-The following data is owned by the HMI session and is not sent to the pipeline until explicitly submitted.
+The following data is owned by the HMI session and is not sent to the pipeline until
+explicitly submitted.
 
 | State Item | Lifecycle | Key |
 |---|---|---|
@@ -326,7 +340,18 @@ The following data is owned by the HMI session and is not sent to the pipeline u
 
 ### 8.3 Credential Handling
 
-API keys and credentials entered in SCR-013 SHALL be written to the system keyring (via `keyring` library) or encrypted local store (Fernet fallback) as defined in the Model Configuration Design Specification. They SHALL NOT be stored in `st.session_state`. The HMI layer retrieves credentials at run-initiation time from the credential store and passes them to the pipeline via the connection contract (INT-015).
+API keys and credentials entered in SCR-013 SHALL be written to the system keyring (via
+`keyring` library) or encrypted local store (Fernet fallback) as defined in the Model
+Configuration Design Specification.  They SHALL NOT be stored in `st.session_state`.
+The HMI layer retrieves credentials at run-initiation time from the credential store and
+passes them to the pipeline via the connection contract (INT-015).
+
+### 8.4 Prompt Configuration State
+
+Agent prompt text, version history, and temperature settings are persisted by
+`backend/prompt_store.py` to `~/.multi_agent_threat_modeler_prompts.json`.
+The GUI screens (SCR-010 Prompt Editor, SCR-011 Prompt History) read and write through
+the `PromptStore` public API; they do not manage the JSON file directly.
 
 ---
 

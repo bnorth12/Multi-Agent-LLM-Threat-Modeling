@@ -321,7 +321,7 @@
 
   <h1>Multi-Agent LLM Threat Modeler</h1>
   <p class="subtitle">
-    <span>User Manual</span> &nbsp;·&nbsp; Sprint 2026-07 (in-progress) &nbsp;·&nbsp;
+    <span>User Manual</span> &nbsp;·&nbsp; Sprint 2026-09 &nbsp;·&nbsp;
     Audience: Security analysts, threat modeling practitioners, and project administrators
   </p>
 
@@ -486,10 +486,17 @@ export XAI_API_KEY="xai-your-key-here"</code></pre>
   <strong>Custom model name</strong>), set <strong>Endpoint mode</strong> as needed,
   and validate the connection before running.</p>
 
-      <h4>Step 5 — Launch the Streamlit application</h4>
+      <h4>Step 5 — Launch the application</h4>
+      <p><strong>Preferred (CLI entry point):</strong></p>
+      <pre><code>python -m threat_modeler</code></pre>
+      <p>Custom port:</p>
+      <pre><code>python -m threat_modeler --port 9000</code></pre>
+      <p>Auto-open browser tab:</p>
+      <pre><code>python -m threat_modeler --open-browser</code></pre>
+      <p>Or launch Streamlit directly (equivalent):</p>
       <pre><code>streamlit run src/threat_modeler/ui/app.py</code></pre>
       <p>
-        The application opens automatically at
+        The application opens at
         <code>http://localhost:8501</code> in your default browser. The sidebar displays
         the navigation menu. Select your role first (SCR-002), then proceed to the
         Configuration screen (SCR-003) before starting a run.
@@ -1039,7 +1046,7 @@ export XAI_API_KEY="xai-your-key-here"</code></pre>
       <strong>Note:</strong> Role enforcement is stored in
       <code>st.session_state["role"]</code> and validated by the backend gate engine
       on every gate action (the <code>actor</code> dict passed to gate decisions must
-      include the role). Full UI-level role gating is planned for Sprint 2026-07.
+      include the role). Full UI-level role gating is implemented from Sprint 2026-08 onwards.
     </div>
   </section>
 
@@ -1175,10 +1182,10 @@ pip install -r requirements.txt</code></pre></dd>
             <em>Offline / fixture mode</em> checkbox is still checked in SCR-003.</dd>
           <dt>Resolution</dt>
           <dd>
-            Set the environment variable before launching Streamlit:
+            Set the environment variable before launching:
             <pre><code># Windows PowerShell
 $env:XAI_API_KEY = "xai-your-key-here"
-streamlit run src/threat_modeler/ui/app.py</code></pre>
+python -m threat_modeler</code></pre>
             Alternatively, switch to offline mode: set <em>Provider</em> to
             <code>fixture</code> and check <em>Offline / fixture mode</em> in SCR-003.
           </dd>
@@ -1421,8 +1428,8 @@ Final run after fixes: 6 passed, 34 deselected in 975.86s (0:16:15)</code></pre>
   </section>
 
   <footer>
-    Multi-Agent LLM Threat Modeler · User Manual · Sprint 2026-06 ·
-    To capture screenshots, launch <code>streamlit run src/threat_modeler/ui/app.py</code>,
+    Multi-Agent LLM Threat Modeler · User Manual · Sprint 2026-09 ·
+    To capture screenshots, launch <code>python -m threat_modeler</code>,
     navigate to each screen, and save images to <code>docs/user_manual/screenshots/</code>
     matching the filenames referenced in each figure above.
   </footer>

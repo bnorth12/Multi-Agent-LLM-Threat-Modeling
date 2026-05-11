@@ -1,8 +1,8 @@
 # Multi-Agent LLM Threat Modeler — User Manual
 
-**Version:** Sprint 2026-07 (in-progress; S06 baseline + S07 workstreams A–F)
+**Version:** Sprint 2026-09
 **Audience:** Security analysts, threat modeling practitioners, and project administrators
-**Status:** Delivered features S06-07 (4 screens); 8 additional screens in development for S07
+**Status:** Full screen set delivered (SCR-001 through SCR-014 plus Prompt Editor, Token Usage, Stage Results, Threat Review, Snapshot Manager, Results Export); Sprint 2026-09 viewer-expansion workstreams in progress.
 
 ---
 
@@ -128,13 +128,33 @@ You can provide the key either:
 - In **Pipeline Configuration (SCR-013)** via the **API key** field (masked, session-only), or
 - Via environment variable (for unattended/CI workflows).
 
-### Step 5 — Launch the Streamlit application
+### Step 5 — Launch the application
+
+**Preferred (CLI entry point):**
+
+```bash
+python -m threat_modeler
+```
+
+The application starts the Streamlit server and opens at `http://localhost:8501`.
+
+**Custom port:**
+
+```bash
+python -m threat_modeler --port 9000
+```
+
+**Auto-open browser:**
+
+```bash
+python -m threat_modeler --open-browser
+```
+
+**Streamlit directly (equivalent):**
 
 ```bash
 streamlit run src/threat_modeler/ui/app.py
 ```
-
-The app opens at `http://localhost:8501` in your default browser.
 
 ---
 
@@ -368,19 +388,61 @@ pip install -r requirements.txt
 
 ---
 
-### Scenario 4 — Streamlit app fails with `XAI_API_KEY not set`
+### Scenario 4 — Application fails with `XAI_API_KEY not set`
 
 **Symptom:** Error when `provider="xai"` is selected but no API key is present.
 
-**Resolution:** Set the environment variable before launching Streamlit:
+**Resolution:** Set the environment variable before launching:
 
 ```powershell
 $env:XAI_API_KEY = "xai-your-key-here"
-streamlit run src/threat_modeler/ui/app.py
+python -m threat_modeler
 ```
 
 Alternatively, enter the key directly in **Pipeline Configuration → SCR-013 API key**,
 or switch to offline mode by setting `provider=fixture` in SCR-003.
+
+---
+
+### Scenario 8 — Run state lost after browser reload
+
+**Symptom:** After reloading the browser tab, the Run Dashboard shows no active run even
+though a pipeline was executing.
+
+**Cause:** The authoritative run state is in `backend/run_manager.py`; the browser
+reload triggers a fresh Streamlit session.  The run URL (`?run_id=…`) contains the
+run identifier needed for recovery.
+
+**Resolution:**
+1. Do not close or reload the browser while a run is active — use the navigation
+   sidebar instead.
+2. If a reload has occurred, check the URL bar for a `run_id` query parameter; the
+   dashboard `sync_execution_state_to_session()` will attempt to restore state
+   automatically from the backend registry.
+3. Run metadata (status, timing, gate, error) is also persisted to
+   `~/.multi_agent_threat_modeler_runs.json`; if the process was restarted you can
+   inspect this file to verify the last known run status.
+
+---
+
+### Scenario 9 — `python -m threat_modeler` command not found
+
+**Symptom:** `ModuleNotFoundError` or `No module named threat_modeler` when running
+`python -m threat_modeler`.
+
+**Resolution:**
+
+```bash
+# Ensure the virtual environment is active and the package is installed
+pip install -e .
+python -m threat_modeler
+```
+
+If you prefer not to install in editable mode, run Streamlit directly:
+
+```bash
+streamlit run src/threat_modeler/ui/app.py
+```
 
 ---
 
@@ -424,10 +486,12 @@ a new run.
 |------|-----------|
 | **Agent** | One of nine specialised LLM-backed processing stages in the pipeline. |
 | **Attack Pattern** | A STIX 2.1 object type representing a threat technique (maps to a threat in the canonical graph). |
+| **Backend Run Manager** | The `backend/run_manager.py` module that owns pipeline execution, the run registry, and JSON-backed run state persistence. Contains no Streamlit dependency and is importable headlessly. |
 | **Canonical Graph** | The structured, schema-validated JSON representation of the full threat model produced by the pipeline. |
 | **CAPEC** | Common Attack Pattern Enumeration and Classification — used to tag threat techniques. |
 | **Course of Action** | A STIX 2.1 object type representing a mitigation control. |
 | **CWE** | Common Weakness Enumeration — software weakness taxonomy used to classify threats. |
+| **ExecutionStatus** | Enum in `backend/run_manager.py` representing run lifecycle states: `idle`, `queued`, `running`, `paused`, `completed`, `failed`. |
 | **Fixture mode** | Execution mode where agents return deterministic pre-recorded outputs instead of calling a live LLM. |
 | **Gate** | A HITL pause point in the pipeline where an analyst must review and action an artifact before execution continues. |
 | **GatePausedError** | Python exception raised by the gate engine when a mandatory or conditional gate opens. |
@@ -436,6 +500,7 @@ a new run.
 | **ICD** | Interface Control Document — a spreadsheet or document defining system interfaces, protocols, and data items. |
 | **Mermaid** | A text-based diagramming language; the pipeline produces Mermaid source for architecture diagrams. |
 | **MITRE ATT&CK** | A globally accessible knowledge base of adversary tactics and techniques. |
+| **PromptStore** | The `backend/prompt_store.py` class that manages per-agent prompt text, version history, and temperature settings backed by a JSON file. |
 | **Run ID** | A unique identifier for a single end-to-end pipeline execution. |
 | **SCR** | Screen inventory identifier (SCR-001, SCR-002, …) from the HMI Architecture Blueprint. |
 | **STIX 2.1** | Structured Threat Information Expression — an open standard for sharing cyber threat intelligence. |

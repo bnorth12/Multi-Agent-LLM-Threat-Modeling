@@ -17,6 +17,7 @@ This tracker is the canonical in-repo status view for Sprint 2026-09 planning an
 | S09-1 | TBD | UI Artifact Viewer Expansion | HMI Architect and UI Engineer | Open | Add STIX, canonical graph, Mermaid, and STRIDE viewers in GUI | 2026-05-09 BN: Sprint seed issue set created from GUI-018 through GUI-022 |
 | S09-2 | TBD | STRIDE Export Capability | UI Engineer and Test Lead | Open | Add standalone STRIDE export artifact and verification coverage | 2026-05-09 BN: Tracked under D-S09-004 |
 | S09-3 | TBD | Results Export Quick Preview Defect | UI Engineer | Open | Fix non-functional quick preview controls in Results Export | 2026-05-09 BN: Deferred from S08 closeout to S09 as D-S09-005 |
+| S09-4 | TBD | Streamlit Decoupling and Backend Execution Engine | Backend Engineer | **Closed** | backend/run_manager.py and backend/prompt_store.py delivered; ui/execution.py refactored; python -m threat_modeler entry point; 259 tests passing | 2026-05-11: Completed. See issue_2026_09_Streamlit_Decoupling_Backend_Engine.md. Requirement PRJ-019 implemented. |
 
 ## 3. S09 Defect and Feature Log
 
