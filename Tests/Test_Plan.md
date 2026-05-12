@@ -119,7 +119,7 @@ Collect artifacts:
 
 ### TC-RC-002: Application Launch and Configuration
 
-Purpose: Verify app starts and configuration flow is functional.
+Purpose: Verify operational runtime starts without Streamlit and browser-validation harness remains available for GUI test execution.
 
 Preconditions:
 
@@ -127,13 +127,15 @@ Preconditions:
 
 Steps:
 
-1. Launch application.
-Expected: Application opens without startup exceptions.
-2. Navigate to configuration screen.
+1. Launch operational runtime (`python -m threat_modeler`).
+Expected: API server starts without startup exceptions and responds on configured host/port.
+2. Install browser-test dependencies and launch Streamlit harness (`pip install -r Tests/requirements_e2e.txt` then `streamlit run src/threat_modeler/ui/app.py`).
+Expected: Streamlit harness starts for browser automation workflows.
+3. Navigate to configuration screen.
 Expected: Configuration controls render correctly.
-3. Enter provider settings and click connection validation button.
+4. Enter provider settings and click connection validation button.
 Expected: Successful connection message for valid settings.
-4. Enter invalid credentials and click validation again.
+5. Enter invalid credentials and click validation again.
 Expected: Clear error message; run start remains blocked for invalid settings.
 
 Collect artifacts:

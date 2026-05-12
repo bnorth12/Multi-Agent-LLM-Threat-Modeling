@@ -18,7 +18,9 @@
   JSON state file: `~/.multi_agent_threat_modeler_runs.json`.
 - `src/threat_modeler/backend/prompt_store.py` — Thread-safe agent prompt store.
   JSON state file: `~/.multi_agent_threat_modeler_prompts.json`.
-- `src/threat_modeler/__main__.py` — CLI entry point (`python -m threat_modeler`).
+- `src/threat_modeler/server/api.py` — Operational non-Streamlit HTTP server.
+- `src/threat_modeler/__main__.py` — CLI entry point (`python -m threat_modeler`) for the operational API server.
+- `src/threat_modeler/ui/app.py` — Streamlit test harness used for browser automation/e2e validation.
 
 ## Design Specifications
 
