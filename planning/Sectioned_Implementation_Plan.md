@@ -3,8 +3,14 @@
 # Sectioned Implementation Plan
 
 Date: 2026-05-02
+Last Updated: 2026-05-11
 Status: Active execution plan
-Scope: Sprint 2026-05 through Sprint 2026-07
+Scope: Sprint 2026-05 through Sprint 2026-09
+
+> **Current Sprint**: 2026-09 — Backend Architecture Decoupling + UI Viewer Expansion.
+> See `planning/Sprint_2026_09_Traceability_Matrix.md` and
+> `planning/issues/Sprint_2026_09_Issue_Tracker.md` for current status.
+>
 
 ## 1. Plan Purpose
 

@@ -102,7 +102,10 @@ def test_token_usage_screen_uses_fixed_width_stage_table_for_horizontal_scroll()
 
 
 def test_execution_registry_persists_and_restores_settings_override() -> None:
-    text = Path("src/threat_modeler/ui/execution.py").read_text(encoding="utf-8")
-    assert 'run_state.get("settings")' in text
-    assert 'st.session_state["settings_override"] = run_settings' in text
-    assert '"settings": settings' in text
+    # execution.py still reads settings from the run registry entry during sync.
+    exec_text = Path("src/threat_modeler/ui/execution.py").read_text(encoding="utf-8")
+    assert 'run_state.get("settings")' in exec_text
+    assert 'st.session_state["settings_override"] = run_settings' in exec_text
+    # The settings key is now written by backend/run_manager.py (not execution.py).
+    manager_text = Path("src/threat_modeler/backend/run_manager.py").read_text(encoding="utf-8")
+    assert '"settings": settings' in manager_text

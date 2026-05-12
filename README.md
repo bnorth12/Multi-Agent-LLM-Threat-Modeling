@@ -42,7 +42,7 @@ Selection and lock criteria are documented in Python_Dependency_Strategy.md.
 
 ## Current Status
 
-**Sprint 2026-07 in progress** (GUI workstreams A–F: HMI features, provider selection, validation gates, exporters).
+**Sprint 2026-09 in progress** (Backend architecture decoupling; UI viewer expansion; LangGraph migration preparation).
 
 ### Completed Deliverables
 
@@ -56,26 +56,33 @@ Selection and lock criteria are documented in Python_Dependency_Strategy.md.
   - Config and model selection
 - **HITL Governance** — 7 mandatory and conditional gates with audit trail, selective rerun, and rejection records
 - **Artifact Export** — Canonical JSON, STIX 2.1, Mermaid diagrams, Markdown reports
-- **Streamlit HMI (Partial)** — 4 screens delivered:
-  - SCR-001: Home / Run Dashboard (pipeline stage progress)
-  - SCR-002: Role Selection (analyst role picker)
-  - SCR-003: Configuration (partial; provider selection deferred to S07)
-  - SCR-004: Input Entry (file upload, raw text, Start Run)
+- **Streamlit HMI** — Full screen set delivered (SCR-001 through SCR-014 plus Prompt Editor, Token Usage, Stage Results, Threat Review, Snapshot Manager, Results Export)
 - **Evidence & Documentation**
-  - 240 automated tests passing (unit + integration + E2E)
-  - 4 screenshot evidence artifacts (S06)
+  - 259 automated tests passing (unit + integration)
   - User manual (HTML and Markdown)
   - HMI architecture blueprint (design authority for GUI)
 
-### Sprint 2026-07 Workstreams (In Progress)
+**Sprint 2026-09 — Backend Architecture Decoupling (Completed):**
 
-- **A (S07-01)** — Documentation & Traceability Cleanup (active)
-- **B (S07-02)** — Model Provider Selection HMI (SCR-012/013/014)
-- **C (S07-03)** — Input Entry Validation Gate & Offline Override
-- **D (S07-04)** — Prompt Editor & Version History (SCR-010/011)
-- **E (S07-05/06)** — Results & Export Screens (SCR-003/004, SCR-007/008/009)
-- **F (S07-07)** — Test & CI Expansion
-- **Closeout (S07-08)** — Required Online E2E Validation Gate
+- **`backend/run_manager.py`** — Pure-Python pipeline execution engine; no Streamlit dependency.
+  Owns `_RUN_REGISTRY`, background threads, orchestrator lifecycle, and HITL gate handling.
+  Persists run metadata to `~/.multi_agent_threat_modeler_runs.json` for reload recovery.
+  Public API: `submit_run()`, `resume_run()`, `cancel_run()`, `wait_for_run()`, `get_run_status()`.
+- **`backend/prompt_store.py`** — Thread-safe, file-backed agent prompt store.
+  Persists prompt text, version history, and temperature settings to
+  `~/.multi_agent_threat_modeler_prompts.json`.
+- **`ui/execution.py`** (refactored) — Now a thin Streamlit adapter; all execution logic
+  delegated to `backend/run_manager.py`.
+- **`__main__.py`** — `python -m threat_modeler` CLI entry point (see Getting Started below).
+- **55 new backend tests** added (total: 259 passing).
+- Requirement PRJ-019 (Asynchronous Backend State Authority) fully implemented.
+
+### Sprint 2026-09 Open Workstreams
+
+- **S09-1** — UI Artifact Viewer Expansion (STIX, Canonical Graph, Mermaid, STRIDE viewers)
+- **S09-2** — STRIDE Export Capability
+- **S09-3** — Results Export Quick Preview Defect
+- **S09-4** — LangGraph `StateGraph` swap-in via `run_manager.submit_run()` seam
 
 ## Getting Started
 
@@ -88,6 +95,15 @@ python -m venv .venv
 # Install dependencies
 pip install -r requirements.txt
 
-# Run all tests
-.venv\Scripts\python.exe -m pytest Tests/ -q
+# Launch the application (preferred)
+python -m threat_modeler
+
+# Or launch on a custom port
+python -m threat_modeler --port 9000
+
+# Or launch Streamlit directly
+streamlit run src/threat_modeler/ui/app.py
+
+# Run all unit tests
+python -m pytest Tests/unit/ -q
 ```

@@ -1,44 +1,26 @@
-"""Background execution manager for non-blocking pipeline runs.
+"""Streamlit UI adapter for non-blocking pipeline execution.
 
-Enables pipeline execution in background thread while allowing UI navigation.
-Stores execution state in Streamlit session_state for cross-screen visibility.
+Owns the session-state synchronisation and URL-param bookkeeping for the
+active run.  All pipeline execution logic lives in
+``threat_modeler.backend.run_manager`` (no Streamlit dependency) — this
+module simply delegates to it and keeps the Streamlit session coherent.
 """
 
-import threading
 import time
-from enum import Enum
 from typing import Optional, Callable
 
 import streamlit as st
 
-from threat_modeler.orchestrator import FrameworkOrchestrator
 from threat_modeler.state import FrameworkState
 from threat_modeler.config import RuntimeSettings
-from threat_modeler.hitl import GatePausedError, GateRejectedError
+from threat_modeler.backend import run_manager as _run_manager
+from threat_modeler.backend.run_manager import ExecutionStatus
 from threat_modeler.backend.runtime_state import (
-    clear_run_state,
     get_provider_display,
     get_last_settings,
-    mark_run_started,
-    mark_run_status,
     remember_settings,
 )
 
-
-class ExecutionStatus(Enum):
-    """Pipeline execution status."""
-    IDLE = "idle"
-    QUEUED = "queued"
-    RUNNING = "running"
-    PAUSED = "paused"
-    COMPLETED = "completed"
-    FAILED = "failed"
-
-
-# Process-local run registry used to recover active runs across Streamlit reruns
-# and browser reloads that reuse the same server process.
-_RUN_REGISTRY: dict[str, dict] = {}
-_REGISTRY_LOCK = threading.Lock()
 _STATUS_POLL_INTERVAL = 3
 
 
@@ -86,9 +68,11 @@ def _get_execution_state():
 
 
 def sync_execution_state_to_session() -> None:
-    """Sync execution state from process registry into session state.
+    """Sync execution state from the backend run manager into session state.
 
-    This keeps screen content coherent across page navigation and browser reloads.
+    This keeps screen content coherent across page navigation and browser
+    reloads.  The authoritative state is ``backend.run_manager``; session
+    state is a read cache for Streamlit screens.
     """
     session_state = _get_execution_state()
 
@@ -96,18 +80,14 @@ def sync_execution_state_to_session() -> None:
     run_id = st.session_state.get("run_id")
     if not run_id:
         query_run_id = _read_query_run_id()
-        if query_run_id:
-            with _REGISTRY_LOCK:
-                if query_run_id in _RUN_REGISTRY:
-                    run_id = query_run_id
-                    st.session_state["run_id"] = query_run_id
+        if query_run_id and _run_manager.get_run_status(query_run_id) is not None:
+            run_id = query_run_id
+            st.session_state["run_id"] = query_run_id
 
     if not run_id:
         return
 
-    with _REGISTRY_LOCK:
-        run_state = _RUN_REGISTRY.get(run_id)
-
+    run_state = _run_manager.get_run_status(run_id)
     if not run_state:
         return
 
@@ -156,7 +136,6 @@ def sync_execution_state_to_session() -> None:
             st.session_state["gate_states"] = checkpoint.get("gates", {})
             break
     if status == ExecutionStatus.RUNNING.value:
-        live_state = run_state.get("live_state")
         stage_id = getattr(live_state, "next_stage_id", None)
         if stage_id:
             st.session_state["pipeline_execution_summary"] = f"Running stage {stage_id} ..."
@@ -219,133 +198,28 @@ def start_pipeline_execution(
     settings: RuntimeSettings,
     on_complete: Optional[Callable] = None,
 ) -> None:
-    """Start pipeline execution in background thread.
+    """Start pipeline execution in a background thread.
+
+    Delegates all execution logic to ``backend.run_manager.submit_run()``.
+    This function handles only Streamlit session-state bookkeeping.
 
     Args:
-        run_id: Unique identifier for this run
-        initial_state: Initial FrameworkState
-        settings: RuntimeSettings for the run
-        on_complete: Optional callback when execution completes
+        run_id:        Unique identifier for this run.
+        initial_state: Initial FrameworkState populated with parsed inputs.
+        settings:      RuntimeSettings for the run.
+        on_complete:   Optional zero-argument callback when execution completes.
     """
-    exec_state = _get_execution_state()
-
-    # Check if already running
     if is_execution_active():
+        exec_state = _get_execution_state()
         st.error(f"🔒 A run is already executing: {exec_state['run_id']}")
         return
 
-    # Mark as queued
-    start_time = time.time()
-    exec_state["status"] = ExecutionStatus.QUEUED.value
-    exec_state["run_id"] = run_id
-    exec_state["start_time"] = start_time
-    exec_state["end_time"] = None
-    exec_state["error"] = None
-    exec_state["pause_gate"] = None
-    exec_state["result_state"] = None
-
-    with _REGISTRY_LOCK:
-        _RUN_REGISTRY[run_id] = {
-            "status": ExecutionStatus.QUEUED.value,
-            "run_id": run_id,
-            "start_time": start_time,
-            "end_time": None,
-            "error": None,
-            "result_state": None,
-            "live_state": initial_state,
-            "pause_gate": None,
-            "settings": settings,
-        }
-
-    if isinstance(settings, RuntimeSettings):
-        mark_run_started(run_id, settings)
-
-    # Keep run_id in URL for recovery on browser reload.
+    # Anchor run_id in session and URL before the background thread starts.
     st.session_state["run_id"] = run_id
     _write_query_run_id(run_id)
 
-    def _execute():
-        """Execution function to run in background thread."""
-        try:
-            exec_state["status"] = ExecutionStatus.RUNNING.value
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.RUNNING.value
-            mark_run_status(ExecutionStatus.RUNNING.value)
-
-            # Expose the mutable state object so the dashboard can read live progress.
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["live_state"] = initial_state
-
-            # Execute pipeline
-            orchestrator = FrameworkOrchestrator(settings)
-            final_state = orchestrator.run_langgraph_compatible(initial_state)
-            setattr(final_state, "next_stage_id", None)
-
-            # Success
-            exec_state["status"] = ExecutionStatus.COMPLETED.value
-            exec_state["result_state"] = final_state
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.COMPLETED.value
-                    _RUN_REGISTRY[run_id]["result_state"] = final_state
-            mark_run_status(ExecutionStatus.COMPLETED.value)
-
-        except GatePausedError as e:
-            # Expected: pipeline paused for human review.
-            # Persist the gate checkpoint so the UI can display gate state without
-            # requiring the orchestrator instance (which won't survive the thread boundary).
-            gate_checkpoint = orchestrator.hitl_service.checkpoint_state()
-            initial_state.hitl_gate_checkpoint = gate_checkpoint
-
-            exec_state["status"] = ExecutionStatus.PAUSED.value
-            exec_state["pause_gate"] = e.gate_record.gate_id
-            exec_state["result_state"] = initial_state
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.PAUSED.value
-                    _RUN_REGISTRY[run_id]["pause_gate"] = e.gate_record.gate_id
-                    _RUN_REGISTRY[run_id]["result_state"] = initial_state
-            mark_run_status(ExecutionStatus.PAUSED.value, pause_gate=e.gate_record.gate_id)
-
-        except GateRejectedError as e:
-            # Gate rejected the output
-            exec_state["status"] = ExecutionStatus.FAILED.value
-            exec_state["error"] = f"Gate rejected at {e.gate_record.gate_id}"
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
-                    _RUN_REGISTRY[run_id]["error"] = f"Gate rejected at {e.gate_record.gate_id}"
-                    _RUN_REGISTRY[run_id]["result_state"] = initial_state
-            mark_run_status(ExecutionStatus.FAILED.value, error=f"Gate rejected at {e.gate_record.gate_id}")
-
-        except Exception as e:
-            # Unexpected error
-            exec_state["status"] = ExecutionStatus.FAILED.value
-            exec_state["error"] = f"{type(e).__name__}: {str(e)}"
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
-                    _RUN_REGISTRY[run_id]["error"] = f"{type(e).__name__}: {str(e)}"
-                    _RUN_REGISTRY[run_id]["result_state"] = initial_state
-            mark_run_status(ExecutionStatus.FAILED.value, error=f"{type(e).__name__}: {str(e)}")
-
-        finally:
-            end_time = time.time()
-            exec_state["end_time"] = end_time
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["end_time"] = end_time
-            if on_complete:
-                on_complete()
-            if exec_state["status"] == ExecutionStatus.IDLE.value:
-                clear_run_state()
-
-    # Start background thread
-    thread = threading.Thread(target=_execute, daemon=True)
-    exec_state["thread"] = thread
-    thread.start()
+    # Delegate all thread / orchestrator logic to the Streamlit-free backend.
+    _run_manager.submit_run(run_id, initial_state, settings, on_complete=on_complete)
 
 
 def resume_pipeline_execution(
@@ -356,14 +230,13 @@ def resume_pipeline_execution(
 ) -> None:
     """Resume a paused pipeline from a gate checkpoint in a background thread.
 
-    Mirrors start_pipeline_execution but resumes via orchestrator.resume_from_checkpoint().
-    Updates _RUN_REGISTRY status so the dashboard reflects RUNNING while stages execute.
+    Delegates all execution logic to ``backend.run_manager.resume_run()``.
 
     Args:
-        run_id: Existing run identifier (must already exist in _RUN_REGISTRY)
-        pipeline_state: FrameworkState captured at the pause point
-        settings: RuntimeSettings for the run
-        gate_id: Gate ID to resume from
+        run_id:         Existing run identifier.
+        pipeline_state: FrameworkState captured at the pause point.
+        settings:       RuntimeSettings for the run.
+        gate_id:        Gate ID that triggered the pause; positions resume point.
     """
     exec_state = _get_execution_state()
 
@@ -376,131 +249,33 @@ def resume_pipeline_execution(
         # Ignore stale resume clicks that do not match the active pause checkpoint.
         return
 
-    # Re-mark as running in both the session state and the registry.
-    exec_state["status"] = ExecutionStatus.RUNNING.value
-    exec_state["end_time"] = None
-    exec_state["pause_gate"] = None
-    exec_state["error"] = None
-    exec_state["result_state"] = None
-
-    with _REGISTRY_LOCK:
-        if run_id in _RUN_REGISTRY:
-            _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.RUNNING.value
-            _RUN_REGISTRY[run_id]["end_time"] = None
-            _RUN_REGISTRY[run_id]["pause_gate"] = None
-            _RUN_REGISTRY[run_id]["error"] = None
-            _RUN_REGISTRY[run_id]["result_state"] = None
-            _RUN_REGISTRY[run_id]["live_state"] = pipeline_state
-            _RUN_REGISTRY[run_id]["settings"] = settings
-
-    remember_settings(settings)
-
-    def _execute():
-        try:
-            orchestrator = FrameworkOrchestrator(settings, run_id=run_id)
-            # Restore HITL checkpoint so the orchestrator knows which gates already passed.
-            checkpoint = getattr(pipeline_state, "hitl_gate_checkpoint", None)
-            if isinstance(checkpoint, dict) and checkpoint:
-                orchestrator.hitl_service.restore_checkpoint_state(checkpoint)
-
-            final_state = orchestrator.resume_from_checkpoint(pipeline_state, gate_id)
-            setattr(final_state, "next_stage_id", None)
-
-            exec_state["status"] = ExecutionStatus.COMPLETED.value
-            exec_state["result_state"] = final_state
-            exec_state["error"] = None
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.COMPLETED.value
-                    _RUN_REGISTRY[run_id]["error"] = None
-                    _RUN_REGISTRY[run_id]["result_state"] = final_state
-            mark_run_status(ExecutionStatus.COMPLETED.value)
-
-        except GatePausedError as e:
-            # Persist gate checkpoint so the UI can display gate state without the orchestrator instance.
-            gate_checkpoint = orchestrator.hitl_service.checkpoint_state()
-            pipeline_state.hitl_gate_checkpoint = gate_checkpoint
-
-            exec_state["status"] = ExecutionStatus.PAUSED.value
-            exec_state["pause_gate"] = e.gate_record.gate_id
-            exec_state["result_state"] = pipeline_state
-            exec_state["error"] = None
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.PAUSED.value
-                    _RUN_REGISTRY[run_id]["pause_gate"] = e.gate_record.gate_id
-                    _RUN_REGISTRY[run_id]["error"] = None
-                    _RUN_REGISTRY[run_id]["result_state"] = pipeline_state
-            mark_run_status(ExecutionStatus.PAUSED.value, pause_gate=e.gate_record.gate_id)
-
-        except GateRejectedError as e:
-            exec_state["status"] = ExecutionStatus.FAILED.value
-            exec_state["error"] = f"Gate rejected at {e.gate_record.gate_id}"
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
-                    _RUN_REGISTRY[run_id]["error"] = f"Gate rejected at {e.gate_record.gate_id}"
-                    _RUN_REGISTRY[run_id]["result_state"] = pipeline_state
-            mark_run_status(ExecutionStatus.FAILED.value, error=f"Gate rejected at {e.gate_record.gate_id}")
-
-        except Exception as e:
-            exec_state["status"] = ExecutionStatus.FAILED.value
-            exec_state["error"] = f"{type(e).__name__}: {str(e)}"
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
-                    _RUN_REGISTRY[run_id]["error"] = f"{type(e).__name__}: {str(e)}"
-                    _RUN_REGISTRY[run_id]["result_state"] = pipeline_state
-            mark_run_status(ExecutionStatus.FAILED.value, error=f"{type(e).__name__}: {str(e)}")
-
-        finally:
-            end_time = time.time()
-            exec_state["end_time"] = end_time
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["end_time"] = end_time
-
-    thread = threading.Thread(target=_execute, daemon=True)
-    exec_state["thread"] = thread
-    thread.start()
+    # Delegate all thread / orchestrator logic to the Streamlit-free backend.
+    _run_manager.resume_run(run_id, gate_id, pipeline_state, settings)
 
 
 def cancel_execution() -> bool:
-    """Request cancellation of active execution.
+    """Request cancellation of the active execution.
 
-    Note: Graceful cancellation is not currently supported.
-    This marks the run as failed.
+    Delegates to ``backend.run_manager.cancel_run()``.
 
     Returns:
-        True if cancellation was successful
+        True if a run was active and has been marked as failed.
     """
-    state = _get_execution_state()
-    if not is_execution_active():
-        return False
-
-    state["status"] = ExecutionStatus.FAILED.value
-    state["error"] = "Execution cancelled by user"
-    state["end_time"] = time.time()
-    return True
+    run_id = st.session_state.get("run_id")
+    if run_id:
+        return _run_manager.cancel_run(run_id)
+    return False
 
 
 def wait_for_execution_complete(timeout: float = 300) -> bool:
-    """Wait for active execution to complete (blocking).
-
-    Args:
-        timeout: Maximum seconds to wait
+    """Block until the active execution leaves its active state or *timeout* expires.
 
     Returns:
-        True if execution completed, False if timeout
+        True if execution completed, False if timeout was reached.
     """
-    start = time.time()
-    state = _get_execution_state()
-
-    while is_execution_active():
-        if time.time() - start > timeout:
-            return False
-        time.sleep(0.1)
-
+    run_id = st.session_state.get("run_id")
+    if run_id:
+        return _run_manager.wait_for_run(run_id, timeout=timeout)
     return True
 
 

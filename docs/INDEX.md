@@ -12,6 +12,14 @@
 - [architecture/framework_overview.md](architecture/framework_overview.md)
 - [architecture/architecture_diagram.mermaid](architecture/architecture_diagram.mermaid)
 
+## Backend Module Reference
+
+- `src/threat_modeler/backend/run_manager.py` — Streamlit-free pipeline execution engine.
+  JSON state file: `~/.multi_agent_threat_modeler_runs.json`.
+- `src/threat_modeler/backend/prompt_store.py` — Thread-safe agent prompt store.
+  JSON state file: `~/.multi_agent_threat_modeler_prompts.json`.
+- `src/threat_modeler/__main__.py` — CLI entry point (`python -m threat_modeler`).
+
 ## Design Specifications
 
 - [HMI_Architecture_Blueprint.md](HMI_Architecture_Blueprint.md) (**Design authority** for all analyst-facing GUI screens; covers GUI-001 through GUI-014, navigation model, shared components, role gating, and state management)
