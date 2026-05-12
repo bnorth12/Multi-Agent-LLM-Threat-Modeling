@@ -29,6 +29,8 @@ Project to component and interface mapping:
 - PRJ-018 -> **GUI-009 (Deferred to S07-04), GUI-010 (Deferred to S07-04)**
 - PRJ-019 -> C01-ORCH-001, C01-STATE-002, INT-005, **GUI-016 (Planned S08 hotfix stream)**
 - PRJ-020 -> C01-STATE-003, C11-LLM-003, INT-012, **GUI-017 (Planned S08 hotfix stream)**
+- PRJ-023 -> C01-ORCH-001, C01-ORCH-002, INT-005
+- PRJ-024 -> PRJ-016, GUI-001, VS-009
 
 ---
 
@@ -64,6 +66,8 @@ Project to component and interface mapping:
 - Tests/unit/test_input_ingestion.py -> PRJ-001, PRJ-002, INT-001, INT-002
 - Tests/integration/test_validation_gates.py -> PRJ-003, PRJ-015, INT-005
 - **Tests/unit/test_ui_app_shell.py** -> PRJ-016, PRJ-018 (S06-07 partial coverage; S07 expansion in S07-07)
+- Tests/unit/test_orchestrator.py -> PRJ-003, PRJ-023
+- Tests/e2e/test_browser_cav_markdown_upload.py -> PRJ-016, PRJ-024, VS-009
 
 ---
 

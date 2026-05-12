@@ -24,3 +24,5 @@ VS-006: Sprint Team SHALL record demonstration evidence (annotated screenshots o
 VS-007: Sprint demonstration SHALL cover, at minimum, the user-facing deliverables of that sprint: pipeline execution for pipeline sprints; HITL gate pause and resume for HITL sprints; screen walkthrough for HMI sprints; full end-to-end run from input to export for release sprints.
 
 VS-008: For release-candidate sprints that intentionally exclude automation from release gating, Sprint Team SHALL execute and document a full manual release-candidate validation campaign that includes functional workflow checks and documentation walkthrough checks (user manual, product documentation set, and deployment guide).
+
+VS-009: Sprint Team SHALL maintain at least one automated visible-browser validation scenario that exercises UI file upload behavior with approved sprint fixtures (including markdown narratives) and records command + fixture evidence in sprint test documentation.
