@@ -20,7 +20,7 @@ from .state import FrameworkState
 from .validation import CanonicalGraphValidator, ValidationHaltError
 
 
-class _LegacyGraphEnvelope(TypedDict):
+class LegacyGraphEnvelope(TypedDict):
     payload: Any
 
 
@@ -58,16 +58,19 @@ class StateGraph:
         if start_node not in self.nodes:
             raise KeyError(f"Unknown start node: {start_node}")
 
-        graph = LangGraphStateGraph(_LegacyGraphEnvelope)
+        graph = LangGraphStateGraph(LegacyGraphEnvelope)
         terminal_nodes: set[str] = set(self.nodes.keys())
 
-        for node_name, func in self.nodes.items():
-            def _runner(envelope: _LegacyGraphEnvelope, _node_name=node_name, _fn=func) -> _LegacyGraphEnvelope:
-                next_state = _fn(envelope["payload"])
-                self.set_checkpoint(_node_name, next_state)
+        def _legacy_runner(node_name: str, fn: Callable[[Any], Any]) -> Callable[[LegacyGraphEnvelope], LegacyGraphEnvelope]:
+            def _runner(envelope: LegacyGraphEnvelope) -> LegacyGraphEnvelope:
+                next_state = fn(envelope["payload"])
+                self.set_checkpoint(node_name, next_state)
                 return {"payload": next_state}
 
-            graph.add_node(node_name, _runner)
+            return _runner
+
+        for node_name, func in self.nodes.items():
+            graph.add_node(node_name, _legacy_runner(node_name, func))
 
         graph.add_edge(START, start_node)
 
@@ -115,7 +118,7 @@ _MANDATORY_POST_STAGE_GATES: dict[str, str] = {
 }
 
 
-class _FrameworkGraphEnvelope(TypedDict):
+class FrameworkGraphEnvelope(TypedDict):
     active_state: FrameworkState
 
 
@@ -215,8 +218,8 @@ class FrameworkOrchestrator:
             else:
                 active_state.hitl_rejected_at_gate = exc.gate_record.gate_id
 
-    def _build_stage_runner(self, stage_id: str) -> Callable[[_FrameworkGraphEnvelope], _FrameworkGraphEnvelope]:
-        def _runner(envelope: _FrameworkGraphEnvelope) -> _FrameworkGraphEnvelope:
+    def _build_stage_runner(self, stage_id: str) -> Callable[[FrameworkGraphEnvelope], FrameworkGraphEnvelope]:
+        def _runner(envelope: FrameworkGraphEnvelope) -> FrameworkGraphEnvelope:
             active_state = envelope["active_state"]
             active_state.next_stage_id = stage_id
             self.run_stage(active_state, stage_id)
@@ -252,7 +255,7 @@ class FrameworkOrchestrator:
         if not stage_ids:
             return active_state
 
-        graph = LangGraphStateGraph(_FrameworkGraphEnvelope)
+        graph = LangGraphStateGraph(FrameworkGraphEnvelope)
         for stage_id in stage_ids:
             graph.add_node(stage_id, self._build_stage_runner(stage_id))
 
