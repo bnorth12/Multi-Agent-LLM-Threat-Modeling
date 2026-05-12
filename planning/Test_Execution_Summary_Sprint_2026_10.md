@@ -32,8 +32,16 @@ RUN_VISIBLE_BROWSER_TESTS=1 pytest Tests/e2e/test_browser_cav_markdown_upload.py
 
 ## 3. Results
 
-- Pending local execution update in this sprint branch.
-- Commands above are the required evidence set for S10 closeout.
+- `python -m pytest Tests/unit/test_orchestrator.py Tests/unit/test_live_mode_failover_halt.py -q --tb=short`
+  - Result: **4 passed**
+- `python -m pytest Tests/unit/ --ignore=Tests/unit/test_chroma_adapter.py --ignore=Tests/unit/test_live_mode_failover_halt.py -q --tb=short -m "not llm_live"`
+  - Result: **259 passed**
+- `python -m pytest Tests/integration Tests/e2e --ignore=Tests/integration/test_retrieval_evidence_linkage.py -q --tb=short -m "not llm_live and not llm_live_browser"`
+  - Result: **165 passed, 15 deselected**
+- `python -m pytest Tests/e2e -q --tb=short -m "not llm_live and not llm_live_browser"`
+  - Result: **34 passed, 15 deselected**
+- `RUN_VISIBLE_BROWSER_TESTS=1 pytest Tests/e2e/test_browser_cav_markdown_upload.py -v -m llm_live_browser -s`
+  - Result: not executed in this environment (opt-in visible-browser path; manual trigger required).
 
 ## 4. Notes
 
