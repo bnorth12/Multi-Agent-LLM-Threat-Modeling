@@ -220,7 +220,7 @@ def submit_run(
                     _RUN_REGISTRY[run_id]["live_state"] = initial_state
 
             orchestrator = FrameworkOrchestrator(settings)
-            final_state = orchestrator.run_langgraph_compatible(initial_state)
+            final_state = orchestrator.run_planned_stages(initial_state)
             setattr(final_state, "next_stage_id", None)
 
             with _REGISTRY_LOCK:

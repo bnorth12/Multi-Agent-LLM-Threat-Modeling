@@ -16,3 +16,4 @@ Each scenario should document:
 - source fixture set
 - requirement IDs
 - expected artifact checks
+- browser automation requirements (if scenario requires live visible-browser validation)

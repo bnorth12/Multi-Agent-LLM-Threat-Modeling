@@ -40,6 +40,7 @@ Current fixtures:
 
 - `inputs/descriptions/description_alpha.md` — Alpha system narrative
 - `inputs/descriptions/description_charlie.txt` — Charlie system narrative
+- `inputs/descriptions/description_cav.md` — Combined Charlie + Avionics markdown narrative for browser/live validation
 
 ## Fixture Naming Convention
 

@@ -8,6 +8,7 @@ The validation framework has two components:
 
 1. **test_live_llm_validation.py** - Unit/integration tests that hook into the adapter to intercept LLM calls
 2. **test_browser_run_validation.py** - Browser-based validation with gate-by-gate token tracking
+3. **test_browser_cav_markdown_upload.py** - Visible-browser upload validation for CAV fixture + markdown files
 
 ## How to Use: Manual Validation During Browser Run
 
@@ -105,6 +106,22 @@ pytest Tests/e2e/test_browser_run_validation.py::TestBrowserRunValidation -v -m 
 
 # Shows JSON report in: ./test_reports/live_llm_validation_*.json
 ```
+
+### Run Visible Browser CAV Upload Validation
+
+```bash
+export RUN_VISIBLE_BROWSER_TESTS=1
+pytest Tests/e2e/test_browser_cav_markdown_upload.py -v -m llm_live_browser -s
+```
+
+This test opens a visible Chromium window (`headless=False`), loads the Input Entry
+screen, uploads:
+
+- `Tests/fixtures/inputs/icd/icd_charlie_v1.xlsx`
+- `Tests/fixtures/inputs/descriptions/description_cav.md`
+- `Tests/fixtures/inputs/descriptions/description_avionics.md`
+
+and verifies file names are rendered by the UI upload list.
 
 ## Interpreting Results
 
@@ -235,5 +252,6 @@ You can be confident the system is working correctly against live LLM with prope
 
 - `test_live_llm_validation.py` - Core LLM validation tests
 - `test_browser_run_validation.py` - Browser/UI validation with token tracking
+- `test_browser_cav_markdown_upload.py` - Visible browser CAV markdown upload automation
 - `test_reports/` - JSON reports from validation runs
 - `.../Last Prompt` screen - Real-time token usage during browser run
