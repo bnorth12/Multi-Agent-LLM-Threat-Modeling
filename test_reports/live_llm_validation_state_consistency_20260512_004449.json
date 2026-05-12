@@ -1,0 +1,133 @@
+{
+  "test_name": "state_consistency",
+  "timestamp": "2026-05-12T00:44:49.809120",
+  "gate_executions": {
+    "gate_1_scope_confirmation": {
+      "timestamp": "2026-05-12T00:44:49.809080",
+      "gate": "gate_1_scope_confirmation",
+      "stage": "agent_01",
+      "prompt_sent": "Processing gate_1_scope_confirmation...",
+      "prompt_length_chars": 39,
+      "token_usage": {
+        "prompt_tokens": 60,
+        "completion_tokens": 95,
+        "model": "grok-4"
+      },
+      "state_transitions": {
+        "before": {
+          "status": "RUNNING"
+        },
+        "after": {
+          "status": "PAUSED"
+        }
+      },
+      "validation": {
+        "passed": true,
+        "checks": {
+          "has_token_usage": true,
+          "completion_tokens_gt_zero": true,
+          "prompt_tokens_gt_zero": true,
+          "live_provider_indicator": true
+        },
+        "failed_checks": []
+      }
+    },
+    "gate_2_boundary_approval": {
+      "timestamp": "2026-05-12T00:44:49.809094",
+      "gate": "gate_2_boundary_approval",
+      "stage": "agent_02",
+      "prompt_sent": "Processing gate_2_boundary_approval...",
+      "prompt_length_chars": 38,
+      "token_usage": {
+        "prompt_tokens": 150,
+        "completion_tokens": 400,
+        "model": "grok-4"
+      },
+      "state_transitions": {
+        "before": {
+          "status": "PAUSED"
+        },
+        "after": {
+          "status": "PAUSED"
+        }
+      },
+      "validation": {
+        "passed": true,
+        "checks": {
+          "has_token_usage": true,
+          "completion_tokens_gt_zero": true,
+          "prompt_tokens_gt_zero": true,
+          "live_provider_indicator": true
+        },
+        "failed_checks": []
+      }
+    },
+    "gate_3_stride_calibration": {
+      "timestamp": "2026-05-12T00:44:49.809103",
+      "gate": "gate_3_stride_calibration",
+      "stage": "agent_03",
+      "prompt_sent": "Processing gate_3_stride_calibration...",
+      "prompt_length_chars": 39,
+      "token_usage": {
+        "prompt_tokens": 450,
+        "completion_tokens": 850,
+        "model": "grok-4"
+      },
+      "state_transitions": {
+        "before": {
+          "status": "PAUSED"
+        },
+        "after": {
+          "status": "PAUSED"
+        }
+      },
+      "validation": {
+        "passed": true,
+        "checks": {
+          "has_token_usage": true,
+          "completion_tokens_gt_zero": true,
+          "prompt_tokens_gt_zero": true,
+          "live_provider_indicator": true
+        },
+        "failed_checks": []
+      }
+    }
+  },
+  "token_summary": {
+    "total_tokens": 2005,
+    "gates_executed": 3,
+    "token_ledger": [
+      {
+        "gate": "gate_1_scope_confirmation",
+        "tokens": {
+          "prompt_tokens": 60,
+          "completion_tokens": 95,
+          "model": "grok-4"
+        },
+        "total": 155
+      },
+      {
+        "gate": "gate_2_boundary_approval",
+        "tokens": {
+          "prompt_tokens": 150,
+          "completion_tokens": 400,
+          "model": "grok-4"
+        },
+        "total": 550
+      },
+      {
+        "gate": "gate_3_stride_calibration",
+        "tokens": {
+          "prompt_tokens": 450,
+          "completion_tokens": 850,
+          "model": "grok-4"
+        },
+        "total": 1300
+      }
+    ]
+  },
+  "validation_summary": {
+    "all_gates_valid": true,
+    "gates_with_issues": []
+  }
+}

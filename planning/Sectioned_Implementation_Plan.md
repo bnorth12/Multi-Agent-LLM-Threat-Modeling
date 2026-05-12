@@ -3,13 +3,12 @@
 # Sectioned Implementation Plan
 
 Date: 2026-05-02
-Last Updated: 2026-05-11
+Last Updated: 2026-05-12
 Status: Active execution plan
-Scope: Sprint 2026-05 through Sprint 2026-09
+Scope: Sprint 2026-05 through Sprint 2026-10
 
-> **Current Sprint**: 2026-09 — Backend Architecture Decoupling + UI Viewer Expansion.
-> See `planning/Sprint_2026_09_Traceability_Matrix.md` and
-> `planning/issues/Sprint_2026_09_Issue_Tracker.md` for current status.
+> **Current Sprint**: 2026-10 — LangGraph Native Orchestration and Live Browser Validation.
+> See `planning/issues/Sprint_2026_10_Issue_Tracker.md` for execution status.
 >
 
 ## 1. Plan Purpose
@@ -523,3 +522,49 @@ To reduce branch overhead and keep traceability simple, each sprint uses exactly
 - Sprint 2026-07 branch: feature/sprint_2026_07
 
 All workstream issues for a sprint are implemented and tracked on that sprint branch until merge.
+
+## 14. Sprint 2026-10 Execution Plan
+
+Sprint objective:
+Complete LangGraph-native orchestration swap-in, refresh requirement and governance artifacts, and deliver automated visible-browser CAV upload validation workflow with live-run guidance.
+
+### 14.1 Workstream A: Orchestrator LangGraph Native Refactor
+
+Deliverables:
+
+- replace compatibility-loop stage runner with LangGraph-backed stage execution path
+- preserve gate semantics, validation halt behavior, and checkpoint resume behavior
+- route backend execution manager through orchestrator mode-aware entry point
+
+Acceptance criteria:
+
+- planned stage execution runs through LangGraph graph compile/invoke path
+- no regression in mandatory/conditional HITL gate behavior
+- resume-from-gate executes only remaining stages and preserves checkpoint semantics
+
+### 14.2 Workstream B: Requirements and Documentation Refresh
+
+Deliverables:
+
+- add requirement IDs for LangGraph native orchestration and browser CAV validation workflow
+- refresh verification strategy and traceability mappings
+- update sprint issue tracker and closure notes for S10 workstream items
+
+Acceptance criteria:
+
+- requirements, verification strategy, and traceability files include new mappings
+- sprint tracker includes closure notes and verification references for each S10 issue
+
+### 14.3 Workstream C: Testing and Evidence Updates
+
+Deliverables:
+
+- update unit tests impacted by orchestration/refactor changes
+- add visible-browser CAV markdown upload e2e automation (opt-in)
+- update live validation guide with execution commands and fixture paths
+
+Acceptance criteria:
+
+- non-live tests pass for updated orchestration paths (excluding known environment-dependent failures)
+- browser upload test confirms CAV ICD and markdown file names are recognized by UI uploader
+- live validation guide includes the new visible-browser workflow

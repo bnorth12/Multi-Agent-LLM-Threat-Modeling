@@ -1,12 +1,37 @@
-"""Stage orchestration and compatibility state graph utilities."""
+"""Stage orchestration with LangGraph-backed execution."""
 
-from typing import Any, Dict, Callable, List
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, List, TypedDict
+
+from langgraph.graph import END, START, StateGraph as LangGraphStateGraph
+
+from .agents import build_default_agents
+from .config import RuntimeSettings
+from .hitl import (
+    ExportConsistencyMetrics,
+    GatePausedError,
+    GateRejectedError,
+    HitlService,
+    InputIntegrityMetrics,
+    MergeConflictMetrics,
+)
+from .models import ExecutionEdge, ExecutionNode, LangGraphExecutionPlan
+from .state import FrameworkState
+from .validation import CanonicalGraphValidator, ValidationHaltError
+
+
+class StatePayloadEnvelope(TypedDict):
+    payload: Any
+
 
 class StateGraph:
     """
-    Represents the LangGraph-style state graph for agent orchestration.
-    Nodes are agent stages; edges are explicit transitions.
+    Legacy compatibility wrapper now backed by LangGraph.
+
+    This preserves the simple test-facing API (add_node/add_edge/run/checkpoint)
+    while executing with `langgraph.graph.StateGraph` under the hood.
     """
+
     def __init__(self):
         self.nodes: Dict[str, Callable[[Any], Any]] = {}
         self.edges: Dict[str, List[str]] = {}
@@ -30,50 +55,58 @@ class StateGraph:
         return self.checkpoints.get(node)
 
     def run(self, start_node: str, initial_state: Any):
-        current_node = start_node
-        self.state = initial_state
-        while current_node:
-            func = self.nodes[current_node]
-            self.state = func(self.state)
-            self.set_checkpoint(current_node, self.state)
-            next_nodes = self.edges.get(current_node, [])
-            current_node = next_nodes[0] if next_nodes else None
+        if start_node not in self.nodes:
+            raise KeyError(f"Unknown start node: {start_node}")
+
+        graph = LangGraphStateGraph(StatePayloadEnvelope)
+        terminal_nodes: set[str] = set(self.nodes.keys())
+
+        def _legacy_runner(node_name: str, fn: Callable[[Any], Any]) -> Callable[[StatePayloadEnvelope], StatePayloadEnvelope]:
+            def _runner(envelope: StatePayloadEnvelope) -> StatePayloadEnvelope:
+                next_state = fn(envelope["payload"])
+                self.set_checkpoint(node_name, next_state)
+                return {"payload": next_state}
+
+            return _runner
+
+        for node_name, func in self.nodes.items():
+            graph.add_node(node_name, _legacy_runner(node_name, func))
+
+        graph.add_edge(START, start_node)
+
+        for from_node, to_nodes in self.edges.items():
+            if from_node not in self.nodes:
+                continue
+            next_node = to_nodes[0] if to_nodes else None
+            if next_node and next_node in self.nodes:
+                graph.add_edge(from_node, next_node)
+                terminal_nodes.discard(from_node)
+
+        for node_name in terminal_nodes:
+            graph.add_edge(node_name, END)
+
+        app = graph.compile()
+        result = app.invoke({"payload": initial_state})
+        self.state = result["payload"]
         return self.state
 
-# Example agent stub functions (to be replaced with real agent logic)
+
+# Example agent stub functions (legacy compatibility only)
 def agent_01_input_normalizer(state):
-    # ... normalize input ...
     return state
+
 
 def agent_02_context_builder(state):
-    # ... build context ...
     return state
 
-# ... more agent stubs ...
 
 def build_default_state_graph():
     sg = StateGraph()
     sg.add_node("input_normalizer", agent_01_input_normalizer)
     sg.add_node("context_builder", agent_02_context_builder)
     sg.add_edge("input_normalizer", "context_builder")
-    # ... add more nodes and edges ...
     return sg
 
-from dataclasses import dataclass
-
-from .agents import build_default_agents
-from .config import RuntimeSettings
-from .hitl import (
-    ExportConsistencyMetrics,
-    GatePausedError,
-    GateRejectedError,
-    HitlService,
-    InputIntegrityMetrics,
-    MergeConflictMetrics,
-)
-from .models import ExecutionEdge, ExecutionNode, LangGraphExecutionPlan
-from .state import FrameworkState
-from .validation import CanonicalGraphValidator, ValidationHaltError
 
 # Stage IDs that always open a mandatory HITL gate after the stage completes.
 _MANDATORY_POST_STAGE_GATES: dict[str, str] = {
@@ -83,6 +116,10 @@ _MANDATORY_POST_STAGE_GATES: dict[str, str] = {
     "agent_05": "gate_4_threat_plausibility",
     "agent_07": "gate_5_mitigation_adequacy",
 }
+
+
+class FrameworkGraphEnvelope(TypedDict):
+    active_state: FrameworkState
 
 
 @dataclass
@@ -181,6 +218,56 @@ class FrameworkOrchestrator:
             else:
                 active_state.hitl_rejected_at_gate = exc.gate_record.gate_id
 
+    def _build_stage_runner(self, stage_id: str) -> Callable[[FrameworkGraphEnvelope], FrameworkGraphEnvelope]:
+        def _runner(envelope: FrameworkGraphEnvelope) -> FrameworkGraphEnvelope:
+            active_state = envelope["active_state"]
+            active_state.next_stage_id = stage_id
+            self.run_stage(active_state, stage_id)
+
+            result = self.validator.validate(active_state)
+            if not result.is_valid and self.settings.pipeline.stop_on_validation_error:
+                raise ValidationHaltError(result, stage_id)
+
+            if self.settings.pipeline.require_hitl_gates and stage_id in _MANDATORY_POST_STAGE_GATES:
+                gate_id = _MANDATORY_POST_STAGE_GATES[stage_id]
+                try:
+                    self._open_mandatory_gate(gate_id, active_state)
+                except (GatePausedError, GateRejectedError) as exc:
+                    self._record_gate_pause_or_reject(active_state, exc)
+                    raise
+
+            if self.settings.pipeline.require_hitl_gates and stage_id == "agent_02":
+                try:
+                    self._evaluate_conditional_gate_6(active_state)
+                except (GatePausedError, GateRejectedError) as exc:
+                    self._record_gate_pause_or_reject(active_state, exc)
+                    raise
+
+            return {"active_state": active_state}
+
+        return _runner
+
+    def _run_stage_sequence_langgraph(
+        self,
+        active_state: FrameworkState,
+        stage_ids: list[str],
+    ) -> FrameworkState:
+        if not stage_ids:
+            return active_state
+
+        graph = LangGraphStateGraph(FrameworkGraphEnvelope)
+        for stage_id in stage_ids:
+            graph.add_node(stage_id, self._build_stage_runner(stage_id))
+
+        graph.add_edge(START, stage_ids[0])
+        for index in range(len(stage_ids) - 1):
+            graph.add_edge(stage_ids[index], stage_ids[index + 1])
+        graph.add_edge(stage_ids[-1], END)
+
+        app = graph.compile()
+        result = app.invoke({"active_state": active_state})
+        return result["active_state"]
+
     def resume_from_checkpoint(self, state: FrameworkState, gate_id: str) -> FrameworkState:
         """Resume execution after a gate is resolved without recomputing prior stages."""
         self.hitl_service.resume_from_checkpoint(gate_id)
@@ -190,22 +277,7 @@ class FrameworkOrchestrator:
             return state
 
         start_index = stage_ids.index(gate_record.stage_id) + 1
-        active_state = state
-        for current_stage_id in stage_ids[start_index:]:
-            active_state.next_stage_id = current_stage_id
-            self.run_stage(active_state, current_stage_id)
-
-            result = self.validator.validate(active_state)
-            if not result.is_valid and self.settings.pipeline.stop_on_validation_error:
-                raise ValidationHaltError(result, current_stage_id)
-
-            if self.settings.pipeline.require_hitl_gates and current_stage_id in _MANDATORY_POST_STAGE_GATES:
-                gate_for_stage = _MANDATORY_POST_STAGE_GATES[current_stage_id]
-                try:
-                    self._open_mandatory_gate(gate_for_stage, active_state)
-                except (GatePausedError, GateRejectedError) as exc:
-                    self._record_gate_pause_or_reject(active_state, exc)
-                    raise
+        active_state = self._run_stage_sequence_langgraph(state, stage_ids[start_index:])
 
         if self.settings.pipeline.require_hitl_gates:
             try:
@@ -256,7 +328,6 @@ class FrameworkOrchestrator:
             return self.run_langgraph_compatible(state)
 
         active_state = state or self.initialize_state()
-
         for index, stage_id in enumerate(self.planned_stage_ids()):
             active_state.next_stage_id = stage_id
             self.run_stage(active_state, stage_id)
@@ -266,7 +337,6 @@ class FrameworkOrchestrator:
                 if not result.is_valid and self.settings.pipeline.stop_on_validation_error:
                     raise ValidationHaltError(result, stage_id)
 
-        # TODO: Replace linear execution with LangGraph routing and checkpointing.
         return active_state
 
     def run_langgraph_compatible(self, state: FrameworkState | None = None) -> FrameworkState:
@@ -285,43 +355,18 @@ class FrameworkOrchestrator:
             try:
                 self.hitl_service.evaluate_and_open_input_integrity_gate(
                     metrics=metrics,
-                    artifact_snapshot={"raw_text_length": len(active_state.raw_text),
-                                       "table_count": len(active_state.tables)},
+                    artifact_snapshot={
+                        "raw_text_length": len(active_state.raw_text),
+                        "table_count": len(active_state.tables),
+                    },
                 )
             except GatePausedError as exc:
                 active_state.hitl_paused_at_gate = exc.gate_record.gate_id
                 active_state.hitl_gate_checkpoint = self.hitl_service.checkpoint_state()
                 raise
 
-        current_stage_id = plan.start_node_id
-        edge_lookup = {edge.from_node_id: edge.to_node_id for edge in plan.edges}
-
-        while current_stage_id is not None:
-            active_state.next_stage_id = current_stage_id
-            self.run_stage(active_state, current_stage_id)
-
-            result = self.validator.validate(active_state)
-            if not result.is_valid and self.settings.pipeline.stop_on_validation_error:
-                raise ValidationHaltError(result, current_stage_id)
-
-            # Mandatory HITL gates after specific stages.
-            if self.settings.pipeline.require_hitl_gates and current_stage_id in _MANDATORY_POST_STAGE_GATES:
-                gate_id = _MANDATORY_POST_STAGE_GATES[current_stage_id]
-                try:
-                    self._open_mandatory_gate(gate_id, active_state)
-                except (GatePausedError, GateRejectedError) as exc:
-                    self._record_gate_pause_or_reject(active_state, exc)
-                    raise
-
-            # Conditional Gate 6 after context merge stage.
-            if self.settings.pipeline.require_hitl_gates and current_stage_id == "agent_02":
-                try:
-                    self._evaluate_conditional_gate_6(active_state)
-                except (GatePausedError, GateRejectedError) as exc:
-                    self._record_gate_pause_or_reject(active_state, exc)
-                    raise
-
-            current_stage_id = edge_lookup.get(current_stage_id)
+        stage_ids = [node.node_id for node in plan.nodes]
+        active_state = self._run_stage_sequence_langgraph(active_state, stage_ids)
 
         # Conditional Gate 7 before publication / return.
         if self.settings.pipeline.require_hitl_gates:
@@ -331,5 +376,4 @@ class FrameworkOrchestrator:
                 self._record_gate_pause_or_reject(active_state, exc)
                 raise
 
-        # TODO: Replace this compatibility layer with a real LangGraph StateGraph.
         return active_state

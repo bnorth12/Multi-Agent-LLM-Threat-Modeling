@@ -259,6 +259,31 @@ Expected: Previews remain functional and data is current.
 3. Refresh browser and re-open preview panels.
 Expected: Preview panels still load and are not stale.
 
+### TC-RC-012: Visible Browser CAV Upload Validation
+
+Purpose: Verify analyst-facing UI upload path accepts CAV ICD + markdown narratives in a visible browser automation run.
+
+Preconditions:
+
+- `RUN_VISIBLE_BROWSER_TESTS=1`
+- Optional live credential env vars configured for extended live run validation.
+
+Steps:
+
+1. Launch visible-browser automation test:
+   `pytest Tests/e2e/test_browser_cav_markdown_upload.py -v -m llm_live_browser -s`
+   Expected: Chromium opens (headless disabled).
+2. Automation fills Input Entry system name and uploads:
+   - `icd_charlie_v1.xlsx`
+   - `description_cav.md`
+   - `description_avionics.md`
+   Expected: all file names appear in the UI selected-files list.
+
+Collect artifacts:
+
+- Screenshot of Input Entry page with all three uploaded file names visible.
+- Command output log with PASS result.
+
 Collect artifacts:
 
 - Screenshot for each preview panel open state.

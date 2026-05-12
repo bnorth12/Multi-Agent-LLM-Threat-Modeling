@@ -8,6 +8,7 @@ from typing import Any
 import pytest
 
 from threat_modeler.config import ModelSelection, PipelineSettings, RuntimeSettings
+from threat_modeler.backend import run_manager
 from threat_modeler.orchestrator import FrameworkOrchestrator
 from threat_modeler.state import FrameworkState
 from threat_modeler.ui import execution
@@ -30,7 +31,7 @@ class _FailingOrchestrator:
     def __init__(self, _settings: RuntimeSettings) -> None:
         self._settings = _settings
 
-    def run_langgraph_compatible(self, _state: FrameworkState) -> FrameworkState:
+    def run_planned_stages(self, _state: FrameworkState) -> FrameworkState:
         raise RuntimeError(
             "Stage agent_01 (Input Normalizer) failed: RuntimeError: "
             "Live adapter required for agent_01 (Input Normalizer) but adapter is missing. "
@@ -81,9 +82,10 @@ def test_execution_manager_marks_failed_on_live_degradation(monkeypatch: pytest.
 
     streamlit_stub = _StreamlitStub()
     monkeypatch.setattr(execution, "st", streamlit_stub)
-    monkeypatch.setattr(execution, "FrameworkOrchestrator", _FailingOrchestrator)
+    monkeypatch.setattr(run_manager, "FrameworkOrchestrator", _FailingOrchestrator)
 
-    execution._RUN_REGISTRY.clear()
+    with run_manager._REGISTRY_LOCK:
+        run_manager._RUN_REGISTRY.clear()
     streamlit_stub.session_state.clear()
 
     run_id = "run-live-failover-status"

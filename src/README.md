@@ -8,7 +8,7 @@ This directory is the Python implementation root for runtime code.
 
 | Module | Status | Purpose |
 |---|---|---|
-| `orchestrator.py` | Implemented | LangGraph-compatible stage execution, validation halt behavior |
+| `orchestrator.py` | Implemented | LangGraph-native `StateGraph` stage execution, HITL/validation halt behavior |
 | `validation.py` | Implemented | `CanonicalGraphValidator`, `ValidationResult`, `ValidationHaltError` |
 | `config.py` | Implemented | `RuntimeSettings`, `ModelSelection`, `PipelineSettings` |
 | `models/canonical.py` | Implemented | Typed dataclasses: System, Subsystem, Component, Function, Interface, threat graph |
