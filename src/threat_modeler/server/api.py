@@ -7,6 +7,7 @@ be hosted without GUI dependencies.
 from __future__ import annotations
 
 import json
+import logging
 import uuid
 from dataclasses import asdict
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -28,6 +29,8 @@ from threat_modeler.config import (
 from threat_modeler.orchestrator import FrameworkOrchestrator
 from threat_modeler.state import FrameworkState
 
+_LOGGER = logging.getLogger(__name__)
+
 
 def _coerce_bool(value: Any, default: bool) -> bool:
     if isinstance(value, bool):
@@ -48,13 +51,13 @@ def _runtime_settings_from_payload(payload: dict[str, Any] | None) -> RuntimeSet
     if not isinstance(payload, dict):
         return defaults
 
-    model_payload = payload.get("model") if isinstance(payload.get("model"), dict) else {}
-    pipeline_payload = payload.get("pipeline") if isinstance(payload.get("pipeline"), dict) else {}
+    model_candidate = payload.get("model")
+    pipeline_candidate = payload.get("pipeline")
+    model_payload = model_candidate if isinstance(model_candidate, dict) else {}
+    pipeline_payload = pipeline_candidate if isinstance(pipeline_candidate, dict) else {}
 
     enabled_stage_ids = pipeline_payload.get("enabled_stage_ids", defaults.pipeline.enabled_stage_ids)
-    if isinstance(enabled_stage_ids, list):
-        enabled_stage_ids = tuple(str(item) for item in enabled_stage_ids)
-    elif isinstance(enabled_stage_ids, tuple):
+    if isinstance(enabled_stage_ids, (list, tuple)):
         enabled_stage_ids = tuple(str(item) for item in enabled_stage_ids)
     else:
         enabled_stage_ids = defaults.pipeline.enabled_stage_ids
@@ -170,7 +173,11 @@ def build_handler() -> type[BaseHTTPRequestHandler]:
             self.wfile.write(body)
 
         def _read_json(self) -> dict[str, Any]:
-            length = int(self.headers.get("Content-Length", "0"))
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+            except (TypeError, ValueError):
+                _LOGGER.warning("Invalid Content-Length header: %r", self.headers.get("Content-Length"))
+                return {}
             if length <= 0:
                 return {}
             raw = self.rfile.read(length)
@@ -179,7 +186,8 @@ def build_handler() -> type[BaseHTTPRequestHandler]:
             try:
                 payload = json.loads(raw.decode("utf-8"))
                 return payload if isinstance(payload, dict) else {}
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as exc:
+                _LOGGER.warning("Invalid JSON body: %s", exc)
                 return {}
 
         def do_GET(self) -> None:  # noqa: N802
@@ -196,7 +204,11 @@ def build_handler() -> type[BaseHTTPRequestHandler]:
                 return
 
             if path.startswith("/runs/"):
-                run_id = path.split("/")[-1]
+                parts = path.split("/")
+                if len(parts) != 3 or parts[1] != "runs" or not parts[2]:
+                    self._json_response(404, {"error": f"Unknown route: {path}"})
+                    return
+                run_id = parts[2]
                 entry = _serialize_run_entry(get_run_status(run_id))
                 if entry is None:
                     self._json_response(404, {"error": f"Unknown run_id: {run_id}"})
@@ -217,7 +229,14 @@ def build_handler() -> type[BaseHTTPRequestHandler]:
                 return
 
             if path == "/runs":
-                run_id = str(payload.get("run_id") or uuid.uuid4())
+                provided_run_id = payload.get("run_id")
+                if provided_run_id is None:
+                    run_id = str(uuid.uuid4())
+                else:
+                    run_id = str(provided_run_id).strip()
+                    if not run_id:
+                        self._json_response(400, {"error": "run_id must be non-empty when provided"})
+                        return
                 settings = _runtime_settings_from_payload(payload.get("settings"))
                 initial_state = _framework_state_from_payload(payload.get("initial_state"))
                 submit_run(run_id, initial_state, settings)
@@ -226,7 +245,7 @@ def build_handler() -> type[BaseHTTPRequestHandler]:
 
             if path.endswith("/cancel") and "/runs/" in path:
                 parts = path.split("/")
-                if len(parts) >= 4:
+                if len(parts) == 4 and parts[1] == "runs" and parts[3] == "cancel" and parts[2]:
                     run_id = parts[2]
                     cancelled = cancel_run(run_id)
                     code = 200 if cancelled else 409
@@ -235,7 +254,7 @@ def build_handler() -> type[BaseHTTPRequestHandler]:
 
             if path.endswith("/resume") and "/runs/" in path:
                 parts = path.split("/")
-                if len(parts) >= 4:
+                if len(parts) == 4 and parts[1] == "runs" and parts[3] == "resume" and parts[2]:
                     run_id = parts[2]
                     gate_id = str(payload.get("gate_id") or "")
                     if not gate_id:
@@ -249,19 +268,18 @@ def build_handler() -> type[BaseHTTPRequestHandler]:
 
             self._json_response(404, {"error": f"Unknown route: {path}"})
 
-        def log_message(self, format: str, *args: Any) -> None:  # noqa: A003
-            return
+        def log_message(self, msg_format: str, *args: Any) -> None:
+            _LOGGER.info("api_request %s", msg_format % args)
 
     return ThreatModelerApiHandler
 
 
 def start_server(*, host: str, port: int) -> None:
     server = ThreadingHTTPServer((host, port), build_handler())
-    print(f"[threat_modeler] Operational API server listening on http://{host}:{port}")
+    _LOGGER.info("Operational API server listening on http://%s:%s", host, port)
     try:
         server.serve_forever()
     except KeyboardInterrupt:
         pass
     finally:
         server.server_close()
-

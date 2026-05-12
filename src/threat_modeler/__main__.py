@@ -1,8 +1,10 @@
-"""Operational entry point.
+"""Operational entry point for the Threat Modeler runtime.
 
-Start the non-Streamlit operational API server with::
-
+Usage:
     python -m threat_modeler
+    python -m threat_modeler --host 0.0.0.0 --port 9000
+
+This command launches the non-Streamlit operational API server.
 """
 
 from __future__ import annotations
