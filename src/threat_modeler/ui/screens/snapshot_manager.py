@@ -13,6 +13,10 @@ from threat_modeler.ui.runtime_io import (
     snapshot_payload_from_json,
     snapshot_payload_to_json,
 )
+from threat_modeler.ui.version_governance import (
+    generate_component_file_inventory,
+    generate_component_version_manifest,
+)
 
 
 def render() -> None:
@@ -24,6 +28,7 @@ def render() -> None:
     run_id = st.session_state.get("run_id")
     pipeline_state = st.session_state.get("pipeline_state")
     gate_states = st.session_state.get("gate_states", {})
+    markdown_edits = st.session_state.get("markdown_edits", {})
 
     if "saved_snapshots" not in st.session_state:
         st.session_state["saved_snapshots"] = {}
@@ -36,7 +41,7 @@ def render() -> None:
         key="snapshot_name_input",
     )
 
-    payload = build_snapshot_payload(run_id, pipeline_state, gate_states)
+    payload = build_snapshot_payload(run_id, pipeline_state, gate_states, markdown_edits)
     payload_json = snapshot_payload_to_json(payload)
 
     col_save, col_download = st.columns(2)
@@ -54,6 +59,13 @@ def render() -> None:
             mime="application/json",
             use_container_width=True,
         )
+
+    st.divider()
+    st.subheader("Version Governance Visibility")
+    manifest = generate_component_version_manifest()
+    inventory = generate_component_file_inventory()
+    st.table(manifest.get("components", []))
+    st.caption(f"Component file inventory rows: {inventory.get('row_count', 0)}")
 
     st.divider()
     st.subheader("Restore Snapshot")
@@ -95,3 +107,4 @@ def _apply_snapshot_payload(payload: dict) -> None:
     st.session_state["run_id"] = payload.get("run_id")
     st.session_state["pipeline_state"] = framework_state_from_dict(payload.get("pipeline_state", {}))
     st.session_state["gate_states"] = payload.get("gate_states", {})
+    st.session_state["markdown_edits"] = payload.get("markdown_edits", {})

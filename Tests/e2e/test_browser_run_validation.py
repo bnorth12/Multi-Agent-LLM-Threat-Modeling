@@ -57,8 +57,21 @@ class BrowserRunValidator:
             self.token_ledger.append({
                 "gate": gate_name,
                 "tokens": token_usage,
-                "total": sum(token_usage.values()),
+                "total": self._token_total(token_usage),
             })
+
+    @staticmethod
+    def _token_total(token_usage: Optional[Dict[str, Any]]) -> int:
+        """Return total of numeric token fields from a mixed token payload."""
+        if not token_usage:
+            return 0
+        total = 0
+        for value in token_usage.values():
+            if isinstance(value, bool):
+                continue
+            if isinstance(value, (int, float)):
+                total += int(value)
+        return total
 
     def _sanitize_state(self, state: Dict) -> Dict:
         """Remove sensitive data from state for reporting."""
@@ -78,7 +91,7 @@ class BrowserRunValidator:
         """Validate execution meets requirements."""
 
         checks = {
-            "has_token_usage": token_usage is not None and sum(token_usage.values() if token_usage else []) > 0,
+            "has_token_usage": token_usage is not None and self._token_total(token_usage) > 0,
             "completion_tokens_gt_zero": token_usage is not None and token_usage.get("completion_tokens", 0) > 0,
             "prompt_tokens_gt_zero": token_usage is not None and token_usage.get("prompt_tokens", 0) > 0,
             "live_provider_indicator": token_usage is not None and token_usage.get("model", "").startswith("grok"),

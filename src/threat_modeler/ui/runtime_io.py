@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from io import StringIO
 from dataclasses import asdict, is_dataclass
 from typing import Any
 
@@ -83,6 +84,7 @@ def build_snapshot_payload(
     run_id: str | None,
     pipeline_state: FrameworkState | None,
     gate_states: dict[str, Any] | None,
+    markdown_edits: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """Build stable snapshot payload for save/restore workflows."""
     return {
@@ -90,6 +92,7 @@ def build_snapshot_payload(
         "run_id": run_id,
         "pipeline_state": framework_state_to_dict(pipeline_state),
         "gate_states": _to_builtin(gate_states or {}),
+        "markdown_edits": _to_builtin(markdown_edits or {}),
     }
 
 
@@ -158,3 +161,71 @@ def export_token_usage_json(state: FrameworkState | None) -> str:
         "totals": _to_builtin(state.llm_usage_totals() if hasattr(state, "llm_usage_totals") else {}),
     }
     return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+
+
+def _stride_rows(state: FrameworkState | None) -> list[dict[str, Any]]:
+    """Return flat STRIDE rows per interface from canonical graph state."""
+    if state is None or state.canonical_graph is None:
+        return []
+
+    rows: list[dict[str, Any]] = []
+    for interface in state.canonical_graph.interfaces:
+        rows.append(
+            {
+                "interface_id": interface.id,
+                "interface_name": interface.name,
+                "from_node": interface.from_node,
+                "to_node": interface.to_node,
+                "S": interface.stride.S,
+                "S_justification": interface.stride.S_justification,
+                "T": interface.stride.T,
+                "T_justification": interface.stride.T_justification,
+                "R": interface.stride.R,
+                "R_justification": interface.stride.R_justification,
+                "I": interface.stride.I,
+                "I_justification": interface.stride.I_justification,
+                "D": interface.stride.D,
+                "D_justification": interface.stride.D_justification,
+                "E": interface.stride.E,
+                "E_justification": interface.stride.E_justification,
+                "threat_count": len(interface.threats),
+            }
+        )
+    return rows
+
+
+def export_stride_json(state: FrameworkState | None) -> str:
+    """Export per-interface STRIDE artifact as JSON."""
+    rows = _stride_rows(state)
+    payload = {
+        "rows": rows,
+        "row_count": len(rows),
+    }
+    return json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+
+
+def export_stride_csv(state: FrameworkState | None) -> str:
+    """Export per-interface STRIDE artifact as CSV."""
+    rows = _stride_rows(state)
+    if not rows:
+        return "interface_id,interface_name,from_node,to_node,S,T,R,I,D,E,threat_count\n"
+
+    fieldnames = [
+        "interface_id",
+        "interface_name",
+        "from_node",
+        "to_node",
+        "S",
+        "T",
+        "R",
+        "I",
+        "D",
+        "E",
+        "threat_count",
+    ]
+    output = StringIO()
+    output.write(",".join(fieldnames) + "\n")
+    for row in rows:
+        values = [str(row.get(name, "")).replace(",", " ") for name in fieldnames]
+        output.write(",".join(values) + "\n")
+    return output.getvalue()

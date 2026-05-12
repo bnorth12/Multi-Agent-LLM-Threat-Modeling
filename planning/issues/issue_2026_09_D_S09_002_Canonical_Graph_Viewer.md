@@ -15,11 +15,11 @@ Medium - Feature enhancement for analyst review and architecture validation.
 
 ## Acceptance Criteria
 
-- [ ] Add a canonical graph viewer screen in the UI navigation.
-- [ ] Display system, subsystem, component, function, and interface hierarchy.
-- [ ] Allow expansion/collapse of hierarchy nodes.
-- [ ] Show trust boundary crossing metadata on interfaces.
-- [ ] Ensure viewer content matches canonical graph export.
+- [x] Add a canonical graph viewer screen in the UI navigation.
+- [x] Display system, subsystem, component, function, and interface hierarchy.
+- [x] Allow expansion/collapse of hierarchy nodes.
+- [x] Show trust boundary crossing metadata on interfaces.
+- [x] Ensure viewer content matches canonical graph export.
 
 ## Verification Evidence
 
@@ -36,7 +36,13 @@ Medium - Feature enhancement for analyst review and architecture validation.
 
 ## Status
 
-Open
+Resolved
+
+## Implementation Notes (2026-05-10)
+
+- Added UI screen: `src/threat_modeler/ui/screens/canonical_graph_viewer.py`
+- Added display-model correctness tests: `Tests/integration/test_canonical_graph_viewer.py`
+- Verified in automated non-manual sweep: `406 passed, 11 deselected`.
 
 ## Metadata
 

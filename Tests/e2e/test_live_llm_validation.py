@@ -7,17 +7,23 @@ Validates that each gate/stage executes against live LLM (not fixtures) by:
 3. Monitoring for fixture fallback indicators
 4. Ensuring real LLM responses (not cached/mocked)
 """
-import pytest
-import json
-import re
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional
-from unittest.mock import patch, MagicMock
+from typing import Any, Dict, List, Optional
 
-from threat_modeler.framework import FrameworkOrchestrator
-from threat_modeler.config import RuntimeSettings, build_default_settings, ModelSelection
-from threat_modeler.llm.openai_compatible_adapter import OpenAICompatibleAdapter
+import json
+import os
+
+import pytest
+
+from threat_modeler.config import (
+    LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
+    LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
+    ModelSelection,
+    PipelineSettings,
+    RuntimeSettings,
+)
+from threat_modeler.llm.openai_compatible_adapter import OpenAiCompatibleAdapter as OpenAICompatibleAdapter
+from threat_modeler.orchestrator import FrameworkOrchestrator
 
 
 class LiveLLMValidator:
@@ -27,35 +33,35 @@ class LiveLLMValidator:
         self.calls: List[Dict[str, Any]] = []
         self.tokens_by_stage: Dict[str, int] = {}
         self.prompts_by_gate: Dict[str, str] = {}
-        self.original_post = None
+        self.original_complete = None
         self.fixture_fallback_detected = False
 
     def install(self, adapter: OpenAICompatibleAdapter):
         """Hook into adapter to intercept LLM calls."""
-        self.original_post = adapter._post
-        adapter._post = self._intercept_post
+        self.original_complete = adapter.complete
 
-    def _intercept_post(self, endpoint: str, payload: Dict, **kwargs) -> Dict:
-        """Intercept POST call to track tokens and prompts."""
-        # Extract prompt from payload
-        prompt_text = ""
-        if "messages" in payload:
-            prompt_text = str(payload["messages"])
+        def _wrapped_complete(system_prompt: str, user_message: str) -> str:
+            return self._intercept_complete(adapter, system_prompt, user_message)
 
-        # Call original
-        response = self.original_post(endpoint, payload, **kwargs)
+        adapter.complete = _wrapped_complete  # type: ignore[method-assign]
+
+    def _intercept_complete(self, adapter: OpenAICompatibleAdapter, system_prompt: str, user_message: str) -> str:
+        """Intercept adapter.complete() to track tokens and prompts."""
+        response_text = self.original_complete(system_prompt, user_message)
+        usage = adapter.usage_snapshot() if hasattr(adapter, "usage_snapshot") else {}
+        prompt_text = f"system={system_prompt}\nuser={user_message}"
 
         # Record call
         call_record = {
             "timestamp": datetime.now().isoformat(),
-            "endpoint": endpoint,
+            "endpoint": getattr(adapter, "_endpoint_mode", "unknown"),
             "prompt_length": len(prompt_text),
             "prompt_preview": prompt_text[:200],
-            "response_model": response.get("model", "unknown"),
-            "usage": response.get("usage", {}),
-            "completion_tokens": response.get("usage", {}).get("completion_tokens", 0),
-            "prompt_tokens": response.get("usage", {}).get("prompt_tokens", 0),
-            "total_tokens": response.get("usage", {}).get("total_tokens", 0),
+            "response_model": usage.get("model", getattr(adapter, "_model", "unknown")),
+            "usage": usage,
+            "completion_tokens": usage.get("completion_tokens", 0),
+            "prompt_tokens": usage.get("prompt_tokens", 0),
+            "total_tokens": usage.get("total_tokens", 0),
         }
 
         self.calls.append(call_record)
@@ -64,7 +70,7 @@ class LiveLLMValidator:
         if call_record["total_tokens"] == 0:
             self.fixture_fallback_detected = True
 
-        return response
+        return response_text
 
     def check_fixture_fallback(self) -> bool:
         """Returns True if fixture fallback was detected."""
@@ -120,6 +126,43 @@ class GateExecutionValidator:
 
         self.gate_validations[gate_name] = validation
         return validation
+
+
+def _live_settings(
+    *,
+    model_name: str = "grok-4",
+    endpoint_mode: str = "chat_completions",
+    timeout_seconds: int = LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
+    max_attempts: int = LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
+) -> RuntimeSettings:
+    if not (os.environ.get("GROK_API") or os.environ.get("XAI_API_KEY")):
+        pytest.skip("GROK_API or XAI_API_KEY not set; skipping live LLM validation.")
+
+    return RuntimeSettings(
+        model=ModelSelection(
+            provider="xai",
+            model_name=model_name,
+            offline_only=False,
+            endpoint_mode=endpoint_mode,
+            request_timeout_seconds=timeout_seconds,
+            request_max_attempts=max_attempts,
+        ),
+        pipeline=PipelineSettings(
+            execution_mode="langgraph-compatible",
+            require_hitl_gates=False,
+            stop_on_validation_error=False,
+        ),
+    )
+
+
+def _build_framework(settings: RuntimeSettings, run_id: str) -> FrameworkOrchestrator:
+    return FrameworkOrchestrator(settings=settings, run_id=run_id)
+
+
+def _live_adapter(framework: FrameworkOrchestrator) -> OpenAICompatibleAdapter:
+    adapter = framework.agents["agent_01"].adapter
+    assert adapter is not None, "Live adapter should be configured on shared agents"
+    return adapter
 
     def validate_gate_2(self, framework: FrameworkOrchestrator) -> Dict[str, Any]:
         """Validate Gate 2: Boundary Approval."""
@@ -179,47 +222,37 @@ class TestLiveLLMValidation:
 
     def test_live_llm_not_fixture_fallback(self, validator):
         """Verify live LLM is used, not fixture fallback."""
-        # Build live settings
-        settings = build_default_settings()
-        assert settings.provider.provider_type == "live", "Should use live provider"
+        settings = _live_settings()
+        assert settings.model.provider == "xai"
+        assert not settings.model.offline_only
 
-        # Create framework
-        framework = FrameworkOrchestrator(
-            system_name="Test System",
-            architecture_text="subsystem: TestSubsystem, component: TestComponent",
-            settings=settings,
+        framework = _build_framework(settings, run_id="test-live-llm-not-fixture-fallback")
+        state = framework.initialize_state()
+        state.raw_text = "subsystem: TestSubsystem, component: TestComponent"
+
+        validator.install(_live_adapter(framework))
+
+        framework.run_planned_stages(state)
+
+        assert not validator.check_fixture_fallback(), (
+            "Should use live LLM, not fixture fallback. Calls: " + json.dumps(validator.calls, indent=2)
         )
 
-        # Hook validator
-        adapter = framework.adapter
-        validator.install(adapter)
+        assert len(validator.calls) > 0
 
-        # Run initial stages (agent_01, agent_02)
-        framework._initialize_context()
-
-        # Validate not using fixtures
-        assert not validator.check_fixture_fallback(), \
-            "Should use live LLM, not fixture fallback. Calls: " + json.dumps(validator.calls, indent=2)
-
-        # Print report
         print("\n" + validator.get_call_report())
 
     def test_gate_1_has_llm_calls_with_tokens(self, validator, gate_validator):
         """Validate Gate 1 makes LLM calls with measurable token usage."""
-        settings = build_default_settings()
-        framework = FrameworkOrchestrator(
-            system_name="Test System",
-            architecture_text="subsystem: TestSubsystem, component: TestComponent",
-            settings=settings,
-        )
+        settings = _live_settings()
+        framework = _build_framework(settings, run_id="test-gate-1-has-llm-calls")
+        state = framework.initialize_state()
+        state.raw_text = "subsystem: TestSubsystem, component: TestComponent"
 
-        adapter = framework.adapter
-        validator.install(adapter)
+        validator.install(_live_adapter(framework))
 
-        # Initialize (Gate 1 validations run here)
-        framework._initialize_context()
+        framework.run_planned_stages(state)
 
-        # Validate gate 1
         validation = gate_validator.validate_gate_1(framework)
 
         assert validation["checks"]["uses_live_provider"], \
@@ -233,26 +266,20 @@ class TestLiveLLMValidation:
 
     def test_gate_3_stride_validation_with_substantial_tokens(self, validator, gate_validator):
         """Validate Gate 3 (STRIDE) makes live LLM calls with substantial token usage."""
-        settings = build_default_settings()
-        framework = FrameworkOrchestrator(
-            system_name="Test System for STRIDE",
-            architecture_text="""
-            subsystem: Authentication, component: LoginProcessor
-            subsystem: Database, component: UserStore
-            data_flow: LoginProcessor -> UserStore (SQL)
-            trust_boundary: External Network boundary
-            """,
-            settings=settings,
-        )
+        settings = _live_settings()
+        framework = _build_framework(settings, run_id="test-gate-3-stride-validation")
+        state = framework.initialize_state()
+        state.raw_text = """
+        subsystem: Authentication, component: LoginProcessor
+        subsystem: Database, component: UserStore
+        data_flow: LoginProcessor -> UserStore (SQL)
+        trust_boundary: External Network boundary
+        """
 
-        adapter = framework.adapter
-        validator.install(adapter)
+        validator.install(_live_adapter(framework))
 
-        # Run through stages to reach STRIDE (agent_04)
-        # Note: This is a simplified check; full pipeline runs in integration tests
-        framework._initialize_context()
+        framework.run_planned_stages(state)
 
-        # Validate tokens were used (gate_3 happens after context is built)
         total_tokens = sum(c["total_tokens"] for c in validator.calls)
 
         assert total_tokens > 0, \
@@ -266,24 +293,20 @@ class TestLiveLLMValidation:
 
     def test_prompt_content_varies_by_stage(self, validator):
         """Validate prompts sent to LLM vary and contain stage-specific content."""
-        settings = build_default_settings()
-        framework = FrameworkOrchestrator(
-            system_name="Multi-Stage Test",
-            architecture_text="""
-            subsystem: Frontend, component: WebUI
-            subsystem: Backend, component: API Server
-            subsystem: Database, component: PostgreSQL
-            interface: Frontend-Backend (HTTPS)
-            interface: Backend-Database (SQL)
-            """,
-            settings=settings,
-        )
+        settings = _live_settings()
+        framework = _build_framework(settings, run_id="test-prompt-content-varies-by-stage")
+        state = framework.initialize_state()
+        state.raw_text = """
+        subsystem: Frontend, component: WebUI
+        subsystem: Backend, component: API Server
+        subsystem: Database, component: PostgreSQL
+        interface: Frontend-Backend (HTTPS)
+        interface: Backend-Database (SQL)
+        """
 
-        adapter = framework.adapter
-        validator.install(adapter)
+        validator.install(_live_adapter(framework))
 
-        # Initialize context
-        framework._initialize_context()
+        framework.run_planned_stages(state)
 
         # Validate prompts captured
         assert len(validator.calls) > 0, "Should have intercepted LLM calls"
@@ -303,15 +326,11 @@ class TestLiveLLMValidation:
 
     def test_live_provider_timeout_config_used(self, validator):
         """Validate that project-level timeout config is used, not env vars."""
-        # Set custom timeout in settings
         custom_timeout = 240  # 4 minutes instead of default 180
         custom_retries = 5    # 5 retries instead of default 3
 
-        settings = build_default_settings()
-        settings.model.request_timeout_seconds = custom_timeout
-        settings.model.request_max_attempts = custom_retries
+        settings = _live_settings(timeout_seconds=custom_timeout, max_attempts=custom_retries)
 
-        # Verify settings
         assert settings.model.request_timeout_seconds == custom_timeout
         assert settings.model.request_max_attempts == custom_retries
 
