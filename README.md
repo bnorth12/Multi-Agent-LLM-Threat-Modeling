@@ -73,7 +73,8 @@ Selection and lock criteria are documented in Python_Dependency_Strategy.md.
   `~/.multi_agent_threat_modeler_prompts.json`.
 - **`ui/execution.py`** (refactored) — Now a thin Streamlit adapter; all execution logic
   delegated to `backend/run_manager.py`.
-- **`__main__.py`** — `python -m threat_modeler` CLI entry point (see Getting Started below).
+- **`server/api.py`** — operational non-Streamlit HTTP server for run control and LangGraph execution-plan APIs.
+- **`__main__.py`** — `python -m threat_modeler` CLI entry point for the operational API server.
 - **55 new backend tests** added (total: 259 passing).
 - Requirement PRJ-019 (Asynchronous Backend State Authority) fully implemented.
 
@@ -95,13 +96,14 @@ python -m venv .venv
 # Install dependencies
 pip install -r requirements.txt
 
-# Launch the application (preferred)
+# Launch the operational API server (preferred)
 python -m threat_modeler
 
 # Or launch on a custom port
 python -m threat_modeler --port 9000
 
-# Or launch Streamlit directly
+# Streamlit is for automated browser validation only (non-operational)
+pip install -r Tests/requirements_e2e.txt
 streamlit run src/threat_modeler/ui/app.py
 
 # Run all unit tests

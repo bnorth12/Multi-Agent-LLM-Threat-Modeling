@@ -136,7 +136,7 @@ You can provide the key either:
 python -m threat_modeler
 ```
 
-The application starts the Streamlit server and opens at `http://localhost:8501`.
+The application starts the operational API server at `http://127.0.0.1:8600`.
 
 **Custom port:**
 
@@ -144,15 +144,16 @@ The application starts the Streamlit server and opens at `http://localhost:8501`
 python -m threat_modeler --port 9000
 ```
 
-**Auto-open browser:**
+**Custom host + port:**
 
 ```bash
-python -m threat_modeler --open-browser
+python -m threat_modeler --host 0.0.0.0 --port 9000
 ```
 
-**Streamlit directly (equivalent):**
+**Streamlit test harness (browser automation/e2e only):**
 
 ```bash
+pip install -r Tests/requirements_e2e.txt
 streamlit run src/threat_modeler/ui/app.py
 ```
 
@@ -438,9 +439,11 @@ pip install -e .
 python -m threat_modeler
 ```
 
-If you prefer not to install in editable mode, run Streamlit directly:
+If you need browser automation/e2e validation, install test dependencies and run
+the Streamlit harness directly:
 
 ```bash
+pip install -r Tests/requirements_e2e.txt
 streamlit run src/threat_modeler/ui/app.py
 ```
 

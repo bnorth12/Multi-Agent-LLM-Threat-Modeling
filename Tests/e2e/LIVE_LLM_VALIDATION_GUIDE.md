@@ -15,7 +15,10 @@ The validation framework has two components:
 ### Step 1: Start the Browser Run (VISIBLE)
 
 ```bash
-# Terminal 1: Start Streamlit with browser auto-open
+# Install browser-test dependencies (includes Streamlit test harness)
+pip install -r Tests/requirements_e2e.txt
+
+# Terminal 1: Start Streamlit test harness with browser auto-open
 streamlit run src/threat_modeler/ui/app.py --logger.level=debug
 ```
 

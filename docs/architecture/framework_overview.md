@@ -67,18 +67,23 @@ Streamlit session-state bookkeeping and URL-parameter handling. **No pipeline lo
 Per-screen rendering modules that read backend state projections via the adapter.
 Screens are read-only consumers of backend state; they do not own runtime data.
 
-### CLI Entry Point
+### Operational API Server
 
 ```bash
-# Launch the full application
+# Launch operational server (non-Streamlit)
 python -m threat_modeler
 
 # With options
-python -m threat_modeler --port 9000 --open-browser
+python -m threat_modeler --host 0.0.0.0 --port 9000
 ```
 
-The `__main__.py` module delegates to `streamlit run src/threat_modeler/ui/app.py`
-so no separate wrapper script is needed.
+The `__main__.py` module launches `server/api.py`, which exposes backend run
+control and LangGraph execution-plan endpoints without a Streamlit dependency.
+
+### Streamlit Test Harness
+
+`src/threat_modeler/ui/app.py` remains available for automated browser testing
+and validation evidence collection, but it is not the operational runtime server.
 
 ## 3. Data Contracts
 

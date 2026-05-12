@@ -5,9 +5,6 @@
 openai>=1.0.0
 langgraph>=1.1.10
 
-# UI
-streamlit>=1.57.0
-
 # Vector store (retrieval evidence linkage)
 chromadb>=0.4.0
 
