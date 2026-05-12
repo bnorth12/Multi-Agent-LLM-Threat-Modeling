@@ -308,14 +308,27 @@ def render() -> None:
         # ===== Pipeline Settings =====
         st.subheader("Pipeline Settings")
 
-        default_enabled = list(defaults.pipeline.enabled_stage_ids)
-        enabled_stages = st.multiselect(
-            "Enabled stages",
-            options=_ALL_STAGES,
-            default=default_enabled,
-            format_func=lambda s: _STAGE_LABELS.get(s, s),
-            help="Deselect stages to skip them during the run.",
-        )
+        # Always show all stages enabled by default in the form
+        default_enabled = list(_ALL_STAGES)
+        st.write("**Enabled stages** — Check which pipeline stages to execute:")
+        st.caption("All stages are enabled by default. Uncheck to skip any stage during the run.")
+
+        # Display stages in 3-column layout for better readability
+        cols = st.columns(3)
+        stage_checkboxes = {}
+        for idx, stage_id in enumerate(_ALL_STAGES):
+            col = cols[idx % 3]
+            stage_label = _STAGE_LABELS.get(stage_id, stage_id)
+            with col:
+                stage_checkboxes[stage_id] = st.checkbox(
+                    stage_label,
+                    value=stage_id in default_enabled,
+                    key=f"stage_checkbox_{stage_id}",
+                    help=f"Enable/disable {stage_label}",
+                )
+
+        # Collect enabled stages from checkboxes
+        enabled_stages = [stage_id for stage_id, is_checked in stage_checkboxes.items() if is_checked]
 
         stop_on_error = st.checkbox(
             "Stop on validation error",

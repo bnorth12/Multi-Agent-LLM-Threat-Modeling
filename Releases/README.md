@@ -8,3 +8,8 @@ Use this folder for:
 - Release checklist bundles
 - Release decision records
 - Signed approval evidence
+- Deployment guides for each release candidate and GA release
+
+Recommended naming:
+
+- `Deployment_Guide_v<version>.md`

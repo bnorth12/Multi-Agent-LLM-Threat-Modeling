@@ -22,6 +22,7 @@ _DEFAULTS: dict = {
     "input_system_name": "",          # last system name entered on Input Entry
     "input_system_description": "",   # last description entered on Input Entry
     "input_raw_text_paste": "",       # last pasted raw text on Input Entry
+    "markdown_edits": {},             # run_id -> edited markdown content (GUI-025)
 }
 
 

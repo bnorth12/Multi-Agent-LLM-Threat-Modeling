@@ -16,12 +16,12 @@ Medium - Feature enhancement for risk review, reporting, and downstream workflow
 
 ## Acceptance Criteria
 
-- [ ] Add STRIDE viewer screen in UI navigation.
-- [ ] Display per-interface STRIDE scores and justifications.
-- [ ] Show linked threats for each interface.
-- [ ] Support sorting by score and interface.
-- [ ] Add standalone STRIDE export action (JSON or CSV) in Results Export.
-- [ ] Export payload matches data shown in STRIDE viewer.
+- [x] Add STRIDE viewer screen in UI navigation.
+- [x] Display per-interface STRIDE scores and justifications.
+- [x] Show linked threats for each interface.
+- [x] Support sorting by score and interface.
+- [x] Add standalone STRIDE export action (JSON or CSV) in Results Export.
+- [x] Export payload matches data shown in STRIDE viewer.
 
 ## Verification Evidence
 
@@ -42,7 +42,14 @@ Medium - Feature enhancement for risk review, reporting, and downstream workflow
 
 ## Status
 
-Open
+Resolved
+
+## Implementation Notes (2026-05-10)
+
+- Added UI screen: `src/threat_modeler/ui/screens/stride_viewer.py`
+- Added STRIDE export helpers in `src/threat_modeler/ui/runtime_io.py`
+- Added correctness tests: `Tests/integration/test_stride_viewer_screen.py`, `Tests/integration/test_stride_export_artifact.py`
+- Verified in automated non-manual sweep: `406 passed, 11 deselected`.
 
 ## Metadata
 
