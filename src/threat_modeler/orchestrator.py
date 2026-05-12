@@ -20,7 +20,7 @@ from .state import FrameworkState
 from .validation import CanonicalGraphValidator, ValidationHaltError
 
 
-class LegacyGraphEnvelope(TypedDict):
+class StatePayloadEnvelope(TypedDict):
     payload: Any
 
 
@@ -58,11 +58,11 @@ class StateGraph:
         if start_node not in self.nodes:
             raise KeyError(f"Unknown start node: {start_node}")
 
-        graph = LangGraphStateGraph(LegacyGraphEnvelope)
+        graph = LangGraphStateGraph(StatePayloadEnvelope)
         terminal_nodes: set[str] = set(self.nodes.keys())
 
-        def _legacy_runner(node_name: str, fn: Callable[[Any], Any]) -> Callable[[LegacyGraphEnvelope], LegacyGraphEnvelope]:
-            def _runner(envelope: LegacyGraphEnvelope) -> LegacyGraphEnvelope:
+        def _legacy_runner(node_name: str, fn: Callable[[Any], Any]) -> Callable[[StatePayloadEnvelope], StatePayloadEnvelope]:
+            def _runner(envelope: StatePayloadEnvelope) -> StatePayloadEnvelope:
                 next_state = fn(envelope["payload"])
                 self.set_checkpoint(node_name, next_state)
                 return {"payload": next_state}
