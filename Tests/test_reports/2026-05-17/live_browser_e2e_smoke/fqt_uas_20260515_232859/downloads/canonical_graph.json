@@ -1,0 +1,1842 @@
+{
+  "metadata": {
+    "generation_timestamp": "2025-01-01T00:00:00Z",
+    "model_level": "system"
+  },
+  "system": {
+    "name": "UAS Weapon System",
+    "description": "The UAS Weapon System is a multi-segment intelligence, surveillance, and reconnaissance (ISR) system composed of four operational segments with lower-level components inside each segment.",
+    "mission_criticality": "HIGH",
+    "safety_criticality": "HIGH"
+  },
+  "subsystems": [
+    {
+      "id": "SS-ALPHA-01",
+      "name": "UAS Air Vehicle Segment",
+      "description": "Airborne platform carrying sensor payloads and command relay functions",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-BRAVO-01",
+      "name": "Mission Processing Ground Station",
+      "description": "Fixed-site mission processing",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-CHARLIE-01",
+      "name": "Satellite Communications Terminal",
+      "description": "Ground relay and crypto gateway for all air-to-ground traffic",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-DELTA-01",
+      "name": "Ground Maintenance System",
+      "description": "Diagnostic and calibration system",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-NAV-01",
+      "name": "Navigation Subsystem",
+      "description": "Provides position and attitude data to the mission computer",
+      "parent_system": "SS-ALPHA-01"
+    },
+    {
+      "id": "SS-CMD-01",
+      "name": "Command and Control Subsystem",
+      "description": "Receives and validates operator commands",
+      "parent_system": "SS-ALPHA-01"
+    },
+    {
+      "id": "SS-PROC-01",
+      "name": "Processing Subsystem",
+      "description": "Executes mission payloads and sensor fusion",
+      "parent_system": "SS-BRAVO-01"
+    },
+    {
+      "id": "SS-STORE-01",
+      "name": "Storage Subsystem",
+      "description": "Manages persistent data recording",
+      "parent_system": "SS-BRAVO-01"
+    },
+    {
+      "id": "SS-EGW-01",
+      "name": "Encryption Gateway Subsystem",
+      "description": "Performs in-line encryption and decryption of all satellite link traffic",
+      "parent_system": "SS-CHARLIE-01"
+    },
+    {
+      "id": "SS-TRF-01",
+      "name": "Traffic Shaping Subsystem",
+      "description": "Controls data flow rates and priority queuing for the satellite link",
+      "parent_system": "SS-CHARLIE-01"
+    },
+    {
+      "id": "SS-DIAG-01",
+      "name": "Diagnostic Computer Subsystem",
+      "description": "Hosts maintenance workstation software and provides the technician HMI for fault isolation and health monitoring",
+      "parent_system": "SS-DELTA-01"
+    },
+    {
+      "id": "SS-SLS-01",
+      "name": "Software Load Station Subsystem",
+      "description": "Manages storage integrity verification and transfer of authorised software loads to Alpha",
+      "parent_system": "SS-DELTA-01"
+    },
+    {
+      "id": "SS-TIM-01",
+      "name": "Test Interface Module Subsystem",
+      "description": "Physical and logical interface between the GMS and the Alpha maintenance port",
+      "parent_system": "SS-DELTA-01"
+    }
+  ],
+  "components": [
+    {
+      "id": "C-ALPHA-01",
+      "name": "Flight Control Computer",
+      "parent_subsystem": "SS-ALPHA-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "embedded"
+      ],
+      "description": "Executes autonomous flight logic and consumes navigation and maintenance inputs"
+    },
+    {
+      "id": "C-ALPHA-02",
+      "name": "Payload Controller",
+      "parent_subsystem": "SS-ALPHA-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "payload.controller",
+        "payload.health"
+      ],
+      "description": "Manages sensor payload collection and mission-mode selection"
+    },
+    {
+      "id": "C-ALPHA-03",
+      "name": "Telemetry Router",
+      "parent_subsystem": "SS-ALPHA-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "telemetry.router"
+      ],
+      "description": "Formats telemetry and command acknowledgements for the satellite link"
+    },
+    {
+      "id": "C-ALPHA-04",
+      "name": "Aircraft Key Store",
+      "parent_subsystem": "SS-ALPHA-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "crypto.keystore"
+      ],
+      "description": "Stores link keys and command authorization material"
+    },
+    {
+      "id": "C-BRAVO-01",
+      "name": "Mission Processing Server",
+      "parent_subsystem": "SS-BRAVO-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "mission.processing",
+        "intel.fusion"
+      ],
+      "description": "Runs payload analytics and intelligence fusion jobs"
+    },
+    {
+      "id": "C-BRAVO-02",
+      "name": "Intelligence Storage Cluster",
+      "parent_subsystem": "SS-BRAVO-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "storage.cluster"
+      ],
+      "description": "Retains mission outputs flight logs and processed intelligence"
+    },
+    {
+      "id": "C-BRAVO-03",
+      "name": "Dissemination Gateway",
+      "parent_subsystem": "SS-BRAVO-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "dissemination.gateway",
+        "distribution.policy"
+      ],
+      "description": "Publishes approved products to downstream consumers and maintenance services"
+    },
+    {
+      "id": "C-BRAVO-04",
+      "name": "Operator Analyst Workstation",
+      "parent_subsystem": "SS-BRAVO-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "operator.ui",
+        "operator.review"
+      ],
+      "description": "Issues tasking updates and reviews processed mission results"
+    },
+    {
+      "id": "C-CHARLIE-01",
+      "name": "Satcom Modem",
+      "parent_subsystem": "SS-CHARLIE-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "satcom.modem",
+        "satcom.link_monitor"
+      ],
+      "description": "Handles encrypted RF relay between the air vehicle and ground segments"
+    },
+    {
+      "id": "C-CHARLIE-02",
+      "name": "Crypto Gateway",
+      "parent_subsystem": "SS-CHARLIE-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "crypto.gateway",
+        "crypto.policy"
+      ],
+      "description": "Performs AES-256-GCM encryption and decryption for the satellite link"
+    },
+    {
+      "id": "C-CHARLIE-03",
+      "name": "Key Management Module",
+      "parent_subsystem": "SS-CHARLIE-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "key.management",
+        "key.rotation"
+      ],
+      "description": "Maintains session keys and rotation state for the relay boundary"
+    },
+    {
+      "id": "C-DELTA-01",
+      "name": "Maintenance Test Set",
+      "parent_subsystem": "SS-DELTA-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "maintenance.testset",
+        "maintenance.checks"
+      ],
+      "description": "Performs diagnostic queries and validation checks on the air vehicle"
+    },
+    {
+      "id": "C-DELTA-02",
+      "name": "Software Load Manager",
+      "parent_subsystem": "SS-DELTA-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "software.loader",
+        "software.validation"
+      ],
+      "description": "Stages and transfers authenticated software packages to the air vehicle"
+    },
+    {
+      "id": "C-DELTA-03",
+      "name": "Diagnostics Recorder",
+      "parent_subsystem": "SS-DELTA-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "diag.recorder"
+      ],
+      "description": "Captures HUMS data fault codes and maintenance session logs"
+    },
+    {
+      "id": "C-GPS-01",
+      "name": "GPS Receiver",
+      "parent_subsystem": "SS-NAV-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "nav.gps_driver"
+      ],
+      "description": "Acquires satellite signals and outputs position fixes"
+    },
+    {
+      "id": "C-IMU-01",
+      "name": "Inertial Measurement Unit",
+      "parent_subsystem": "SS-NAV-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "nav.imu_driver"
+      ],
+      "description": "Measures angular rate and acceleration"
+    },
+    {
+      "id": "C-CMD-01",
+      "name": "Command Processor",
+      "parent_subsystem": "SS-CMD-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "cmd.processor",
+        "cmd.validator"
+      ],
+      "description": "Parses and validates operator uplink messages"
+    },
+    {
+      "id": "C-PROC-01",
+      "name": "Mission Computer",
+      "parent_subsystem": "SS-PROC-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "proc.mission",
+        "proc.logger"
+      ],
+      "description": "Runs payload algorithms and logs results"
+    },
+    {
+      "id": "C-STORE-01",
+      "name": "Solid State Recorder",
+      "parent_subsystem": "SS-STORE-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "store.recorder"
+      ],
+      "description": "Records high-rate sensor data"
+    },
+    {
+      "id": "C-STORE-02",
+      "name": "Key Management Module",
+      "parent_subsystem": "SS-STORE-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "store.kms"
+      ],
+      "description": "Manages encryption keys for stored data"
+    },
+    {
+      "id": "C-BEM-01",
+      "name": "Bulk Encryption Module",
+      "parent_subsystem": "SS-EGW-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "egw.aes_engine"
+      ],
+      "description": "Applies AES-256-GCM encryption and decryption to satellite data frames"
+    },
+    {
+      "id": "C-KDM-01",
+      "name": "Key Distribution Module",
+      "parent_subsystem": "SS-EGW-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "egw.key_dist"
+      ],
+      "description": "Receives keying material and distributes keys to the encryption module on schedule"
+    },
+    {
+      "id": "C-TRF-01",
+      "name": "Traffic Shaper",
+      "parent_subsystem": "SS-TRF-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "trf.shaper",
+        "trf.queue_mgr"
+      ],
+      "description": "Manages queuing, prioritization, and rate limiting for satellite link data"
+    },
+    {
+      "id": "C-DIAG-01",
+      "name": "Maintenance Workstation",
+      "parent_subsystem": "SS-DIAG-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "diag.workstation",
+        "diag.hmi"
+      ],
+      "description": "Technician HMI presenting BIT results fault codes calibration data and maintenance history"
+    },
+    {
+      "id": "C-DIAG-02",
+      "name": "Maintenance Data Recorder",
+      "parent_subsystem": "SS-DIAG-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "diag.recorder"
+      ],
+      "description": "Encrypted local storage for all maintenance session logs BIT results and HUMS downloads"
+    },
+    {
+      "id": "C-SLS-01",
+      "name": "Software Load Controller",
+      "parent_subsystem": "SS-SLS-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "sls.controller",
+        "sls.keystore"
+      ],
+      "description": "Manages software baseline for all loadable software parts and coordinates with Bravo for approved packages"
+    },
+    {
+      "id": "C-SLS-02",
+      "name": "Load Verification Module",
+      "parent_subsystem": "SS-SLS-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "sls.verifier"
+      ],
+      "description": "Executes post-load integrity checks by reading back installed part numbers and checksums"
+    },
+    {
+      "id": "C-TIM-01",
+      "name": "Bus Controller",
+      "parent_subsystem": "SS-TIM-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "tim.bus_controller"
+      ],
+      "description": "Manages MIL-STD-1553 bus master operations and schedules message transfers to Alpha LRUs"
+    },
+    {
+      "id": "C-TIM-02",
+      "name": "RS-422 Serial Interface",
+      "parent_subsystem": "SS-TIM-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "tim.rs422"
+      ],
+      "description": "Low-speed serial channel for Alpha LRUs that do not support MIL-STD-1553"
+    }
+  ],
+  "functions": [],
+  "interfaces": [
+    {
+      "id": "DF-WS-001",
+      "name": "",
+      "description": "Telemetry and Sensor Data Downlink",
+      "from_node": "C-ALPHA-03",
+      "to_node": "C-CHARLIE-01",
+      "interface_type": "unknown",
+      "protocol": "Encrypted RF (AES-256-GCM)",
+      "data_items": [
+        "telemetry_frame",
+        "sensor_data",
+        "health_status"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Satellite Link Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "RF link allows unauthenticated spoofing of telemetry sources.",
+        "T": 4,
+        "T_justification": "Encrypted but susceptible to bit-flip tampering under jamming.",
+        "R": 2,
+        "R_justification": "Limited audit trail on satellite relay reduces repudiation evidence.",
+        "I": 4,
+        "I_justification": "Sensor and health data are mission-sensitive.",
+        "D": 5,
+        "D_justification": "Jamming or link loss disrupts critical ISR downlink.",
+        "E": 1,
+        "E_justification": "No privilege escalation path on this interface."
+      },
+      "threats": [
+        {
+          "name": "RF Telemetry Spoofing",
+          "description": "Adversary injects forged telemetry frames over the satellite RF link to mislead ground analysts.",
+          "mitre_attack_technique": [
+            "T1200"
+          ],
+          "capec_id": "CAPEC-390",
+          "cwe_id": "CWE-345",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-001",
+              "title": "RF Link Message Authentication",
+              "description": "Implement cryptographic message authentication codes on all telemetry frames to detect and reject spoofed data.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-002",
+              "title": "Telemetry Anomaly Response Procedure",
+              "description": "Crew procedure to validate telemetry against independent sources and initiate link failover on anomaly detection.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-WS-002",
+      "name": "",
+      "description": "Command and Control Uplink",
+      "from_node": "C-CHARLIE-02",
+      "to_node": "C-ALPHA-01",
+      "interface_type": "unknown",
+      "protocol": "Encrypted RF (AES-256-GCM)",
+      "data_items": [
+        "command_message",
+        "auth_token",
+        "session_nonce"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Satellite Link Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed uplink commands could inject malicious flight directives.",
+        "T": 4,
+        "T_justification": "Tampering with auth tokens or waypoints risks vehicle control.",
+        "R": 2,
+        "R_justification": "Limited logging on air-to-ground relay.",
+        "I": 3,
+        "I_justification": "Command tokens are operationally sensitive.",
+        "D": 5,
+        "D_justification": "Link denial prevents real-time command authority.",
+        "E": 3,
+        "E_justification": "Compromised token could enable elevated command privileges."
+      },
+      "threats": [
+        {
+          "name": "Uplink Command Injection",
+          "description": "Adversary forges authenticated uplink commands to alter flight path or payload modes.",
+          "mitre_attack_technique": [
+            "T1078"
+          ],
+          "capec_id": "CAPEC-66",
+          "cwe_id": "CWE-287",
+          "likelihood": 4,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-003",
+              "title": "Command Message Signing and Replay Protection",
+              "description": "Enforce digital signatures and nonce validation on all uplink commands to prevent injection and replay.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-004",
+              "title": "Command Authorization Audit",
+              "description": "Require dual-operator authorization review for high-impact commands before transmission.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-WS-003",
+      "name": "",
+      "description": "Processed Mission Data Forward",
+      "from_node": "C-CHARLIE-01",
+      "to_node": "C-BRAVO-01",
+      "interface_type": "unknown",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "decrypted_sensor_frame",
+        "metadata",
+        "link_status"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Ops Network Boundary",
+      "stride": {
+        "S": 2,
+        "S_justification": "TLS mitigates spoofing but endpoint misconfiguration possible.",
+        "T": 3,
+        "T_justification": "Decrypted frames could be altered in transit on internal net.",
+        "R": 2,
+        "R_justification": "HTTPS logs exist but may not cover all avionics metadata.",
+        "I": 4,
+        "I_justification": "Processed sensor frames contain classified ISR content.",
+        "D": 3,
+        "D_justification": "Bandwidth saturation could delay mission data delivery.",
+        "E": 2,
+        "E_justification": "Limited elevation path but gateway compromise possible."
+      },
+      "threats": [
+        {
+          "name": "Sensor Frame Tampering",
+          "description": "Adversary alters decrypted ISR frames on the ground network to corrupt intelligence products.",
+          "mitre_attack_technique": [
+            "T1565"
+          ],
+          "capec_id": "CAPEC-31",
+          "cwe_id": "CWE-494",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-005",
+              "title": "Frame Integrity Hash Verification",
+              "description": "Apply cryptographic hashes to sensor frames and verify at every hop on the ground network.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-006",
+              "title": "Ground Network Integrity Monitoring",
+              "description": "Implement continuous network monitoring and anomaly alerting for frame tampering indicators.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-WS-004",
+      "name": "",
+      "description": "Mission Tasking and Retasking",
+      "from_node": "C-BRAVO-04",
+      "to_node": "C-CHARLIE-02",
+      "interface_type": "unknown",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "mission_task",
+        "waypoint_update",
+        "payload_mode"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Ops Network Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Analyst workstation could be impersonated to inject tasks.",
+        "T": 3,
+        "T_justification": "Waypoint updates can be tampered to alter flight path.",
+        "R": 2,
+        "R_justification": "Limited non-repudiation on tasking changes.",
+        "I": 3,
+        "I_justification": "Tasking data reveals operational intent.",
+        "D": 3,
+        "D_justification": "Denial prevents timely retasking of ISR mission.",
+        "E": 2,
+        "E_justification": "Potential for privilege abuse via forged tasking."
+      },
+      "threats": [
+        {
+          "name": "Tasking Injection",
+          "description": "Adversary impersonates analyst workstation to inject malicious waypoints or payload modes.",
+          "mitre_attack_technique": [
+            "T1078"
+          ],
+          "capec_id": "CAPEC-66",
+          "cwe_id": "CWE-287",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-007",
+              "title": "Tasking Digital Signature Validation",
+              "description": "Require digital signatures on all tasking messages with strict certificate validation.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-008",
+              "title": "Tasking Change Approval Workflow",
+              "description": "Enforce multi-party approval for all flight path and payload changes.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-WS-005",
+      "name": "",
+      "description": "Maintenance Diagnostic Query",
+      "from_node": "C-DELTA-01",
+      "to_node": "C-ALPHA-01",
+      "interface_type": "unknown",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "bit_command",
+        "lru_status_request",
+        "session_token"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Maintenance test set can be spoofed on the bus.",
+        "T": 4,
+        "T_justification": "BIT commands can be altered to trigger unsafe states.",
+        "R": 2,
+        "R_justification": "MIL-STD-1553 has minimal native logging.",
+        "I": 2,
+        "I_justification": "Diagnostic data is sensitive but not classified.",
+        "D": 3,
+        "D_justification": "Flooding bus prevents normal maintenance access.",
+        "E": 3,
+        "E_justification": "Compromised session token may elevate maintenance rights."
+      },
+      "threats": [
+        {
+          "name": "Malicious BIT Command",
+          "description": "Adversary injects forged BIT commands over the 1553 bus to induce unsafe LRU behavior.",
+          "mitre_attack_technique": [
+            "T0831"
+          ],
+          "capec_id": "CAPEC-166",
+          "cwe_id": "CWE-20",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-009",
+              "title": "BIT Command Whitelisting",
+              "description": "Restrict 1553 bus to only pre-approved diagnostic command sets with hardware enforcement.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-010",
+              "title": "Maintenance Session Authorization",
+              "description": "Require physical presence and authenticated token for any BIT command execution.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-WS-006",
+      "name": "",
+      "description": "Post-Flight HUMS Download",
+      "from_node": "C-ALPHA-03",
+      "to_node": "C-DELTA-03",
+      "interface_type": "unknown",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "hums_data",
+        "fault_codes",
+        "flight_log"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 2,
+        "S_justification": "Telemetry router identity can be spoofed on bus.",
+        "T": 3,
+        "T_justification": "Flight logs could be tampered during download.",
+        "R": 2,
+        "R_justification": "Limited audit on 1553 bus.",
+        "I": 3,
+        "I_justification": "HUMS contains operational flight history.",
+        "D": 2,
+        "D_justification": "Bus flooding delays post-flight analysis.",
+        "E": 1,
+        "E_justification": "No elevation path on diagnostic interface."
+      },
+      "threats": [
+        {
+          "name": "HUMS Log Tampering",
+          "description": "Adversary modifies flight logs or fault codes during 1553 download to conceal incidents.",
+          "mitre_attack_technique": [
+            "T1565"
+          ],
+          "capec_id": "CAPEC-31",
+          "cwe_id": "CWE-494",
+          "likelihood": 3,
+          "impact": 3,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-011",
+              "title": "HUMS Data Signing",
+              "description": "Sign all HUMS downloads with hardware-backed keys before transmission.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-012",
+              "title": "HUMS Integrity Review",
+              "description": "Mandate post-download integrity checks by independent maintenance personnel.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-WS-007",
+      "name": "",
+      "description": "Software Load Transfer",
+      "from_node": "C-DELTA-02",
+      "to_node": "C-ALPHA-02",
+      "interface_type": "unknown",
+      "protocol": "RS-422",
+      "data_items": [
+        "software_package",
+        "checksum",
+        "load_command"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Load manager can be impersonated on serial link.",
+        "T": 5,
+        "T_justification": "Malicious software package injection risks flight safety.",
+        "R": 2,
+        "R_justification": "RS-422 provides no native non-repudiation.",
+        "I": 3,
+        "I_justification": "Software images contain proprietary logic.",
+        "D": 3,
+        "D_justification": "Link denial blocks required software updates.",
+        "E": 4,
+        "E_justification": "Successful load can grant elevated execution rights."
+      },
+      "threats": [
+        {
+          "name": "Malicious Software Load",
+          "description": "Adversary supplies tampered software package over RS-422 to compromise flight control.",
+          "mitre_attack_technique": [
+            "T1195"
+          ],
+          "capec_id": "CAPEC-186",
+          "cwe_id": "CWE-494",
+          "likelihood": 4,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-013",
+              "title": "Secure Software Load Protocol",
+              "description": "Use authenticated encryption and hardware root of trust for all software loads.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-014",
+              "title": "Software Load Authorization",
+              "description": "Require cryptographic approval and physical key presence for load operations.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-WS-008",
+      "name": "",
+      "description": "Software Package Distribution",
+      "from_node": "C-BRAVO-03",
+      "to_node": "C-DELTA-02",
+      "interface_type": "unknown",
+      "protocol": "Ethernet (LAN)",
+      "data_items": [
+        "signed_software_package",
+        "digital_signature",
+        "baseline_manifest"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance LAN Boundary",
+      "stride": {
+        "S": 2,
+        "S_justification": "Gateway can be spoofed on LAN.",
+        "T": 3,
+        "T_justification": "Signed package could be replaced before verification.",
+        "R": 2,
+        "R_justification": "LAN logs may not capture signature checks.",
+        "I": 3,
+        "I_justification": "Baseline manifests reveal software versions.",
+        "D": 2,
+        "D_justification": "LAN congestion delays distribution.",
+        "E": 2,
+        "E_justification": "Limited elevation but possible via malicious manifest."
+      },
+      "threats": [
+        {
+          "name": "Software Package Substitution",
+          "description": "Adversary replaces signed package on the LAN before integrity verification.",
+          "mitre_attack_technique": [
+            "T1195"
+          ],
+          "capec_id": "CAPEC-186",
+          "cwe_id": "CWE-494",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-015",
+              "title": "Package Signature Verification",
+              "description": "Perform mandatory signature verification before any package acceptance on LAN.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-016",
+              "title": "Software Baseline Audit",
+              "description": "Conduct periodic audits of software distribution manifests and signatures.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-WS-009",
+      "name": "",
+      "description": "Maintenance Log Sync",
+      "from_node": "C-DELTA-03",
+      "to_node": "C-BRAVO-02",
+      "interface_type": "unknown",
+      "protocol": "Ethernet (LAN)",
+      "data_items": [
+        "maintenance_session_log",
+        "bit_results",
+        "load_verification_record"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance LAN Boundary",
+      "stride": {
+        "S": 2,
+        "S_justification": "Recorder identity can be spoofed on LAN.",
+        "T": 2,
+        "T_justification": "Logs can be altered to hide maintenance events.",
+        "R": 3,
+        "R_justification": "Sync lacks strong non-repudiation controls.",
+        "I": 3,
+        "I_justification": "Maintenance logs contain fault and health data.",
+        "D": 2,
+        "D_justification": "LAN saturation delays log synchronization.",
+        "E": 1,
+        "E_justification": "No privilege escalation path."
+      },
+      "threats": [
+        {
+          "name": "Log Tampering on Sync",
+          "description": "Adversary alters maintenance logs during LAN synchronization to conceal tampering.",
+          "mitre_attack_technique": [
+            "T1565"
+          ],
+          "capec_id": "CAPEC-31",
+          "cwe_id": "CWE-494",
+          "likelihood": 3,
+          "impact": 3,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-017",
+              "title": "Log Integrity Hashing",
+              "description": "Hash and sign all maintenance logs before synchronization.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-018",
+              "title": "Log Review and Retention Policy",
+              "description": "Require independent review of synced logs and maintain immutable audit copies.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-WS-010",
+      "name": "",
+      "description": "Key Provisioning",
+      "from_node": "C-CHARLIE-03",
+      "to_node": "C-ALPHA-04",
+      "interface_type": "unknown",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "key_material",
+        "rotation_policy",
+        "revocation_status"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Key Management Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Key manager spoofing could distribute malicious keys.",
+        "T": 4,
+        "T_justification": "Key material tampering breaks all link encryption.",
+        "R": 2,
+        "R_justification": "Key rotation logs may be incomplete.",
+        "I": 4,
+        "I_justification": "Key material is highly sensitive.",
+        "D": 3,
+        "D_justification": "Key denial prevents secure link establishment.",
+        "E": 3,
+        "E_justification": "Compromised keys enable elevated access to encrypted traffic."
+      },
+      "threats": [
+        {
+          "name": "Key Material Spoofing",
+          "description": "Adversary distributes forged key material to break link encryption.",
+          "mitre_attack_technique": [
+            "T1552"
+          ],
+          "capec_id": "CAPEC-517",
+          "cwe_id": "CWE-522",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-019",
+              "title": "Hardware-Backed Key Distribution",
+              "description": "Use hardware security modules for all key provisioning and rotation.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-020",
+              "title": "Key Management Policy Enforcement",
+              "description": "Enforce strict key rotation schedules and revocation procedures with audit logging.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-001",
+      "name": "",
+      "description": "GPS Position Flow",
+      "from_node": "C-GPS-01",
+      "to_node": "C-CMD-01",
+      "interface_type": "unknown",
+      "protocol": "UDP",
+      "data_items": [
+        "position_fix",
+        "timestamp"
+      ],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 2,
+        "S_justification": "Internal UDP source can be spoofed within subsystem.",
+        "T": 2,
+        "T_justification": "Position data susceptible to tampering on internal bus.",
+        "R": 1,
+        "R_justification": "Minimal logging on internal navigation flow.",
+        "I": 2,
+        "I_justification": "Position data is operationally sensitive.",
+        "D": 3,
+        "D_justification": "Loss of GPS feed degrades navigation accuracy.",
+        "E": 1,
+        "E_justification": "No elevation path inside navigation subsystem."
+      },
+      "threats": [
+        {
+          "name": "Internal GPS Spoofing",
+          "description": "Adversary spoofs GPS position data on internal UDP to corrupt navigation.",
+          "mitre_attack_technique": [
+            "T1200"
+          ],
+          "capec_id": "CAPEC-390",
+          "cwe_id": "CWE-345",
+          "likelihood": 2,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-021",
+              "title": "GPS Signal Authentication Filter",
+              "description": "Apply RAIM and signal authentication within the navigation subsystem.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-022",
+              "title": "Navigation Cross-Check Procedure",
+              "description": "Require periodic cross-check of GPS with IMU and other sensors.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-002",
+      "name": "",
+      "description": "IMU Telemetry Flow",
+      "from_node": "C-IMU-01",
+      "to_node": "C-CMD-01",
+      "interface_type": "unknown",
+      "protocol": "SPI",
+      "data_items": [
+        "angular_rate",
+        "acceleration"
+      ],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 1,
+        "S_justification": "SPI bus is internal and difficult to spoof.",
+        "T": 2,
+        "T_justification": "Acceleration data can be altered on SPI.",
+        "R": 1,
+        "R_justification": "No native logging on SPI.",
+        "I": 1,
+        "I_justification": "IMU data is low sensitivity internally.",
+        "D": 3,
+        "D_justification": "Loss of IMU feed impacts attitude control.",
+        "E": 1,
+        "E_justification": "No privilege escalation possible."
+      },
+      "threats": [
+        {
+          "name": "IMU Data Tampering",
+          "description": "Adversary tampers with IMU readings on SPI bus to degrade attitude control.",
+          "mitre_attack_technique": [
+            "T0831"
+          ],
+          "capec_id": "CAPEC-166",
+          "cwe_id": "CWE-20",
+          "likelihood": 2,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-023",
+              "title": "IMU Data Integrity Check",
+              "description": "Implement CRC and range validation on IMU data reads.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-024",
+              "title": "IMU Calibration Schedule",
+              "description": "Enforce regular IMU calibration and health monitoring procedures.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-003",
+      "name": "",
+      "description": "Operator Command Uplink",
+      "from_node": "GCS",
+      "to_node": "C-CMD-01",
+      "interface_type": "unknown",
+      "protocol": "TLS",
+      "data_items": [
+        "command_message",
+        "auth_token"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "External Radio Link",
+      "stride": {
+        "S": 4,
+        "S_justification": "External GCS can be spoofed to inject commands.",
+        "T": 3,
+        "T_justification": "Command messages can be tampered before validation.",
+        "R": 2,
+        "R_justification": "TLS provides limited non-repudiation.",
+        "I": 3,
+        "I_justification": "Auth tokens reveal operator identity.",
+        "D": 4,
+        "D_justification": "Radio link denial prevents operator control.",
+        "E": 3,
+        "E_justification": "Valid token can enable elevated command execution."
+      },
+      "threats": [
+        {
+          "name": "External Command Injection",
+          "description": "Adversary spoofs GCS to inject malicious commands over TLS radio link.",
+          "mitre_attack_technique": [
+            "T1078"
+          ],
+          "capec_id": "CAPEC-66",
+          "cwe_id": "CWE-287",
+          "likelihood": 4,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-025",
+              "title": "External Link Command Authentication",
+              "description": "Enforce mutual TLS with certificate pinning for GCS commands.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-026",
+              "title": "GCS Operator Authentication Policy",
+              "description": "Require multi-factor authentication for all GCS operators.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-101",
+      "name": "",
+      "description": "Sensor Fusion Output",
+      "from_node": "C-PROC-01",
+      "to_node": "C-STORE-01",
+      "interface_type": "unknown",
+      "protocol": "PCIe",
+      "data_items": [
+        "fused_sensor_frame",
+        "metadata"
+      ],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 1,
+        "S_justification": "Internal PCIe component hard to spoof.",
+        "T": 2,
+        "T_justification": "Fused frames can be altered in memory transfer.",
+        "R": 1,
+        "R_justification": "PCIe has minimal transaction logging.",
+        "I": 3,
+        "I_justification": "Fused sensor data is mission sensitive.",
+        "D": 2,
+        "D_justification": "PCIe failure blocks recording.",
+        "E": 1,
+        "E_justification": "No elevation path on internal bus."
+      },
+      "threats": [
+        {
+          "name": "Fusion Frame Tampering",
+          "description": "Adversary alters fused sensor frames in PCIe memory transfer to corrupt recording.",
+          "mitre_attack_technique": [
+            "T1565"
+          ],
+          "capec_id": "CAPEC-31",
+          "cwe_id": "CWE-494",
+          "likelihood": 2,
+          "impact": 3,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-027",
+              "title": "Memory Integrity Protection",
+              "description": "Enable PCIe transaction signing and memory encryption for sensor frames.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-028",
+              "title": "Frame Integrity Audit",
+              "description": "Perform periodic audits of fusion output integrity.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-102",
+      "name": "",
+      "description": "Encrypted Log Write",
+      "from_node": "C-PROC-01",
+      "to_node": "C-STORE-02",
+      "interface_type": "unknown",
+      "protocol": "I2C",
+      "data_items": [
+        "key_request",
+        "key_response"
+      ],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 1,
+        "S_justification": "I2C internal link difficult to spoof.",
+        "T": 2,
+        "T_justification": "Key responses can be tampered on I2C.",
+        "R": 1,
+        "R_justification": "No logging on I2C.",
+        "I": 2,
+        "I_justification": "Key requests are moderately sensitive.",
+        "D": 2,
+        "D_justification": "I2C loss prevents key updates.",
+        "E": 1,
+        "E_justification": "No elevation possible."
+      },
+      "threats": []
+    },
+    {
+      "id": "DF-103",
+      "name": "",
+      "description": "Remote Diagnostics Pull",
+      "from_node": "REMOTE_OPS",
+      "to_node": "C-PROC-01",
+      "interface_type": "unknown",
+      "protocol": "HTTPS",
+      "data_items": [
+        "diagnostics_request",
+        "diagnostics_report"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Operations Network Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Remote ops endpoint can be impersonated.",
+        "T": 3,
+        "T_justification": "Diagnostics report can be altered in transit.",
+        "R": 2,
+        "R_justification": "HTTPS logs provide partial non-repudiation.",
+        "I": 4,
+        "I_justification": "Diagnostics reveal system health and faults.",
+        "D": 3,
+        "D_justification": "HTTPS denial blocks remote diagnostics.",
+        "E": 2,
+        "E_justification": "Possible limited elevation via diagnostics interface."
+      },
+      "threats": [
+        {
+          "name": "Remote Diagnostics Tampering",
+          "description": "Adversary alters remote diagnostics reports in transit to mask system faults.",
+          "mitre_attack_technique": [
+            "T1565"
+          ],
+          "capec_id": "CAPEC-31",
+          "cwe_id": "CWE-494",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-029",
+              "title": "Diagnostics Report Signing",
+              "description": "Sign all remote diagnostics reports with device-specific keys.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-030",
+              "title": "Remote Diagnostics Access Control",
+              "description": "Enforce strict access control lists and logging for remote diagnostics.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-D-001",
+      "name": "",
+      "description": "BIT Command to Alpha",
+      "from_node": "C-DIAG-01",
+      "to_node": "C-TIM-01",
+      "interface_type": "unknown",
+      "protocol": "Internal Bus",
+      "data_items": [
+        "bit_command",
+        "session_token"
+      ],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 2,
+        "S_justification": "Internal bus allows limited spoofing of workstation.",
+        "T": 3,
+        "T_justification": "BIT commands can be tampered before bus transfer.",
+        "R": 1,
+        "R_justification": "Internal bus lacks strong logging.",
+        "I": 2,
+        "I_justification": "BIT commands are moderately sensitive.",
+        "D": 2,
+        "D_justification": "Bus failure prevents diagnostic execution.",
+        "E": 2,
+        "E_justification": "Token may allow limited elevation."
+      },
+      "threats": [
+        {
+          "name": "BIT Command Tampering",
+          "description": "Adversary tampers with BIT commands on internal bus to induce unsafe states.",
+          "mitre_attack_technique": [
+            "T0831"
+          ],
+          "capec_id": "CAPEC-166",
+          "cwe_id": "CWE-20",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-031",
+              "title": "Internal Bus Command Validation",
+              "description": "Validate all BIT commands against a hardware-enforced whitelist.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-032",
+              "title": "Maintenance Workstation Access Control",
+              "description": "Require physical token and role-based access for maintenance workstations.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-D-002",
+      "name": "",
+      "description": "1553 BIT Execution",
+      "from_node": "C-TIM-01",
+      "to_node": "ALPHA_MAINTENANCE_PORT",
+      "interface_type": "unknown",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "bit_command",
+        "session_token"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Bus controller can be spoofed on 1553.",
+        "T": 4,
+        "T_justification": "Altered BIT commands risk unsafe LRU states.",
+        "R": 2,
+        "R_justification": "1553 has minimal native auditing.",
+        "I": 2,
+        "I_justification": "BIT commands are operationally sensitive.",
+        "D": 3,
+        "D_justification": "Bus flooding denies maintenance access.",
+        "E": 3,
+        "E_justification": "Compromised token can elevate maintenance privileges."
+      },
+      "threats": [
+        {
+          "name": "Malicious 1553 BIT Command",
+          "description": "Adversary spoofs bus controller to send forged BIT commands risking unsafe LRU states.",
+          "mitre_attack_technique": [
+            "T0831"
+          ],
+          "capec_id": "CAPEC-166",
+          "cwe_id": "CWE-20",
+          "likelihood": 4,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-033",
+              "title": "1553 Bus Controller Authentication",
+              "description": "Enforce authenticated bus controller identity for all BIT commands.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-034",
+              "title": "BIT Command Execution Logging",
+              "description": "Log and review all BIT commands with independent oversight.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-D-003",
+      "name": "",
+      "description": "LRU Status Response",
+      "from_node": "ALPHA_MAINTENANCE_PORT",
+      "to_node": "C-TIM-01",
+      "interface_type": "unknown",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "lru_status",
+        "fault_codes",
+        "bit_result"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 2,
+        "S_justification": "Maintenance port can be spoofed.",
+        "T": 3,
+        "T_justification": "Status responses can be falsified on bus.",
+        "R": 2,
+        "R_justification": "Limited 1553 logging.",
+        "I": 3,
+        "I_justification": "Fault codes reveal LRU health.",
+        "D": 2,
+        "D_justification": "Bus denial delays status reporting.",
+        "E": 1,
+        "E_justification": "No elevation path."
+      },
+      "threats": [
+        {
+          "name": "Falsified LRU Status",
+          "description": "Adversary falsifies LRU status responses on 1553 bus to mask faults.",
+          "mitre_attack_technique": [
+            "T1565"
+          ],
+          "capec_id": "CAPEC-31",
+          "cwe_id": "CWE-494",
+          "likelihood": 3,
+          "impact": 3,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-035",
+              "title": "LRU Status Signing",
+              "description": "Sign all LRU status responses with device-specific keys.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-036",
+              "title": "LRU Status Verification Procedure",
+              "description": "Require cross-verification of status responses during maintenance.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-D-004",
+      "name": "",
+      "description": "HUMS Data Download",
+      "from_node": "ALPHA_MAINTENANCE_PORT",
+      "to_node": "C-TIM-01",
+      "interface_type": "unknown",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "hums_data",
+        "flight_log"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 2,
+        "S_justification": "Port can be impersonated.",
+        "T": 3,
+        "T_justification": "HUMS data can be tampered during download.",
+        "R": 2,
+        "R_justification": "Minimal logging on 1553.",
+        "I": 3,
+        "I_justification": "Flight logs contain operational history.",
+        "D": 2,
+        "D_justification": "Bus denial delays HUMS retrieval.",
+        "E": 1,
+        "E_justification": "No elevation path."
+      },
+      "threats": [
+        {
+          "name": "HUMS Tampering on Bus",
+          "description": "Adversary tampers with HUMS data on 1553 during download to hide operational history.",
+          "mitre_attack_technique": [
+            "T1565"
+          ],
+          "capec_id": "CAPEC-31",
+          "cwe_id": "CWE-494",
+          "likelihood": 3,
+          "impact": 3,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-037",
+              "title": "HUMS Download Integrity Check",
+              "description": "Apply cryptographic signatures to HUMS data before bus transfer.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-038",
+              "title": "HUMS Download Review Protocol",
+              "description": "Require post-download review by maintenance supervisor.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-D-005",
+      "name": "",
+      "description": "HUMS Forward to Recorder",
+      "from_node": "C-TIM-01",
+      "to_node": "C-DIAG-02",
+      "interface_type": "unknown",
+      "protocol": "Internal Bus",
+      "data_items": [
+        "hums_data",
+        "flight_log",
+        "session_id"
+      ],
+      "trust_boundary_crossing": false,
+      "trust_boundary_name": "",
+      "stride": {
+        "S": 1,
+        "S_justification": "Internal bus difficult to spoof.",
+        "T": 2,
+        "T_justification": "HUMS can be altered on internal bus.",
+        "R": 1,
+        "R_justification": "No logging on internal bus.",
+        "I": 2,
+        "I_justification": "HUMS data is moderately sensitive.",
+        "D": 2,
+        "D_justification": "Bus failure blocks recorder write.",
+        "E": 1,
+        "E_justification": "No elevation possible."
+      },
+      "threats": []
+    },
+    {
+      "id": "DF-D-006",
+      "name": "",
+      "description": "Software Package Receive from Bravo",
+      "from_node": "BRAVO_MAINT_LAN",
+      "to_node": "C-SLS-01",
+      "interface_type": "unknown",
+      "protocol": "Ethernet (LAN)",
+      "data_items": [
+        "signed_software_package",
+        "digital_signature",
+        "baseline_manifest"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance LAN Boundary",
+      "stride": {
+        "S": 2,
+        "S_justification": "LAN source can be spoofed.",
+        "T": 3,
+        "T_justification": "Signed package can be swapped before verification.",
+        "R": 2,
+        "R_justification": "LAN logs may miss signature checks.",
+        "I": 3,
+        "I_justification": "Software packages are proprietary.",
+        "D": 2,
+        "D_justification": "LAN congestion delays receipt.",
+        "E": 2,
+        "E_justification": "Manifest abuse may allow limited elevation."
+      },
+      "threats": [
+        {
+          "name": "Signed Package Swap",
+          "description": "Adversary swaps signed software package on LAN before verification.",
+          "mitre_attack_technique": [
+            "T1195"
+          ],
+          "capec_id": "CAPEC-186",
+          "cwe_id": "CWE-494",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-039",
+              "title": "LAN Package Verification",
+              "description": "Enforce mandatory signature verification on receipt from Bravo LAN.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-040",
+              "title": "Software Package Approval Workflow",
+              "description": "Require approval workflow before accepting packages from Bravo.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-D-007",
+      "name": "",
+      "description": "Post-Load Verification Result to Bravo",
+      "from_node": "C-SLS-02",
+      "to_node": "BRAVO_MAINT_LAN",
+      "interface_type": "unknown",
+      "protocol": "Ethernet (LAN)",
+      "data_items": [
+        "load_verification_record",
+        "installed_part_numbers",
+        "checksums"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance LAN Boundary",
+      "stride": {
+        "S": 2,
+        "S_justification": "Verification module can be spoofed on LAN.",
+        "T": 2,
+        "T_justification": "Verification records can be falsified.",
+        "R": 2,
+        "R_justification": "Limited non-repudiation on LAN.",
+        "I": 2,
+        "I_justification": "Verification records are moderately sensitive.",
+        "D": 2,
+        "D_justification": "LAN denial delays result sync.",
+        "E": 1,
+        "E_justification": "No elevation path."
+      },
+      "threats": []
+    },
+    {
+      "id": "DF-D-008",
+      "name": "",
+      "description": "Software Load to Alpha via 1553",
+      "from_node": "C-TIM-01",
+      "to_node": "ALPHA_MAINTENANCE_PORT",
+      "interface_type": "unknown",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "software_package",
+        "load_command",
+        "sequence_number"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Bus controller can be spoofed.",
+        "T": 5,
+        "T_justification": "Malicious load injection risks flight safety.",
+        "R": 2,
+        "R_justification": "1553 provides minimal audit.",
+        "I": 3,
+        "I_justification": "Software loads are proprietary.",
+        "D": 3,
+        "D_justification": "Bus denial blocks software updates.",
+        "E": 4,
+        "E_justification": "Successful load grants elevated execution rights."
+      },
+      "threats": [
+        {
+          "name": "Malicious 1553 Software Load",
+          "description": "Adversary spoofs bus controller to inject malicious software over 1553 risking flight safety.",
+          "mitre_attack_technique": [
+            "T1195"
+          ],
+          "capec_id": "CAPEC-186",
+          "cwe_id": "CWE-494",
+          "likelihood": 4,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-041",
+              "title": "1553 Load Authentication",
+              "description": "Authenticate all software loads over 1553 with hardware tokens.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-042",
+              "title": "1553 Load Authorization",
+              "description": "Require physical authorization and logging for all 1553 software loads.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-D-009",
+      "name": "",
+      "description": "Software Load to Alpha via RS-422",
+      "from_node": "C-TIM-02",
+      "to_node": "ALPHA_MAINTENANCE_PORT",
+      "interface_type": "unknown",
+      "protocol": "RS-422",
+      "data_items": [
+        "software_package",
+        "load_command",
+        "checksum"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Serial interface can be spoofed.",
+        "T": 5,
+        "T_justification": "Package tampering on RS-422 risks safety.",
+        "R": 2,
+        "R_justification": "RS-422 lacks logging.",
+        "I": 3,
+        "I_justification": "Software images are sensitive.",
+        "D": 3,
+        "D_justification": "Link denial prevents updates.",
+        "E": 4,
+        "E_justification": "Load grants elevated privileges."
+      },
+      "threats": [
+        {
+          "name": "RS-422 Software Injection",
+          "description": "Adversary tampers with software package on RS-422 serial link to compromise avionics.",
+          "mitre_attack_technique": [
+            "T1195"
+          ],
+          "capec_id": "CAPEC-186",
+          "cwe_id": "CWE-494",
+          "likelihood": 4,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-043",
+              "title": "RS-422 Secure Load Protocol",
+              "description": "Use authenticated encryption for all RS-422 software transfers.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-044",
+              "title": "RS-422 Load Authorization",
+              "description": "Require dual authorization for RS-422 software loads.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "DF-D-010",
+      "name": "",
+      "description": "Maintenance Session Log Sync to Bravo",
+      "from_node": "C-DIAG-02",
+      "to_node": "BRAVO_MAINT_LAN",
+      "interface_type": "unknown",
+      "protocol": "Ethernet (LAN)",
+      "data_items": [
+        "maintenance_session_log",
+        "bit_results",
+        "technician_id"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance LAN Boundary",
+      "stride": {
+        "S": 2,
+        "S_justification": "Recorder can be spoofed on LAN.",
+        "T": 2,
+        "T_justification": "Session logs can be tampered.",
+        "R": 2,
+        "R_justification": "LAN provides partial audit.",
+        "I": 3,
+        "I_justification": "Maintenance logs contain technician and fault data.",
+        "D": 2,
+        "D_justification": "LAN denial delays sync.",
+        "E": 1,
+        "E_justification": "No elevation path."
+      },
+      "threats": [
+        {
+          "name": "Maintenance Log Tampering",
+          "description": "Adversary tampers with maintenance session logs on LAN to conceal actions.",
+          "mitre_attack_technique": [
+            "T1565"
+          ],
+          "capec_id": "CAPEC-31",
+          "cwe_id": "CWE-494",
+          "likelihood": 3,
+          "impact": 3,
+          "mitigations_technical": [
+            {
+              "control_id": "CTRL-045",
+              "title": "LAN Log Signing",
+              "description": "Sign all maintenance logs before LAN synchronization.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "CTRL-046",
+              "title": "Maintenance Log Audit Policy",
+              "description": "Enforce independent audit of all synced maintenance logs.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

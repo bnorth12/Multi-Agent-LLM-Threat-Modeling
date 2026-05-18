@@ -1,0 +1,24 @@
+{
+  "type": "bundle",
+  "objects": [
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "UAS Weapon System Compromise",
+      "description": "Exploitation of interfaces or functions in UAS Weapon System"
+    },
+    {
+      "type": "threat-actor",
+      "id": "threat-actor--b2c3d4e5-f6a7-8901-bcde-f23456789012",
+      "name": "Unknown Adversary",
+      "description": "Threat actor targeting mission-critical UAS"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--c3d4e5f6-a7b8-9012-cdef-345678901234",
+      "relationship_type": "targets",
+      "source_ref": "threat-actor--b2c3d4e5-f6a7-8901-bcde-f23456789012",
+      "target_ref": "attack-pattern--a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    }
+  ]
+}

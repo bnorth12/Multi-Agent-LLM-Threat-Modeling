@@ -1,0 +1,36 @@
+{
+  "manifest_version": "s09-component-version-v1",
+  "project_version": "0.1.0",
+  "components": [
+    {
+      "component": "agents",
+      "version": "0.1.0",
+      "file_count": 12
+    },
+    {
+      "component": "exports",
+      "version": "0.1.0",
+      "file_count": 5
+    },
+    {
+      "component": "models",
+      "version": "0.1.0",
+      "file_count": 2
+    },
+    {
+      "component": "orchestrator",
+      "version": "0.1.0",
+      "file_count": 2
+    },
+    {
+      "component": "ui",
+      "version": "0.1.0",
+      "file_count": 28
+    },
+    {
+      "component": "validation",
+      "version": "0.1.0",
+      "file_count": 1
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "type": "bundle",
+  "id": "bundle--a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "objects": [
+    {
+      "type": "threat-actor",
+      "id": "threat-actor--11111111-2222-3333-4444-555555555555",
+      "name": "UAS Adversary",
+      "description": "Threat actor targeting UAS Weapon System"
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "name": "UAS Weapon System Exploitation",
+      "description": "Attack against UAS Weapon System components and interfaces"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--99999999-8888-7777-6666-555555555555",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--11111111-2222-3333-4444-555555555555",
+      "target_ref": "attack-pattern--aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    }
+  ]
+}

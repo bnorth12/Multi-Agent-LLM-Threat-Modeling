@@ -1,0 +1,116 @@
+{
+  "type": "bundle",
+  "id": "bundle--a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "spec_version": "2.1",
+  "objects": [
+    {
+      "type": "identity",
+      "id": "identity--11111111-1111-1111-1111-111111111111",
+      "spec_version": "2.1",
+      "created": "2025-01-01T00:00:00.000Z",
+      "modified": "2025-01-01T00:00:00.000Z",
+      "name": "UAS Weapon System",
+      "identity_class": "system"
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--22222222-2222-2222-2222-222222222222",
+      "spec_version": "2.1",
+      "created": "2025-01-01T00:00:00.000Z",
+      "modified": "2025-01-01T00:00:00.000Z",
+      "name": "RF Telemetry Spoofing",
+      "description": "Adversary injects forged telemetry frames over the satellite RF link to mislead ground analysts.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1200"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--33333333-3333-3333-3333-333333333333",
+      "spec_version": "2.1",
+      "created": "2025-01-01T00:00:00.000Z",
+      "modified": "2025-01-01T00:00:00.000Z",
+      "name": "Uplink Command Injection",
+      "description": "Adversary forges authenticated uplink commands to alter flight path or payload modes.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1078"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--44444444-4444-4444-4444-444444444444",
+      "spec_version": "2.1",
+      "created": "2025-01-01T00:00:00.000Z",
+      "modified": "2025-01-01T00:00:00.000Z",
+      "name": "Sensor Frame Tampering",
+      "description": "Adversary alters decrypted ISR frames on the ground network to corrupt intelligence products.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1565"
+        }
+      ]
+    },
+    {
+      "type": "attack-pattern",
+      "id": "attack-pattern--55555555-5555-5555-5555-555555555555",
+      "spec_version": "2.1",
+      "created": "2025-01-01T00:00:00.000Z",
+      "modified": "2025-01-01T00:00:00.000Z",
+      "name": "Malicious Software Load",
+      "description": "Adversary supplies tampered software package over RS-422 to compromise flight control.",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T1195"
+        }
+      ]
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--66666666-6666-6666-6666-666666666666",
+      "spec_version": "2.1",
+      "created": "2025-01-01T00:00:00.000Z",
+      "modified": "2025-01-01T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "identity--11111111-1111-1111-1111-111111111111",
+      "target_ref": "attack-pattern--22222222-2222-2222-2222-222222222222"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--77777777-7777-7777-7777-777777777777",
+      "spec_version": "2.1",
+      "created": "2025-01-01T00:00:00.000Z",
+      "modified": "2025-01-01T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "identity--11111111-1111-1111-1111-111111111111",
+      "target_ref": "attack-pattern--33333333-3333-3333-3333-333333333333"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--88888888-8888-8888-8888-888888888888",
+      "spec_version": "2.1",
+      "created": "2025-01-01T00:00:00.000Z",
+      "modified": "2025-01-01T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "identity--11111111-1111-1111-1111-111111111111",
+      "target_ref": "attack-pattern--44444444-4444-4444-4444-444444444444"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--99999999-9999-9999-9999-999999999999",
+      "spec_version": "2.1",
+      "created": "2025-01-01T00:00:00.000Z",
+      "modified": "2025-01-01T00:00:00.000Z",
+      "relationship_type": "uses",
+      "source_ref": "identity--11111111-1111-1111-1111-111111111111",
+      "target_ref": "attack-pattern--55555555-5555-5555-5555-555555555555"
+    }
+  ]
+}

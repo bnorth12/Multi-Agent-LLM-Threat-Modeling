@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "generation_timestamp": "",
+    "model_level": "system"
+  },
+  "system": {
+    "name": "UAS Weapon System",
+    "description": "",
+    "mission_criticality": "undetermined",
+    "safety_criticality": "undetermined"
+  },
+  "subsystems": [],
+  "components": [],
+  "functions": [],
+  "interfaces": []
+}

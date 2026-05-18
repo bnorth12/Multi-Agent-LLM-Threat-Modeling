@@ -1,0 +1,127 @@
+{
+  "run_stamp": "20260517_203114",
+  "status": "LIVE_BROWSER_SMOKE_OK",
+  "system_name": "UAS Weapon System FQT",
+  "icd_path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\icd\\icd_uas_weapon_system_v1.csv",
+  "description_path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\descriptions\\description_uas_weapon_system.md",
+  "screenshots": [
+    {
+      "label": "01_home_sidebar_ready",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\01_home_sidebar_ready.png"
+    },
+    {
+      "label": "02_pipeline_configuration",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\02_pipeline_configuration.png"
+    },
+    {
+      "label": "03_input_entry_uploaded",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\03_input_entry_uploaded.png"
+    },
+    {
+      "label": "04_run_dashboard_started",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\04_run_dashboard_started.png"
+    },
+    {
+      "label": "05_run_completed",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\05_run_completed.png"
+    },
+    {
+      "label": "06_token_usage",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\06_token_usage.png"
+    },
+    {
+      "label": "07_stage_results",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\07_stage_results.png"
+    },
+    {
+      "label": "08_results_export",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\08_results_export.png"
+    },
+    {
+      "label": "09_stix_viewer",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\09_stix_viewer.png"
+    },
+    {
+      "label": "10_canonical_graph_viewer",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\10_canonical_graph_viewer.png"
+    },
+    {
+      "label": "11_mermaid_viewer",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\11_mermaid_viewer.png"
+    },
+    {
+      "label": "12_stride_viewer",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\12_stride_viewer.png"
+    },
+    {
+      "label": "13_markdown_viewer",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\13_markdown_viewer.png"
+    },
+    {
+      "label": "14_snapshot_manager",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\14_snapshot_manager.png"
+    },
+    {
+      "label": "15_last_prompt",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\15_last_prompt.png"
+    },
+    {
+      "label": "16_prompt_editor",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\screenshots\\16_prompt_editor.png"
+    }
+  ],
+  "downloads": [
+    {
+      "label": "Download Canonical Graph JSON",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\downloads\\canonical_graph.json"
+    },
+    {
+      "label": "Download STIX Bundle JSON",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\downloads\\threat_model.stix2.json"
+    },
+    {
+      "label": "Download Final Report (Markdown)",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\downloads\\report.md"
+    },
+    {
+      "label": "Download Mermaid Diagrams (Markdown)",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\downloads\\diagrams.md"
+    },
+    {
+      "label": "Download Token Usage JSON",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\downloads\\token_usage.json"
+    },
+    {
+      "label": "Download STRIDE JSON",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\downloads\\stride.json"
+    },
+    {
+      "label": "Download STRIDE CSV",
+      "path": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_uas_20260517_203114\\downloads\\stride.csv"
+    }
+  ],
+  "approved_gates": [
+    "gate_1_scope_confirmation",
+    "gate_2_boundary_approval",
+    "gate_3_stride_calibration",
+    "gate_4_threat_plausibility",
+    "gate_5_mitigation_adequacy"
+  ],
+  "observed_hitl_gates": [
+    "gate_1_scope_confirmation",
+    "gate_2_boundary_approval",
+    "gate_3_stride_calibration",
+    "gate_4_threat_plausibility",
+    "gate_5_mitigation_adequacy"
+  ],
+  "missing_hitl_gates": [],
+  "notes": "Visible browser FQT completed against UAS Weapon System with HITL approvals and export verification.",
+  "duration_seconds": 337,
+  "completed_stages": 9,
+  "threats": 1,
+  "total_tokens": 44569,
+  "findings_dir": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\verified_findings",
+  "stale_findings": [],
+  "gates_approved": 5,
+  "result_line": "LIVE_BROWSER_SMOKE_OK gates_approved=5 total_tokens=44569 threats=1"
+}
