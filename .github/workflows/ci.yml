@@ -27,10 +27,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -e .
           pip install pytest openpyxl
 
-      - name: Run unit tests
-        run: python -m pytest Tests/unit -q --tb=short -m "not llm_live"
+      - name: Run unit tests (Lane A)
+        run: python -m pytest Tests/unit -q --tb=short -m "not llm_live and not llm_live_browser"
 
   integration-tests:
     name: Integration tests (non-live)
@@ -49,10 +50,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -e .
           pip install pytest openpyxl
 
-      - name: Run integration tests
-        run: python -m pytest Tests/integration -q --tb=short -m "not llm_live"
+      - name: Run integration tests (Lane A)
+        run: python -m pytest Tests/integration -q --tb=short -m "not llm_live and not llm_live_browser"
 
   e2e-tests-non-live:
     name: E2E tests (non-live)
@@ -71,10 +73,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -e .
           pip install pytest openpyxl
 
-      - name: Run e2e tests (non-live)
-        run: python -m pytest Tests/e2e -q --tb=short -m "not llm_live"
+      - name: Run e2e tests (Lane A, non-live only)
+        run: python -m pytest Tests/e2e -q --tb=short -m "not llm_live and not llm_live_browser"
 
   non-live-suite:
     name: Full non-live suite gate
@@ -94,10 +97,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -e .
           pip install pytest openpyxl
 
-      - name: Run full test suite
-        run: python -m pytest Tests/ -q --tb=short -m "not llm_live"
+      - name: Run full test suite (Lane A gate)
+        run: python -m pytest Tests/ -q --tb=short -m "not llm_live and not llm_live_browser"
 
   llm-live:
     name: Live LLM tests (Grok API)
@@ -119,6 +123,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install -e .
 
       - name: Run live LLM tests
         env:
