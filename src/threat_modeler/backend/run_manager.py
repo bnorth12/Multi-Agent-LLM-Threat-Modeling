@@ -15,8 +15,11 @@ are needed.
 from __future__ import annotations
 
 import json
+import os
 import threading
 import time
+import logging
+from threat_modeler.llm.llm_provider_error import LlmProviderError
 from dataclasses import asdict
 from enum import Enum
 from pathlib import Path
@@ -43,6 +46,7 @@ class ExecutionStatus(Enum):
     QUEUED = "queued"
     RUNNING = "running"
     PAUSED = "paused"
+    PROVIDER_THROTTLED = "provider_throttled"
     COMPLETED = "completed"
     FAILED = "failed"
 
@@ -56,6 +60,33 @@ _REGISTRY_LOCK = threading.Lock()
 
 # JSON checkpoint — persists run metadata across process restarts.
 _CHECKPOINT_FILE = Path.home() / ".multi_agent_threat_modeler_runs.json"
+
+# Heartbeat/watchdog defaults (seconds). Override with environment variables.
+_HEARTBEAT_INTERVAL_SECONDS_DEFAULT = 3.0
+_HEARTBEAT_TIMEOUT_SECONDS_DEFAULT = 10.0  # Tuned from 35s based on observed max heartbeat age ~2s
+
+
+def _coerce_positive_float(value: object, default: float) -> float:
+    """Return a positive float parsed from *value* or *default* on failure."""
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return default
+    return parsed if parsed > 0 else default
+
+
+def _heartbeat_interval_seconds() -> float:
+    return _coerce_positive_float(
+        os.environ.get("THREAT_MODELER_HEARTBEAT_INTERVAL_SECONDS"),
+        _HEARTBEAT_INTERVAL_SECONDS_DEFAULT,
+    )
+
+
+def _heartbeat_timeout_seconds() -> float:
+    return _coerce_positive_float(
+        os.environ.get("THREAT_MODELER_HEARTBEAT_TIMEOUT_SECONDS"),
+        _HEARTBEAT_TIMEOUT_SECONDS_DEFAULT,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -84,6 +115,8 @@ def _persist_run_metadata(run_id: str) -> None:
         "end_time": entry.get("end_time"),
         "pause_gate": entry.get("pause_gate"),
         "error": entry.get("error"),
+        "last_heartbeat_time": entry.get("last_heartbeat_time"),
+        "heartbeat_timeout_seconds": entry.get("heartbeat_timeout_seconds"),
         "settings": _serialize_settings(entry.get("settings")),
     }
     try:
@@ -122,6 +155,11 @@ def _restore_metadata_from_checkpoint() -> None:
                     "end_time": record.get("end_time"),
                     "pause_gate": record.get("pause_gate"),
                     "error": record.get("error"),
+                    "last_heartbeat_time": record.get("last_heartbeat_time"),
+                    "heartbeat_timeout_seconds": record.get(
+                        "heartbeat_timeout_seconds",
+                        _heartbeat_timeout_seconds(),
+                    ),
                     "result_state": None,
                     "live_state": None,
                     "settings": None,  # settings are re-hydrated from runtime_state on next run
@@ -165,6 +203,67 @@ def any_run_active() -> bool:
     return False
 
 
+def _set_heartbeat(run_id: str, ts: float | None = None) -> None:
+    """Record a heartbeat timestamp for *run_id*."""
+    heartbeat_time = ts if ts is not None else time.time()
+    with _REGISTRY_LOCK:
+        if run_id in _RUN_REGISTRY:
+            _RUN_REGISTRY[run_id]["last_heartbeat_time"] = heartbeat_time
+
+
+def _run_heartbeat_ticker(run_id: str, stop_event: threading.Event) -> None:
+    """Emit periodic heartbeats while a run is queued/running."""
+    interval = _heartbeat_interval_seconds()
+    while not stop_event.wait(interval):
+        with _REGISTRY_LOCK:
+            entry = _RUN_REGISTRY.get(run_id)
+            status = entry.get("status") if entry else None
+        if status not in (ExecutionStatus.QUEUED.value, ExecutionStatus.RUNNING.value):
+            break
+        _set_heartbeat(run_id)
+
+
+def _run_heartbeat_watchdog(run_id: str, stop_event: threading.Event) -> None:
+    """Fail the run if heartbeats stop for longer than timeout."""
+    while not stop_event.wait(1.0):
+        with _REGISTRY_LOCK:
+            entry = _RUN_REGISTRY.get(run_id)
+            if not entry:
+                break
+            status = entry.get("status")
+            last_heartbeat_time = float(entry.get("last_heartbeat_time") or 0.0)
+            heartbeat_timeout_seconds = _coerce_positive_float(
+                entry.get("heartbeat_timeout_seconds"),
+                _heartbeat_timeout_seconds(),
+            )
+
+        if status not in (ExecutionStatus.QUEUED.value, ExecutionStatus.RUNNING.value):
+            break
+        if last_heartbeat_time <= 0:
+            continue
+
+        stale_for = time.time() - last_heartbeat_time
+        if stale_for <= heartbeat_timeout_seconds:
+            continue
+
+        error_msg = (
+            "Heartbeat timeout: no run heartbeat for "
+            f"{stale_for:.1f}s (threshold={heartbeat_timeout_seconds:.1f}s)."
+        )
+        with _REGISTRY_LOCK:
+            current = _RUN_REGISTRY.get(run_id)
+            if current and current.get("status") in (
+                ExecutionStatus.QUEUED.value,
+                ExecutionStatus.RUNNING.value,
+            ):
+                current["status"] = ExecutionStatus.FAILED.value
+                current["error"] = error_msg
+                current["end_time"] = time.time()
+        mark_run_status(ExecutionStatus.FAILED.value, error=error_msg)
+        _persist_run_metadata(run_id)
+        break
+
+
 # ---------------------------------------------------------------------------
 # Submit (start a new run)
 # ---------------------------------------------------------------------------
@@ -188,6 +287,7 @@ def submit_run(
         on_complete:   Optional zero-argument callback invoked when the thread exits.
     """
     start_time = time.time()
+    heartbeat_timeout_seconds = _heartbeat_timeout_seconds()
 
     with _REGISTRY_LOCK:
         _RUN_REGISTRY[run_id] = {
@@ -196,6 +296,8 @@ def submit_run(
             "start_time": start_time,
             "end_time": None,
             "error": None,
+            "last_heartbeat_time": start_time,
+            "heartbeat_timeout_seconds": heartbeat_timeout_seconds,
             "result_state": None,
             "live_state": initial_state,
             "pause_gate": None,
@@ -208,63 +310,151 @@ def submit_run(
         mark_run_started(run_id, settings)
 
     def _execute() -> None:
-        try:
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.RUNNING.value
-            mark_run_status(ExecutionStatus.RUNNING.value)
+        logger = logging.getLogger("threat_modeler.backend.run_manager")
+        stop_event = threading.Event()
+        heartbeat_thread = threading.Thread(
+            target=_run_heartbeat_ticker,
+            args=(run_id, stop_event),
+            daemon=True,
+            name=f"heartbeat-{run_id[:8]}",
+        )
+        watchdog_thread = threading.Thread(
+            target=_run_heartbeat_watchdog,
+            args=(run_id, stop_event),
+            daemon=True,
+            name=f"watchdog-{run_id[:8]}",
+        )
+        heartbeat_thread.start()
+        watchdog_thread.start()
+        retry_count = 0
+        max_retries = 3
+        while True:
+            try:
+                with _REGISTRY_LOCK:
+                    if run_id in _RUN_REGISTRY:
+                        _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.RUNNING.value
+                mark_run_status(ExecutionStatus.RUNNING.value)
+                _set_heartbeat(run_id)
 
-            # Keep live_state reference visible for dashboard progress reads.
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["live_state"] = initial_state
+                # Keep live_state reference visible for dashboard progress reads.
+                with _REGISTRY_LOCK:
+                    if run_id in _RUN_REGISTRY:
+                        _RUN_REGISTRY[run_id]["live_state"] = initial_state
 
-            orchestrator = FrameworkOrchestrator(settings)
-            final_state = orchestrator.run_planned_stages(initial_state)
-            setattr(final_state, "next_stage_id", None)
+                orchestrator = FrameworkOrchestrator(settings)
+                final_state = orchestrator.run_planned_stages(initial_state)
+                setattr(final_state, "next_stage_id", None)
 
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.COMPLETED.value
-                    _RUN_REGISTRY[run_id]["result_state"] = final_state
-            mark_run_status(ExecutionStatus.COMPLETED.value)
+                with _REGISTRY_LOCK:
+                    if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                        ExecutionStatus.QUEUED.value,
+                        ExecutionStatus.RUNNING.value,
+                    ):
+                        _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.COMPLETED.value
+                        _RUN_REGISTRY[run_id]["result_state"] = final_state
+                with _REGISTRY_LOCK:
+                    run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+                if run_status == ExecutionStatus.COMPLETED.value:
+                    mark_run_status(ExecutionStatus.COMPLETED.value)
+                break
 
-        except GatePausedError as exc:
-            gate_checkpoint = orchestrator.hitl_service.checkpoint_state()
-            initial_state.hitl_gate_checkpoint = gate_checkpoint
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.PAUSED.value
-                    _RUN_REGISTRY[run_id]["pause_gate"] = exc.gate_record.gate_id
-                    _RUN_REGISTRY[run_id]["result_state"] = initial_state
-            mark_run_status(ExecutionStatus.PAUSED.value, pause_gate=exc.gate_record.gate_id)
+            except LlmProviderError as exc:
+                if exc.retryable and retry_count < max_retries:
+                    wait_seconds = exc.wait_seconds or 120
+                    logger.warning(f"LLM provider throttled (rate limit). Pausing for {wait_seconds}s before retry ({retry_count+1}/{max_retries})")
+                    with _REGISTRY_LOCK:
+                        if run_id in _RUN_REGISTRY:
+                            _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.PROVIDER_THROTTLED.value
+                            _RUN_REGISTRY[run_id]["error"] = str(exc)
+                    mark_run_status(ExecutionStatus.PROVIDER_THROTTLED.value, error=str(exc))
+                    _persist_run_metadata(run_id)
+                    time.sleep(wait_seconds)
+                    retry_count += 1
+                    continue
+                else:
+                    # Include all LlmProviderError details for telemetry
+                    error_details = {
+                        "type": "LlmProviderError",
+                        "message": str(exc),
+                        "code": getattr(exc, "code", None),
+                        "retryable": getattr(exc, "retryable", False),
+                        "wait_seconds": getattr(exc, "wait_seconds", None),
+                        "retries": retry_count,
+                    }
+                    error_msg = f"LlmProviderError: {error_details}"
+                    with _REGISTRY_LOCK:
+                        if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                            ExecutionStatus.QUEUED.value,
+                            ExecutionStatus.RUNNING.value,
+                            ExecutionStatus.PROVIDER_THROTTLED.value,
+                        ):
+                            _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
+                            _RUN_REGISTRY[run_id]["error"] = error_msg
+                            _RUN_REGISTRY[run_id]["result_state"] = initial_state
+                    with _REGISTRY_LOCK:
+                        run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+                    if run_status == ExecutionStatus.FAILED.value:
+                        mark_run_status(ExecutionStatus.FAILED.value, error=error_msg)
+                    break
 
-        except GateRejectedError as exc:
-            error_msg = f"Gate rejected at {exc.gate_record.gate_id}"
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
-                    _RUN_REGISTRY[run_id]["error"] = error_msg
-                    _RUN_REGISTRY[run_id]["result_state"] = initial_state
-            mark_run_status(ExecutionStatus.FAILED.value, error=error_msg)
+            except GatePausedError as exc:
+                gate_checkpoint = orchestrator.hitl_service.checkpoint_state()
+                initial_state.hitl_gate_checkpoint = gate_checkpoint
+                with _REGISTRY_LOCK:
+                    if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                        ExecutionStatus.QUEUED.value,
+                        ExecutionStatus.RUNNING.value,
+                    ):
+                        _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.PAUSED.value
+                        _RUN_REGISTRY[run_id]["pause_gate"] = exc.gate_record.gate_id
+                        _RUN_REGISTRY[run_id]["result_state"] = initial_state
+                with _REGISTRY_LOCK:
+                    run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+                if run_status == ExecutionStatus.PAUSED.value:
+                    mark_run_status(ExecutionStatus.PAUSED.value, pause_gate=exc.gate_record.gate_id)
+                break
 
-        except Exception as exc:
-            error_msg = f"{type(exc).__name__}: {exc}"
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
-                    _RUN_REGISTRY[run_id]["error"] = error_msg
-                    _RUN_REGISTRY[run_id]["result_state"] = initial_state
-            mark_run_status(ExecutionStatus.FAILED.value, error=error_msg)
+            except GateRejectedError as exc:
+                error_msg = f"Gate rejected at {exc.gate_record.gate_id}"
+                with _REGISTRY_LOCK:
+                    if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                        ExecutionStatus.QUEUED.value,
+                        ExecutionStatus.RUNNING.value,
+                    ):
+                        _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
+                        _RUN_REGISTRY[run_id]["error"] = error_msg
+                        _RUN_REGISTRY[run_id]["result_state"] = initial_state
+                with _REGISTRY_LOCK:
+                    run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+                if run_status == ExecutionStatus.FAILED.value:
+                    mark_run_status(ExecutionStatus.FAILED.value, error=error_msg)
+                break
 
-        finally:
-            end_time = time.time()
-            with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
-                    _RUN_REGISTRY[run_id]["end_time"] = end_time
-            _persist_run_metadata(run_id)
-            if on_complete:
-                on_complete()
+            except Exception as exc:
+                error_msg = f"{type(exc).__name__}: {exc}"
+                with _REGISTRY_LOCK:
+                    if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                        ExecutionStatus.QUEUED.value,
+                        ExecutionStatus.RUNNING.value,
+                    ):
+                        _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
+                        _RUN_REGISTRY[run_id]["error"] = error_msg
+                        _RUN_REGISTRY[run_id]["result_state"] = initial_state
+                with _REGISTRY_LOCK:
+                    run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+                if run_status == ExecutionStatus.FAILED.value:
+                    mark_run_status(ExecutionStatus.FAILED.value, error=error_msg)
+                break
+
+        # Always finalize the run record once the execution loop exits.
+        stop_event.set()
+        end_time = time.time()
+        with _REGISTRY_LOCK:
+            if run_id in _RUN_REGISTRY:
+                _RUN_REGISTRY[run_id]["end_time"] = end_time
+        _persist_run_metadata(run_id)
+        if on_complete:
+            on_complete()
 
     thread = threading.Thread(target=_execute, daemon=True, name=f"run-{run_id[:8]}")
     with _REGISTRY_LOCK:
@@ -297,6 +487,8 @@ def resume_run(
         return
 
     remember_settings(settings)
+    now = time.time()
+    heartbeat_timeout_seconds = _heartbeat_timeout_seconds()
 
     with _REGISTRY_LOCK:
         if run_id in _RUN_REGISTRY:
@@ -304,6 +496,8 @@ def resume_run(
             _RUN_REGISTRY[run_id]["end_time"] = None
             _RUN_REGISTRY[run_id]["pause_gate"] = None
             _RUN_REGISTRY[run_id]["error"] = None
+            _RUN_REGISTRY[run_id]["last_heartbeat_time"] = now
+            _RUN_REGISTRY[run_id]["heartbeat_timeout_seconds"] = heartbeat_timeout_seconds
             _RUN_REGISTRY[run_id]["result_state"] = None
             _RUN_REGISTRY[run_id]["live_state"] = pipeline_state
             _RUN_REGISTRY[run_id]["settings"] = settings
@@ -312,9 +506,11 @@ def resume_run(
             _RUN_REGISTRY[run_id] = {
                 "status": ExecutionStatus.RUNNING.value,
                 "run_id": run_id,
-                "start_time": time.time(),
+                "start_time": now,
                 "end_time": None,
                 "error": None,
+                "last_heartbeat_time": now,
+                "heartbeat_timeout_seconds": heartbeat_timeout_seconds,
                 "result_state": None,
                 "live_state": pipeline_state,
                 "pause_gate": None,
@@ -322,8 +518,24 @@ def resume_run(
             }
 
     def _resume_execute() -> None:
+        stop_event = threading.Event()
+        heartbeat_thread = threading.Thread(
+            target=_run_heartbeat_ticker,
+            args=(run_id, stop_event),
+            daemon=True,
+            name=f"heartbeat-resume-{run_id[:8]}",
+        )
+        watchdog_thread = threading.Thread(
+            target=_run_heartbeat_watchdog,
+            args=(run_id, stop_event),
+            daemon=True,
+            name=f"watchdog-resume-{run_id[:8]}",
+        )
+        heartbeat_thread.start()
+        watchdog_thread.start()
         try:
             orchestrator = FrameworkOrchestrator(settings, run_id=run_id)
+            _set_heartbeat(run_id)
             checkpoint = getattr(pipeline_state, "hitl_gate_checkpoint", None)
             if isinstance(checkpoint, dict) and checkpoint:
                 orchestrator.hitl_service.restore_checkpoint_state(checkpoint)
@@ -332,42 +544,67 @@ def resume_run(
             setattr(final_state, "next_stage_id", None)
 
             with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
+                if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                    ExecutionStatus.QUEUED.value,
+                    ExecutionStatus.RUNNING.value,
+                ):
                     _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.COMPLETED.value
                     _RUN_REGISTRY[run_id]["error"] = None
                     _RUN_REGISTRY[run_id]["result_state"] = final_state
-            mark_run_status(ExecutionStatus.COMPLETED.value)
+            with _REGISTRY_LOCK:
+                run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+            if run_status == ExecutionStatus.COMPLETED.value:
+                mark_run_status(ExecutionStatus.COMPLETED.value)
 
         except GatePausedError as exc:
             gate_checkpoint = orchestrator.hitl_service.checkpoint_state()
             pipeline_state.hitl_gate_checkpoint = gate_checkpoint
             with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
+                if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                    ExecutionStatus.QUEUED.value,
+                    ExecutionStatus.RUNNING.value,
+                ):
                     _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.PAUSED.value
                     _RUN_REGISTRY[run_id]["pause_gate"] = exc.gate_record.gate_id
                     _RUN_REGISTRY[run_id]["error"] = None
                     _RUN_REGISTRY[run_id]["result_state"] = pipeline_state
-            mark_run_status(ExecutionStatus.PAUSED.value, pause_gate=exc.gate_record.gate_id)
+            with _REGISTRY_LOCK:
+                run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+            if run_status == ExecutionStatus.PAUSED.value:
+                mark_run_status(ExecutionStatus.PAUSED.value, pause_gate=exc.gate_record.gate_id)
 
         except GateRejectedError as exc:
             error_msg = f"Gate rejected at {exc.gate_record.gate_id}"
             with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
+                if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                    ExecutionStatus.QUEUED.value,
+                    ExecutionStatus.RUNNING.value,
+                ):
                     _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
                     _RUN_REGISTRY[run_id]["error"] = error_msg
                     _RUN_REGISTRY[run_id]["result_state"] = pipeline_state
-            mark_run_status(ExecutionStatus.FAILED.value, error=error_msg)
+            with _REGISTRY_LOCK:
+                run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+            if run_status == ExecutionStatus.FAILED.value:
+                mark_run_status(ExecutionStatus.FAILED.value, error=error_msg)
 
         except Exception as exc:
             error_msg = f"{type(exc).__name__}: {exc}"
             with _REGISTRY_LOCK:
-                if run_id in _RUN_REGISTRY:
+                if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                    ExecutionStatus.QUEUED.value,
+                    ExecutionStatus.RUNNING.value,
+                ):
                     _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
                     _RUN_REGISTRY[run_id]["error"] = error_msg
                     _RUN_REGISTRY[run_id]["result_state"] = pipeline_state
-            mark_run_status(ExecutionStatus.FAILED.value, error=error_msg)
+            with _REGISTRY_LOCK:
+                run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+            if run_status == ExecutionStatus.FAILED.value:
+                mark_run_status(ExecutionStatus.FAILED.value, error=error_msg)
 
         finally:
+            stop_event.set()
             end_time = time.time()
             with _REGISTRY_LOCK:
                 if run_id in _RUN_REGISTRY:

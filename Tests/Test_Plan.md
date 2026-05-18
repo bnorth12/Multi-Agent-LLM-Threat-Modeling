@@ -30,11 +30,25 @@ Out of scope:
 - Integration: stage transitions, recovery, HITL pause/resume
 - E2E: fixture and live validation suites
 
+Automated lane governance:
+
+- Lane A (CI-safe): required by default; excludes `llm_live` and `llm_live_browser` markers.
+- Lane B (controlled-live): executes `llm_live` and `llm_live_browser` scenarios only under approved environment and evidence controls.
+
+Entry criteria for manual RC campaign:
+
+- Lane A pass is mandatory.
+- Lane B evidence is required for release claims involving live-provider behavior and visible-browser workflows, unless a documented waiver is approved.
+
 ### 3.2 Manual (Release-Gating for RC, Starts After Automated Clean Pass)
 
 - full run workflow with 9 stages and 7 HITL gates
 - results export and viewer validation
 - documentation validation and deployment dry-run
+
+Formal qualification extension:
+
+- `Tests/Formal_Qualification_Test_Plan.md` provides the step-by-step qualification variant with requirement traceability, gate reject/recover paths, and required evidence artifacts for every case.
 
 ## 4. Outcome Codes and Execution Rules
 

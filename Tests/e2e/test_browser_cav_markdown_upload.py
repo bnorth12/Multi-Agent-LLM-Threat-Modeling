@@ -58,9 +58,8 @@ def test_visible_browser_uploads_cav_and_markdown_files():
             "true",
         ],
         cwd=str(repo_root),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
 
     try:
@@ -69,9 +68,25 @@ def test_visible_browser_uploads_cav_and_markdown_files():
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=False)
             page = browser.new_page()
-            page.goto(f"http://127.0.0.1:{port}", wait_until="networkidle")
+            page.goto(f"http://127.0.0.1:{port}", wait_until="domcontentloaded")
 
-            page.get_by_label("System name").fill("CAV Browser Live Validation")
+            # Ensure we are on the Input Entry screen before interacting with form fields.
+            sidebar = page.locator("[data-testid='stSidebar']")
+            sidebar.wait_for(state="visible", timeout=30000)
+            try:
+                input_entry_label = sidebar.locator(
+                    "[data-testid='stRadio'] label:not([data-testid='stWidgetLabel']):has-text('Input Entry')"
+                ).first
+                input_entry_label.wait_for(state="visible", timeout=30000)
+                input_entry_label.click(timeout=30000)
+            except Exception:
+                sidebar.get_by_text("Input Entry", exact=True).first.click(timeout=30000)
+            page.get_by_role("heading", name="Input Entry Form").wait_for(timeout=30000)
+
+            page.get_by_role("textbox", name="System name").fill(
+                "CAV Browser Live Validation",
+                timeout=30000,
+            )
             page.locator("input[type='file']").set_input_files(
                 [
                     str(icd_path),

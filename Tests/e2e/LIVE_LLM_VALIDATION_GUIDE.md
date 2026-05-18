@@ -10,6 +10,11 @@ The validation framework has two components:
 2. **test_browser_run_validation.py** - Browser-based validation with gate-by-gate token tracking
 3. **test_browser_cav_markdown_upload.py** - Visible-browser upload validation for CAV fixture + markdown files
 
+Governance note:
+
+- Treat this guide as controlled-live lane execution only.
+- CI-safe pipelines should exclude `llm_live` and `llm_live_browser` markers.
+
 ## How to Use: Manual Validation During Browser Run
 
 ### Step 1: Start the Browser Run (VISIBLE)
@@ -113,7 +118,12 @@ pytest Tests/e2e/test_browser_run_validation.py::TestBrowserRunValidation -v -m 
 ### Run Visible Browser CAV Upload Validation
 
 ```bash
-export RUN_VISIBLE_BROWSER_TESTS=1
+# Windows (PowerShell)
+$env:RUN_VISIBLE_BROWSER_TESTS="1"
+
+# macOS/Linux
+# export RUN_VISIBLE_BROWSER_TESTS=1
+
 pytest Tests/e2e/test_browser_cav_markdown_upload.py -v -m llm_live_browser -s
 ```
 
@@ -187,14 +197,22 @@ and verifies file names are rendered by the UI upload list.
 For the tests to run against live LLM:
 
 ```bash
-# Required
-export THREAT_MODELER_LLM_PROVIDER=xai
-export THREAT_MODELER_LLM_MODEL=grok-4
-export THREAT_MODELER_LLM_API_KEY=<your_xai_api_key>
+# Required (Windows PowerShell)
+$env:THREAT_MODELER_LLM_PROVIDER="xai"
+$env:THREAT_MODELER_LLM_MODEL="grok-4"
+$env:THREAT_MODELER_LLM_API_KEY="<your_xai_api_key>"
+
+# Required (macOS/Linux)
+# export THREAT_MODELER_LLM_PROVIDER=xai
+# export THREAT_MODELER_LLM_MODEL=grok-4
+# export THREAT_MODELER_LLM_API_KEY=<your_xai_api_key>
 
 # Optional (project config overrides these)
-export THREAT_MODELER_LLM_TIMEOUT_SECONDS=180
-export THREAT_MODELER_LLM_MAX_ATTEMPTS=3
+$env:THREAT_MODELER_LLM_TIMEOUT_SECONDS="300"
+$env:THREAT_MODELER_LLM_MAX_ATTEMPTS="5"
+
+# Optional live-test harness heartbeat (seconds)
+$env:THREAT_MODELER_LIVE_TEST_HEARTBEAT_SECONDS="15"
 ```
 
 ## Project-Level Configuration (Preferred)
@@ -203,9 +221,19 @@ Instead of env vars, use Pipeline Configuration screen in UI:
 
 1. Navigate to **Pipeline Configuration**
 2. Under "Live Request Reliability":
-   - Request timeout per attempt: 180 seconds
-   - Max retry attempts: 3
+   - Request timeout per attempt: 300 seconds
+   - Max retry attempts: 5
 3. Save (persisted to run registry)
+
+### Heartbeat During Long LLM Calls
+
+When live calls are slow, the live validation harness prints periodic heartbeat messages while waiting for provider output, for example:
+
+```text
+[live-llm heartbeat] waiting for provider response (model=grok-4, mode=chat_completions, elapsed=15s)
+```
+
+This indicates the request is still in progress and has not silently fallen back to fixture mode.
 
 ## Debugging: Token Usage Not Showing?
 
@@ -236,7 +264,8 @@ streamlit run src/threat_modeler/ui/app.py --logger.level=debug 2>&1 | grep -E "
 | Issue | Cause | Fix |
 |-------|-------|-----|
 | Zero token usage | Fixture fallback | Check `THREAT_MODELER_LLM_PROVIDER=xai` env var |
-| "RuntimeError: timeout" | Timeout too short | Increase to 240s in Pipeline Configuration |
+| "RuntimeError: timeout" | Timeout too short | Increase timeout/retries (recommended 300s and 5 attempts) |
+| Long wait with no heartbeat | Heartbeat interval not set | Set `THREAT_MODELER_LIVE_TEST_HEARTBEAT_SECONDS=15` (or similar) |
 | State inconsistency | Stale error carryover | Ensure latest code with state cleanup |
 | Model shows "fixture_grok" | Provider not recognized | Clear env, restart Streamlit |
 

@@ -1,7 +1,7 @@
 """Stage orchestration with LangGraph-backed execution."""
 
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, TypedDict
+from typing import Any, Callable, TypedDict
 
 from langgraph.graph import END, START, StateGraph as LangGraphStateGraph
 
@@ -18,94 +18,6 @@ from .hitl import (
 from .models import ExecutionEdge, ExecutionNode, LangGraphExecutionPlan
 from .state import FrameworkState
 from .validation import CanonicalGraphValidator, ValidationHaltError
-
-
-class StatePayloadEnvelope(TypedDict):
-    payload: Any
-
-
-class StateGraph:
-    """
-    Legacy compatibility wrapper now backed by LangGraph.
-
-    This preserves the simple test-facing API (add_node/add_edge/run/checkpoint)
-    while executing with `langgraph.graph.StateGraph` under the hood.
-    """
-
-    def __init__(self):
-        self.nodes: Dict[str, Callable[[Any], Any]] = {}
-        self.edges: Dict[str, List[str]] = {}
-        self.checkpoints: Dict[str, Any] = {}
-        self.state: Dict[str, Any] = {}
-
-    def add_node(self, name: str, func: Callable[[Any], Any]):
-        self.nodes[name] = func
-        if name not in self.edges:
-            self.edges[name] = []
-
-    def add_edge(self, from_node: str, to_node: str):
-        if from_node not in self.edges:
-            self.edges[from_node] = []
-        self.edges[from_node].append(to_node)
-
-    def set_checkpoint(self, node: str, state: Any):
-        self.checkpoints[node] = state
-
-    def get_checkpoint(self, node: str) -> Any:
-        return self.checkpoints.get(node)
-
-    def run(self, start_node: str, initial_state: Any):
-        if start_node not in self.nodes:
-            raise KeyError(f"Unknown start node: {start_node}")
-
-        graph = LangGraphStateGraph(StatePayloadEnvelope)
-        terminal_nodes: set[str] = set(self.nodes.keys())
-
-        def _legacy_runner(node_name: str, fn: Callable[[Any], Any]) -> Callable[[StatePayloadEnvelope], StatePayloadEnvelope]:
-            def _runner(envelope: StatePayloadEnvelope) -> StatePayloadEnvelope:
-                next_state = fn(envelope["payload"])
-                self.set_checkpoint(node_name, next_state)
-                return {"payload": next_state}
-
-            return _runner
-
-        for node_name, func in self.nodes.items():
-            graph.add_node(node_name, _legacy_runner(node_name, func))
-
-        graph.add_edge(START, start_node)
-
-        for from_node, to_nodes in self.edges.items():
-            if from_node not in self.nodes:
-                continue
-            next_node = to_nodes[0] if to_nodes else None
-            if next_node and next_node in self.nodes:
-                graph.add_edge(from_node, next_node)
-                terminal_nodes.discard(from_node)
-
-        for node_name in terminal_nodes:
-            graph.add_edge(node_name, END)
-
-        app = graph.compile()
-        result = app.invoke({"payload": initial_state})
-        self.state = result["payload"]
-        return self.state
-
-
-# Example agent stub functions (legacy compatibility only)
-def agent_01_input_normalizer(state):
-    return state
-
-
-def agent_02_context_builder(state):
-    return state
-
-
-def build_default_state_graph():
-    sg = StateGraph()
-    sg.add_node("input_normalizer", agent_01_input_normalizer)
-    sg.add_node("context_builder", agent_02_context_builder)
-    sg.add_edge("input_normalizer", "context_builder")
-    return sg
 
 
 # Stage IDs that always open a mandatory HITL gate after the stage completes.

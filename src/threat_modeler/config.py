@@ -4,8 +4,15 @@ from dataclasses import dataclass, field
 from typing import Sequence
 
 
-LIVE_LLM_DEFAULT_TIMEOUT_SECONDS = 180
-LIVE_LLM_DEFAULT_MAX_ATTEMPTS = 3
+LIVE_LLM_DEFAULT_TIMEOUT_SECONDS = 900
+LIVE_LLM_DEFAULT_MAX_ATTEMPTS = 2
+
+EXECUTION_MODE_GOVERNED = "langgraph-compatible"
+EXECUTION_MODE_COMPATIBILITY = "linear"
+SUPPORTED_EXECUTION_MODES = (
+    EXECUTION_MODE_GOVERNED,
+    EXECUTION_MODE_COMPATIBILITY,
+)
 
 
 # Provider enumeration for model selection UI
@@ -75,7 +82,7 @@ class ModelSelection:
 
 @dataclass(frozen=True)
 class PipelineSettings:
-    execution_mode: str = "linear"
+    execution_mode: str = EXECUTION_MODE_GOVERNED
     enabled_stage_ids: Sequence[str] = field(
         default_factory=lambda: (
             "agent_01",
@@ -99,6 +106,13 @@ class RuntimeSettings:
     pipeline: PipelineSettings = field(default_factory=PipelineSettings)
 
 
+def normalize_execution_mode(value: object, default: str = EXECUTION_MODE_GOVERNED) -> str:
+    mode = str(value).strip().lower()
+    if mode in SUPPORTED_EXECUTION_MODES:
+        return mode
+    return default
+
+
 def build_default_settings() -> RuntimeSettings:
     return RuntimeSettings(
         model=ModelSelection(
@@ -109,5 +123,6 @@ def build_default_settings() -> RuntimeSettings:
             endpoint_mode="chat_completions",
             request_timeout_seconds=LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
             request_max_attempts=LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
-        )
+        ),
+        pipeline=PipelineSettings(execution_mode=EXECUTION_MODE_GOVERNED),
     )

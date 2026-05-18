@@ -1,0 +1,13 @@
+[run]
+# Sprint 2026-11 closeout coverage scope.
+# Streamlit UI and HTTP server layers are validated in dedicated browser/live lanes,
+# and major UI replacement is intentionally deferred to a later sprint.
+omit =
+    src/threat_modeler/ui/*
+    src/threat_modeler/ui/**/*
+    src/threat_modeler/server/*
+    src/threat_modeler/server/**/*
+
+[report]
+show_missing = True
+skip_covered = False

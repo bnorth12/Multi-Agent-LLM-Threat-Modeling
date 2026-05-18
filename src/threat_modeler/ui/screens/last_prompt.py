@@ -26,27 +26,6 @@ _STAGE_LABELS: dict[str, str] = {
 }
 
 
-def _apply_dark_prompt_text_style() -> None:
-    """Improve disabled prompt readability when dark theme is active."""
-    theme = str(st.session_state.get("theme", "")).strip().lower()
-    if theme != "dark":
-        return
-
-    st.markdown(
-        """
-        <style>
-        /* Make disabled prompt text brighter in dark mode. */
-        [data-testid="stTextArea"] textarea[disabled] {
-            color: #d4dbe5 !important;
-            -webkit-text-fill-color: #d4dbe5 !important;
-            opacity: 1 !important;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-
 def _request_payload(prompt: dict[str, Any]) -> dict[str, Any]:
     mode = str(prompt.get("endpoint_mode", "")).strip().lower()
     base = {"model": str(prompt.get("model", "")).strip()}
@@ -81,9 +60,23 @@ def _prompt_for_selection(state: Any, selection: str) -> dict[str, Any] | None:
     return dict(entries[-1]) if entries else None
 
 
+def _latest_attempt_for_prompt(state: Any, selected_prompt: dict[str, Any]) -> dict[str, Any] | None:
+    stage_id = str(selected_prompt.get("stage_id", "")).strip()
+    prompt_record_id = str(selected_prompt.get("prompt_record_id", "")).strip()
+    if not stage_id or not prompt_record_id:
+        return None
+    by_stage = getattr(state, "llm_attempts_by_stage", {}) or {}
+    entries = by_stage.get(stage_id, [])
+    if not entries:
+        return None
+    for entry in reversed(entries):
+        if str(entry.get("prompt_record_id", "")).strip() == prompt_record_id:
+            return dict(entry)
+    return None
+
+
 def render() -> None:
     sync_execution_state_to_session()
-    _apply_dark_prompt_text_style()
 
     st.header("Last Prompt")
     st.caption("SCR-015 — Prompt payload diagnostics for timeout troubleshooting")
@@ -151,3 +144,35 @@ def render() -> None:
         json.dumps(_request_payload(selected_prompt), indent=2, ensure_ascii=False),
         language="json",
     )
+
+    latest_attempt = _latest_attempt_for_prompt(pipeline_state, selected_prompt)
+    if latest_attempt:
+        st.divider()
+        st.subheader("Model Result")
+
+        status = str(latest_attempt.get("status", "unknown")).upper()
+        col_a, col_b, col_c = st.columns(3)
+        col_a.metric("Attempt Status", status)
+        col_b.metric("Provider", str(latest_attempt.get("provider", "-")) or "-")
+        col_c.metric("Model", str(latest_attempt.get("model", "-")) or "-")
+
+        response_text = str(latest_attempt.get("response_text", "") or "")
+        response_preview = str(latest_attempt.get("response_preview", "") or "")
+        if response_text or response_preview:
+            st.caption("Latest response captured from this stage.")
+            st.text_area(
+                "LLM response",
+                value=response_text or response_preview,
+                height=320,
+                disabled=True,
+            )
+
+        error_text = str(latest_attempt.get("error", "") or "")
+        if error_text:
+            st.error("Latest provider error for this stage")
+            st.text_area(
+                "Provider error",
+                value=error_text,
+                height=140,
+                disabled=True,
+            )

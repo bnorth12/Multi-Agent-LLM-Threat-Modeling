@@ -17,6 +17,7 @@ from urllib.error import HTTPError
 import pytest
 
 from threat_modeler.llm.openai_compatible_adapter import OpenAiCompatibleAdapter
+from threat_modeler.llm.llm_provider_error import LlmProviderError
 
 
 # ---------------------------------------------------------------------------
@@ -321,7 +322,7 @@ class TestTimeoutRetry:
 
 class TestHttpErrorRetryPolicy:
     def test_429_retries_all_attempts_then_raises(self, monkeypatch):
-        """429 is retriable — should exhaust all attempts and raise."""
+        """429 is retriable — should exhaust all attempts and raise LlmProviderError."""
         monkeypatch.setenv("_TEST_ADAPTER_KEY", "fake-key")
         monkeypatch.delenv("THREAT_MODELER_LLM_MAX_ATTEMPTS", raising=False)
         call_count: list[int] = []
@@ -335,7 +336,7 @@ class TestHttpErrorRetryPolicy:
                   side_effect=fake_urlopen),
             patch("threat_modeler.llm.openai_compatible_adapter.time.sleep"),
         ):
-            with pytest.raises(RuntimeError, match="HTTP error 429"):
+            with pytest.raises(LlmProviderError, match="Provider HTTP 429 Rate Limit"):
                 _adapter().complete("sys", "user")
         assert len(call_count) == 3
 

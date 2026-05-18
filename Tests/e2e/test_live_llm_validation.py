@@ -9,6 +9,8 @@ Validates that each gate/stage executes against live LLM (not fixtures) by:
 """
 from datetime import datetime
 from typing import Any, Dict, List, Optional
+from threading import Event, Thread
+import time
 
 import json
 import os
@@ -16,14 +18,17 @@ import os
 import pytest
 
 from threat_modeler.config import (
-    LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
-    LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
     ModelSelection,
     PipelineSettings,
     RuntimeSettings,
 )
 from threat_modeler.llm.openai_compatible_adapter import OpenAiCompatibleAdapter as OpenAICompatibleAdapter
 from threat_modeler.orchestrator import FrameworkOrchestrator
+
+
+LIVE_TEST_DEFAULT_TIMEOUT_SECONDS = 300
+LIVE_TEST_DEFAULT_MAX_ATTEMPTS = 5
+LIVE_TEST_HEARTBEAT_SECONDS = 20
 
 
 class LiveLLMValidator:
@@ -35,6 +40,10 @@ class LiveLLMValidator:
         self.prompts_by_gate: Dict[str, str] = {}
         self.original_complete = None
         self.fixture_fallback_detected = False
+        self._heartbeat_seconds = max(
+            5,
+            int(os.environ.get("THREAT_MODELER_LIVE_TEST_HEARTBEAT_SECONDS", str(LIVE_TEST_HEARTBEAT_SECONDS))),
+        )
 
     def install(self, adapter: OpenAICompatibleAdapter):
         """Hook into adapter to intercept LLM calls."""
@@ -47,7 +56,20 @@ class LiveLLMValidator:
 
     def _intercept_complete(self, adapter: OpenAICompatibleAdapter, system_prompt: str, user_message: str) -> str:
         """Intercept adapter.complete() to track tokens and prompts."""
-        response_text = self.original_complete(system_prompt, user_message)
+        heartbeat_stop = Event()
+        heartbeat_thread = Thread(
+            target=self._emit_heartbeat,
+            args=(heartbeat_stop, getattr(adapter, "_model", "unknown"), getattr(adapter, "_endpoint_mode", "unknown")),
+            daemon=True,
+        )
+        heartbeat_thread.start()
+
+        try:
+            response_text = self.original_complete(system_prompt, user_message)
+        finally:
+            heartbeat_stop.set()
+            heartbeat_thread.join(timeout=0.2)
+
         usage = adapter.usage_snapshot() if hasattr(adapter, "usage_snapshot") else {}
         prompt_text = f"system={system_prompt}\nuser={user_message}"
 
@@ -71,6 +93,17 @@ class LiveLLMValidator:
             self.fixture_fallback_detected = True
 
         return response_text
+
+    def _emit_heartbeat(self, stop_event: Event, model: str, endpoint_mode: str) -> None:
+        """Emit periodic heartbeat while waiting for a live LLM response."""
+        started = time.monotonic()
+        while not stop_event.wait(self._heartbeat_seconds):
+            elapsed = int(time.monotonic() - started)
+            print(
+                f"[live-llm heartbeat] waiting for provider response "
+                f"(model={model}, mode={endpoint_mode}, elapsed={elapsed}s)",
+                flush=True,
+            )
 
     def check_fixture_fallback(self) -> bool:
         """Returns True if fixture fallback was detected."""
@@ -132,11 +165,11 @@ def _live_settings(
     *,
     model_name: str = "grok-4",
     endpoint_mode: str = "chat_completions",
-    timeout_seconds: int = LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
-    max_attempts: int = LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
+    timeout_seconds: int = LIVE_TEST_DEFAULT_TIMEOUT_SECONDS,
+    max_attempts: int = LIVE_TEST_DEFAULT_MAX_ATTEMPTS,
 ) -> RuntimeSettings:
-    if not (os.environ.get("GROK_API") or os.environ.get("XAI_API_KEY")):
-        pytest.skip("GROK_API or XAI_API_KEY not set; skipping live LLM validation.")
+    if not os.environ.get("GROK_API"):
+        pytest.skip("GROK_API not set; skipping live LLM validation.")
 
     return RuntimeSettings(
         model=ModelSelection(

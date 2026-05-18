@@ -3,13 +3,18 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from ..llm.base import FixtureAdapter, LlmAdapter
 from ..state import FrameworkState
+
+
+logger = logging.getLogger(__name__)
 
 
 _AGENTS_PROMPT_DIR = Path(__file__).parent.parent.parent.parent / "docs" / "agents"
@@ -36,11 +41,67 @@ class BaseAgent:
     _prompt_filename: str = ""
     _fixture_filename: str = ""
 
-    def _load_system_prompt(self) -> str:
+    def _load_system_prompt_from_file(self) -> str:
         prompt_path = _AGENTS_PROMPT_DIR / self._prompt_filename
         if prompt_path.exists():
             return prompt_path.read_text(encoding="utf-8")
         return f"You are the {self.display_name} agent. Output JSON only."
+
+    def _load_system_prompt(self) -> str:
+        try:
+            from ..backend.prompt_store import get_prompt
+            return get_prompt(self.stage_id)
+        except ImportError as e:
+            logger.warning(
+                f"Backend prompt store not available for {self.stage_id}; falling back to file-based prompt. "
+                f"ImportError: {e}"
+            )
+            return self._load_system_prompt_from_file()
+        except KeyError as e:
+            logger.warning(
+                f"Prompt not found in backend store for {self.stage_id}; falling back to file-based prompt. "
+                f"KeyError: {e}"
+            )
+            return self._load_system_prompt_from_file()
+        except Exception as e:
+            logger.error(
+                f"Unexpected error loading system prompt for {self.stage_id}: {type(e).__name__}: {e}. "
+                f"Falling back to file-based prompt."
+            )
+            return self._load_system_prompt_from_file()
+
+    def _load_expected_output(self) -> str:
+        try:
+            from ..backend.prompt_store import get_expected_output
+            return get_expected_output(self.stage_id)
+        except ImportError as e:
+            logger.debug(
+                f"Backend prompt store not available for expected output of {self.stage_id}. "
+                f"ImportError: {e}"
+            )
+            return ""
+        except KeyError as e:
+            logger.debug(
+                f"Expected output not found in backend store for {self.stage_id}. "
+                f"KeyError: {e}"
+            )
+            return ""
+        except Exception as e:
+            logger.error(
+                f"Unexpected error loading expected output for {self.stage_id}: {type(e).__name__}: {e}"
+            )
+            return ""
+
+    def _compose_system_prompt(self, system_prompt: str, expected_output: str) -> str:
+        if not expected_output.strip():
+            return system_prompt
+        return (
+            f"{system_prompt.rstrip()}\n\n"
+            "Expected output example (match structure and ordering style; do not copy literal values unless input supports them):\n"
+            "--- EXPECTED_OUTPUT_EXAMPLE_START ---\n"
+            f"{expected_output.rstrip()}\n"
+            "--- EXPECTED_OUTPUT_EXAMPLE_END ---"
+        )
 
     def _get_adapter(self) -> LlmAdapter:
         if self.adapter is not None:
@@ -165,24 +226,33 @@ class BaseAgent:
     def run(self, state: FrameworkState) -> FrameworkState:
         adapter = self._get_adapter()
         system_prompt = self._load_system_prompt()
+        expected_output = self._load_expected_output()
+        llm_system_prompt = self._compose_system_prompt(system_prompt, expected_output)
         user_message = self._build_user_message(state)
         endpoint_mode = str(getattr(adapter, "_endpoint_mode", ""))
         model_name = str(getattr(adapter, "_model", ""))
+        prompt_record_id = f"{self.stage_id}:{time.time_ns()}"
         state.record_llm_prompt(
             self.stage_id,
             {
+                "prompt_record_id": prompt_record_id,
                 "provider": str(getattr(adapter, "__class__", type(adapter)).__name__),
                 "endpoint_mode": endpoint_mode,
                 "model": model_name,
                 "system_prompt": system_prompt,
+                "expected_output": expected_output,
+                "llm_system_prompt": llm_system_prompt,
                 "user_message": user_message,
                 "system_prompt_chars": len(system_prompt),
+                "expected_output_chars": len(expected_output),
+                "llm_system_prompt_chars": len(llm_system_prompt),
                 "user_message_chars": len(user_message),
             },
         )
         state.record_llm_attempt(
             self.stage_id,
             {
+                "prompt_record_id": prompt_record_id,
                 "status": "submitted",
                 "provider": str(getattr(adapter, "__class__", type(adapter)).__name__),
                 "endpoint_mode": endpoint_mode,
@@ -190,11 +260,12 @@ class BaseAgent:
             },
         )
         try:
-            response = adapter.complete(system_prompt, user_message)
+            response = adapter.complete(llm_system_prompt, user_message)
         except Exception as exc:
             state.record_llm_attempt(
                 self.stage_id,
                 {
+                    "prompt_record_id": prompt_record_id,
                     "status": "failed",
                     "provider": str(getattr(adapter, "__class__", type(adapter)).__name__),
                     "endpoint_mode": endpoint_mode,
@@ -208,10 +279,15 @@ class BaseAgent:
         state.record_llm_attempt(
             self.stage_id,
             {
+                "prompt_record_id": prompt_record_id,
                 "status": "completed",
                 "provider": str(getattr(adapter, "__class__", type(adapter)).__name__),
                 "endpoint_mode": endpoint_mode,
                 "model": model_name,
+                # Keep a bounded response body for operator diagnostics.
+                "response_chars": len(response),
+                "response_preview": response[:2000],
+                "response_text": response[:20000],
             },
         )
 

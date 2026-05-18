@@ -188,91 +188,90 @@ class TestNarrativeAvionics:
         assert "ARINC-818" in self.result.raw_text
 
 
-class TestIcdCsvThreatModeler:
-    """icd_threat_modeler_v1.csv — Multi-Agent Threat Modeler Tool."""
+class TestIcdCsvUasWeaponSystem:
+    """icd_uas_weapon_system_v1.csv — UAS Weapon System."""
 
     def setup_method(self):
-        self.result: IcdParseResult = parse_csv(str(ICD_DIR / "icd_threat_modeler_v1.csv"))
+        self.result: IcdParseResult = parse_csv(str(ICD_DIR / "icd_uas_weapon_system_v1.csv"))
 
     def test_provenance_version(self):
         assert self.result.version == "1"
 
     def test_expected_subsystem_count(self):
-        assert len(self.result.subsystems) == 6
+        assert len(self.result.subsystems) == 4
 
     def test_subsystem_ids_present(self):
         ids = {s.id for s in self.result.subsystems}
-        assert "SS-INPUT-01" in ids
-        assert "SS-ORCHESTRATION-01" in ids
-        assert "SS-LLM-01" in ids
-        assert "SS-HITL-01" in ids
-        assert "SS-EXPORT-01" in ids
-        assert "SS-UI-01" in ids
+        assert "SS-ALPHA-01" in ids
+        assert "SS-BRAVO-01" in ids
+        assert "SS-CHARLIE-01" in ids
+        assert "SS-DELTA-01" in ids
 
     def test_expected_component_count(self):
-        # Threat modeler ICD is large; validate >= expected threshold
-        assert len(self.result.components) >= 15
+        assert len(self.result.components) >= 12
 
     def test_expected_data_flow_count(self):
-        assert len(self.result.data_flows) == 27
+        assert len(self.result.data_flows) == 10
 
-    def test_llm_api_boundary_flows_present(self):
-        boundary_flows = [df for df in self.result.data_flows if "API" in df.trust_boundary_name]
+    def test_satellite_link_boundary_flows_present(self):
+        boundary_flows = [df for df in self.result.data_flows if df.trust_boundary_name == "Satellite Link Boundary"]
         boundary_ids = {df.id for df in boundary_flows}
-        assert "DF-MODEL-009" in boundary_ids
-        assert "DF-MODEL-010" in boundary_ids
+        assert "DF-WS-001" in boundary_ids
+        assert "DF-WS-002" in boundary_ids
 
-    def test_user_trust_boundary_flows_present(self):
-        user_boundary = [df for df in self.result.data_flows if df.trust_boundary_name == "User Trust Boundary"]
-        assert len(user_boundary) >= 5
+    def test_ground_boundary_flows_present(self):
+        boundary_names = {df.trust_boundary_name for df in self.result.data_flows}
+        assert "Ops Network Boundary" in boundary_names
+        assert "Maintenance Bus Boundary" in boundary_names
+        assert "Maintenance LAN Boundary" in boundary_names
+        assert "Key Management Boundary" in boundary_names
 
     def test_protocol_variety(self):
         protocols = {df.protocol for df in self.result.data_flows}
-        assert "HTTP/Multipart" in protocols
-        assert "HTTPS" in protocols
-        assert "gRPC" in protocols
-        assert "protobuf" in protocols
-        assert "in-process" in protocols
+        assert "Encrypted RF (AES-256-GCM)" in protocols
+        assert "HTTPS TLS 1.3" in protocols
+        assert "MIL-STD-1553" in protocols
+        assert "RS-422" in protocols
+        assert "Ethernet (LAN)" in protocols
 
-    def test_hitl_gate_components_present(self):
+    def test_lower_level_components_present(self):
         ids = {c.id for c in self.result.components}
-        assert "C-HITL-01" in ids
-        assert "C-HITL-02" in ids
+        assert "C-ALPHA-01" in ids
+        assert "C-BRAVO-03" in ids
+        assert "C-CHARLIE-02" in ids
+        assert "C-DELTA-02" in ids
 
 
-class TestNarrativeThreatModeler:
-    """description_threat_modeler.md — Multi-Agent Threat Modeler Tool."""
+class TestNarrativeUasWeaponSystem:
+    """description_uas_weapon_system.md — UAS Weapon System."""
 
     def setup_method(self):
-        self.result: NarrativeParseResult = parse_markdown(str(DESC_DIR / "description_threat_modeler.md"))
+        self.result: NarrativeParseResult = parse_markdown(str(DESC_DIR / "description_uas_weapon_system.md"))
 
     def test_system_name_extracted_from_h1(self):
-        assert self.result.system_name == "Multi-Agent Threat Modeler Tool"
+        assert self.result.system_name == "UAS Weapon System"
 
     def test_description_is_comprehensive(self):
         assert len(self.result.description) > 100
 
-    def test_raw_text_contains_subsystems(self):
-        assert "Input Management Subsystem" in self.result.raw_text
-        assert "Agent Orchestration Subsystem" in self.result.raw_text
-        assert "LLM Runtime Subsystem" in self.result.raw_text
-        assert "Human-in-the-Loop Subsystem" in self.result.raw_text
-        assert "Export Subsystem" in self.result.raw_text
-        assert "User Interface Subsystem" in self.result.raw_text
+    def test_raw_text_contains_segments(self):
+        assert "Segment Alpha" in self.result.raw_text
+        assert "Segment Bravo" in self.result.raw_text
+        assert "Segment Charlie" in self.result.raw_text
+        assert "Segment Delta" in self.result.raw_text
 
-    def test_raw_text_contains_hitl_gates(self):
-        assert "Gate 0" in self.result.raw_text
-        assert "Gate 7" in self.result.raw_text
-        assert "pause" in self.result.raw_text.lower()
-
-    def test_raw_text_contains_export_formats(self):
-        assert "STIX" in self.result.raw_text
-        assert "Mermaid" in self.result.raw_text
-        assert "JSON" in self.result.raw_text
+    def test_raw_text_contains_lower_level_components(self):
+        assert "Flight Control Computer" in self.result.raw_text
+        assert "Mission Processing Server" in self.result.raw_text
+        assert "Satcom Modem" in self.result.raw_text
+        assert "Maintenance Test Set" in self.result.raw_text
 
     def test_raw_text_contains_trust_boundaries(self):
-        assert "User Trust Boundary" in self.result.raw_text
-        assert "External LLM API Boundary" in self.result.raw_text
+        assert "Satellite Link Boundary" in self.result.raw_text
+        assert "Ops Network Boundary" in self.result.raw_text
+        assert "Maintenance Bus Boundary" in self.result.raw_text
+        assert "Maintenance LAN Boundary" in self.result.raw_text
+        assert "Key Management Boundary" in self.result.raw_text
 
 
 # ---------------------------------------------------------------------------

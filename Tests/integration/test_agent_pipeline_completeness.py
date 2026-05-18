@@ -13,6 +13,8 @@ Covers:
 from __future__ import annotations
 
 import json
+import time
+import uuid
 from pathlib import Path
 from unittest.mock import patch
 
@@ -28,6 +30,7 @@ from src.threat_modeler.models.canonical import CanonicalThreatModelGraph
 from src.threat_modeler.orchestrator import FrameworkOrchestrator
 from src.threat_modeler.state import FrameworkState
 from src.threat_modeler.validation import ValidationHaltError
+from threat_modeler.backend import run_manager
 
 _FIXTURES = Path(__file__).parent.parent / "fixtures" / "agents"
 
@@ -390,3 +393,80 @@ class TestContractValidationAtBoundaries:
         state = FrameworkState(raw_text="Sample input.")
         with pytest.raises(ValidationHaltError):
             orch.run_planned_stages(state)
+
+
+# ---------------------------------------------------------------------------
+# Run-manager delegation path coverage (S11-002)
+# ---------------------------------------------------------------------------
+
+class TestRunManagerDelegationPath:
+    @staticmethod
+    def _wait_for_terminal_status(run_id: str, timeout_seconds: float = 5.0) -> dict:
+        deadline = time.time() + timeout_seconds
+        while time.time() < deadline:
+            entry = run_manager.get_run_status(run_id)
+            if entry and entry.get("status") in {
+                "completed",
+                "failed",
+                "paused",
+                "provider_throttled",
+            }:
+                return entry
+            time.sleep(0.05)
+        pytest.fail(f"Run {run_id} did not reach terminal status within {timeout_seconds}s")
+
+    def test_submit_run_delegates_with_langgraph_mode(self, monkeypatch):
+        observed_modes: list[str] = []
+
+        class _FakeOrchestrator:
+            def __init__(self, settings):
+                observed_modes.append(settings.pipeline.execution_mode)
+
+            def run_planned_stages(self, state):
+                state.record_message("agent_01", "delegated")
+                return state
+
+        monkeypatch.setattr(run_manager, "FrameworkOrchestrator", _FakeOrchestrator)
+
+        settings = RuntimeSettings(
+            model=ModelSelection(provider="test", model_name="mock", offline_only=True),
+            pipeline=PipelineSettings(
+                execution_mode="langgraph-compatible",
+                require_hitl_gates=False,
+                enabled_stage_ids=["agent_01"],
+            ),
+        )
+        run_id = f"delegation-langgraph-{uuid.uuid4()}"
+        run_manager.submit_run(run_id, FrameworkState(raw_text="x"), settings)
+
+        entry = self._wait_for_terminal_status(run_id)
+        assert observed_modes == ["langgraph-compatible"]
+        assert entry.get("status") == "completed"
+
+    def test_submit_run_delegates_with_linear_mode(self, monkeypatch):
+        observed_modes: list[str] = []
+
+        class _FakeOrchestrator:
+            def __init__(self, settings):
+                observed_modes.append(settings.pipeline.execution_mode)
+
+            def run_planned_stages(self, state):
+                state.record_message("agent_01", "delegated")
+                return state
+
+        monkeypatch.setattr(run_manager, "FrameworkOrchestrator", _FakeOrchestrator)
+
+        settings = RuntimeSettings(
+            model=ModelSelection(provider="test", model_name="mock", offline_only=True),
+            pipeline=PipelineSettings(
+                execution_mode="linear",
+                require_hitl_gates=False,
+                enabled_stage_ids=["agent_01"],
+            ),
+        )
+        run_id = f"delegation-linear-{uuid.uuid4()}"
+        run_manager.submit_run(run_id, FrameworkState(raw_text="x"), settings)
+
+        entry = self._wait_for_terminal_status(run_id)
+        assert observed_modes == ["linear"]
+        assert entry.get("status") == "completed"

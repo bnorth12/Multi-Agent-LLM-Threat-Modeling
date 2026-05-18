@@ -103,4 +103,4 @@ def render() -> None:
                     st.table(function_rows)
 
     st.subheader("Interfaces and Trust Boundaries")
-    st.dataframe(_interface_rows(graph), use_container_width=True, hide_index=True)
+    st.table(_interface_rows(graph))

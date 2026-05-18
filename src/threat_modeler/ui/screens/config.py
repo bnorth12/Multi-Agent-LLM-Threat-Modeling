@@ -96,8 +96,31 @@ def _api_key_env_candidates(provider: str) -> tuple[str, ...]:
 
 
 def _defaults() -> RuntimeSettings:
+    def _migrate_legacy_timeout_attempts(settings: RuntimeSettings) -> RuntimeSettings:
+        # Migrate historical defaults (180s/3 attempts) to the new baseline (900s/2 attempts)
+        # when the values appear untouched from older builds.
+        timeout = int(getattr(settings.model, "request_timeout_seconds", LIVE_LLM_DEFAULT_TIMEOUT_SECONDS))
+        attempts = int(getattr(settings.model, "request_max_attempts", LIVE_LLM_DEFAULT_MAX_ATTEMPTS))
+        if timeout == 180 and attempts == 3:
+            migrated_model = ModelSelection(
+                provider=settings.model.provider,
+                model_name=settings.model.model_name,
+                offline_only=settings.model.offline_only,
+                connection_url=settings.model.connection_url,
+                endpoint_mode=getattr(settings.model, "endpoint_mode", "chat_completions"),
+                request_timeout_seconds=LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
+                request_max_attempts=LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
+            )
+            return RuntimeSettings(model=migrated_model, pipeline=settings.pipeline)
+        return settings
+
     override = st.session_state.get("settings_override")
     recovered = get_last_settings()
+    if isinstance(override, RuntimeSettings):
+        override = _migrate_legacy_timeout_attempts(override)
+        st.session_state["settings_override"] = override
+    if isinstance(recovered, RuntimeSettings):
+        recovered = _migrate_legacy_timeout_attempts(recovered)
     if isinstance(override, RuntimeSettings):
         if isinstance(recovered, RuntimeSettings):
             override_live = not override.model.offline_only and override.model.provider != "fixture"
@@ -370,6 +393,7 @@ def render() -> None:
                     request_max_attempts=int(request_max_attempts),
                 ),
                 pipeline=PipelineSettings(
+                    execution_mode="langgraph-compatible",
                     enabled_stage_ids=tuple(enabled_stages),
                     stop_on_validation_error=stop_on_error,
                     require_hitl_gates=require_hitl,

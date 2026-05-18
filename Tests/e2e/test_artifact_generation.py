@@ -401,7 +401,7 @@ class TestLlmLiveSprintValidation:
     def test_full_9_stage_real_grok_matrix(self, model_name, endpoint_mode):
         import os
 
-        api_key = os.environ.get("GROK_API") or os.environ.get("XAI_API_KEY")
+        api_key = os.environ.get("GROK_API")
         if not api_key:
             pytest.skip("GROK_API not set; skipping live LLM test.")
 

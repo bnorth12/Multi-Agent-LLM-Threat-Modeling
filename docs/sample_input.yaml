@@ -1,146 +1,175 @@
-# Sample Input for Multi-Agent Threat Modeler
-
-components:
-  - id: flight_director
-    name: Flight Director
-    type: control_computer
-    description: Provides flight path computation and guidance
-  - id: fcs
-    name: Flight Control System
-    type: control_computer
-    description: Executes flight control algorithms and issues commands
-  - id: servos
-    name: Flight Control Servos
-    type: actuator
-    description: Actuate control surfaces based on FCS commands
-  - id: route_planner
-    name: Route Planner
-    type: mission_planning
-    description: Computes optimal flight routes
-  - id: waypoint_manager
-    name: Waypoint Manager
-    type: mission_planning
-    description: Manages waypoints and navigation data
-  - id: comm_manager
-    name: Communication Manager
-    type: comms
-    description: Manages radio and datalink communications
-  - id: radio_mgr_vhf
-    name: VHF Radio Manager
-    type: radio
-    description: Controls VHF radio
-  - id: radio_mgr_uhf
-    name: UHF Radio Manager
-    type: radio
-    description: Controls UHF radio
-  - id: eoir_mgr
-    name: EO/IR Manager
-    type: sensor_manager
-    description: Manages EO/IR sensor data
-  - id: radar_mgr
-    name: Radar Manager
-    type: sensor_manager
-    description: Manages radar sensor data
-  - id: fusion_engine
-    name: Multimodal Sensor Fusion Engine
-    type: fusion
-    description: Fuses sensor and datalink data
-  - id: tdl_interpreter
-    name: Tactical Datalink Interpreter
-    type: datalink
-    description: Parses and interprets tactical datalink messages
-  - id: tdl_radio_mgr
-    name: Tactical Datalink Radio Manager
-    type: radio
-    description: Controls tactical datalink radio
-  - id: mission_system
-    name: Mission System Equipment
-    type: mission_system
-    description: Aggregates mission payloads and avionics
-  - id: power_gen
-    name: Power Generation
-    type: utility
-    description: Generates electrical power
-  - id: power_dist
-    name: Power Distribution
-    type: utility
-    description: Distributes electrical power
-  - id: hydraulic_pump
-    name: Hydraulic Pumping
-    type: utility
-    description: Provides hydraulic pressure
-  - id: hydraulic_act
-    name: Hydraulic Actuation
-    type: utility
-    description: Actuates hydraulic systems
-  - id: fcc
-    name: Flight Control Computer
-    type: control_computer
-    description: Runs flight control software and closed-loop feedback
-
-data_flows:
-  - source: fcs
-    destination: servos
-    protocol: ARINC-429
-    bus_type: serial
-    description: Flight control commands to servos
-  - source: servos
-    destination: fcs
-    protocol: ARINC-429
-    bus_type: serial
-    description: Feedback from servos to FCS
-  - source: route_planner
-    destination: waypoint_manager
-    protocol: Ethernet
-    bus_type: ethernet
-    description: Route updates and navigation data
-  - source: comm_manager
-    destination: radio_mgr_vhf
-    protocol: RS-232
-    bus_type: serial
-    description: VHF radio control
-  - source: comm_manager
-    destination: radio_mgr_uhf
-    protocol: RS-232
-    bus_type: serial
-    description: UHF radio control
-  - source: eoir_mgr
-    destination: fusion_engine
-    protocol: Ethernet
-    bus_type: ethernet
-    description: EO/IR sensor data to fusion engine
-  - source: radar_mgr
-    destination: fusion_engine
-    protocol: Ethernet
-    bus_type: ethernet
-    description: Radar data to fusion engine
-  - source: fusion_engine
-    destination: tdl_interpreter
-    protocol: Ethernet
-    bus_type: ethernet
-    description: Fused track data to datalink interpreter
-  - source: tdl_interpreter
-    destination: tdl_radio_mgr
+system_name: UAS Weapon System
+scenario: full_segment_and_lower_level_coverage
+source_fixtures:
+  icd: Tests/fixtures/inputs/icd/icd_uas_weapon_system_v1.csv
+  narrative: Tests/fixtures/inputs/descriptions/description_uas_weapon_system.md
+segments:
+  - id: ALPHA
+    name: UAS Air Vehicle
+    description: Airborne platform carrying the sensor payload and autonomous flight control stack
+    lower_level_components:
+      - id: C-ALPHA-01
+        name: Flight Control Computer
+        description: Executes autonomous flight logic and health monitoring
+      - id: C-ALPHA-02
+        name: Payload Controller
+        description: Manages sensor payload collection and mission mode selection
+      - id: C-ALPHA-03
+        name: Telemetry Router
+        description: Formats telemetry, acknowledgements, and command status for the relay link
+      - id: C-ALPHA-04
+        name: Aircraft Key Store
+        description: Stores link keys and command authorization material
+  - id: BRAVO
+    name: Mission Processing Ground Station
+    description: Fixed-site mission processing, storage, and intelligence dissemination segment
+    lower_level_components:
+      - id: C-BRAVO-01
+        name: Mission Processing Server
+        description: Runs payload analytics and intelligence fusion jobs
+      - id: C-BRAVO-02
+        name: Intelligence Storage Cluster
+        description: Retains mission outputs, flight logs, and processed intelligence
+      - id: C-BRAVO-03
+        name: Dissemination Gateway
+        description: Publishes approved products to downstream consumers and maintenance services
+      - id: C-BRAVO-04
+        name: Operator Analyst Workstation
+        description: Issues tasking updates and reviews processed mission results
+  - id: CHARLIE
+    name: Satellite Communications Terminal
+    description: Ground relay and crypto gateway for all air-to-ground traffic
+    lower_level_components:
+      - id: C-CHARLIE-01
+        name: Satcom Modem
+        description: Handles encrypted RF relay between the air vehicle and ground segments
+      - id: C-CHARLIE-02
+        name: Crypto Gateway
+        description: Performs AES-256-GCM encryption and decryption for the satellite link
+      - id: C-CHARLIE-03
+        name: Key Management Module
+        description: Maintains session keys and rotation state for the relay boundary
+  - id: DELTA
+    name: Ground Maintenance System
+    description: Diagnostic, calibration, and software loading segment for air vehicle sustainment
+    lower_level_components:
+      - id: C-DELTA-01
+        name: Maintenance Test Set
+        description: Performs diagnostic queries and validation checks on the air vehicle
+      - id: C-DELTA-02
+        name: Software Load Manager
+        description: Stages and transfers authenticated software packages to the air vehicle
+      - id: C-DELTA-03
+        name: Diagnostics Recorder
+        description: Captures HUMS data, fault codes, and maintenance session logs
+interfaces:
+  - id: DF-WS-001
+    name: Telemetry and Sensor Data Downlink
+    from: C-ALPHA-03
+    to: C-CHARLIE-01
+    protocol: Encrypted RF (AES-256-GCM)
+    data_items:
+      - telemetry_frame
+      - sensor_data
+      - health_status
+    trust_boundary_crossing: true
+    trust_boundary_name: Satellite Link Boundary
+  - id: DF-WS-002
+    name: Command and Control Uplink
+    from: C-CHARLIE-02
+    to: C-ALPHA-01
+    protocol: Encrypted RF (AES-256-GCM)
+    data_items:
+      - command_message
+      - auth_token
+      - session_nonce
+    trust_boundary_crossing: true
+    trust_boundary_name: Satellite Link Boundary
+  - id: DF-WS-003
+    name: Processed Mission Data Forward
+    from: C-CHARLIE-01
+    to: C-BRAVO-01
+    protocol: HTTPS TLS 1.3
+    data_items:
+      - decrypted_sensor_frame
+      - metadata
+      - link_status
+    trust_boundary_crossing: true
+    trust_boundary_name: Ops Network Boundary
+  - id: DF-WS-004
+    name: Mission Tasking and Retasking
+    from: C-BRAVO-04
+    to: C-CHARLIE-02
+    protocol: HTTPS TLS 1.3
+    data_items:
+      - mission_task
+      - waypoint_update
+      - payload_mode
+    trust_boundary_crossing: true
+    trust_boundary_name: Ops Network Boundary
+  - id: DF-WS-005
+    name: Maintenance Diagnostic Query
+    from: C-DELTA-01
+    to: C-ALPHA-01
     protocol: MIL-STD-1553
-    bus_type: serial
-    description: Datalink messages to radio
-  - source: mission_system
-    destination: power_gen
-    protocol: CAN
-    bus_type: can
-    description: Power status/control
-  - source: power_gen
-    destination: power_dist
-    protocol: CAN
-    bus_type: can
-    description: Power distribution control
-  - source: hydraulic_pump
-    destination: hydraulic_act
-    protocol: CAN
-    bus_type: can
-    description: Hydraulic pressure to actuators
-  - source: fcc
-    destination: fcs
-    protocol: SPI
-    bus_type: backplane
-    description: Flight control computer to FCS commands
+    data_items:
+      - bit_command
+      - lru_status_request
+      - session_token
+    trust_boundary_crossing: true
+    trust_boundary_name: Maintenance Bus Boundary
+  - id: DF-WS-006
+    name: Post-Flight HUMS Download
+    from: C-ALPHA-03
+    to: C-DELTA-03
+    protocol: MIL-STD-1553
+    data_items:
+      - hums_data
+      - fault_codes
+      - flight_log
+    trust_boundary_crossing: true
+    trust_boundary_name: Maintenance Bus Boundary
+  - id: DF-WS-007
+    name: Software Load Transfer
+    from: C-DELTA-02
+    to: C-ALPHA-02
+    protocol: RS-422
+    data_items:
+      - software_package
+      - checksum
+      - load_command
+    trust_boundary_crossing: true
+    trust_boundary_name: Maintenance Bus Boundary
+  - id: DF-WS-008
+    name: Software Package Distribution
+    from: C-BRAVO-03
+    to: C-DELTA-02
+    protocol: Ethernet (LAN)
+    data_items:
+      - signed_software_package
+      - digital_signature
+      - baseline_manifest
+    trust_boundary_crossing: true
+    trust_boundary_name: Maintenance LAN Boundary
+  - id: DF-WS-009
+    name: Maintenance Log Sync
+    from: C-DELTA-03
+    to: C-BRAVO-02
+    protocol: Ethernet (LAN)
+    data_items:
+      - maintenance_session_log
+      - bit_results
+      - load_verification_record
+    trust_boundary_crossing: true
+    trust_boundary_name: Maintenance LAN Boundary
+  - id: DF-WS-010
+    name: Key Provisioning
+    from: C-CHARLIE-03
+    to: C-ALPHA-04
+    protocol: HTTPS TLS 1.3
+    data_items:
+      - key_material
+      - rotation_policy
+      - revocation_status
+    trust_boundary_crossing: true
+    trust_boundary_name: Key Management Boundary

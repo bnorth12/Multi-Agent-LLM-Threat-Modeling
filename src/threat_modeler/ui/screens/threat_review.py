@@ -267,11 +267,34 @@ def _submit_gate_decision(gate_id: str, action: GateAction, rationale: str) -> N
 
 def _render_gate_review() -> None:
     gate_states: dict[str, Any] = st.session_state.get("gate_states", {})
+    pipeline_state = st.session_state.get("pipeline_state")
+    paused_gate = get_paused_at_gate()
+
+    # Defensive hydration: after navigation/rerender, gate cache can be empty
+    # even though the run is paused. Rebuild from checkpoint or paused gate id.
+    if not gate_states:
+        checkpoint = getattr(pipeline_state, "hitl_gate_checkpoint", None) if pipeline_state is not None else None
+        if isinstance(checkpoint, dict):
+            restored_gates = checkpoint.get("gates", {})
+            if isinstance(restored_gates, dict) and restored_gates:
+                gate_states = restored_gates
+                st.session_state["gate_states"] = restored_gates
+
+    if not gate_states and paused_gate:
+        gate_states = {
+            paused_gate: {
+                "gate_id": paused_gate,
+                "status": "open",
+                "artifact_snapshot": {},
+            }
+        }
+        st.session_state["gate_states"] = gate_states
+
     if not gate_states:
         st.caption("No HITL gates recorded for this run.")
         return
 
-    active_default = st.session_state.get("pipeline_state")
+    active_default = pipeline_state
     default_gate = st.session_state.get("_execution_state", {}).get("pause_gate")
     if default_gate is None and active_default is not None:
         default_gate = getattr(active_default, "hitl_paused_at_gate", None)
@@ -467,7 +490,7 @@ def render() -> None:
     min_risk = st.slider("Minimum risk score", min_value=1, max_value=25, value=1, step=1)
     filtered = [r for r in rows if int(r["Risk Score"]) >= min_risk]
 
-    st.dataframe(filtered, use_container_width=True, hide_index=True)
+    st.table(filtered)
 
     st.divider()
     st.subheader("Review Decisions")

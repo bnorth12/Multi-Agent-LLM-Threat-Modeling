@@ -25,6 +25,7 @@ from threat_modeler.config import (
     PipelineSettings,
     RuntimeSettings,
     build_default_settings,
+    normalize_execution_mode,
 )
 from threat_modeler.orchestrator import FrameworkOrchestrator
 from threat_modeler.state import FrameworkState
@@ -77,7 +78,10 @@ def _runtime_settings_from_payload(payload: dict[str, Any] | None) -> RuntimeSet
     )
 
     pipeline = PipelineSettings(
-        execution_mode=str(pipeline_payload.get("execution_mode", defaults.pipeline.execution_mode)),
+        execution_mode=normalize_execution_mode(
+            pipeline_payload.get("execution_mode", defaults.pipeline.execution_mode),
+            default=defaults.pipeline.execution_mode,
+        ),
         enabled_stage_ids=enabled_stage_ids,
         stop_on_validation_error=_coerce_bool(
             pipeline_payload.get("stop_on_validation_error"),

@@ -81,12 +81,17 @@ def render() -> None:
 
 def _render_editor(agent_id: str, can_edit: bool, role: str) -> None:
     """SCR-010: Prompt text area + temperature slider + save/reset controls."""
+    from threat_modeler.ui.prompt_store import get_expected_output, set_expected_output
+
     current_prompt = get_prompt(agent_id)
     default_prompt = get_default_prompt(agent_id)
+    # If default_prompt is a dict (from _DEFAULT_PROMPTS), extract the 'prompt' field
+    if isinstance(default_prompt, dict):
+        default_prompt = default_prompt.get("prompt", "")
     current_temp = get_temperature(agent_id)
+    current_expected = get_expected_output(agent_id)
 
     st.subheader("System Prompt")
-
     edited_text = st.text_area(
         "System prompt text",
         value=current_prompt,
@@ -100,10 +105,23 @@ def _render_editor(agent_id: str, can_edit: bool, role: str) -> None:
         ),
     )
 
+    st.subheader("Expected Output Example")
+    edited_expected = st.text_area(
+        "Expected output example",
+        value=current_expected,
+        height=180,
+        disabled=not can_edit,
+        key=f"expected_output_{agent_id}",
+        label_visibility="collapsed",
+        help=(
+            "A canonical example output for this agent's prompt. "
+            "Used for LLM validation, debugging, and prompt engineering."
+        ),
+    )
+
     # ── Temperature ────────────────────────────────────────────────────────
     st.subheader("Temperature")
     st.caption("Controls LLM randomness. 0.0 = deterministic, 2.0 = most creative.")
-
     new_temp = st.slider(
         "Temperature",
         min_value=0.0,
@@ -124,7 +142,7 @@ def _render_editor(agent_id: str, can_edit: bool, role: str) -> None:
             disabled=not can_edit,
             type="primary",
             use_container_width=True,
-            help="Save the current prompt text and temperature as a new version.",
+            help="Save the current prompt, expected output, and temperature as a new version.",
         )
 
     with col_reset:
@@ -133,7 +151,7 @@ def _render_editor(agent_id: str, can_edit: bool, role: str) -> None:
             key=f"reset_prompt_{agent_id}",
             disabled=not can_edit,
             use_container_width=True,
-            help="Restore the built-in default prompt and temperature.",
+            help="Restore the built-in default prompt, expected output, and temperature.",
         )
 
     with col_diff:
@@ -147,13 +165,16 @@ def _render_editor(agent_id: str, can_edit: bool, role: str) -> None:
     if save_clicked and can_edit:
         text_changed = edited_text.strip() != current_prompt.strip()
         temp_changed = abs(new_temp - current_temp) > 0.001
+        expected_changed = edited_expected.strip() != current_expected.strip()
 
         if text_changed:
             set_prompt(agent_id, edited_text.strip(), actor=role)
         if temp_changed:
             set_temperature(agent_id, new_temp)
+        if expected_changed:
+            set_expected_output(agent_id, edited_expected.strip())
 
-        if text_changed or temp_changed:
+        if text_changed or temp_changed or expected_changed:
             st.success(f"✅ Changes saved for **{AGENT_LABELS[agent_id]}**.")
             st.rerun()
         else:
@@ -161,7 +182,8 @@ def _render_editor(agent_id: str, can_edit: bool, role: str) -> None:
 
     if reset_clicked and can_edit:
         reset_to_default(agent_id, actor=role)
-        st.success(f"↺ **{AGENT_LABELS[agent_id]}** reset to default prompt and temperature.")
+        set_expected_output(agent_id, get_expected_output(agent_id))
+        st.success(f"↺ **{AGENT_LABELS[agent_id]}** reset to default prompt, expected output, and temperature.")
         st.rerun()
 
 

@@ -277,9 +277,10 @@ class TestTheme:
         from threat_modeler.ui.theme import _DARK_CSS
         assert "stSidebar" in _DARK_CSS
 
-    def test_default_css_is_empty(self):
+    def test_default_css_contains_background(self):
         from threat_modeler.ui.theme import _DEFAULT_CSS
-        assert _DEFAULT_CSS == ""
+        assert "<style>" in _DEFAULT_CSS
+        assert "--tm-bg" in _DEFAULT_CSS
 
     def test_apply_theme_dark_injects_css(self):
         """apply_theme with theme='Dark' must call st.markdown with a style block."""
@@ -293,8 +294,8 @@ class TestTheme:
             theme_mod.apply_theme()
         assert any("<style>" in c for c in calls), "Dark mode must inject a <style> block"
 
-    def test_apply_theme_default_injects_nothing(self):
-        """apply_theme with theme='Default' must not call st.markdown."""
+    def test_apply_theme_default_injects_css(self):
+        """apply_theme with theme='Default' must call st.markdown with a style block."""
         calls = []
         st_stub = _make_st_stub()
         st_stub.markdown = lambda content, **kw: calls.append(content)
@@ -302,7 +303,7 @@ class TestTheme:
         import threat_modeler.ui.theme as theme_mod
         with patch.object(theme_mod, "st", st_stub):
             theme_mod.apply_theme()
-        assert calls == [], "Default theme must not inject any CSS"
+        assert any("<style>" in c for c in calls), "Default mode must inject a <style> block"
 
 
 # ---------------------------------------------------------------------------

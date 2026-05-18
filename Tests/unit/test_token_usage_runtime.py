@@ -95,10 +95,13 @@ def test_framework_state_attempt_totals() -> None:
     assert totals["total"] == 4
 
 
-def test_token_usage_screen_uses_fixed_width_stage_table_for_horizontal_scroll() -> None:
+def test_token_usage_screen_uses_table_for_stage_display() -> None:
+    # st.table is used instead of st.dataframe so the HTML table is fully
+    # styleable by the injected theme CSS (canvas-based dataframe cannot be
+    # targeted by external CSS selectors).
     text = Path("src/threat_modeler/ui/screens/token_usage.py").read_text(encoding="utf-8")
-    assert "use_container_width=False" in text
-    assert "width=1400" in text
+    assert "st.table(stage_rows)" in text
+    assert "st.table(gate_rows)" in text
 
 
 def test_execution_registry_persists_and_restores_settings_override() -> None:

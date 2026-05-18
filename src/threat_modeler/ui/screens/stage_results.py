@@ -6,10 +6,17 @@ the active FrameworkState in session state.
 
 from __future__ import annotations
 
+import html
 from typing import Any
 
 import streamlit as st
-from threat_modeler.ui.execution import sync_execution_state_to_session
+from threat_modeler.ui.execution import (
+    sync_execution_state_to_session,
+    get_execution_error,
+    is_execution_active,
+    get_execution_status,
+    get_paused_at_gate,
+)
 
 _STAGE_LABELS: dict[str, str] = {
     "agent_01": "01 · Input Normalizer",
@@ -25,9 +32,13 @@ _STAGE_LABELS: dict[str, str] = {
 
 
 def _stage_rows(pipeline_state: Any) -> list[dict[str, str]]:
-    """Build stage status rows from FrameworkState.messages."""
+    """Build stage status rows from framework messages and live execution status."""
     rows: list[dict[str, str]] = []
     completed: set[str] = set()
+    current_stage_id = getattr(pipeline_state, "next_stage_id", None) if pipeline_state else None
+    paused_gate = get_paused_at_gate()
+    execution_active = is_execution_active()
+    execution_status = get_execution_status()
 
     messages = getattr(pipeline_state, "messages", []) if pipeline_state else []
     for msg in messages:
@@ -36,7 +47,16 @@ def _stage_rows(pipeline_state: Any) -> list[dict[str, str]]:
             completed.add(stage_id)
 
     for stage_id, label in _STAGE_LABELS.items():
-        status = "Complete" if stage_id in completed else "Pending"
+        if stage_id in completed:
+            status = "Complete"
+        elif paused_gate and current_stage_id == stage_id:
+            status = "Awaiting HITL"
+        elif execution_active and current_stage_id == stage_id:
+            status = "Running"
+        elif execution_status == "completed":
+            status = "Skipped/Not Reached"
+        else:
+            status = "Pending"
         rows.append({"Stage": label, "Stage ID": stage_id, "Status": status})
 
     return rows
@@ -71,6 +91,16 @@ def render() -> None:
     else:
         st.warning("No active run yet. Start a run from Input Entry.")
 
+    execution_error = get_execution_error()
+    if execution_error:
+        raw_text = str(execution_error)
+        decoded_text = html.unescape(raw_text)
+        st.error("Execution error detected for this run.")
+        st.code(decoded_text, language="text")
+        if decoded_text != raw_text:
+            with st.expander("Raw error payload"):
+                st.code(raw_text, language="text")
+
     if pipeline_state is None:
         st.caption("No pipeline state available yet.")
         return
@@ -83,7 +113,7 @@ def render() -> None:
     st.subheader("Recorded Stage Messages")
     message_rows = _message_rows(pipeline_state)
     if message_rows:
-        st.dataframe(message_rows, use_container_width=True, hide_index=True)
+        st.table(message_rows)
     else:
         st.caption("No messages recorded yet.")
 

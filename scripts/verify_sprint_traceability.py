@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 import sys
+import contextlib
 from argparse import ArgumentParser
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
@@ -407,15 +408,24 @@ def main() -> None:
     parser.add_argument("--sprint", required=True, help="Sprint ID (YYYY-MM or YYYY_MM)")
     parser.add_argument("--audit", action="store_true", help="Run strict audit checks")
     parser.add_argument("--closure", action="store_true", help="Enforce sprint closure prerequisites")
+    parser.add_argument("--log", type=str, default=None, help="Optional log file path. If set, all output is written to this file.")
     args = parser.parse_args()
 
-    try:
-        success, _ = verify_traceability(args.sprint, audit=args.audit, closure=args.closure)
-    except ValueError as exc:
-        log_fail(str(exc))
-        sys.exit(2)
-
-    sys.exit(0 if success else 1)
+    if args.log:
+        with open(args.log, 'w', encoding='utf-8') as log_file, contextlib.redirect_stdout(log_file):
+            try:
+                success, _ = verify_traceability(args.sprint, audit=args.audit, closure=args.closure)
+            except ValueError as exc:
+                log_fail(str(exc))
+                sys.exit(2)
+            sys.exit(0 if success else 1)
+    else:
+        try:
+            success, _ = verify_traceability(args.sprint, audit=args.audit, closure=args.closure)
+        except ValueError as exc:
+            log_fail(str(exc))
+            sys.exit(2)
+        sys.exit(0 if success else 1)
 
 
 if __name__ == "__main__":

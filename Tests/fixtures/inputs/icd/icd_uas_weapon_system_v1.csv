@@ -1,14 +1,29 @@
 entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
-segment,SEG-ALPHA-01,UAS Air Vehicle,Airborne ISR platform carrying sensor payload and autonomous flight control,UAS Weapon System,,,,,,,,
-segment,SEG-BRAVO-01,Mission Processing Ground Station,Fixed-site facility for ISR data processing storage and intelligence dissemination,UAS Weapon System,,,,,,,,
-segment,SEG-CHARLIE-01,Satellite Communications Terminal,Ground-based satellite modem and AES-256-GCM encryption gateway for all air-to-ground relay,UAS Weapon System,,,,,,,,
-segment,SEG-DELTA-01,Ground Maintenance System,Diagnostic test and software-loading equipment for ground servicing of the Alpha air vehicle,UAS Weapon System,,,,,,,,
-data_flow,DF-WS-001,,Telemetry and Sensor Data Downlink,,,,SEG-ALPHA-01,SEG-CHARLIE-01,Encrypted RF (AES-256-GCM),telemetry_frame|sensor_data|health_status,true,Satellite Link Boundary
-data_flow,DF-WS-002,,Command and Control Uplink,,,,SEG-CHARLIE-01,SEG-ALPHA-01,Encrypted RF (AES-256-GCM),command_message|auth_token|session_nonce,true,Satellite Link Boundary
-data_flow,DF-WS-003,,Processed Mission Data Forward,,,,SEG-CHARLIE-01,SEG-BRAVO-01,HTTPS TLS 1.3,decrypted_sensor_frame|metadata|link_status,true,Ops Network Boundary
-data_flow,DF-WS-004,,Mission Tasking and Retasking,,,,SEG-BRAVO-01,SEG-CHARLIE-01,HTTPS TLS 1.3,mission_task|waypoint_update|payload_mode,true,Ops Network Boundary
-data_flow,DF-WS-005,,Maintenance Diagnostic Query,,,,SEG-DELTA-01,SEG-ALPHA-01,MIL-STD-1553,bit_command|lru_status_request|session_token,true,Maintenance Bus Boundary
-data_flow,DF-WS-006,,Post-Flight HUMS Download,,,,SEG-ALPHA-01,SEG-DELTA-01,MIL-STD-1553,hums_data|fault_codes|flight_log,true,Maintenance Bus Boundary
-data_flow,DF-WS-007,,Software Load Transfer,,,,SEG-DELTA-01,SEG-ALPHA-01,RS-422,software_package|checksum|load_command,true,Maintenance Bus Boundary
-data_flow,DF-WS-008,,Software Package Distribution,,,,SEG-BRAVO-01,SEG-DELTA-01,Ethernet (LAN),signed_software_package|digital_signature|baseline_manifest,true,Maintenance LAN Boundary
-data_flow,DF-WS-009,,Maintenance Log Sync,,,,SEG-DELTA-01,SEG-BRAVO-01,Ethernet (LAN),maintenance_session_log|bit_results|load_verification_record,true,Maintenance LAN Boundary
+subsystem,SS-ALPHA-01,UAS Air Vehicle Segment,Airborne platform carrying sensor payloads and command relay functions,UAS Weapon System,,,,,,,,
+subsystem,SS-BRAVO-01,Mission Processing Ground Station,Fixed-site mission processing, storage, and intelligence dissemination segment,UAS Weapon System,,,,,,,,
+subsystem,SS-CHARLIE-01,Satellite Communications Terminal,Ground relay and crypto gateway for all air-to-ground traffic,UAS Weapon System,,,,,,,,
+subsystem,SS-DELTA-01,Ground Maintenance System,Diagnostic, calibration, and software loading segment for air vehicle sustainment,UAS Weapon System,,,,,,,,
+component,C-ALPHA-01,Flight Control Computer,Executes autonomous flight logic and consumes navigation, health, and maintenance inputs,SS-ALPHA-01,embedded,flight.control|flight.health,,,,,,
+component,C-ALPHA-02,Payload Controller,Manages sensor payload collection and mission-mode selection,SS-ALPHA-01,embedded,payload.controller|payload.health,,,,,,
+component,C-ALPHA-03,Telemetry Router,Formats telemetry and command acknowledgements for the satellite link,SS-ALPHA-01,embedded,telemetry.router,,,,,,
+component,C-ALPHA-04,Aircraft Key Store,Stores link keys and command authorization material,SS-ALPHA-01,embedded,crypto.keystore,,,,,,
+component,C-BRAVO-01,Mission Processing Server,Runs payload analytics and intelligence fusion jobs,SS-BRAVO-01,hosted,mission.processing|intel.fusion,,,,,,
+component,C-BRAVO-02,Intelligence Storage Cluster,Retains mission outputs, flight logs, and processed intelligence,SS-BRAVO-01,hosted,storage.cluster|storage.audit,,,,,,
+component,C-BRAVO-03,Dissemination Gateway,Publishes approved products to downstream consumers and maintenance services,SS-BRAVO-01,hosted,dissemination.gateway|distribution.policy,,,,,,
+component,C-BRAVO-04,Operator Analyst Workstation,Issues tasking updates and reviews processed mission results,SS-BRAVO-01,hosted,operator.ui|operator.review,,,,,,
+component,C-CHARLIE-01,Satcom Modem,Handles encrypted RF relay between the air vehicle and ground segments,SS-CHARLIE-01,hosted,satcom.modem|satcom.link_monitor,,,,,,
+component,C-CHARLIE-02,Crypto Gateway,Performs AES-256-GCM encryption and decryption for the satellite link,SS-CHARLIE-01,hosted,crypto.gateway|crypto.policy,,,,,,
+component,C-CHARLIE-03,Key Management Module,Maintains session keys and rotation state for the relay boundary,SS-CHARLIE-01,hosted,key.management|key.rotation,,,,,,
+component,C-DELTA-01,Maintenance Test Set,Performs diagnostic queries and validation checks on the air vehicle,SS-DELTA-01,hosted,maintenance.testset|maintenance.checks,,,,,,
+component,C-DELTA-02,Software Load Manager,Stages and transfers authenticated software packages to the air vehicle,SS-DELTA-01,hosted,software.loader|software.validation,,,,,,
+component,C-DELTA-03,Diagnostics Recorder,Captures HUMS data, fault codes, and maintenance session logs,SS-DELTA-01,hosted,diagnostics.recorder|maintenance.audit,,,,,,
+data_flow,DF-WS-001,,Telemetry and Sensor Data Downlink,,,,C-ALPHA-03,C-CHARLIE-01,Encrypted RF (AES-256-GCM),telemetry_frame|sensor_data|health_status,true,Satellite Link Boundary
+data_flow,DF-WS-002,,Command and Control Uplink,,,,C-CHARLIE-02,C-ALPHA-01,Encrypted RF (AES-256-GCM),command_message|auth_token|session_nonce,true,Satellite Link Boundary
+data_flow,DF-WS-003,,Processed Mission Data Forward,,,,C-CHARLIE-01,C-BRAVO-01,HTTPS TLS 1.3,decrypted_sensor_frame|metadata|link_status,true,Ops Network Boundary
+data_flow,DF-WS-004,,Mission Tasking and Retasking,,,,C-BRAVO-04,C-CHARLIE-02,HTTPS TLS 1.3,mission_task|waypoint_update|payload_mode,true,Ops Network Boundary
+data_flow,DF-WS-005,,Maintenance Diagnostic Query,,,,C-DELTA-01,C-ALPHA-01,MIL-STD-1553,bit_command|lru_status_request|session_token,true,Maintenance Bus Boundary
+data_flow,DF-WS-006,,Post-Flight HUMS Download,,,,C-ALPHA-03,C-DELTA-03,MIL-STD-1553,hums_data|fault_codes|flight_log,true,Maintenance Bus Boundary
+data_flow,DF-WS-007,,Software Load Transfer,,,,C-DELTA-02,C-ALPHA-02,RS-422,software_package|checksum|load_command,true,Maintenance Bus Boundary
+data_flow,DF-WS-008,,Software Package Distribution,,,,C-BRAVO-03,C-DELTA-02,Ethernet (LAN),signed_software_package|digital_signature|baseline_manifest,true,Maintenance LAN Boundary
+data_flow,DF-WS-009,,Maintenance Log Sync,,,,C-DELTA-03,C-BRAVO-02,Ethernet (LAN),maintenance_session_log|bit_results|load_verification_record,true,Maintenance LAN Boundary
+data_flow,DF-WS-010,,Key Provisioning,,,,C-CHARLIE-03,C-ALPHA-04,HTTPS TLS 1.3,key_material|rotation_policy|revocation_status,true,Key Management Boundary

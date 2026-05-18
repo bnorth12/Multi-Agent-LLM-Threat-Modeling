@@ -77,7 +77,11 @@ def test_last_prompt_screen_module_exposes_render() -> None:
     assert callable(render)
 
 
-def test_last_prompt_screen_contains_dark_mode_contrast_style() -> None:
-    text = Path("src/threat_modeler/ui/screens/last_prompt.py").read_text(encoding="utf-8")
-    assert "_apply_dark_prompt_text_style" in text
-    assert "textarea[disabled]" in text
+def test_last_prompt_screen_disabled_textarea_styled_by_theme() -> None:
+    # Disabled prompt textarea styling is now handled centrally by theme.py
+    # rather than by a screen-local injection function.
+    theme_text = Path("src/threat_modeler/ui/theme.py").read_text(encoding="utf-8")
+    assert "textarea:disabled" in theme_text
+    # last_prompt.py should not contain its own inline style injection
+    screen_text = Path("src/threat_modeler/ui/screens/last_prompt.py").read_text(encoding="utf-8")
+    assert "_apply_dark_prompt_text_style" not in screen_text

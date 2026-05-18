@@ -145,7 +145,7 @@ def render() -> None:
     st.subheader("Usage by Stage")
     stage_rows = _stage_usage_rows(pipeline_state)
     if stage_rows:
-        st.dataframe(stage_rows, use_container_width=False, width=1400, hide_index=True)
+        st.table(stage_rows)
     else:
         st.caption("No live token usage has been recorded yet. Run a live provider pipeline to populate this table.")
 
@@ -153,6 +153,6 @@ def render() -> None:
     st.subheader("Gate Context")
     gate_rows = _gate_usage_rows(pipeline_state)
     if gate_rows:
-        st.dataframe(gate_rows, use_container_width=True, hide_index=True)
+        st.table(gate_rows)
     else:
         st.caption("No gate checkpoint data available for this run.")

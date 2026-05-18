@@ -5,11 +5,13 @@ from __future__ import annotations
 import os
 import json
 import time
+import logging
 from urllib import request
 from urllib.error import HTTPError, URLError
 from typing import Iterable
 
 from .base import LlmAdapter
+from .llm_provider_error import LlmProviderError
 
 
 DEFAULT_TIMEOUT_SECONDS = 180
@@ -90,6 +92,8 @@ class OpenAiCompatibleAdapter(LlmAdapter):
                 DEFAULT_TIMEOUT_SECONDS,
             )
 
+
+        logger = logging.getLogger("threat_modeler.llm.openai_compatible_adapter")
         for attempt in range(1, max_attempts + 1):
             try:
                 with request.urlopen(req, timeout=timeout) as response:
@@ -97,9 +101,25 @@ class OpenAiCompatibleAdapter(LlmAdapter):
             except HTTPError as exc:
                 detail = exc.read().decode("utf-8", errors="replace") if exc.fp else str(exc)
                 retriable = exc.code in {429, 500, 502, 503, 504}
-                last_error = RuntimeError(f"Provider HTTP error {exc.code}: {detail}")
-                if not retriable or attempt == max_attempts:
-                    raise last_error from exc
+                if exc.code == 429:
+                    # Rate limit: wait 2 minutes before retrying
+                    wait_seconds = 120
+                    last_error = LlmProviderError(
+                        f"Provider HTTP 429 Rate Limit: {detail}",
+                        code=429,
+                        retryable=True,
+                        wait_seconds=wait_seconds,
+                    )
+                    if attempt < max_attempts:
+                        logger.warning(f"Rate limit (429) encountered, waiting {wait_seconds}s before retry (attempt {attempt}/{max_attempts})")
+                        time.sleep(wait_seconds)
+                        continue
+                    else:
+                        raise last_error from exc
+                else:
+                    last_error = RuntimeError(f"Provider HTTP error {exc.code}: {detail}")
+                    if not retriable or attempt == max_attempts:
+                        raise last_error from exc
             except (URLError, TimeoutError) as exc:
                 retriable = True
                 last_error = exc
@@ -111,8 +131,11 @@ class OpenAiCompatibleAdapter(LlmAdapter):
                         f"(timeout={timeout}s, path={path}, model={self._model}, mode={self._endpoint_mode})"
                     ) from exc
 
-            # Exponential backoff: 1s, 2s before final attempt.
-            time.sleep(2 ** (attempt - 1))
+            # Exponential backoff for other retriable errors: 1s, 2s, ...
+            if attempt < max_attempts:
+                backoff = 2 ** (attempt - 1)
+                logger.info(f"Retryable error, waiting {backoff}s before retry (attempt {attempt}/{max_attempts})")
+                time.sleep(backoff)
 
         if last_error is not None:
             raise RuntimeError(f"Provider request failed: {last_error}") from last_error

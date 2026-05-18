@@ -73,7 +73,7 @@ def render() -> None:
     sorted_rows = _sorted_rows(rows, sort_by, ascending)
 
     st.subheader("STRIDE Scores")
-    st.dataframe(sorted_rows, use_container_width=True, hide_index=True)
+    st.table(sorted_rows)
 
     st.subheader("Interface Detail")
     selected_interface = st.selectbox(

@@ -9,7 +9,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
-from threat_modeler.config import ModelSelection, PipelineSettings, RuntimeSettings
+from threat_modeler.config import (
+    EXECUTION_MODE_GOVERNED,
+    LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
+    LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
+    ModelSelection,
+    PipelineSettings,
+    RuntimeSettings,
+    normalize_execution_mode,
+)
 
 
 @dataclass
@@ -57,11 +65,14 @@ def _deserialize_settings(payload: dict | None) -> RuntimeSettings | None:
             offline_only=bool(model_data.get("offline_only", True)),
             connection_url=str(model_data.get("connection_url", "")),
             endpoint_mode=str(model_data.get("endpoint_mode", "chat_completions")),
-            request_timeout_seconds=int(model_data.get("request_timeout_seconds", 180)),
-            request_max_attempts=int(model_data.get("request_max_attempts", 3)),
+            request_timeout_seconds=int(model_data.get("request_timeout_seconds", LIVE_LLM_DEFAULT_TIMEOUT_SECONDS)),
+            request_max_attempts=int(model_data.get("request_max_attempts", LIVE_LLM_DEFAULT_MAX_ATTEMPTS)),
         )
         pipeline = PipelineSettings(
-            execution_mode=str(pipeline_data.get("execution_mode", "linear")),
+            execution_mode=normalize_execution_mode(
+                pipeline_data.get("execution_mode", EXECUTION_MODE_GOVERNED),
+                default=EXECUTION_MODE_GOVERNED,
+            ),
             enabled_stage_ids=tuple(pipeline_data.get("enabled_stage_ids", ())),
             stop_on_validation_error=bool(pipeline_data.get("stop_on_validation_error", True)),
             require_hitl_gates=bool(pipeline_data.get("require_hitl_gates", True)),

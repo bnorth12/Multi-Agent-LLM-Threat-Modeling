@@ -63,6 +63,8 @@ def _get_execution_state():
             "error": None,
             "result_state": None,
             "pause_gate": None,
+            "last_heartbeat_time": None,
+            "heartbeat_timeout_seconds": None,
         }
     return st.session_state["_execution_state"]
 
@@ -92,7 +94,16 @@ def sync_execution_state_to_session() -> None:
         return
 
     # Mirror runtime status into session-visible execution state.
-    for key in ("status", "run_id", "start_time", "end_time", "error", "pause_gate"):
+    for key in (
+        "status",
+        "run_id",
+        "start_time",
+        "end_time",
+        "error",
+        "pause_gate",
+        "last_heartbeat_time",
+        "heartbeat_timeout_seconds",
+    ):
         session_state[key] = run_state.get(key)
 
     # Restore settings used for this run so resumed actions do not fall back
@@ -294,6 +305,19 @@ def get_execution_elapsed_seconds() -> float:
     return end - start
 
 
+def get_heartbeat_age_seconds() -> float | None:
+    """Return seconds since last run heartbeat, or None if unavailable."""
+    sync_execution_state_to_session()
+    state = _get_execution_state()
+    heartbeat_ts = state.get("last_heartbeat_time")
+    if not heartbeat_ts:
+        return None
+    try:
+        return max(0.0, time.time() - float(heartbeat_ts))
+    except (TypeError, ValueError):
+        return None
+
+
 def get_current_provider_status() -> tuple[str, str]:
     """Get current provider and detect if using live LLM or local fixture.
 
@@ -353,6 +377,8 @@ def render_execution_status_badge() -> None:
 
     badge = color_map.get(status, "⚪")
     elapsed = get_execution_elapsed_seconds()
+    heartbeat_age = get_heartbeat_age_seconds()
+    heartbeat_timeout = _get_execution_state().get("heartbeat_timeout_seconds")
 
     st.metric(
         "Execution Status",
@@ -362,6 +388,14 @@ def render_execution_status_badge() -> None:
 
     if run_id:
         st.caption(f"Run: {run_id[:8]}…")
+    if heartbeat_age is not None and status in (ExecutionStatus.RUNNING.value, ExecutionStatus.QUEUED.value):
+        timeout_txt = ""
+        if heartbeat_timeout:
+            try:
+                timeout_txt = f" / timeout {float(heartbeat_timeout):.0f}s"
+            except (TypeError, ValueError):
+                timeout_txt = ""
+        st.caption(f"Heartbeat age: {heartbeat_age:.1f}s{timeout_txt}")
 
 
 def block_interaction_during_execution(widget_name: str = "form") -> bool:
