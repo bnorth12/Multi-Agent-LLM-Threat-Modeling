@@ -41,8 +41,8 @@ import yaml
 
 with open("data/models/embeddings.yaml") as f:
     config = yaml.safe_load(f)
-    
-selected_model = next(m for m in config["models"] 
+
+selected_model = next(m for m in config["models"]
                      if m["name"] == "all-MiniLM-L6-v2")
 ```
 

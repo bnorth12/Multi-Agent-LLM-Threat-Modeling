@@ -85,6 +85,16 @@ control and LangGraph execution-plan endpoints without a Streamlit dependency.
 `src/threat_modeler/ui/app.py` remains available for automated browser testing
 and validation evidence collection, but it is not the operational runtime server.
 
+### Execution Mode Semantics
+
+The orchestrator supports two execution modes in pipeline settings:
+
+- `linear`: compatibility mode for controlled scenarios.
+- `langgraph-compatible`: LangGraph-native execution path used for governed validation and release evidence.
+
+Runtime defaults may remain conservative for compatibility, but release validation profiles are expected to set
+`execution_mode=langgraph-compatible` to satisfy orchestration evidence requirements.
+
 ## 3. Data Contracts
 
 Primary artifacts:

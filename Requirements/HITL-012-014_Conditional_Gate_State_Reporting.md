@@ -40,7 +40,7 @@ Currently, both active and skipped conditional gates show as "Pending" in the Ru
 
 ### Code Locations
 
-- Orchestrator gate logic: `src/threat_modeler/orchestration/orchestrator.py` (transition_to_next_gate)
+- Orchestrator gate logic: `src/threat_modeler/orchestrator.py`
 - UI gate state display: `src/threat_modeler/ui/screens/home.py` (HITL Gate States table rendering)
 - Session state gate record: `src/threat_modeler/ui/session.py` (hitl_gates schema)
 

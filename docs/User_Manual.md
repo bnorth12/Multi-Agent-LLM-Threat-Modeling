@@ -1,8 +1,8 @@
 # Multi-Agent LLM Threat Modeler — User Manual
 
-**Version:** Sprint 2026-09
+**Version:** Sprint 2026-11
 **Audience:** Security analysts, threat modeling practitioners, and project administrators
-**Status:** Full screen set delivered (SCR-001 through SCR-014 plus Prompt Editor, Token Usage, Stage Results, Threat Review, Snapshot Manager, Results Export); Sprint 2026-09 viewer-expansion workstreams in progress.
+**Status:** Sprint 2026-11 closeout in progress. Implementation and regression gates are complete; formal live-browser/live-LLM rerun is pending only on runtime credential provisioning (`GROK_API`).
 
 ---
 
@@ -285,10 +285,12 @@ through `src/threat_modeler/config.py`.
 | `model_api_key` | string | `""` | Session-only API key used for providers requiring authentication |
 | `offline_only` | bool | `true` | Force fixture mode regardless of provider |
 | `endpoint_mode` | string | `chat_completions` | Endpoint style: `chat_completions`, `responses`, or `multi_agent` |
-| `execution_mode` | string | `langgraph-compatible` | Pipeline execution strategy |
+| `execution_mode` | string | `langgraph-compatible` | Pipeline execution strategy (`langgraph-compatible` is required for governed release validation profiles; `linear` is compatibility-only) |
 | `require_hitl_gates` | bool | `true` | Enable/disable mandatory HITL gates |
 | `stop_on_validation_error` | bool | `true` | Halt pipeline on canonical graph validation failure |
 | `enabled_stage_ids` | list | all 9 stages | Subset of agent stages to run |
+| `request_timeout_seconds` | int | `900` | **[S11]** LLM request timeout (default: 900s = 15 minutes for complex threat models) |
+| `request_max_attempts` | int | `2` | **[S11]** LLM retry attempts before failure (default: 2) |
 
 ### Offline vs. Hybrid Profiles
 
@@ -296,6 +298,12 @@ through `src/threat_modeler/config.py`.
 |---------|-----------|----------------|-----------------|
 | Offline (fixture) | `fixture` | `true` | No |
 | Hybrid (Grok-4) | `xai` | `false` | Yes — `XAI_API_KEY` |
+
+### Execution Mode Policy
+
+- `linear`: compatibility mode intended for controlled or legacy scenarios.
+- `langgraph-compatible`: governed validation and release mode; required for LangGraph-native execution evidence.
+- For release-candidate verification, set `execution_mode` to `langgraph-compatible` and capture evidence in sprint test summary artifacts.
 
 ---
 
@@ -415,12 +423,15 @@ reload triggers a fresh Streamlit session.  The run URL (`?run_id=…`) contains
 run identifier needed for recovery.
 
 **Resolution:**
+
 1. Do not close or reload the browser while a run is active — use the navigation
    sidebar instead.
-2. If a reload has occurred, check the URL bar for a `run_id` query parameter; the
+
+1. If a reload has occurred, check the URL bar for a `run_id` query parameter; the
    dashboard `sync_execution_state_to_session()` will attempt to restore state
    automatically from the backend registry.
-3. Run metadata (status, timing, gate, error) is also persisted to
+
+1. Run metadata (status, timing, gate, error) is also persisted to
    `~/.multi_agent_threat_modeler_runs.json`; if the process was restarted you can
    inspect this file to verify the last known run status.
 
@@ -483,6 +494,55 @@ a new run.
 
 ---
 
+## 8.5 **[Sprint S11]** Diagnostics & Monitoring
+
+### Run Diagnostics Panel
+
+The **Run Diagnostics** panel displays real-time execution metrics during pipeline operation:
+
+- **Heartbeat Age (seconds):** Time elapsed since the last backend activity pulse. Indicates backend responsiveness.
+  - **Normal:** < 10 seconds
+  - **Warning:** 10–30 seconds (investigate delays)
+  - **Critical:** > 30 seconds or `None` (backend may be stalled)
+- **Last Active Stage:** The most recent agent that reported execution progress.
+- **Pipeline Status:** Current run state (RUNNING, QUEUED, PAUSED, COMPLETED, FAILED).
+- **Elapsed Time:** Total runtime since pipeline start.
+
+### Last Prompt Screen — Enhanced Response Display
+
+The **Last Prompt** screen (SCR-015) now displays both request and response for each stage:
+
+- **Prompt:** The full LLM request payload sent to the model
+- **Model Result:**
+  - **Status:** Submission status (submitted, failed, completed)
+  - **Provider & Model:** Which LLM provider and model executed the request
+  - **Response:** Full LLM response text (bounded to 20,000 characters for display)
+  - **Error:** Failure reason if the LLM request failed
+- **Stale Prevention:** Responses are correlated by `prompt_record_id` (stage_id:timestamp).
+  Switching between prompts will not show stale responses from previous selections.
+
+### Troubleshooting with Diagnostics
+
+#### Scenario: Pipeline stalls with "Heartbeat Age" > 10 seconds
+
+1. Check the **Last Active Stage** — note which agent was last active.
+1. Open **Last Prompt** screen and select that stage.
+1. Review the **Model Result** response text for errors or truncation.
+1. If response is truncated (20,000 char limit), the LLM likely generated excessive output.
+1. Increase `request_timeout_seconds` in **Pipeline Configuration** if the agent needs more processing time.
+
+### User Manual Drift Prevention Workflow (S11-010)
+
+Use this workflow whenever user-facing behavior changes to keep markdown and HTML manuals synchronized.
+
+1. Update source content in `docs/User_Manual.md`.
+1. Regenerate or manually apply equivalent content updates in `docs/user_manual/index.html`.
+1. Verify both manuals contain updated canonical tokens and policy text. Command: `rg "execution_mode|Run Diagnostics|Last Prompt|Heartbeat" docs/User_Manual.md docs/user_manual/index.html`
+1. Run markdown quality checks and document evidence in sprint closeout artifacts. Command: `npx --yes markdownlint-cli docs/User_Manual.md planning/Test_Execution_Summary_Sprint_2026_11.md`
+1. During review, treat `docs/user_manual/index.html` as release-facing presentation and `docs/User_Manual.md` as change-tracking source; no intentional drift is allowed without a documented waiver.
+
+---
+
 ## 9. Glossary
 
 | Term | Definition |
@@ -511,3 +571,22 @@ a new run.
 | **Trust Boundary** | A boundary across which data flows between zones of different trust levels. |
 | **ValidationHaltError** | Exception raised when a pipeline stage produces a state that fails canonical graph schema validation. |
 | **xAI Grok** | The LLM provider used in hybrid mode; accessed via `XAI_API_KEY` environment variable. |
+
+---
+
+## Appendix A. Sprint 2026-11 Formal Validation Evidence
+
+Formal test report:
+
+- `planning/FQT_Test_Report_Sprint_2026_11.md`
+
+Primary evidence run used for formal qualification:
+
+- `FQT/fqt_uas_20260515_232859/test_report.json` (`LIVE_BROWSER_SMOKE_OK`)
+- `FQT/fqt_uas_20260515_232859/smoke_run.log`
+- `FQT/fqt_uas_20260515_232859/screenshots/`
+- `FQT/fqt_uas_20260515_232859/downloads/`
+
+Current rerun status (2026-05-17):
+
+- A fresh same-day live rerun was attempted and blocked before launch because `RUN_VISIBLE_BROWSER_TESTS` and `GROK_API` were not set in the execution shell.

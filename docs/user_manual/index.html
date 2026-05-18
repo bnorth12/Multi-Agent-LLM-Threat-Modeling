@@ -321,7 +321,7 @@
 
   <h1>Multi-Agent LLM Threat Modeler</h1>
   <p class="subtitle">
-    <span>User Manual</span> &nbsp;·&nbsp; Sprint 2026-09 &nbsp;·&nbsp;
+    <span>User Manual</span> &nbsp;·&nbsp; Sprint 2026-11 &nbsp;·&nbsp;
     Audience: Security analysts, threat modeling practitioners, and project administrators
   </p>
 
@@ -981,6 +981,8 @@ export XAI_API_KEY="xai-your-key-here"</code></pre>
         <tr><td><code>model_name</code></td><td>str</td><td><code>"fixture-placeholder"</code></td><td>Model name passed to the provider (for xAI, use Grok-4 family values such as <code>"grok-4"</code>).</td></tr>
         <tr><td><code>offline_only</code></td><td>bool</td><td><code>True</code></td><td>When <code>True</code>, forces fixture mode regardless of provider setting.</td></tr>
         <tr><td><code>endpoint_mode</code></td><td>str</td><td><code>"chat_completions"</code></td><td>Endpoint style: <code>chat_completions</code>, <code>responses</code>, or <code>multi_agent</code>.</td></tr>
+        <tr><td><code>request_timeout_seconds</code></td><td>int</td><td><code>900</code></td><td><strong>[S11]</strong> LLM request timeout in seconds. Default: 900s (15 minutes) for complex threat models.</td></tr>
+        <tr><td><code>request_max_attempts</code></td><td>int</td><td><code>2</code></td><td><strong>[S11]</strong> Number of retry attempts for failed LLM requests. Default: 2.</td></tr>
       </tbody>
     </table>
 
@@ -988,7 +990,7 @@ export XAI_API_KEY="xai-your-key-here"</code></pre>
     <table>
       <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
       <tbody>
-        <tr><td><code>execution_mode</code></td><td>str</td><td><code>"langgraph-compatible"</code></td><td>Pipeline execution strategy. Use <code>"langgraph-compatible"</code> for full HITL gate support.</td></tr>
+        <tr><td><code>execution_mode</code></td><td>str</td><td><code>"langgraph-compatible"</code></td><td>Pipeline execution strategy. Use <code>"langgraph-compatible"</code> for governed validation and release evidence; <code>"linear"</code> is compatibility-only.</td></tr>
         <tr><td><code>require_hitl_gates</code></td><td>bool</td><td><code>True</code></td><td>Enable mandatory and conditional HITL gates.</td></tr>
         <tr><td><code>stop_on_validation_error</code></td><td>bool</td><td><code>True</code></td><td>Halt on canonical graph schema validation failure.</td></tr>
         <tr><td><code>enabled_stage_ids</code></td><td>list[str]</td><td>All 9 stages</td><td>Ordered list of agent stage IDs to execute.</td></tr>
@@ -1244,6 +1246,83 @@ python -m threat_modeler</code></pre>
         </dl>
       </div>
     </div>
+
+    <h3 style="margin-top: 2.5rem;"><strong>[Sprint S11]</strong> Run Diagnostics & Monitoring</h3>
+    <p>
+      The <strong>Run Diagnostics</strong> panel displays real-time execution metrics during pipeline operation:
+    </p>
+    <ul>
+      <li><strong>Heartbeat Age (seconds)</strong> — Time elapsed since the last backend activity pulse.
+        <ul>
+          <li><strong style="color: #22a340;">Normal:</strong> &lt; 10 seconds</li>
+          <li><strong style="color: #e89c2f;">Warning:</strong> 10–30 seconds (investigate delays)</li>
+          <li><strong style="color: #d32f2f;">Critical:</strong> &gt; 30 seconds or <code>None</code> (backend may be stalled)</li>
+        </ul>
+      </li>
+      <li><strong>Last Active Stage</strong> — The most recent agent that reported execution progress.</li>
+      <li><strong>Pipeline Status</strong> — Current run state (RUNNING, QUEUED, PAUSED, COMPLETED, FAILED).</li>
+      <li><strong>Elapsed Time</strong> — Total runtime since pipeline start.</li>
+    </ul>
+
+    <h4>Last Prompt Screen — Enhanced Response Display</h4>
+    <p>
+      The <strong>Last Prompt</strong> screen (SCR-015) now displays both request and response for each stage:
+    </p>
+    <ul>
+      <li><strong>Prompt</strong> — The full LLM request payload sent to the model</li>
+      <li><strong>Model Result</strong>:
+        <ul>
+          <li><strong>Status</strong> — Submission status (submitted, failed, completed)</li>
+          <li><strong>Provider &amp; Model</strong> — Which LLM provider and model executed the request</li>
+          <li><strong>Response</strong> — Full LLM response text (bounded to 20,000 characters for display)</li>
+          <li><strong>Error</strong> — Failure reason if the LLM request failed</li>
+        </ul>
+      </li>
+      <li><strong>Stale Prevention</strong> — Responses are correlated by <code>prompt_record_id</code> (stage_id:timestamp).
+        Switching between prompts will not show stale responses from previous selections.</li>
+    </ul>
+
+    <h4>Troubleshooting with Diagnostics</h4>
+    <div class="trouble" style="margin-top: 1rem;">
+      <div class="trouble-header">Scenario 8 — Pipeline stalls with "Heartbeat Age" &gt; 10 seconds</div>
+      <div class="trouble-body">
+        <dl>
+          <dt>Symptom</dt>
+          <dd>Run Diagnostics panel shows <strong>Heartbeat Age</strong> consistently above 10 seconds,
+            and pipeline appears stuck.</dd>
+          <dt>Resolution</dt>
+          <dd>
+            <ol>
+              <li>Check the <strong>Last Active Stage</strong> — note which agent was last active.</li>
+              <li>Open the <strong>Last Prompt</strong> screen and select that stage.</li>
+              <li>Review the <strong>Model Result</strong> response text for errors or truncation.</li>
+              <li>If response is truncated (20,000 character limit reached), the LLM likely generated excessive output.</li>
+              <li>Increase <code>request_timeout_seconds</code> in <strong>Pipeline Configuration</strong> (SCR-003)
+                if the agent needs more processing time.</li>
+              <li>If heartbeat is missing (shows <code>None</code>), the backend may be unresponsive —
+                restart the application and re-run the pipeline.</li>
+            </ol>
+          </dd>
+        </dl>
+      </div>
+    </div>
+
+    <h4>User Manual Drift Prevention Workflow (S11-010)</h4>
+    <p>
+      Use this workflow whenever user-facing behavior changes to keep
+      <code>docs/User_Manual.md</code> and <code>docs/user_manual/index.html</code> synchronized.
+    </p>
+    <ol>
+      <li>Update source content in <code>docs/User_Manual.md</code>.</li>
+      <li>Regenerate or manually apply equivalent content updates in <code>docs/user_manual/index.html</code>.</li>
+      <li>Verify both manuals contain updated canonical tokens and policy text:
+        <pre><code>rg "execution_mode|Run Diagnostics|Last Prompt|Heartbeat" docs/User_Manual.md docs/user_manual/index.html</code></pre>
+      </li>
+      <li>Run markdown quality checks and capture evidence in sprint artifacts:
+        <pre><code>npx --yes markdownlint-cli docs/User_Manual.md planning/Test_Execution_Summary_Sprint_2026_11.md</code></pre>
+      </li>
+      <li>No intentional markdown/html drift is allowed without a documented waiver.</li>
+    </ol>
   </section>
 
   <!-- ═══════════════════════════════════════
@@ -1323,7 +1402,16 @@ python -m threat_modeler</code></pre>
   <section id="validation">
     <h2>10 · Live Grok LLM Validation</h2>
 
-    <p><strong>Status:</strong> VALIDATED | <strong>Date:</strong> May 6, 2026 | <strong>Scope:</strong> Full end-to-end pipeline with xAI Grok API</p>
+    <p><strong>Status:</strong> VALIDATED (Sprint 2026-11 formal evidence set) | <strong>Date:</strong> May 17, 2026 | <strong>Scope:</strong> Full end-to-end visible-browser pipeline with live xAI Grok API evidence</p>
+
+    <div class="callout success">
+      <strong>Formal report:</strong> <code>planning/FQT_Test_Report_Sprint_2026_11.md</code><br>
+      <strong>Primary evidence run:</strong> <code>FQT/fqt_uas_20260515_232859</code> with <code>LIVE_BROWSER_SMOKE_OK</code> status in <code>test_report.json</code>.
+    </div>
+
+    <div class="callout warn">
+      <strong>Closeout rerun status (2026-05-17):</strong> A same-day rerun attempt was blocked before launch because <code>RUN_VISIBLE_BROWSER_TESTS</code> and <code>GROK_API</code> were not set in the execution shell.
+    </div>
 
     <h3>Executive Summary</h3>
     <p>
@@ -1428,7 +1516,7 @@ Final run after fixes: 6 passed, 34 deselected in 975.86s (0:16:15)</code></pre>
   </section>
 
   <footer>
-    Multi-Agent LLM Threat Modeler · User Manual · Sprint 2026-09 ·
+    Multi-Agent LLM Threat Modeler · User Manual · Sprint 2026-11 ·
     To capture screenshots, launch <code>python -m threat_modeler</code>,
     navigate to each screen, and save images to <code>docs/user_manual/screenshots/</code>
     matching the filenames referenced in each figure above.

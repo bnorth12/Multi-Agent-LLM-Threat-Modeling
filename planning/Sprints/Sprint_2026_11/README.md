@@ -1,7 +1,7 @@
 # Sprint 2026-11: Work Plan and Artifacts
 
-**Sprint Duration:** 2026-05-08 to 2026-05-31  
-**Status:** Active / Closing out  
+**Sprint Duration:** 2026-05-08 to 2026-05-31
+**Status:** Active / Closing out
 **Scrum Master:** [TBD]
 
 ---

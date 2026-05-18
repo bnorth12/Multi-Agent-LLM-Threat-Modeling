@@ -54,12 +54,12 @@ Data sources for ingestion and processing.
   - Operational architecture diagrams
   - API specifications
   - Design documents
-  
+
 - **`threat_libraries/`**: Reference threat catalogs
   - STRIDE threat templates
   - OWASP Top 10 mappings
   - Common vulnerability patterns
-  
+
 - **`fixtures/`**: Test and validation data
   - Sample threat models
   - Reference documents for RAG validation
@@ -83,7 +83,7 @@ models:
     speed: "fast"
     accuracy: "good"
     provider: "huggingface"
-    
+
   - name: "all-mpnet-base-v2"
     dimension: 768
     speed: "medium"
@@ -110,7 +110,7 @@ Generated data and artifacts (not tracked in git).
 ### Expected Flow (Sprint 2026-12+)
 
 1. **Ingest** → Load documents from `inputs/` → Generate embeddings
-2. **Store** → Write vectors to `vector_db/indexes/` 
+2. **Store** → Write vectors to `vector_db/indexes/`
 3. **Retrieve** → Query embeddings, retrieve context
 4. **Generate** → Output threat models to `outputs/`
 

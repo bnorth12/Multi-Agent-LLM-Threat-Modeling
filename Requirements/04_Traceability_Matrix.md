@@ -1,6 +1,6 @@
 # Traceability Matrix
 
-**Last Updated:** Sprint 2026-07 WA (S07-01)
+**Last Updated:** Sprint 2026-11 closeout (S11-004)
 **Status:** Active reconciliation — Delivered vs Deferred columns now separate GUI requirements by sprint delivery
 
 ---
@@ -29,8 +29,11 @@ Project to component and interface mapping:
 - PRJ-018 -> **GUI-009 (Deferred to S07-04), GUI-010 (Deferred to S07-04)**
 - PRJ-019 -> C01-ORCH-001, C01-STATE-002, INT-005, **GUI-016 (Planned S08 hotfix stream)**
 - PRJ-020 -> C01-STATE-003, C11-LLM-003, INT-012, **GUI-017 (Planned S08 hotfix stream)**
-- PRJ-023 -> C01-ORCH-001, C01-ORCH-002, INT-005
+- PRJ-023 -> C01-ORCH-001, C01-ORCH-002, C01-ORCH-003, INT-005
 - PRJ-024 -> PRJ-016, GUI-001, VS-009
+- PRJ-026 -> C01-ORCH-005, C02-A01-004, C03-A02-003, INT-005
+- PRJ-027 -> C02-A01-004, C03-A02-003, GUI-001A, GUI-003B, GUI-014
+- PRJ-028 -> C01-ORCH-004, C01-ORCH-005, HITL-001 to HITL-008, GUI-002, GUI-003A
 
 ---
 
@@ -66,8 +69,11 @@ Project to component and interface mapping:
 - Tests/unit/test_input_ingestion.py -> PRJ-001, PRJ-002, INT-001, INT-002
 - Tests/integration/test_validation_gates.py -> PRJ-003, PRJ-015, INT-005
 - **Tests/unit/test_ui_app_shell.py** -> PRJ-016, PRJ-018 (S06-07 partial coverage; S07 expansion in S07-07)
-- Tests/unit/test_orchestrator.py -> PRJ-003, PRJ-023
+- Tests/unit/test_framework_orchestrator_langgraph.py -> PRJ-023, C01-ORCH-001, C01-ORCH-002
+- Tests/unit/test_execution_mode_governance.py -> PRJ-023, C01-ORCH-003
+- Tests/integration/test_agent_pipeline_completeness.py -> PRJ-003, PRJ-023, C01-ORCH-003
 - Tests/e2e/test_browser_cav_markdown_upload.py -> PRJ-016, PRJ-024, VS-009
+- Tests/Formal_Qualification_Test_Plan.md -> PRJ-001 through PRJ-028, HITL-001 through HITL-012, GUI-001A, GUI-002, GUI-003, GUI-003A, GUI-003B, GUI-003C, GUI-004, GUI-005, GUI-006, GUI-007, GUI-008, GUI-009, GUI-010, GUI-012, GUI-012A, GUI-013, GUI-014, GUI-015, GUI-016, GUI-017
 
 ---
 
