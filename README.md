@@ -42,7 +42,18 @@ Selection and lock criteria are documented in Python_Dependency_Strategy.md.
 
 ## Current Status
 
-**Sprint 2026-09 in progress** (Backend architecture decoupling; UI viewer expansion; LangGraph migration preparation).
+**Sprint 2026-11 closeout execution active**.
+
+Current sprint priority is to finalize alignment, governance, and evidence closure:
+
+- Coverage gate for closeout scope is restored and validated (80% with sprint scope config).
+- Final issue-evidence closure and traceability reconciliation are being completed.
+- Top-level and sprint documentation are being normalized to a single closeout narrative.
+
+Planned next-sprint architecture direction (deferred from 2026-11 scope):
+
+- Remove Streamlit dependency from the deployed release UX path by introducing a separate production frontend integrated with the operational backend API.
+- Keep Streamlit as a development/test harness until the replacement frontend reaches required parity and test coverage.
 
 ### Completed Deliverables
 
@@ -78,14 +89,15 @@ Selection and lock criteria are documented in Python_Dependency_Strategy.md.
 - **55 new backend tests** added (total: 259 passing).
 - Requirement PRJ-019 (Asynchronous Backend State Authority) fully implemented.
 
-### Sprint 2026-09 Open Workstreams
+### Sprint 2026-11 Active Closeout Workstreams
 
-- **S09-1** — UI Artifact Viewer Expansion (STIX, Canonical Graph, Mermaid, STRIDE viewers)
-- **S09-2** — STRIDE Export Capability
-- **S09-3** — Results Export Quick Preview Defect
-- **S09-4** — LangGraph `StateGraph` swap-in via `run_manager.submit_run()` seam
+- **S11 Governance/Traceability** — execution-mode alignment, traceability delta completion, issue closure evidence.
+- **S11 Testing/Release Evidence** — Lane A/Lane B evidence completion, manual validation indexing, closeout summary quality.
+- **S11 Documentation Hygiene** — README, manuals, architecture, and sprint documents updated to current runtime behavior and release policy.
 
 ## Getting Started
+
+### Quick Start: Runtime Only
 
 ```sh
 # Create and activate virtual environment
@@ -93,19 +105,88 @@ python -m venv .venv
 .venv\Scripts\activate      # Windows
 # source .venv/bin/activate  # macOS/Linux
 
-# Install dependencies
+# Install runtime dependencies
 pip install -r requirements.txt
 
-# Launch the operational API server (preferred)
+# Launch the operational API server
 python -m threat_modeler
 
 # Or launch on a custom port
 python -m threat_modeler --port 9000
-
-# Streamlit is for automated browser validation only (non-operational)
-pip install -r Tests/requirements_e2e.txt
-streamlit run src/threat_modeler/ui/app.py
-
-# Run all unit tests
-python -m pytest Tests/unit/ -q
 ```
+
+### Development & Testing
+
+```sh
+# Install runtime + test dependencies (includes pytest, playwright, streamlit)
+pip install -r Tests/requirements_e2e.txt
+
+# Configure test environment (UTF-8 logs + browser test flags)
+.\scripts\set_test_env.ps1
+
+# Run unit tests
+python -m pytest Tests/unit/ -q
+
+# Run scripted tests with structured logging under test_reports/YYYY-MM-DD/
+python scripts/run_and_log.py scripts/verify_sprint_traceability.py --sprint 2026_11
+
+# Browser E2E smoke (requires GROK_API or GROK_API_KEY)
+python scripts/run_and_log.py scripts/live_browser_e2e_smoke.py
+
+# Streamlit HMI (test harness only, not operational)
+streamlit run src/threat_modeler/ui/app.py
+```
+
+### Dependency Strategy
+
+**Runtime Dependencies** (`requirements.txt`):
+- `openai` — LLM integration
+- `langgraph` — Agent orchestration
+- `chromadb` — Vector store for retrieval
+- `stix2` — STIX 2.1 export format
+- `python-dotenv` — Environment variable loading
+
+**Test Dependencies** (`Tests/requirements_e2e.txt`):
+- Includes all runtime dependencies (via `-r ../requirements.txt`)
+- `pytest`, `pytest-cov` — Unit and integration testing
+- `playwright`, `pytest-playwright` — Browser automation for E2E
+- `streamlit` — Development HMI test harness only
+- Additional test utilities (json-report, timeout, etc.)
+
+This separation keeps the production release minimal while providing comprehensive testing infrastructure for development.
+
+## Test Execution
+
+All test commands and infrastructure are documented in [Tests/README.md](Tests/README.md).
+
+### Quick Reference
+
+```bash
+# Environment setup (one-time, recommended before test runs)
+.\scripts\set_test_env.ps1
+
+# Unit tests (fast, local)
+python -m pytest Tests/unit/ -q
+
+# Sprint traceability verification (logs to test_reports/)
+python scripts/run_and_log.py scripts/verify_sprint_traceability.py --sprint 2026_11
+
+# E2E browser tests (requires GROK_API environment variable)
+python scripts/run_and_log.py scripts/live_browser_e2e_smoke.py
+```
+
+### Test Organization
+
+- **Unit tests** → `Tests/unit/` — Fast validation of core functions
+- **Integration tests** → `Tests/integration/` — Multi-module orchestration tests
+- **E2E tests** → `Tests/e2e/` — Full pipeline from input to artifact export
+- **Test fixtures** → `Tests/fixtures/` — Sample inputs and expected outputs
+- **Test reports** → `Tests/test_reports/YYYY-MM-DD/[test_type]/` — Logs organized by date and type
+
+### Test Infrastructure
+
+- **`scripts/run_and_log.py`** — Universal test runner with UTF-8 logging and environment validation
+- **`scripts/set_test_env.ps1`** — Environment setup (PYTHONIOENCODING, browser flags, GROK_API check)
+- **`Tests/requirements_e2e.txt`** — Consolidated test dependencies
+- **`Tests/conftest.py`** — Pytest configuration and fixtures
+- **`Tests/pytest.ini`** — Pytest test discovery and behavior settings

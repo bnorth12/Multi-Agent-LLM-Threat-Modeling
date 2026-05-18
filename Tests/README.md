@@ -1,6 +1,37 @@
 # Tests Directory
 
-This directory contains the Python test suite for the Multi Agent Threat Modeler.
+This directory contains the Python test suite, test configuration, and test dependencies for the Multi Agent Threat Modeler.
+
+## Setup & Dependencies
+
+### Installation
+
+Test dependencies are separated from runtime dependencies:
+
+```bash
+# Install runtime + test dependencies
+pip install -r Tests/requirements_e2e.txt
+```
+
+This command:
+1. Installs runtime dependencies from `requirements.txt` (openai, langgraph, chromadb, stix2, python-dotenv)
+2. Installs test-specific dependencies (pytest, playwright, streamlit for test harness)
+
+### Environment Setup
+
+Before running tests, configure the test environment:
+
+```powershell
+# PowerShell (Windows)
+. .\scripts\set_test_env.ps1
+```
+
+This sets:
+- `PYTHONIOENCODING=utf-8` (for proper Unicode logging)
+- `RUN_VISIBLE_BROWSER_TESTS=1` (for headful E2E tests)
+- Validates `GROK_API` availability for browser tests
+
+---
 
 ## Test Suite Layout
 
@@ -99,6 +130,63 @@ Planned automation model:
 - Pull request gate: unit plus integration tests
 - Main branch gate: full suite including e2e and coverage threshold
 - Release gate: full suite plus artifact verification tests
+
+### Lane Policy (Sprint 2026-11)
+
+Lane A: CI-safe default lane
+
+- Scope: unit, integration, and fixture-safe e2e only
+- Excludes: tests marked `llm_live` and `llm_live_browser`
+- Required on pull requests and main-branch merges
+
+Lane B: controlled-live validation lane
+
+- Scope: tests marked `llm_live` and `llm_live_browser`
+- Trigger: scheduled or manually approved execution
+- Requirements: live provider credentials, explicit environment controls, and evidence capture
+
+Recommended commands:
+
+```sh
+# Lane A: CI-safe default
+.venv\Scripts\python.exe -m pytest Tests/ -q -m "not llm_live and not llm_live_browser"
+
+# Lane B1: live provider tests
+.venv\Scripts\python.exe -m pytest Tests/e2e/test_live_llm_validation.py -v -m llm_live -s
+
+# Lane B2: browser-live tests (opt-in)
+set RUN_VISIBLE_BROWSER_TESTS=1
+.venv\Scripts\python.exe -m pytest Tests/e2e/test_browser_cav_markdown_upload.py -v -m llm_live_browser -s
+
+# Lane B3: standalone full E2E smoke (script-first, pytest-independent runtime)
+set RUN_VISIBLE_BROWSER_TESTS=1
+.venv\Scripts\python.exe scripts/live_browser_e2e_smoke.py
+
+# Lane B3a: manual-followup browser lane (Edge)
+set RUN_VISIBLE_BROWSER_TESTS=1
+set THREAT_MODELER_BROWSER_CHANNEL=msedge
+set THREAT_MODELER_SMOKE_KEEP_OPEN_UNTIL_INPUT=1
+.venv\Scripts\python.exe scripts/live_browser_e2e_smoke.py
+
+# Optional pytest wrapper that delegates to the standalone smoke script
+set RUN_VISIBLE_BROWSER_TESTS=1
+.venv\Scripts\python.exe -m pytest Tests/e2e/test_live_browser_smoke.py -v -s -m llm_live_browser
+```
+
+Release governance rule:
+
+- Release candidate sign-off requires Lane A pass plus documented Lane B evidence (or approved waiver with rationale) in the sprint test execution summary.
+
+### Smoke Validation Guidance
+
+- Mocked browser token checks are only interaction contracts; they do not prove live provider functionality.
+- The authoritative smoke path is a visible browser run against the live provider that exercises the staged pipeline end to end.
+- The authoritative smoke runtime entrypoint is `scripts/live_browser_e2e_smoke.py`; this keeps server start/execution independent of pytest internals.
+- `Tests/e2e/test_live_browser_smoke.py` is a thin wrapper that only invokes the standalone script for test-lane integration.
+- Browser policy: default automated lane uses Playwright Chromium; manual follow-up validation should use Edge by setting `THREAT_MODELER_BROWSER_CHANNEL=msedge`.
+- Result-capture policy: keep the final visible browser open until evidence is captured by setting `THREAT_MODELER_SMOKE_KEEP_OPEN_UNTIL_INPUT=1` (or use timed hold with `THREAT_MODELER_SMOKE_HOLD_SECONDS`).
+- For the current sprint, the smoke path should focus on the first three stages so gate 3 is reached only after gate 1 and gate 2 have executed in order.
+- Use the live-browser smoke test in `Tests/e2e/test_live_browser_smoke.py` for that path.
 
 ## Documentation Rules for New Tests
 

@@ -1,4 +1,24 @@
+# Test and E2E dependencies
+# Install with: pip install -r Tests/requirements_e2e.txt
+#
+# This file includes all test/dev dependencies.
+# It references ../requirements.txt to include runtime dependencies,
+# then adds test-specific tools for unit, integration, and E2E testing.
+
 -r ../requirements.txt
-pytest>=9.0.0
+
+# Unit testing framework
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Browser automation (Playwright E2E)
+playwright>=1.40.0
+pytest-playwright>=0.4.0
+
+# Test reporting and utilities
+pytest-json-report>=1.5.0
+pytest-timeout>=2.1.0
+
+# HMI testing support (test-only Streamlit harness)
 streamlit>=1.57.0
-playwright>=1.55.0
+
