@@ -37,7 +37,9 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -q pathlib re argparse
+          # Traceability verifier uses only stdlib modules.
+          # Installing stdlib names from PyPI can fail (e.g., `re`).
+          python -m pip --version
 
       - name: Extract active sprint
         id: sprint
