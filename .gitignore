@@ -49,3 +49,18 @@ test_reports/*
 .env.*
 *.pem
 *.key
+
+# Data infrastructure (RAG / Vector DB)
+# Track: READMEs and configs; Ignore: indexes, outputs, fetched data
+data/vector_db/indexes/
+data/vector_db/*.faiss
+data/vector_db/*.pkl
+data/outputs/
+data/inputs/fetched/
+!data/README.md
+!data/vector_db/README.md
+!data/vector_db/config.yaml
+!data/inputs/README.md
+!data/models/README.md
+!data/models/embeddings.yaml
+!data/outputs/README.md
