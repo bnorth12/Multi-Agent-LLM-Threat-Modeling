@@ -1,0 +1,16 @@
+entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
+subsystem,SS-A05-INPUT,Input Stage,Receives STRIDE-scored canonical graph from Agent 04,Agent 05 Threat Generator,,,,,,,,
+subsystem,SS-A05-GENERATE,Generation Stage,Analyzes high-risk flows and generates concrete threats with MITRE ATT&CK mappings,Agent 05 Threat Generator,,,,,,,,
+subsystem,SS-A05-OUTPUT,Output Stage,Emits threat-populated canonical graph to orchestrator,Agent 05 Threat Generator,,,,,,,,
+component,C-A05-FETCH,Graph Fetcher,Retrieves STRIDE-scored canonical graph from Agent 04 state; identifies flows scoring 3+ on any STRIDE dimension,SS-A05-INPUT,hosted,state_loader|score_filter||,,,,
+component,C-A05-CONTEXT,Context Analyzer,Extracts threat context for high-risk flows (trust boundary names component functions interfaces protocol types); prepares LLM prompt,SS-A05-GENERATE,hosted,context_extractor|threat_scorer||,,,,
+component,C-A05-LLM,LLM Prompt Handler,Constructs Agent 05 system prompt (threat generation rules) and user prompt (high-risk flows with context); calls LLM,SS-A05-GENERATE,hosted,prompt_builder|json_formatter||,,,,
+component,C-A05-GENERATOR,Threat Generator,Extracts threat objects from LLM response (name description MITRE ATT&CK CAPEC CWE likelihood impact); populates threats array for each qualifying flow,SS-A05-GENERATE,hosted,threat_extractor|taxonomy_mapper||,,,,
+component,C-A05-VALIDATOR,Validation Engine,Validates threat objects (non-empty name/description valid MITRE IDs likelihood/impact 1-5); ensures schema compliance; rejects non-compliant threats,SS-A05-GENERATE,hosted,schema_validator|type_checker||,,,,
+component,C-A05-EMIT,State Emitter,Serializes threat-populated canonical graph; returns to orchestrator for Agent 06,SS-A05-OUTPUT,hosted,state_serializer|json_encoder||,,,,
+data_flow,DF-A05-IN-001,,STRIDE-scored canonical graph from Agent 04,C-A05-FETCH,,,C-A05-FETCH,C-A05-CONTEXT,Memory/IPC,canonical_graph,false,
+data_flow,DF-A05-PROC-001,,Extracted context for high-risk flows,C-A05-CONTEXT,,,C-A05-CONTEXT,C-A05-LLM,Memory/IPC,flow_context|stride_scores,false,
+data_flow,DF-A05-PROC-002,,LLM prompt with threat generation guidance,C-A05-LLM,,,C-A05-LLM,C-A05-LLM,REST/JSON,system_prompt|user_prompt|model_params,true,LLM-Provider Boundary
+data_flow,DF-A05-PROC-003,,LLM response with generated threats,C-A05-LLM,,,C-A05-LLM,C-A05-GENERATOR,REST/JSON,response_json|finish_reason,true,LLM-Provider Boundary
+data_flow,DF-A05-PROC-004,,Graph with threats applied to high-risk flows,C-A05-GENERATOR,,,C-A05-GENERATOR,C-A05-VALIDATOR,Memory/IPC,threat_populated_graph,false,
+data_flow,DF-A05-OUT-001,,Validated threat-populated graph ready for Agent 06,C-A05-VALIDATOR,,,C-A05-VALIDATOR,C-A05-EMIT,Memory/IPC,threat_graph|timestamp,false,

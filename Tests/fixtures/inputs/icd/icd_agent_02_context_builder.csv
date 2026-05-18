@@ -1,0 +1,17 @@
+entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
+subsystem,SS-A02-INPUT,Input Stage,Receives canonical graph from Agent 01 and optional existing graph baseline,Agent 02 Context Builder,,,,,,,,
+subsystem,SS-A02-MERGE,Merge Stage,Compares new canonical graph with existing baseline and resolves conflicts,Agent 02 Context Builder,,,,,,,,
+subsystem,SS-A02-OUTPUT,Output Stage,Emits merged canonical graph with conflict annotations to orchestrator,Agent 02 Context Builder,,,,,,,,
+component,C-A02-FETCH,Graph Fetcher,Retrieves new canonical graph from Agent 01 state and optional existing baseline graph from storage,SS-A02-INPUT,hosted,state_loader|graph_retriever,,,,,,
+component,C-A02-DIFF,Graph Differ,Analyzes differences between new and existing graphs; identifies entity additions modifications and conflicts,SS-A02-MERGE,hosted,diff_engine|conflict_detector||,,,,
+component,C-A02-LLM,LLM Prompt Handler,Constructs Agent 02 system prompt (non-destructive merge rules) and user prompt (both graphs and detected conflicts); calls LLM,SS-A02-MERGE,hosted,prompt_builder|json_formatter||,,,,
+component,C-A02-MERGER,Merge Engine,Executes non-destructive merge logic preserving approved entities and attaching merge-conflict notes for analyst review,SS-A02-MERGE,hosted,merge_executor|conflict_annotator||,,,,
+component,C-A02-VALIDATOR,Validation Engine,Validates merged graph against canonical schema; ensures all IDs remain stable for unchanged entities; rejects if schema violated,SS-A02-MERGE,hosted,schema_validator|id_checker||,,,,
+component,C-A02-EMIT,State Emitter,Serializes merged canonical graph with conflict metadata; returns to orchestrator for Agent 03,SS-A02-OUTPUT,hosted,state_serializer|json_encoder||,,,,
+data_flow,DF-A02-IN-001,,New canonical graph from Agent 01,C-A02-FETCH,,,C-A02-FETCH,C-A02-DIFF,Memory/IPC,canonical_graph,false,
+data_flow,DF-A02-IN-002,,Existing baseline graph from persistent storage (optional),C-A02-FETCH,,,C-A02-FETCH,C-A02-DIFF,File I/O,canonical_graph,false,
+data_flow,DF-A02-PROC-001,,Detected graph differences and conflicts,C-A02-DIFF,,,C-A02-DIFF,C-A02-LLM,Memory/IPC,diff_report|conflicts,false,
+data_flow,DF-A02-PROC-002,,LLM prompt with merge context,C-A02-LLM,,,C-A02-LLM,C-A02-LLM,REST/JSON,system_prompt|user_prompt|model_params,true,LLM-Provider Boundary
+data_flow,DF-A02-PROC-003,,LLM response with merged graph JSON,C-A02-LLM,,,C-A02-LLM,C-A02-MERGER,REST/JSON,response_json|finish_reason,true,LLM-Provider Boundary
+data_flow,DF-A02-PROC-004,,Executed merge with conflict annotations,C-A02-MERGER,,,C-A02-MERGER,C-A02-VALIDATOR,Memory/IPC,merged_graph|conflict_notes,false,
+data_flow,DF-A02-OUT-001,,Validated merged graph ready for Agent 03,C-A02-VALIDATOR,,,C-A02-VALIDATOR,C-A02-EMIT,Memory/IPC,merged_graph|timestamp,false,
