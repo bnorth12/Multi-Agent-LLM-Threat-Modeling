@@ -37,8 +37,12 @@ htmlcov/
 Thumbs.db
 .vscode/settings.json
 
-# Logs
+
+# Logs and test outputs
 *.log
+*.txt
+test_reports/*
+!test_reports/README.md
 
 # Local secrets and environment overrides
 .env
