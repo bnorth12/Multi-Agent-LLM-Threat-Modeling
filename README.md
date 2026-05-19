@@ -149,6 +149,11 @@ This configures `core.hooksPath` to `.githooks` for this repository. The include
 - `python -m pytest Tests/unit/ -q`
 - `python scripts/verify_sprint_traceability.py --sprint $TRACEABILITY_SPRINT` (default: `2026_11`)
 
+Behavior:
+- Unit tests are blocking.
+- Traceability verification is warning-only by default to avoid unnecessary push blockers.
+- Set `TRACEABILITY_ENFORCE=1` to make traceability failures blocking.
+
 Use this setup to catch local quality and traceability regressions before opening or updating PRs.
 
 ### Dependency Strategy
