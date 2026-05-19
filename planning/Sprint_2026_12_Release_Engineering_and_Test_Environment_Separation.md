@@ -16,6 +16,21 @@ This sprint is the foundation for a sustainable release process: clean separatio
 
 ---
 
+## Story Map
+
+The story map is the execution source of truth for the sprint. Strategic objectives summarize intent; stories define the delivery slices and the checklist items below execute them.
+
+| Story ID | Epic | Story Detail | Exit Evidence |
+|----------|------|--------------|---------------|
+| S12-01 | Dependency Isolation | Separate test infrastructure from production dependencies and imports. | `requirements-prod.txt`, `requirements-dev.txt`, clean `src/` import tree |
+| S12-02 | GUI Separation | Make the Streamlit GUI production-clean and remove test harness coupling. | Standalone GUI entry point, `tests_only/` structure |
+| S12-03 | Release Engineering | Add semantic versioning, build config, and release artifact controls. | RC1 tag, wheel/sdist artifacts, release notes |
+| S12-04 | Release Validation | Define and execute release smoke tests and clean-environment validation. | `Release_RC1_Validation_Report.md` |
+| S12-05 | Release Publication | Publish RC1 and document the release promotion path. | GitHub release pre-release, promotion checklist |
+| S12-06 | Governance Handoff | Lock the S13 handoff on the release-clean backend baseline. | Handoff checklist, S13 preview alignment |
+
+---
+
 ## Strategic Objectives
 
 1. **Test Environment Separation**: Refactor repository structure to isolate test infrastructure (pytest, test fixtures, test utilities) from production code. Enable independent deployment of the application without test dependencies.
@@ -99,20 +114,20 @@ This sprint is the foundation for a sustainable release process: clean separatio
 
 **Tasks**:
 
-- [ ] **T1.1**: Audit all imports in `src/` for test-framework references (pytest, mock, test fixtures)
+- [ ] **Story S12-01 / T1.1**: Audit all imports in `src/` for test-framework references (pytest, mock, test fixtures)
   - Generate report: `planning/Test_Dependency_Audit_Sprint_2026_12.md`
   - Identify files with mixed concerns
 
-- [ ] **T1.2**: Audit production requirements:
+- [ ] **Story S12-01 / T1.2**: Audit production requirements
   - Review `requirements.txt` and `pyproject.toml`
   - Segregate into: core, optional (streamlit, dev tools, test tools)
   - Document in: `planning/Dependency_Segregation_Plan.md`
 
-- [ ] **T1.3**: Create `requirements-prod.txt` and `requirements-dev.txt`
+- [ ] **Story S12-01 / T1.3**: Create `requirements-prod.txt` and `requirements-dev.txt`
   - Production: only core deps (langchain, langgraph, pydantic, etc.)
   - Dev: prod + streamlit + pytest + dev tools
 
-- [ ] **T1.4**: Validate production import tree
+- [ ] **Story S12-01 / T1.4**: Validate production import tree
   - Confirm `src/` has zero test-framework imports
   - Fix any violations (move to test-only modules or add lazy imports)
 
@@ -131,11 +146,11 @@ This sprint is the foundation for a sustainable release process: clean separatio
 
 **Tasks**:
 
-- [ ] **T2.1**: Refactor `src/threat_modeler/ui/` to remove test-framework dependencies
+- [ ] **Story S12-02 / T2.1**: Refactor `src/threat_modeler/ui/` to remove test-framework dependencies
   - Move test-only Streamlit components to `tests_only/` module (new)
   - Streamlit app remains in `src/` but with clean import boundaries
 
-- [ ] **T2.2**: Create `tests_only/` directory structure
+- [ ] **Story S12-02 / T2.2**: Create `tests_only/` directory structure
   ```
   tests_only/
     __init__.py
@@ -148,11 +163,11 @@ This sprint is the foundation for a sustainable release process: clean separatio
       (existing test utilities)
   ```
 
-- [ ] **T2.3**: Update test imports to use `tests_only/`
+- [ ] **Story S12-02 / T2.3**: Update test imports to use `tests_only/`
   - Tests now import from `tests_only.e2e` instead of `src`
   - Confirms test code is decoupled from production UI
 
-- [ ] **T2.4**: Create standalone Streamlit app entry point
+- [ ] **Story S12-02 / T2.4**: Create standalone Streamlit app entry point
   - `src/threat_modeler/ui/app.py` as pure Streamlit application
   - No test dependencies; production-ready
   - Can be run: `streamlit run src/threat_modeler/ui/app.py`
@@ -173,23 +188,23 @@ This sprint is the foundation for a sustainable release process: clean separatio
 
 **Tasks**:
 
-- [ ] **T3.1**: Set up semantic versioning
+- [ ] **Story S12-03 / T3.1**: Set up semantic versioning
   - Update `pyproject.toml` with `version = "1.0.0rc1"`
   - Update `src/threat_modeler/__init__.py` with `__version__ = "1.0.0rc1"`
   - Add version retrieval function for runtime access
 
-- [ ] **T3.2**: Create release configuration
+- [ ] **Story S12-03 / T3.2**: Create release configuration
   - Update `setup.py` / `pyproject.toml`:
     - Exclude `tests_only/` and `Tests/` from distribution
     - Set production dependencies (requirements-prod.txt)
     - Mark optional dependencies: `streamlit` (for CLI use), dev tools
 
-- [ ] **T3.3**: Build release artifacts
+- [ ] **Story S12-03 / T3.3**: Build release artifacts
   - `python -m build`  → generates wheel + sdist
   - Verify artifact contents (no test files, no test fixtures)
   - Test artifact install: `pip install dist/threat-modeler-1.0.0rc1.whl`
 
-- [ ] **T3.4**: Create release notes
+- [ ] **Story S12-05 / T3.4**: Create release notes
   - File: `Releases/v1.0.0-rc1_Release_Notes.md`
   - Content:
     - Key features delivered (LangGraph orchestration, HITL gates, multi-agent threat modeling)
@@ -198,7 +213,7 @@ This sprint is the foundation for a sustainable release process: clean separatio
     - Quick-start guide
     - Breaking changes (if any)
 
-- [ ] **T3.5**: Create release tag in git
+- [ ] **Story S12-03 / T3.5**: Create release tag in git
   - Tag: `v1.0.0-rc1`
   - Message: Release notes excerpt
   - Push to origin
@@ -219,7 +234,7 @@ This sprint is the foundation for a sustainable release process: clean separatio
 
 **Tasks**:
 
-- [ ] **T4.1**: Define "Release Test" suite
+- [ ] **Story S12-04 / T4.1**: Define "Release Test" suite
   - Create `Tests/e2e/test_release_smoke.py`
   - Smoke test suite covering:
     - Threat model creation (basic workflow)
@@ -228,19 +243,19 @@ This sprint is the foundation for a sustainable release process: clean separatio
     - UI loads and responds (if GUI included)
   - NOT full unit/integration suite (too heavy for release validation)
 
-- [ ] **T4.2**: Test RC1 in clean environment
+- [ ] **Story S12-04 / T4.2**: Test RC1 in clean environment
   - Fresh Python venv
   - Install from artifact: `pip install dist/threat-modeler-1.0.0rc1.whl`
   - Run smoke test suite
   - Document results: `test_reports/Release_RC1_Validation_Report.md`
 
-- [ ] **T4.3**: Test Streamlit GUI (optional feature)
+- [ ] **Story S12-02 / T4.3**: Test Streamlit GUI (optional feature)
   - Install with `pip install .[gui]` (if configurable extras)
   - `streamlit run app.py`
   - Manual validation: UI loads, basic workflow functional
   - Document: `test_reports/Streamlit_GUI_RC1_Validation.md`
 
-- [ ] **T4.4**: Create Release Promotion Checklist
+- [ ] **Story S12-05 / T4.4**: Create Release Promotion Checklist
   - File: `Releases/Release_Promotion_Checklist_v1.0.0.md`
   - HITL gate items for GA promotion:
     - [ ] All smoke tests pass
@@ -266,7 +281,7 @@ This sprint is the foundation for a sustainable release process: clean separatio
 
 **Tasks**:
 
-- [ ] **T5.1**: Publish GitHub Release
+- [ ] **Story S12-05 / T5.1**: Publish GitHub Release
   - Go to GitHub repo Releases tab
   - Create Release from tag `v1.0.0-rc1`
   - Upload build artifacts (wheel, sdist)
@@ -274,12 +289,12 @@ This sprint is the foundation for a sustainable release process: clean separatio
   - Mark as **Pre-release** (not GA)
   - Publish
 
-- [ ] **T5.2**: Update top-level README
+- [ ] **Story S12-05 / T5.2**: Update top-level README
   - Add section: "Latest Release: v1.0.0-rc1 (Release Candidate)"
   - Link to release page
   - Update install instructions: `pip install threat-modeler==1.0.0rc1`
 
-- [ ] **T5.3**: Create sprint closure summary
+- [ ] **Story S12-06 / T5.3**: Create sprint closure summary
   - File: `planning/Sprint_2026_12_Closure_Summary.md`
   - What was delivered: test env separation, RC1 build, release policy
   - What's pending: GA promotion (requires PO sign-off in S13)
@@ -353,18 +368,53 @@ This sprint is the foundation for a sustainable release process: clean separatio
 
 ---
 
-## 8. Next Sprint Planning (S13 Preview)
+## 8. Governance & Rollout
 
-After RC1 baseline, Sprint 2026-13 will focus on:
+### Release Governance Controls
 
-- **GA Promotion**: Execute Release Promotion Checklist items (PO review, deployment testing, security audit if needed)
-- **v1.0.0 Release**: Promote RC1 to GA; publish v1.0.0 on GitHub Releases and PyPI (if applicable)
-- **Streamlit Live LLM Fix**: Install streamlit in CI live lane and validate E2E test suite
-- **User Acceptance**: Beta user onboarding or limited release validation
+- [ ] RC1 promotion requires PO sign-off on the Release Promotion Checklist.
+- [ ] The release branch/tag is the source of truth for RC1 artifacts.
+- [ ] Any production dependency change after RC1 tagging is deferred or handled as a patch release.
+- [ ] Build artifacts are verified for content before publication.
+- [ ] Release validation evidence is retained in `test_reports/` and referenced from the release notes.
+
+### Rollout Sequence
+
+- [ ] Complete dependency isolation and GUI split.
+- [ ] Build and verify RC1 artifacts in a clean environment.
+- [ ] Run release smoke tests against the installed artifact.
+- [ ] Publish RC1 as a GitHub pre-release.
+- [ ] Collect PO review feedback and lock promotion criteria for S13.
+
+### Release Sign-Off Checklist
+
+- [ ] Dependency isolation complete.
+- [ ] GUI split complete and validated.
+- [ ] RC1 artifact built and verified.
+- [ ] Smoke tests pass on installed artifact.
+- [ ] GitHub release published as pre-release.
+- [ ] PO review complete for promotion path.
+
+### Handoff to Sprint 2026-13
+
+- [ ] S13 consumes the RC1 baseline and builds on the release-clean backend boundary.
+- [ ] Any S13 packaging changes remain coordinated with the RC1 artifact model.
+- [ ] S13 rollout planning assumes the GUI/backend split is complete and stable.
 
 ---
 
-## 9. Appendices
+## 9. Next Sprint Planning (S13 Preview)
+
+After RC1 baseline, Sprint 2026-13 will focus on:
+
+- [ ] GA promotion: execute Release Promotion Checklist items (PO review, deployment testing, security audit if needed).
+- [ ] v1.0.0 release: promote RC1 to GA; publish v1.0.0 on GitHub Releases and PyPI if applicable.
+- [ ] Streamlit live LLM fix: install streamlit in CI live lane and validate E2E test suite.
+- [ ] User acceptance: beta user onboarding or limited release validation.
+
+---
+
+## 10. Appendices
 
 ### A. Repository Structure After Sprint 2026-12
 
