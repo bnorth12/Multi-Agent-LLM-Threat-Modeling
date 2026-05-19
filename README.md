@@ -137,6 +137,20 @@ python scripts/run_and_log.py scripts/live_browser_e2e_smoke.py
 streamlit run src/threat_modeler/ui/app.py
 ```
 
+### Git Hooks
+
+Install the repo-managed Git hooks (recommended):
+
+```powershell
+.\scripts\install_git_hooks.ps1
+```
+
+This configures `core.hooksPath` to `.githooks` for this repository. The included `pre-push` hook runs:
+- `python -m pytest Tests/unit/ -q`
+- `python scripts/verify_sprint_traceability.py --sprint $TRACEABILITY_SPRINT` (default: `2026_11`)
+
+Use this setup to catch local quality and traceability regressions before opening or updating PRs.
+
 ### Dependency Strategy
 
 **Runtime Dependencies** (`requirements.txt`):
