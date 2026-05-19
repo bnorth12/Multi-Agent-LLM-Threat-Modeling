@@ -6,13 +6,25 @@ cd "$ROOT_DIR"
 
 echo "[pre-push] Running local quality gates before push..."
 
-if command -v python >/dev/null 2>&1; then
+if [ -x "$ROOT_DIR/.venv/Scripts/python.exe" ]; then
+  PYTHON_BIN="$ROOT_DIR/.venv/Scripts/python.exe"
+elif [ -x "$ROOT_DIR/.venv/bin/python" ]; then
+  PYTHON_BIN="$ROOT_DIR/.venv/bin/python"
+elif command -v python >/dev/null 2>&1; then
   PYTHON_BIN="python"
 elif command -v python3 >/dev/null 2>&1; then
   PYTHON_BIN="python3"
 else
   echo "[pre-push] ERROR: Python is required but was not found on PATH."
   exit 1
+fi
+
+path_sep=":"
+if uname | grep -Eiq "mingw|msys|cygwin"; then
+  path_sep=";"
+fi
+if [ -d "$ROOT_DIR/src" ]; then
+  export PYTHONPATH="$ROOT_DIR/src${PYTHONPATH:+$path_sep$PYTHONPATH}"
 fi
 
 if [ -f "scripts/set_test_env.ps1" ]; then
