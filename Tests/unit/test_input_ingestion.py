@@ -9,8 +9,11 @@ from threat_modeler.parsing.icd_parser import parse_csv, IcdParseResult
 from threat_modeler.parsing.narrative_parser import parse_markdown, NarrativeParseResult
 
 FIXTURES = pathlib.Path(__file__).parent.parent / "fixtures" / "inputs"
-ICD_DIR = FIXTURES / "icd"
-DESC_DIR = FIXTURES / "descriptions"
+SYSTEMS_DIR = FIXTURES / "systems"
+
+
+def fixture_file(system: str, filename: str) -> pathlib.Path:
+    return SYSTEMS_DIR / system / filename
 
 
 # ---------------------------------------------------------------------------
@@ -21,7 +24,7 @@ class TestIcdCsvAlpha:
     """icd_alpha_v1.csv — Alpha UAV System."""
 
     def setup_method(self):
-        self.result: IcdParseResult = parse_csv(str(ICD_DIR / "icd_alpha_v1.csv"))
+        self.result: IcdParseResult = parse_csv(str(fixture_file("alpha", "icd_alpha_v1.csv")))
 
     def test_returns_icd_parse_result(self):
         assert isinstance(self.result, IcdParseResult)
@@ -78,7 +81,7 @@ class TestIcdCsvBravo:
     """icd_bravo_v2.csv — Bravo Ground Station."""
 
     def setup_method(self):
-        self.result: IcdParseResult = parse_csv(str(ICD_DIR / "icd_bravo_v2.csv"))
+        self.result: IcdParseResult = parse_csv(str(fixture_file("bravo", "icd_bravo_v2.csv")))
 
     def test_provenance_version(self):
         assert self.result.version == "2"
@@ -102,7 +105,7 @@ class TestIcdCsvAvionics:
     """icd_avionics_v1.csv — Avionics Data Network."""
 
     def setup_method(self):
-        self.result: IcdParseResult = parse_csv(str(ICD_DIR / "icd_avionics_v1.csv"))
+        self.result: IcdParseResult = parse_csv(str(fixture_file("avionics", "icd_avionics_v1.csv")))
 
     def test_provenance_version(self):
         assert self.result.version == "1"
@@ -136,7 +139,7 @@ class TestNarrativeAlpha:
     """description_alpha.md — Alpha UAV System."""
 
     def setup_method(self):
-        self.result: NarrativeParseResult = parse_markdown(str(DESC_DIR / "description_alpha.md"))
+        self.result: NarrativeParseResult = parse_markdown(str(fixture_file("alpha", "description_alpha.md")))
 
     def test_returns_narrative_parse_result(self):
         assert isinstance(self.result, NarrativeParseResult)
@@ -161,7 +164,7 @@ class TestNarrativeBravo:
     """description_bravo.md — Bravo Ground Station."""
 
     def setup_method(self):
-        self.result: NarrativeParseResult = parse_markdown(str(DESC_DIR / "description_bravo.md"))
+        self.result: NarrativeParseResult = parse_markdown(str(fixture_file("bravo", "description_bravo.md")))
 
     def test_system_name_extracted_from_h1(self):
         assert self.result.system_name == "Bravo Ground Station"
@@ -177,7 +180,7 @@ class TestNarrativeAvionics:
     """description_avionics.md — Avionics Data Network."""
 
     def setup_method(self):
-        self.result: NarrativeParseResult = parse_markdown(str(DESC_DIR / "description_avionics.md"))
+        self.result: NarrativeParseResult = parse_markdown(str(fixture_file("avionics", "description_avionics.md")))
 
     def test_system_name_extracted_from_h1(self):
         assert self.result.system_name == "Avionics Data Network"
@@ -192,7 +195,7 @@ class TestIcdCsvUasWeaponSystem:
     """icd_uas_weapon_system_v1.csv — UAS Weapon System."""
 
     def setup_method(self):
-        self.result: IcdParseResult = parse_csv(str(ICD_DIR / "icd_uas_weapon_system_v1.csv"))
+        self.result: IcdParseResult = parse_csv(str(fixture_file("uas_weapon_system", "icd_uas_weapon_system_v1.csv")))
 
     def test_provenance_version(self):
         assert self.result.version == "1"
@@ -246,7 +249,7 @@ class TestNarrativeUasWeaponSystem:
     """description_uas_weapon_system.md — UAS Weapon System."""
 
     def setup_method(self):
-        self.result: NarrativeParseResult = parse_markdown(str(DESC_DIR / "description_uas_weapon_system.md"))
+        self.result: NarrativeParseResult = parse_markdown(str(fixture_file("uas_weapon_system", "description_uas_weapon_system.md")))
 
     def test_system_name_extracted_from_h1(self):
         assert self.result.system_name == "UAS Weapon System"
@@ -280,13 +283,13 @@ class TestNarrativeUasWeaponSystem:
 
 def test_parse_icd_dispatches_csv():
     from threat_modeler.parsing.icd_parser import parse
-    result = parse(str(ICD_DIR / "icd_alpha_v1.csv"))
+    result = parse(str(fixture_file("alpha", "icd_alpha_v1.csv")))
     assert isinstance(result, IcdParseResult)
 
 
 def test_parse_narrative_dispatches_md():
     from threat_modeler.parsing.narrative_parser import parse
-    result = parse(str(DESC_DIR / "description_alpha.md"))
+    result = parse(str(fixture_file("alpha", "description_alpha.md")))
     assert isinstance(result, NarrativeParseResult)
 
 

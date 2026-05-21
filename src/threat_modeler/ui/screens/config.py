@@ -9,8 +9,6 @@ The resulting RuntimeSettings is stored in st.session_state["settings_override"]
 and connection validation state is stored in st.session_state["model_connection_valid"].
 """
 
-import os
-
 import streamlit as st
 
 from threat_modeler.config import (
@@ -62,10 +60,6 @@ _API_KEY_ENV_VARS = {
     "fixture": "",
 }
 
-_API_KEY_ENV_CANDIDATES = {
-    "xai": ("GROK_API", "XAI_API_KEY"),
-}
-
 _PROVIDER_MODEL_CATALOGS = {
     "fixture": ["fixture-placeholder"],
     "openai": ["gpt-4.1", "gpt-4.1-mini", "gpt-4o", "gpt-4o-mini", "o4-mini", "o3"],
@@ -91,10 +85,6 @@ def _api_key_env_var(provider: str) -> str:
     return _API_KEY_ENV_VARS.get(provider, f"{provider.upper()}_API_KEY")
 
 
-def _api_key_env_candidates(provider: str) -> tuple[str, ...]:
-    return _API_KEY_ENV_CANDIDATES.get(provider, (_api_key_env_var(provider),))
-
-
 def _defaults() -> RuntimeSettings:
     def _migrate_legacy_timeout_attempts(settings: RuntimeSettings) -> RuntimeSettings:
         # Migrate historical defaults (180s/3 attempts) to the new baseline (900s/2 attempts)
@@ -105,6 +95,7 @@ def _defaults() -> RuntimeSettings:
             migrated_model = ModelSelection(
                 provider=settings.model.provider,
                 model_name=settings.model.model_name,
+                api_key=getattr(settings.model, "api_key", ""),
                 offline_only=settings.model.offline_only,
                 connection_url=settings.model.connection_url,
                 endpoint_mode=getattr(settings.model, "endpoint_mode", "chat_completions"),
@@ -386,6 +377,7 @@ def render() -> None:
                 model=ModelSelection(
                     provider=selected_provider,
                     model_name=model_name.strip(),
+                    api_key=api_key_input.strip() if provider_info.get("requires_api_key", False) else "",
                     offline_only=offline_mode_checkbox,
                     connection_url=connection_url.strip(),
                     endpoint_mode=endpoint_mode,
@@ -408,10 +400,6 @@ def render() -> None:
             if provider_info.get("requires_api_key", False):
                 key_value = api_key_input.strip()
                 st.session_state["model_api_key"] = key_value
-                if key_value:
-                    for env_var in _api_key_env_candidates(selected_provider):
-                        if env_var:
-                            os.environ[env_var] = key_value
 
             st.success(f"✅ Settings applied. Provider: {provider_info['label']}, Model: {model_name.strip()}")
 
@@ -462,7 +450,7 @@ def render() -> None:
                 st.caption("API key found in current session for selected provider.")
             else:
                 st.caption(
-                    "No API key stored in session. Set it in SCR-013 or via environment variable."
+                    "No API key stored in session. Set it in SCR-013 before validating and running."
                 )
 
         col_validate, col_override = st.columns(2)
@@ -470,13 +458,8 @@ def render() -> None:
             if st.button("Validate Connection", type="primary", key="validate_connection_btn"):
                 from threat_modeler.ui.connection_validator import validate_connection  # noqa: PLC0415
 
-                # Resolve API key: UI input first, then environment.
+                # Resolve API key from current session settings only.
                 resolved_key = stored_key.strip()
-                if not resolved_key:
-                    for env_var in _api_key_env_candidates(active.model.provider):
-                        resolved_key = os.environ.get(env_var, "").strip()
-                        if resolved_key:
-                            break
 
                 with st.spinner("Checking connection…"):
                     result = validate_connection(active.model, api_key=resolved_key)

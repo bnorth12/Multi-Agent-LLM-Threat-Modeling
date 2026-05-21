@@ -313,11 +313,11 @@ def _build_config() -> SmokeConfig:
         app_path=repo_root / "src" / "threat_modeler" / "ui" / "app.py",
         icd_path=_env_path(
             "THREAT_MODELER_SMOKE_ICD_PATH",
-            repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_uas_weapon_system_v1.csv",
+            repo_root / "Tests" / "fixtures" / "inputs" / "systems" / "uas_weapon_system" / "icd_uas_weapon_system_v1.csv",
         ),
         description_path=_env_path(
             "THREAT_MODELER_SMOKE_DESCRIPTION_PATH",
-            repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_uas_weapon_system.md",
+            repo_root / "Tests" / "fixtures" / "inputs" / "systems" / "uas_weapon_system" / "description_uas_weapon_system.md",
         ),
         system_name=os.environ.get("THREAT_MODELER_SMOKE_SYSTEM_NAME", "UAS Weapon System FQT").strip() or "UAS Weapon System FQT",
         port=_env_int("THREAT_MODELER_BROWSER_TEST_PORT", 8511),
@@ -1582,17 +1582,22 @@ def run_live_browser_smoke() -> int:
         "stale_findings": stale_findings,
     }
 
+    bundle_dir = cfg.repo_root / "Tests" / "fixtures" / "inputs" / "systems" / "uas_weapon_system" / "full_system_bundle"
     upload_bundle = [
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_uas_weapon_system_v1.csv",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_uas_weapon_system.md",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_alpha_v1.csv",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_alpha_comprehensive.md",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_bravo_v2.csv",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_bravo_comprehensive.md",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_charlie_v1.xlsx",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_charlie_comprehensive.md",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_ground_maintenance_v1.csv",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_ground_maintenance_comprehensive.md",
+        bundle_dir / "icd_uas_weapon_system_v1.csv",
+        bundle_dir / "description_uas_weapon_system.md",
+        bundle_dir / "icd_alpha_v1.csv",
+        bundle_dir / "description_alpha_comprehensive.md",
+        bundle_dir / "icd_alpha_mission_computer_v1.csv",
+        bundle_dir / "description_alpha_mission_computer.md",
+        bundle_dir / "icd_bravo_v2.csv",
+        bundle_dir / "description_bravo_comprehensive.md",
+        bundle_dir / "icd_charlie_v1.xlsx",
+        bundle_dir / "description_charlie_comprehensive.md",
+        bundle_dir / "icd_charlie_mission_planning_computer_v1.csv",
+        bundle_dir / "description_charlie_mission_planning_computer.md",
+        bundle_dir / "icd_ground_maintenance_v1.csv",
+        bundle_dir / "description_ground_maintenance_comprehensive.md",
     ]
 
     try:
@@ -1896,6 +1901,22 @@ def run_live_browser_smoke() -> int:
 
 
 def main() -> int:
+    ui_target = str(os.environ.get("THREAT_MODELER_SMOKE_UI_TARGET", "react")).strip().lower()
+    if ui_target in {"react", "hmi", "mui"}:
+        repo_root = Path(__file__).resolve().parents[1]
+        react_runner = repo_root / "scripts" / "live_browser_e2e_smoke_react.py"
+        if not react_runner.exists():
+            print(f"LIVE_BROWSER_SMOKE_FAILED: React smoke runner not found at {react_runner}")
+            return 2
+
+        env = os.environ.copy()
+        existing_pythonpath = env.get("PYTHONPATH", "")
+        src_path = str(repo_root / "src")
+        env["PYTHONPATH"] = src_path if not existing_pythonpath else f"{src_path}{os.pathsep}{existing_pythonpath}"
+
+        result = subprocess.run([sys.executable, str(react_runner)], env=env, cwd=str(repo_root), check=False)
+        return int(result.returncode)
+
     try:
         return run_live_browser_smoke()
     except SmokeFailure as exc:
