@@ -106,6 +106,15 @@ The HMI is organized as a **single-page application with a left-sidebar navigati
 
 ## 5. Navigation Flows
 
+### 5.0 HITL Gate Enforcement Update (Sprint 2026-12)
+
+The HITL flow is updated with two enforced controls:
+
+- **Gate 0 Input Integrity Preflight**: must be reviewed before Stage 1 executes.
+- **Gate 1 Normalization Review**: must be reviewed after Stage 1 and before Stage 2 executes.
+
+These controls SHALL be represented on the footer execution timeline with gate markers before Stage 1 and after each gated stage boundary so operators can track review points in execution order.
+
 ### 5.1 Primary Analysis Workflow
 
 ```mermaid
@@ -217,6 +226,20 @@ Renders:
   - table    → sortable dataframe table (st.dataframe)
   - mermaid  → rendered diagram via st.components.v1.html
 Includes: [Copy] [Download] action buttons in top-right corner
+
+### 6.7 Gate-Specific Human Readable Review Panels
+
+Used on: SCR-005 (HITL Gate Screen)
+
+```
+Component: GateReadableSummary(gate_id, artifact_snapshot)
+Props:
+  gate_id          : str
+  artifact_snapshot: dict | None
+Behavior:
+  - For gate_0_input_integrity: render preflight checks (source presence, raw text summary, table summary).
+  - For gate_1_normalization_review: render normalized graph summary (system info, subsystem/component/function/interface counts, interface preview, validation checks).
+  - Fallback to generic key-value summary when specialized renderer not defined.
 ```
 
 ### 6.4 Role-Gated Button

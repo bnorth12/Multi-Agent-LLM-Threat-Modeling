@@ -190,6 +190,9 @@ python -m pytest Tests/unit/ -q
 # Sprint traceability verification (logs to test_reports/)
 python scripts/run_and_log.py scripts/verify_sprint_traceability.py --sprint 2026_11
 
+# Dependency boundary hardening (release/runtime must exclude test-only deps)
+python scripts/verify_dependency_boundary.py
+
 # E2E browser tests (requires GROK_API environment variable)
 python scripts/run_and_log.py scripts/live_browser_e2e_smoke.py
 ```
