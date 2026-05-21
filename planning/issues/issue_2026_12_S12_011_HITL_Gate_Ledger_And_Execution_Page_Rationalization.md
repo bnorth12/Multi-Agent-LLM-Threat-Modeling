@@ -1,0 +1,59 @@
+# S12-011: HITL Gate Ledger Refinement and Execution Page Rationalization
+
+## Issue Summary
+
+The React HMI workflow evolved from a split execution-vs-gates model into a gate-centric operational flow. The UI now exposes a persistent execution timeline footer and a unified HITL gate ledger, which makes the standalone execution page largely redundant. This change requires explicit Sprint 2026-12 governance so the implemented behavior is traceable and the remaining execution-page decision is handled intentionally.
+
+## Related Requirements
+
+- GUI-030
+- GUI-031
+
+## Severity
+
+High - operator workflow clarity and governance alignment
+
+## Implemented Scope
+
+1. Display all HITL gates in pipeline order on one page.
+1. Summarize lifecycle counts for Approved, Rejected, Bypassed, and Pending states.
+1. Keep the operator on the HITL Gate page while execution resumes.
+1. Provide centered plain-language status text in the persistent footer timeline.
+1. Rename navigation label to `HITL Gate` for clarity.
+
+## Open Decision
+
+The standalone execution page currently provides minimal unique value because:
+
+- the footer timeline is visible globally,
+- the footer now includes live run-status text,
+- the HITL Gate page can be used during active execution and pause/resume workflows.
+
+Execution-page removal or repurposing SHALL be treated as a separate approved decision, not an implicit side effect of the HITL ledger refinement.
+
+## Acceptance Criteria
+
+- [x] HITL Gate page shows all gates in defined order.
+- [x] Lifecycle summary counts are displayed for Approved, Rejected, Bypassed, and Pending.
+- [x] Footer timeline status text remains visible and centered across pages.
+- [x] Resume does not force navigation back to the execution page.
+- [ ] Product/program decision recorded for execution-page disposition: retain, repurpose, or remove.
+- [ ] Follow-on requirement added if execution page is removed or materially repurposed.
+
+## Verification
+
+- `frontend: npm run test -- --run src/components/HITLGateManager.test.tsx` -> `5 passed`
+- `PYTHONPATH=src python -m pytest Tests/test_hmi_backend_api.py Tests/integration/test_hitl_gate_set_2.py Tests/integration/test_avionics_expected_results.py -q` -> `35 passed`
+
+## Status
+
+In Review
+
+## GitHub Tracking
+
+- Repository issue: #65
+
+## Owner Guidance
+
+- Treat the implemented UI changes as Sprint 2026-12 governed scope.
+- Do not remove the execution page until the product/program decision is captured and traceability is updated.
