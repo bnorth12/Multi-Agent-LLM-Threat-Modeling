@@ -1,9 +1,0 @@
-entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
-subsystem,SS-PROC-01,Processing Subsystem,Executes mission payloads and sensor fusion,Bravo Ground Station,,,,,,,,
-subsystem,SS-STORE-01,Storage Subsystem,Manages persistent data recording,Bravo Ground Station,,,,,,,,
-component,C-PROC-01,Mission Computer,Runs payload algorithms and logs results,SS-PROC-01,embedded,proc.mission|proc.logger,,,,,,
-component,C-STORE-01,Solid State Recorder,Records high-rate sensor data,SS-STORE-01,embedded,store.recorder,,,,,,
-component,C-STORE-02,Key Management Module,Manages encryption keys for stored data,SS-STORE-01,hosted,store.kms,,,,,,
-data_flow,DF-101,,Sensor Fusion Output,,,,C-PROC-01,C-STORE-01,PCIe,fused_sensor_frame|metadata,false,
-data_flow,DF-102,,Encrypted Log Write,,,,C-PROC-01,C-STORE-02,I2C,key_request|key_response,false,
-data_flow,DF-103,,Remote Diagnostics Pull,,,,REMOTE_OPS,C-PROC-01,HTTPS,diagnostics_request|diagnostics_report,true,Operations Network Boundary

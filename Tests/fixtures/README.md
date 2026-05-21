@@ -4,8 +4,7 @@ This directory contains test source material.
 
 ## Structure
 
-- `inputs/icd/` — ICD spreadsheet files (CSV and XLSX) describing system entities and interfaces
-- `inputs/descriptions/` — narrative system description documents (Markdown and plain text)
+- `inputs/systems/<system>/` — per-system fixture folders containing both ICD and narrative files together
 - `inputs/hitl/` — HITL trigger rule configurations
 - `expected_outputs/` — expected canonical graph fragments and output checks
 
@@ -28,10 +27,29 @@ CSV files use a flat single-sheet layout. XLSX files may use two sheets: `Entiti
 
 Current fixtures:
 
-- `inputs/icd/icd_alpha_v1.csv` — Alpha system, 7 entities + 5 interfaces
-- `inputs/icd/icd_bravo_v2.csv` — Bravo system, minimal entities
-- `inputs/icd/icd_charlie_v1.xlsx` — Charlie system, multi-sheet XLSX format
-- `inputs/icd/icd_uas_weapon_system_v1.csv` — UAS weapon system, full segment and lower-level coverage
+- `inputs/systems/alpha/icd_alpha_v1.csv` — Alpha system, 7 entities + 5 interfaces
+- `inputs/systems/bravo/icd_bravo_v2.csv` — Bravo system, minimal entities
+- `inputs/systems/charlie/icd_charlie_v1.xlsx` — Charlie system, multi-sheet XLSX format
+- `inputs/systems/uas_weapon_system/icd_uas_weapon_system_v1.csv` — UAS weapon system, full segment and lower-level coverage
+
+### UAS Program Bundle Layout
+
+For lifecycle alignment, UAS program-level fixtures now support two modes:
+
+- **Early lifecycle top-level modeling:** use only
+   - `inputs/systems/uas_weapon_system/icd_uas_weapon_system_v1.csv`
+   - `inputs/systems/uas_weapon_system/description_uas_weapon_system.md`
+- **Full UAS program modeling in one folder:** use
+   - `inputs/systems/uas_weapon_system/full_system_bundle/`
+
+The `full_system_bundle` folder contains top-level UAS files plus Alpha, Bravo, Charlie, and Ground Maintenance files so a single-folder upload can run the combined system threat model.
+
+Additional mission-context pairs included in this fixture family:
+
+- `inputs/systems/alpha/icd_alpha_mission_computer_v1.csv`
+- `inputs/systems/alpha/description_alpha_mission_computer.md`
+- `inputs/systems/charlie/icd_charlie_mission_planning_computer_v1.csv`
+- `inputs/systems/charlie/description_charlie_mission_planning_computer.md`
 
 ### 2. Narrative Description (Markdown or plain text)
 
@@ -39,10 +57,10 @@ Describes the system, subsystems, and components in prose. Parsed separately by 
 
 Current fixtures:
 
-- `inputs/descriptions/description_alpha.md` — Alpha system narrative
-- `inputs/descriptions/description_charlie.txt` — Charlie system narrative
-- `inputs/descriptions/description_cav.md` — Combined Charlie + Avionics markdown narrative for browser/live validation
-- `inputs/descriptions/description_uas_weapon_system.md` — UAS weapon system narrative with lower-level segment detail
+- `inputs/systems/alpha/description_alpha.md` — Alpha system narrative
+- `inputs/systems/charlie/description_charlie.txt` — Charlie system narrative
+- `inputs/systems/cav/description_cav.md` — Combined Charlie + Avionics markdown narrative for browser/live validation
+- `inputs/systems/uas_weapon_system/description_uas_weapon_system.md` — UAS weapon system narrative with lower-level segment detail
 
 ## Fixture Naming Convention
 
@@ -57,11 +75,12 @@ When testing the threat modeler **manually via the browser UI**, operators uploa
 
 | System | ICD File | Description File | Use Case |
 |---|---|---|---|
-| **UAS Weapon System** | `icd_uas_weapon_system_v1.csv` | `description_uas_weapon_system.md` | Full four-segment ISR system (recommended for comprehensive testing) |
-| **Alpha** | `icd_alpha_v1.csv` | `description_alpha.md` | Single platform segment |
-| **Bravo** | `icd_bravo_v2.csv` | `description_bravo.md` | Ground processing segment |
-| **Avionics** | `icd_avionics_v1.csv` | `description_avionics.md` | Legacy avionics system |
-| **Threat Modeler** | `icd_threat_modeler_v1.csv` | `description_threat_modeler.md` | Example threat model input |
+| **UAS Weapon System** | `inputs/systems/uas_weapon_system/icd_uas_weapon_system_v1.csv` | `inputs/systems/uas_weapon_system/description_uas_weapon_system.md` | Full four-segment ISR system (recommended for comprehensive testing) |
+| **UAS Weapon System (Single-Folder Bundle)** | `inputs/systems/uas_weapon_system/full_system_bundle/` | `inputs/systems/uas_weapon_system/full_system_bundle/` | Upload all ICD + narrative files from one folder for full combined-system run |
+| **Alpha** | `inputs/systems/alpha/icd_alpha_v1.csv` | `inputs/systems/alpha/description_alpha.md` | Single platform segment |
+| **Bravo** | `inputs/systems/bravo/icd_bravo_v2.csv` | `inputs/systems/bravo/description_bravo.md` | Ground processing segment |
+| **Avionics** | `inputs/systems/avionics/icd_avionics_v1.csv` | `inputs/systems/avionics/description_avionics.md` | Legacy avionics system |
+| **Threat Modeler** | `inputs/systems/threat_modeler/icd_threat_modeler_v1.csv` | `inputs/systems/threat_modeler/description_threat_modeler.md` | Example threat model input |
 
 ### Manual Testing Workflow
 
@@ -72,9 +91,9 @@ When testing the threat modeler **manually via the browser UI**, operators uploa
 
 1. **In the browser UI**, navigate to the input upload panel.
 
-1. **Select CSV ICD file** from `Tests/fixtures/inputs/icd/` directory.
+1. **Select CSV ICD file** from the system folder under `Tests/fixtures/inputs/systems/`.
 
-1. **Select Markdown description file** from `Tests/fixtures/inputs/descriptions/` directory.
+1. **Select Markdown description file** from the same system folder under `Tests/fixtures/inputs/systems/`.
    - **Pairing rule:** The scenario name in both filenames must match (e.g., `icd_uas_weapon_system_v1.csv` pairs with `description_uas_weapon_system.md`).
 
 1. **Click Run** to execute the threat model generation pipeline.

@@ -7,7 +7,7 @@ import pathlib
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 
-OUT = pathlib.Path(__file__).parent / "inputs" / "icd" / "icd_charlie_v1.xlsx"
+OUT = pathlib.Path(__file__).parent / "inputs" / "systems" / "charlie" / "icd_charlie_v1.xlsx"
 
 wb = openpyxl.Workbook()
 
@@ -26,6 +26,9 @@ entities = [
     ["subsystem", "SS-TRF-01", "Traffic Shaping Subsystem",
      "Controls data flow rates and priority queuing for the satellite link",
      "Charlie Satellite Communications Terminal", "", ""],
+    ["subsystem", "SS-MSN-01", "Mission Planning Subsystem",
+     "Generates mission packages from all-source intelligence and flight-planning resources",
+     "Charlie Satellite Communications Terminal", "", ""],
     # components
     ["component", "C-BEM-01", "Bulk Encryption Module",
      "Applies AES-256-GCM encryption and decryption to satellite data frames",
@@ -36,6 +39,12 @@ entities = [
     ["component", "C-TRF-01", "Traffic Shaper",
      "Manages queuing, prioritization, and rate limiting for satellite link data",
      "SS-TRF-01", "hosted", "trf.shaper|trf.queue_mgr"],
+    ["component", "C-MSN-01", "Mission Planning Computer",
+     "Builds strike SEAD DEAD and ISR mission packages for Bravo validation and Alpha execution",
+     "SS-MSN-01", "hosted", "planning.engine|planning.route_solver|planning.weapon_release"],
+    ["component", "C-MSN-02", "Planning Data Fusion Service",
+     "Normalizes all-source intelligence terrain weather and airspace constraints",
+     "SS-MSN-01", "hosted", "planning.data_fusion|planning.constraint_engine"],
     # functions
     ["function", "F-BEM-01", "Encrypt Outbound Frame",
      "Accepts a plaintext frame from the Traffic Shaper and applies AES-256-GCM encryption",
@@ -55,6 +64,12 @@ entities = [
     ["function", "F-TRF-02", "Shape Transmit Rate",
      "Regulates outbound transmit rate and forwards frames to the Encryption Gateway",
      "C-TRF-01", "", ""],
+    ["function", "F-MSN-01", "Generate Mission Package",
+     "Generates mission package content including waypoints routes targeting and sensor coverage",
+     "C-MSN-01", "", ""],
+    ["function", "F-MSN-02", "Fuse Planning Inputs",
+     "Combines all-source intelligence and flight-planning resources into normalized planning inputs",
+     "C-MSN-02", "", ""],
 ]
 
 for row in entities:
@@ -120,6 +135,22 @@ interfaces = [
      "Internal bus between the Traffic Shaping Subsystem and the Encryption Gateway Subsystem",
      "SS-TRF-01", "SS-EGW-01", "subsystem-subsystem",
      "internal", "queued_frame", "false", ""],
+    ["IF-209", "All-Source Intelligence Intake",
+     "Carries all-source intelligence updates into the planning data fusion service",
+     "ALL_SOURCE_INTEL", "C-MSN-02", "external-component",
+     "HTTPS", "intel_summary|threat_updates|target_dossiers", "true", "Planning Intelligence Boundary"],
+    ["IF-210", "Flight Planning Resource Intake",
+     "Carries airspace weather and route constraints into the planning data fusion service",
+     "FLIGHT_PLANNING_RESOURCES", "C-MSN-02", "external-component",
+     "HTTPS", "airspace_data|terrain_data|weather_data|route_constraints", "true", "Planning Intelligence Boundary"],
+    ["IF-211", "Planning Fusion to Mission Package Generator",
+     "Carries fused planning inputs from data fusion service to mission planning computer",
+     "F-MSN-02", "F-MSN-01", "function-function",
+     "internal", "fused_planning_inputs|risk_models", "false", ""],
+    ["IF-212", "Mission Plan to Bravo Broker",
+     "Carries generated mission plans from Charlie planning to Bravo mission package broker",
+     "C-MSN-01", "BRAVO_MISSION_BROKER", "component-external",
+     "HTTPS", "mission_id|waypoints|flight_plan|route_plan|targeting_data|weapon_profile|comm_plan|sensor_plan", "true", "Ops Network Boundary"],
 ]
 
 for row in interfaces:
