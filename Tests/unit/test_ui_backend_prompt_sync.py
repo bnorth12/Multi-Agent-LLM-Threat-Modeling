@@ -143,8 +143,9 @@ class TestUIBackendPromptSync:
         from importlib import reload
         import threat_modeler.ui.prompt_store as ui_prompt_store
 
-        # Point backend store to our temp file
-        monkeypatch.setenv("THREAT_MODELER_PROMPT_STORE_PATH", str(temp_store_file))
+        # Ensure backend module-level default store writes only to temp file.
+        import threat_modeler.backend.prompt_store as backend_prompt_store
+        monkeypatch.setattr(backend_prompt_store, "_default_store", PromptStore(store_path=temp_store_file))
 
         # Now call UI set_prompt (with mocked streamlit)
         try:

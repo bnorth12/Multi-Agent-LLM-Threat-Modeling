@@ -244,108 +244,115 @@ def _validate_agent(agent_id: str) -> None:
 
 
 def get_prompt(agent_id: str) -> str:
-    """Return the current system prompt for agent_id."""
+    """Return the current system prompt for agent_id from backend store."""
     _validate_agent(agent_id)
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    prompt = backend_prompt_store.get_prompt(agent_id)
     _ensure_initialised()
-    return st.session_state[_KEY_PROMPTS][agent_id]
+    st.session_state[_KEY_PROMPTS][agent_id] = prompt
+    return prompt
 
 def get_expected_output(agent_id: str) -> str:
-    """Return the expected output example for agent_id."""
+    """Return the expected output example for agent_id from backend store."""
     _validate_agent(agent_id)
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    expected_output = backend_prompt_store.get_expected_output(agent_id)
     _ensure_initialised()
-    return st.session_state[_KEY_EXPECTED_OUTPUTS][agent_id]
+    st.session_state[_KEY_EXPECTED_OUTPUTS][agent_id] = expected_output
+    return expected_output
 
 def set_prompt(agent_id: str, text: str, actor: str = "user") -> None:
-    """Save a new prompt for agent_id and record a version history entry.
-
-    Prompts are saved to both Streamlit session state (for immediate UI use) and
-    the backend persistent store (for agent execution). This ensures user edits
-    reach agents on the next execution run.
-    """
+    """Save a new prompt for agent_id in backend store and mirror to session."""
     _validate_agent(agent_id)
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    backend_prompt_store.set_prompt(agent_id, text, actor=actor)
+
     _ensure_initialised()
     st.session_state[_KEY_PROMPTS][agent_id] = text
-    history: list[VersionEntry] = st.session_state[_KEY_HISTORIES][agent_id]
-    next_version = history[-1].version + 1 if history else 1
-    history.append(
-        VersionEntry(
-            version=next_version,
-            text=text,
-            actor=actor,
-            timestamp=_utc_now(),
-        )
-    )
-
-    # Bridge to backend persistent store (S11-017)
-    # Persist edits to ~/.multi_agent_threat_modeler_prompts.json so agents can load them
-    try:
-        from threat_modeler.backend.prompt_store import _default_store
-        _default_store.set_prompt(agent_id, text, actor=actor)
-    except Exception:
-        # Graceful fallback: if backend is unavailable, session state is still saved
-        # The UI will work; backend execution will use last known persisted state
-        pass
+    st.session_state[_KEY_HISTORIES][agent_id] = list(backend_prompt_store.get_history(agent_id))
 
 def set_expected_output(agent_id: str, example: str) -> None:
-    """Save a new expected output example for agent_id."""
+    """Save a new expected output example for agent_id in backend store and mirror to session."""
     _validate_agent(agent_id)
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    backend_prompt_store.set_expected_output(agent_id, example)
     _ensure_initialised()
     st.session_state[_KEY_EXPECTED_OUTPUTS][agent_id] = example
 
 
 def get_history(agent_id: str) -> list[VersionEntry]:
-    """Return the full version history for agent_id, oldest first."""
+    """Return the full version history for agent_id from backend store."""
     _validate_agent(agent_id)
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    history = backend_prompt_store.get_history(agent_id)
     _ensure_initialised()
-    return list(st.session_state[_KEY_HISTORIES][agent_id])
+    st.session_state[_KEY_HISTORIES][agent_id] = list(history)
+    return list(history)
 
 
 def revert_to(agent_id: str, version_index: int, actor: str = "user") -> None:
-    """Restore a prior version by its 0-based list index and create a new version entry."""
+    """Restore a prior version by its 0-based list index in backend store."""
     _validate_agent(agent_id)
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    backend_prompt_store.revert_to(agent_id, version_index, actor=actor)
     _ensure_initialised()
-    history = st.session_state[_KEY_HISTORIES][agent_id]
-    if version_index < 0 or version_index >= len(history):
-        raise IndexError(
-            f"version_index {version_index} out of range for agent '{agent_id}' "
-            f"(history length {len(history)})."
-        )
-    prior_text = history[version_index].text
-    set_prompt(agent_id, prior_text, actor=f"{actor} (revert to v{history[version_index].version})")
+    st.session_state[_KEY_PROMPTS][agent_id] = backend_prompt_store.get_prompt(agent_id)
+    st.session_state[_KEY_HISTORIES][agent_id] = list(backend_prompt_store.get_history(agent_id))
 
 
 def get_temperature(agent_id: str) -> float:
-    """Return the current temperature setting for agent_id."""
+    """Return the current temperature setting for agent_id from backend store."""
     _validate_agent(agent_id)
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    temperature = backend_prompt_store.get_temperature(agent_id)
     _ensure_initialised()
-    return st.session_state[_KEY_TEMPERATURES][agent_id]
+    st.session_state[_KEY_TEMPERATURES][agent_id] = temperature
+    return temperature
 
 
 def set_temperature(agent_id: str, value: float) -> None:
-    """Persist a temperature value (0.0–2.0) for agent_id."""
+    """Persist a temperature value (0.0–2.0) for agent_id in backend store."""
     _validate_agent(agent_id)
     if not (0.0 <= value <= 2.0):
         raise ValueError(f"Temperature must be in [0.0, 2.0]; got {value}.")
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    backend_prompt_store.set_temperature(agent_id, value)
     _ensure_initialised()
     st.session_state[_KEY_TEMPERATURES][agent_id] = value
 
 
 def reset_to_default(agent_id: str, actor: str = "user") -> None:
-    """Reset agent_id to its default prompt and record the change."""
+    """Reset agent_id prompt and temperature to backend defaults."""
     _validate_agent(agent_id)
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    backend_prompt_store.reset_to_default(agent_id, actor=actor)
     _ensure_initialised()
-    set_prompt(agent_id, _DEFAULT_PROMPTS[agent_id]["prompt"], actor=f"{actor} (reset to default)")
-    st.session_state[_KEY_TEMPERATURES][agent_id] = _DEFAULT_TEMPERATURES[agent_id]
+    st.session_state[_KEY_PROMPTS][agent_id] = backend_prompt_store.get_prompt(agent_id)
+    st.session_state[_KEY_EXPECTED_OUTPUTS][agent_id] = backend_prompt_store.get_expected_output(agent_id)
+    st.session_state[_KEY_TEMPERATURES][agent_id] = backend_prompt_store.get_temperature(agent_id)
+    st.session_state[_KEY_HISTORIES][agent_id] = list(backend_prompt_store.get_history(agent_id))
 
 
 def is_modified(agent_id: str) -> bool:
-    """Return True if the current prompt differs from the default."""
+    """Return True if backend current prompt differs from default."""
     _validate_agent(agent_id)
-    _ensure_initialised()
-    return st.session_state[_KEY_PROMPTS][agent_id] != _DEFAULT_PROMPTS[agent_id]["prompt"]
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    return backend_prompt_store.is_modified(agent_id)
 
 
 def get_default_prompt(agent_id: str) -> str:
-    """Return the default (built-in) system prompt for agent_id."""
+    """Return the default system prompt for agent_id from backend store."""
     _validate_agent(agent_id)
-    return _DEFAULT_PROMPTS[agent_id]["prompt"]
+    from threat_modeler.backend import prompt_store as backend_prompt_store
+
+    return backend_prompt_store.get_default_prompt(agent_id)

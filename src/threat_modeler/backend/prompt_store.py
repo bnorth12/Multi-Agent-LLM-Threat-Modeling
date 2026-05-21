@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import os
 import threading
 from pathlib import Path
 from typing import NamedTuple, Optional
@@ -195,7 +196,12 @@ _DEFAULT_PROMPTS: dict[str, str] = {
 _DEFAULT_TEMPERATURES: dict[str, float] = {agent: 0.2 for agent in AGENT_IDS}
 
 # Default file location for the global store instance.
-_DEFAULT_STORE_PATH = Path.home() / ".multi_agent_threat_modeler_prompts.json"
+_DEFAULT_STORE_PATH = Path(
+    os.environ.get(
+        "THREAT_MODELER_PROMPT_STORE_PATH",
+        str(Path.home() / ".multi_agent_threat_modeler_prompts.json"),
+    )
+)
 
 
 # ---------------------------------------------------------------------------
@@ -485,3 +491,8 @@ def is_modified(agent_id: str) -> bool:
 def get_default_prompt(agent_id: str) -> str:
     """Return default prompt text for *agent_id*."""
     return _default_store.get_default_prompt(agent_id)
+
+
+def get_store_path() -> str:
+    """Return the absolute path of the active prompt store file."""
+    return str(_DEFAULT_STORE_PATH)
