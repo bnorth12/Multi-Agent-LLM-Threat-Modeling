@@ -659,3 +659,24 @@ def wait_for_run(run_id: str, timeout: float = 300) -> bool:
             return False
         time.sleep(0.1)
     return True
+
+
+def purge_run(run_id: str) -> bool:
+    """Permanently remove *run_id* from in-memory and checkpoint metadata."""
+    removed = False
+    with _REGISTRY_LOCK:
+        if run_id in _RUN_REGISTRY:
+            del _RUN_REGISTRY[run_id]
+            removed = True
+
+    try:
+        if _CHECKPOINT_FILE.exists():
+            payload = json.loads(_CHECKPOINT_FILE.read_text(encoding="utf-8"))
+            if isinstance(payload, dict) and run_id in payload:
+                del payload[run_id]
+                _CHECKPOINT_FILE.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+                removed = True
+    except Exception:
+        pass
+
+    return removed

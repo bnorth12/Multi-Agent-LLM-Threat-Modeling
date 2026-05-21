@@ -73,11 +73,9 @@ class TestFixtureAdapter:
 
 
 class TestXaiAdapter:
-    def test_raises_without_api_key(self, monkeypatch):
-        monkeypatch.delenv("GROK_API", raising=False)
-        monkeypatch.delenv("XAI_API_KEY", raising=False)
+    def test_raises_without_api_key(self):
         adapter = XaiAdapter()
-        with pytest.raises(EnvironmentError, match="GROK_API"):
+        with pytest.raises(EnvironmentError, match="run settings"):
             adapter.complete("sys", "user")
 
 

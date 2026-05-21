@@ -73,6 +73,7 @@ PROVIDER_MATRIX = {
 class ModelSelection:
     provider: str
     model_name: str
+    api_key: str = ""
     offline_only: bool = True
     connection_url: str = ""  # For Azure, Ollama, Custom/Intranet providers
     endpoint_mode: str = "chat_completions"  # chat_completions | responses | multi_agent

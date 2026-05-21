@@ -194,7 +194,7 @@ class TestConfigPageDefaults:
         assert "_api_key_env_var" in text
         assert "OPENAI_API_KEY" in text
         assert "ANTHROPIC_API_KEY" in text
-        assert "XAI_API_KEY" in text
+        assert "GROK_API" in text
 
     def test_config_screen_contains_model_catalog_controls(self):
         from pathlib import Path

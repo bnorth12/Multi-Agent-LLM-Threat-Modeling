@@ -61,6 +61,14 @@ class HitlService:
     # Gate 0 — Input Integrity (HITL-009)
     # ------------------------------------------------------------------
 
+    def open_input_integrity_gate(
+        self,
+        artifact_snapshot: dict[str, Any] | None = None,
+    ) -> HitlGateRecord:
+        """Open Gate 0 as an explicit preflight review step."""
+        record = self.engine.open_gate("gate_0_input_integrity", artifact_snapshot)
+        raise GatePausedError(record)
+
     def evaluate_and_open_input_integrity_gate(
         self,
         metrics: InputIntegrityMetrics,
@@ -78,6 +86,18 @@ class HitlService:
             record = self.engine.open_gate("gate_0_input_integrity", artifact_snapshot)
             raise GatePausedError(record)
         return self.engine.bypass_gate("gate_0_input_integrity")
+
+    # ------------------------------------------------------------------
+    # Gate 1 — Normalization Review (new, post Agent 01)
+    # ------------------------------------------------------------------
+
+    def open_normalization_review_gate(
+        self,
+        artifact_snapshot: dict[str, Any] | None = None,
+    ) -> HitlGateRecord:
+        """Open Gate 1 normalization review. Always triggers."""
+        record = self.engine.open_gate("gate_1_normalization_review", artifact_snapshot)
+        raise GatePausedError(record)
 
     # ------------------------------------------------------------------
     # Gate 1 — Scope Confirmation (HITL-001)
@@ -124,6 +144,20 @@ class HitlService:
     ) -> HitlGateRecord:
         """Open Gate 5. Always triggers (non-conditional). Raises GatePausedError."""
         record = self.engine.open_gate("gate_5_mitigation_adequacy", artifact_snapshot)
+        raise GatePausedError(record)
+
+    def open_diagram_review_gate(
+        self, artifact_snapshot: dict[str, Any] | None = None
+    ) -> HitlGateRecord:
+        """Open Gate 8. Always triggers (non-conditional). Raises GatePausedError."""
+        record = self.engine.open_gate("gate_8_diagram_review", artifact_snapshot)
+        raise GatePausedError(record)
+
+    def open_stix_packaging_review_gate(
+        self, artifact_snapshot: dict[str, Any] | None = None
+    ) -> HitlGateRecord:
+        """Open Gate 9. Always triggers (non-conditional). Raises GatePausedError."""
+        record = self.engine.open_gate("gate_9_stix_packaging_review", artifact_snapshot)
         raise GatePausedError(record)
 
     # ------------------------------------------------------------------

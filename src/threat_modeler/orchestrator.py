@@ -12,7 +12,6 @@ from .hitl import (
     GatePausedError,
     GateRejectedError,
     HitlService,
-    InputIntegrityMetrics,
     MergeConflictMetrics,
 )
 from .models import ExecutionEdge, ExecutionNode, LangGraphExecutionPlan
@@ -22,11 +21,14 @@ from .validation import CanonicalGraphValidator, ValidationHaltError
 
 # Stage IDs that always open a mandatory HITL gate after the stage completes.
 _MANDATORY_POST_STAGE_GATES: dict[str, str] = {
+    "agent_01": "gate_1_normalization_review",
     "agent_02": "gate_1_scope_confirmation",
     "agent_03": "gate_2_boundary_approval",
     "agent_04": "gate_3_stride_calibration",
     "agent_05": "gate_4_threat_plausibility",
+    "agent_06": "gate_9_stix_packaging_review",
     "agent_07": "gate_5_mitigation_adequacy",
+    "agent_08": "gate_8_diagram_review",
 }
 
 
@@ -71,7 +73,11 @@ class FrameworkOrchestrator:
 
     def _open_mandatory_gate(self, gate_id: str, active_state: FrameworkState) -> None:
         snapshot = active_state.canonical_graph_dict()
-        if gate_id == "gate_1_scope_confirmation":
+        if gate_id == "gate_1_normalization_review":
+            self.hitl_service.open_normalization_review_gate(
+                artifact_snapshot=self._build_normalization_review_snapshot(active_state)
+            )
+        elif gate_id == "gate_1_scope_confirmation":
             self.hitl_service.open_scope_confirmation_gate(artifact_snapshot=snapshot)
         elif gate_id == "gate_2_boundary_approval":
             self.hitl_service.open_boundary_approval_gate(artifact_snapshot=snapshot)
@@ -81,6 +87,10 @@ class FrameworkOrchestrator:
             self.hitl_service.open_threat_plausibility_gate(artifact_snapshot=snapshot)
         elif gate_id == "gate_5_mitigation_adequacy":
             self.hitl_service.open_mitigation_adequacy_gate(artifact_snapshot=snapshot)
+        elif gate_id == "gate_8_diagram_review":
+            self.hitl_service.open_diagram_review_gate(artifact_snapshot=snapshot)
+        elif gate_id == "gate_9_stix_packaging_review":
+            self.hitl_service.open_stix_packaging_review_gate(artifact_snapshot=snapshot)
 
     def _evaluate_conditional_gate_6(self, active_state: FrameworkState) -> None:
         rules = self._trigger_rules().get("merge_conflict_resolution", {})
@@ -129,6 +139,80 @@ class FrameworkOrchestrator:
                 active_state.hitl_paused_at_gate = exc.gate_record.gate_id
             else:
                 active_state.hitl_rejected_at_gate = exc.gate_record.gate_id
+
+    def _build_input_integrity_snapshot(self, active_state: FrameworkState) -> dict[str, Any]:
+        raw_text = active_state.raw_text or ""
+        tables = active_state.tables or []
+        table_headers: list[str] = []
+        for table in tables[:3]:
+            if isinstance(table, dict):
+                table_headers.extend([str(k) for k in list(table.keys())[:5]])
+
+        return {
+            "input_preflight": {
+                "raw_text_length": len(raw_text),
+                "raw_text_preview": raw_text[:500],
+                "table_count": len(tables),
+                "table_headers_preview": table_headers[:12],
+                "checks": {
+                    "has_raw_text": len(raw_text.strip()) > 0,
+                    "has_tables": len(tables) > 0,
+                    "source_present": bool(raw_text.strip() or tables),
+                },
+            }
+        }
+
+    def _build_normalization_review_snapshot(self, active_state: FrameworkState) -> dict[str, Any]:
+        graph = active_state.canonical_graph_dict()
+        if not graph:
+            return {
+                "normalization_review": {
+                    "status": "missing_canonical_graph",
+                    "checks": {
+                        "graph_present": False,
+                        "system_name_present": False,
+                    },
+                }
+            }
+
+        interfaces = graph.get("interfaces", []) if isinstance(graph.get("interfaces"), list) else []
+        first_interfaces = []
+        for item in interfaces[:8]:
+            if isinstance(item, dict):
+                first_interfaces.append(
+                    {
+                        "id": item.get("id", ""),
+                        "name": item.get("name", ""),
+                        "from": item.get("from_node", ""),
+                        "to": item.get("to_node", ""),
+                        "protocol": item.get("protocol", ""),
+                        "trust_boundary_crossing": bool(item.get("trust_boundary_crossing", False)),
+                    }
+                )
+
+        system = graph.get("system", {}) if isinstance(graph.get("system"), dict) else {}
+        return {
+            "normalization_review": {
+                "system": {
+                    "name": system.get("name", ""),
+                    "description": system.get("description", ""),
+                    "mission_criticality": system.get("mission_criticality", ""),
+                    "safety_criticality": system.get("safety_criticality", ""),
+                },
+                "counts": {
+                    "subsystems": len(graph.get("subsystems", [])) if isinstance(graph.get("subsystems"), list) else 0,
+                    "components": len(graph.get("components", [])) if isinstance(graph.get("components"), list) else 0,
+                    "functions": len(graph.get("functions", [])) if isinstance(graph.get("functions"), list) else 0,
+                    "interfaces": len(interfaces),
+                },
+                "interfaces_preview": first_interfaces,
+                "checks": {
+                    "graph_present": True,
+                    "system_name_present": bool(system.get("name")),
+                    "interface_count_nonzero": len(interfaces) > 0,
+                },
+            }
+        }
 
     def _build_stage_runner(self, stage_id: str) -> Callable[[FrameworkGraphEnvelope], FrameworkGraphEnvelope]:
         def _runner(envelope: FrameworkGraphEnvelope) -> FrameworkGraphEnvelope:
@@ -188,7 +272,9 @@ class FrameworkOrchestrator:
         if gate_record.stage_id not in stage_ids:
             return state
 
-        start_index = stage_ids.index(gate_record.stage_id) + 1
+        stage_index = stage_ids.index(gate_record.stage_id)
+        # Gate 0 is a pre-stage review, so resuming should start at agent_01.
+        start_index = stage_index if gate_id == "gate_0_input_integrity" else stage_index + 1
         active_state = self._run_stage_sequence_langgraph(state, stage_ids[start_index:])
 
         if self.settings.pipeline.require_hitl_gates:
@@ -258,19 +344,11 @@ class FrameworkOrchestrator:
         if plan.start_node_id is None:
             return active_state
 
-        # Gate 0: Input Integrity — evaluated before first stage executes.
+        # Gate 0: Input Integrity — explicit preflight pause before first stage.
         if self.settings.pipeline.require_hitl_gates:
-            metrics = InputIntegrityMetrics(
-                parse_error_count=len(active_state.tables) == 0 and active_state.raw_text == "",
-                source_provenance_complete=bool(active_state.tables or active_state.raw_text),
-            )
             try:
-                self.hitl_service.evaluate_and_open_input_integrity_gate(
-                    metrics=metrics,
-                    artifact_snapshot={
-                        "raw_text_length": len(active_state.raw_text),
-                        "table_count": len(active_state.tables),
-                    },
+                self.hitl_service.open_input_integrity_gate(
+                    artifact_snapshot=self._build_input_integrity_snapshot(active_state),
                 )
             except GatePausedError as exc:
                 active_state.hitl_paused_at_gate = exc.gate_record.gate_id
