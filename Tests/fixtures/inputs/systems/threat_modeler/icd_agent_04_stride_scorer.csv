@@ -1,0 +1,14 @@
+entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
+subsystem,SS-A04-INPUT,Input Stage,Receives boundary-enriched canonical graph from Agent 03,Agent 04 STRIDE Scorer,,,,,,,,
+subsystem,SS-A04-SCORE,Scoring Stage,Assigns STRIDE severity scores and justifications for each data flow,Agent 04 STRIDE Scorer,,,,,,,,
+subsystem,SS-A04-OUTPUT,Output Stage,Emits STRIDE-scored canonical graph to orchestrator,Agent 04 STRIDE Scorer,,,,,,,,
+component,C-A04-FETCH,Graph Fetcher,Retrieves boundary-enriched canonical graph from Agent 03 state; validates schema compliance,SS-A04-INPUT,hosted,state_loader|graph_validator,,,,,,
+component,C-A04-LLM,LLM Prompt Handler,Constructs Agent 04 system prompt (0-5 STRIDE scoring rubric) and user prompt (all data flows with trust boundary context); calls LLM,SS-A04-SCORE,hosted,prompt_builder|json_formatter||,,,,
+component,C-A04-APPLICATOR,STRIDE Applicator,Extracts six STRIDE scores (S/T/R/I/D/E) and justification strings from LLM response; applies to each data flow,SS-A04-SCORE,hosted,score_extractor|stride_applier||,,,,
+component,C-A04-VALIDATOR,Validation Engine,Validates STRIDE scores; checks that each score is integer 0-5; checks that each justification is non-empty text; ensures schema compliance; rejects non-compliant scores,SS-A04-SCORE,hosted,schema_validator|type_checker||,,,,
+component,C-A04-EMIT,State Emitter,Serializes STRIDE-scored canonical graph; returns to orchestrator for Agent 05,SS-A04-OUTPUT,hosted,state_serializer|json_encoder||,,,,
+data_flow,DF-A04-IN-001,,Boundary-enriched canonical graph from Agent 03,C-A04-FETCH,,,C-A04-FETCH,C-A04-LLM,Memory/IPC,canonical_graph,false,
+data_flow,DF-A04-PROC-001,,LLM prompt with STRIDE scoring context,C-A04-LLM,,,C-A04-LLM,C-A04-LLM,REST/JSON,system_prompt|user_prompt|model_params,true,LLM-Provider Boundary
+data_flow,DF-A04-PROC-002,,LLM response with STRIDE scores and justifications,C-A04-LLM,,,C-A04-LLM,C-A04-APPLICATOR,REST/JSON,response_json|finish_reason,true,LLM-Provider Boundary
+data_flow,DF-A04-PROC-003,,Graph with applied STRIDE scores,C-A04-APPLICATOR,,,C-A04-APPLICATOR,C-A04-VALIDATOR,Memory/IPC,stride_scored_graph,false,
+data_flow,DF-A04-OUT-001,,Validated STRIDE-scored graph ready for Agent 05,C-A04-VALIDATOR,,,C-A04-VALIDATOR,C-A04-EMIT,Memory/IPC,stride_graph|timestamp,false,

@@ -1,0 +1,15 @@
+entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
+subsystem,SS-PROC-01,Processing Subsystem,Executes mission payload analytics and sensor fusion,Bravo Ground Station,,,,,,,,
+subsystem,SS-ROUTE-01,Mission Routing Subsystem,Validates and relays mission planning products between Charlie and Alpha,Bravo Ground Station,,,,,,,,
+subsystem,SS-STORE-01,Storage Subsystem,Manages persistent mission and intelligence data recording,Bravo Ground Station,,,,,,,,
+component,C-PROC-01,Mission Processing Server,Runs payload analytics and logs mission results,SS-PROC-01,embedded,proc.mission|proc.logger|proc.isr_analytics,,,,,,
+component,C-ROUTE-01,Mission Package Broker,Validates mission plans and routes approved mission packages to Charlie for Alpha delivery,SS-ROUTE-01,hosted,route.broker|route.policy|route.audit,,,,,,
+component,C-STORE-01,Solid State Recorder,Records high-rate sensor and mission execution data,SS-STORE-01,embedded,store.recorder,,,,,,
+component,C-STORE-02,Key Management Module,Manages encryption keys for stored data and mission-package signatures,SS-STORE-01,hosted,store.kms,,,,,,
+data_flow,DF-101,,Sensor Fusion Output,,,,C-PROC-01,C-STORE-01,PCIe,fused_sensor_frame|metadata,false,
+data_flow,DF-102,,Encrypted Log Write,,,,C-PROC-01,C-STORE-02,I2C,key_request|key_response,false,
+data_flow,DF-103,,Remote Diagnostics Pull,,,,REMOTE_OPS,C-PROC-01,HTTPS,diagnostics_request|diagnostics_report,true,Operations Network Boundary
+data_flow,DF-104,,All-Source Intelligence Input,,,,ALL_SOURCE_INTEL,C-ROUTE-01,HTTPS TLS 1.3,intel_summary|threat_updates|target_dossiers,true,Intelligence Boundary
+data_flow,DF-105,,Mission Plan from Charlie Planner,,,,C-CHARLIE-MP-01,C-ROUTE-01,HTTPS TLS 1.3,mission_id|flight_plan|weapon_profile|sensor_plan,true,Ops Network Boundary
+data_flow,DF-106,,Approved Mission Package to Charlie Relay,,,,C-ROUTE-01,C-CHARLIE-MP-01,HTTPS TLS 1.3,approved_mission_package|comm_schedule|frequency_plan,true,Ops Network Boundary
+data_flow,DF-107,,Mission Execution Feedback from Alpha,,,,ALPHA_MISSION_COMPUTER,C-ROUTE-01,HTTPS TLS 1.3,mission_status|route_progress|sensor_collection_status,true,Ops Network Boundary

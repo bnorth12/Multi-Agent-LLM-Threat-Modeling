@@ -1,0 +1,9 @@
+entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
+subsystem,SS-CHARLIE-MP-01,Charlie Mission Planning Subsystem,Generates and refines mission plans before relay through Bravo to Alpha,Charlie Satellite Communications Terminal,,,,,,,,
+component,C-CHARLIE-MP-01,Mission Planning Computer,Builds mission plans from all-source intelligence and flight-planning resources,SS-CHARLIE-MP-01,hosted,planning.engine|planning.route_solver|planning.sensor_optimizer|planning.weapon_release,,,,,,
+component,C-CHARLIE-MP-02,Planning Data Fusion Service,Normalizes all-source intelligence terrain weather and airspace constraints,SS-CHARLIE-MP-01,hosted,planning.data_fusion|planning.constraint_engine,,,,,,
+data_flow,DF-CMP-001,,All-Source Intelligence Intake,,,,ALL_SOURCE_INTEL,C-CHARLIE-MP-02,HTTPS TLS 1.3,intel_summary|threat_updates|target_dossiers,true,Planning Intelligence Boundary
+data_flow,DF-CMP-002,,Flight Planning Resource Intake,,,,FLIGHT_PLANNING_RESOURCES,C-CHARLIE-MP-02,HTTPS TLS 1.3,airspace_data|terrain_data|weather_data|route_constraints,true,Planning Intelligence Boundary
+data_flow,DF-CMP-003,,Planning Inputs to Mission Planning Computer,,,,C-CHARLIE-MP-02,C-CHARLIE-MP-01,Internal Bus,fused_planning_inputs|risk_models,false,
+data_flow,DF-CMP-004,,Generated Mission Plan to Bravo Broker,,,,C-CHARLIE-MP-01,C-BRAVO-ROUTER,HTTPS TLS 1.3,mission_id|waypoints|flight_plan|route_plan|targeting_data|weapon_profile|comm_plan|sensor_plan,true,Ops Network Boundary
+data_flow,DF-CMP-005,,Approved Mission Package Return from Bravo,,,,C-BRAVO-ROUTER,C-CHARLIE-MP-01,HTTPS TLS 1.3,approved_mission_package|release_authority|schedule,true,Ops Network Boundary

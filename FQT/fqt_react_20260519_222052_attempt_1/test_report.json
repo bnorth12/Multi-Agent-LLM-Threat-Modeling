@@ -1,0 +1,11 @@
+{
+  "status": "LIVE_BROWSER_SMOKE_OK",
+  "frontend_url": "http://localhost:5174",
+  "backend_url": "http://127.0.0.1:8600",
+  "system_name": "React FQT System",
+  "live_provider_used": true,
+  "screenshots": [
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260519_222052_attempt_1\\screenshots\\01_home.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260519_222052_attempt_1\\screenshots\\02_run_created.png"
+  ]
+}

@@ -1,0 +1,281 @@
+{
+  "attempt": 1,
+  "error": "Run did not complete all 9 stages before timeout. Observed: ['agent_01', 'agent_02']",
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 748, in main\n    result = _run_browser_flow(cfg, run_dir, baseline_runs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 673, in _run_browser_flow\n    progression = _wait_for_full_pipeline_completion(\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 313, in _wait_for_full_pipeline_completion\n    raise SmokeFailure(\nSmokeFailure: Run did not complete all 9 stages before timeout. Observed: ['agent_01', 'agent_02']\n",
+  "timestamp": "2026-05-21 00:38:21",
+  "backend_url": "http://127.0.0.1:8600",
+  "frontend_url": "http://127.0.0.1:5174",
+  "input_files": [
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\icd\\icd_alpha_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\descriptions\\description_alpha.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\icd\\icd_uas_weapon_system_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\descriptions\\description_uas_weapon_system.md"
+  ],
+  "backend_health": {
+    "status": "ok"
+  },
+  "runs": {
+    "runs": [
+      {
+        "run_id": "test-run-001",
+        "run_name": "test-run-001",
+        "archived": false,
+        "status": "paused",
+        "start_time": 1779340314.4416227,
+        "end_time": 1779340315.5922534,
+        "pause_gate": "gate_0_input_integrity",
+        "error": null,
+        "last_heartbeat_time": 1779340314.4899228,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": null,
+        "settings": null,
+        "result_state": null,
+        "live_state": null
+      },
+      {
+        "run_id": "hmi-test-run",
+        "run_name": "hmi-test-run",
+        "archived": false,
+        "status": "paused",
+        "start_time": 1779340318.7076585,
+        "end_time": 1779340318.8380542,
+        "pause_gate": "gate_0_input_integrity",
+        "error": null,
+        "last_heartbeat_time": 1779340318.8380542,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": null,
+        "settings": null,
+        "result_state": null,
+        "live_state": null
+      },
+      {
+        "run_id": "gates-test-run",
+        "run_name": "gates-test-run",
+        "archived": false,
+        "status": "paused",
+        "start_time": 1779340323.525082,
+        "end_time": 1779340324.641479,
+        "pause_gate": "gate_0_input_integrity",
+        "error": null,
+        "last_heartbeat_time": 1779340324.641479,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": null,
+        "settings": null,
+        "result_state": null,
+        "live_state": null
+      },
+      {
+        "run_id": "threats-test-run",
+        "run_name": "threats-test-run",
+        "archived": false,
+        "status": "paused",
+        "start_time": 1779340328.6904204,
+        "end_time": 1779340329.191989,
+        "pause_gate": "gate_0_input_integrity",
+        "error": null,
+        "last_heartbeat_time": 1779340329.191989,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": null,
+        "settings": null,
+        "result_state": null,
+        "live_state": null
+      },
+      {
+        "run_id": "stages-test-run",
+        "run_name": "stages-test-run",
+        "archived": false,
+        "status": "paused",
+        "start_time": 1779340333.754945,
+        "end_time": 1779340334.4753401,
+        "pause_gate": "gate_0_input_integrity",
+        "error": null,
+        "last_heartbeat_time": 1779340334.4743278,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": null,
+        "settings": null,
+        "result_state": null,
+        "live_state": null
+      },
+      {
+        "run_id": "metrics-test-run",
+        "run_name": "metrics-test-run",
+        "archived": false,
+        "status": "paused",
+        "start_time": 1779340338.485121,
+        "end_time": 1779340338.6346002,
+        "pause_gate": "gate_0_input_integrity",
+        "error": null,
+        "last_heartbeat_time": 1779340338.6346002,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": null,
+        "settings": null,
+        "result_state": null,
+        "live_state": null
+      },
+      {
+        "run_id": "gate-decision-test",
+        "run_name": "gate-decision-test",
+        "archived": false,
+        "status": "paused",
+        "start_time": 1779340342.7181437,
+        "end_time": 1779340342.8209133,
+        "pause_gate": "gate_0_input_integrity",
+        "error": null,
+        "last_heartbeat_time": 1779340342.8198993,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": null,
+        "settings": null,
+        "result_state": null,
+        "live_state": null
+      },
+      {
+        "run_id": "threat-decision-test",
+        "run_name": "threat-decision-test",
+        "archived": false,
+        "status": "paused",
+        "start_time": 1779340358.5721495,
+        "end_time": 1779340359.5232348,
+        "pause_gate": "gate_0_input_integrity",
+        "error": null,
+        "last_heartbeat_time": 1779340359.5232348,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": null,
+        "settings": null,
+        "result_state": null,
+        "live_state": null
+      },
+      {
+        "run_id": "bba90aa2-056d-4b6b-9bb9-05e114cf90dd",
+        "run_name": "React FQT System",
+        "archived": false,
+        "status": "paused",
+        "start_time": 1779340640.724035,
+        "end_time": 1779340657.6336994,
+        "pause_gate": "gate_1_scope_confirmation",
+        "error": null,
+        "last_heartbeat_time": 1779340656.354257,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": null,
+        "settings": null,
+        "result_state": null,
+        "live_state": null
+      },
+      {
+        "run_id": "a6696120-e073-4cf0-a1bc-c7d0873df46c",
+        "run_name": "React FQT System",
+        "archived": false,
+        "status": "paused",
+        "start_time": 1779340991.6069572,
+        "end_time": 1779341014.9377182,
+        "pause_gate": "gate_1_scope_confirmation",
+        "error": null,
+        "last_heartbeat_time": 1779341013.16431,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": null,
+        "settings": {
+          "model": {
+            "provider": "xai",
+            "model_name": "grok-4",
+            "api_key": "",
+            "offline_only": false,
+            "connection_url": "https://api.x.ai/v1",
+            "endpoint_mode": "chat_completions",
+            "request_timeout_seconds": 90,
+            "request_max_attempts": 2
+          },
+          "pipeline": {
+            "execution_mode": "langgraph-compatible",
+            "enabled_stage_ids": [
+              "agent_01",
+              "agent_02",
+              "agent_03",
+              "agent_04",
+              "agent_05",
+              "agent_06",
+              "agent_07",
+              "agent_08",
+              "agent_09"
+            ],
+            "stop_on_validation_error": false,
+            "require_hitl_gates": true
+          }
+        },
+        "result_state": {
+          "next_stage_id": "agent_02",
+          "messages": [
+            {
+              "stage_id": "agent_01",
+              "text": "Input Normalizer completed."
+            },
+            {
+              "stage_id": "agent_02",
+              "text": "Context Builder completed."
+            }
+          ],
+          "hitl_paused_at_gate": null,
+          "hitl_rejected_at_gate": null,
+          "llm_usage_totals": {
+            "prompt_tokens": 10296,
+            "completion_tokens": 208,
+            "reasoning_tokens": 1690,
+            "cached_tokens": 9344,
+            "total_tokens": 12194,
+            "request_count": 2
+          },
+          "llm_attempt_totals": {
+            "submitted": 2,
+            "completed": 2,
+            "failed": 0,
+            "total": 4
+          },
+          "has_canonical_graph": true,
+          "has_stix_bundle": false,
+          "has_mermaid_diagrams": false,
+          "has_final_report": false
+        },
+        "live_state": {
+          "next_stage_id": "agent_02",
+          "messages": [
+            {
+              "stage_id": "agent_01",
+              "text": "Input Normalizer completed."
+            },
+            {
+              "stage_id": "agent_02",
+              "text": "Context Builder completed."
+            }
+          ],
+          "hitl_paused_at_gate": null,
+          "hitl_rejected_at_gate": null,
+          "llm_usage_totals": {
+            "prompt_tokens": 10296,
+            "completion_tokens": 208,
+            "reasoning_tokens": 1690,
+            "cached_tokens": 9344,
+            "total_tokens": 12194,
+            "request_count": 2
+          },
+          "llm_attempt_totals": {
+            "submitted": 2,
+            "completed": 2,
+            "failed": 0,
+            "total": 4
+          },
+          "has_canonical_graph": true,
+          "has_stix_bundle": false,
+          "has_mermaid_diagrams": false,
+          "has_final_report": false
+        }
+      }
+    ]
+  },
+  "new_run_ids_since_attempt_start": [
+    "a6696120-e073-4cf0-a1bc-c7d0873df46c"
+  ],
+  "backend_port_pids": [
+    317812
+  ],
+  "frontend_port_pids": [
+    317944
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "status": "LIVE_BROWSER_SMOKE_OK",
+  "run_id": "d32aa43b-27ff-476f-ab03-379a881997e0",
+  "frontend_url": "http://localhost:5174",
+  "backend_url": "http://127.0.0.1:8600",
+  "system_name": "React FQT System",
+  "input_files": [
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\icd\\icd_alpha_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\descriptions\\description_alpha.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\icd\\icd_uas_weapon_system_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\descriptions\\description_uas_weapon_system.md"
+  ],
+  "live_provider_used": true,
+  "pipeline_progression": {
+    "status": "completed",
+    "observed_stage_ids": [
+      "agent_01",
+      "agent_02",
+      "agent_03",
+      "agent_04",
+      "agent_05",
+      "agent_06",
+      "agent_07",
+      "agent_08",
+      "agent_09"
+    ],
+    "gates_resolved": 11,
+    "resumes": 5,
+    "threats_reviewed": 0,
+    "pauses_detected": [
+      "gate_1_scope_confirmation",
+      "gate_2_boundary_approval",
+      "gate_3_stride_calibration",
+      "gate_4_threat_plausibility",
+      "gate_5_mitigation_adequacy",
+      "gate_6_merge_conflict_resolution",
+      "gate_7_export_consistency"
+    ]
+  },
+  "displays_covered": [
+    "execution",
+    "threats",
+    "gates",
+    "tokens",
+    "artifacts",
+    "last_prompt",
+    "prompt_editor"
+  ],
+  "screenshots": [
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\01_home.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\02_uploaded_files.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\03_run_created.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\03_execution.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\04_threats.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\05_gates.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\06_tokens.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\07_artifacts.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\08_last_prompt.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\09_prompt_editor.png",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\FQT\\fqt_react_20260521_010507_attempt_1\\screenshots\\99_completed.png"
+  ]
+}
