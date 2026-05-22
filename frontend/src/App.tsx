@@ -20,6 +20,7 @@ import {
   Typography,
   Chip,
 } from '@mui/material'
+import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded'
 import * as XLSX from 'xlsx'
 import { apiClient } from './api/client'
 import type { RunEntry, FullStateResponse, Stage, Gate, LLMMetrics } from './types/api'
@@ -519,6 +520,8 @@ function App() {
   const timelineCurrentStage = isRunActivelyExecuting ? fullState?.state.next_stage_id : null
   const currentStageLabel = stages.find((stage) => stage.stage_id === timelineCurrentStage)?.label ?? null
   const pausedGateName = gates.find((gate) => gate.gate_id === pausedGateId)?.gate_name ?? pausedGateId ?? null
+  const showHeaderRuntimeIndicator = normalizedRunStatus === 'running' && !isPaused && !isRejected
+  const headerRuntimeLabel = currentStageLabel ? `Running ${currentStageLabel}` : 'Pipeline running'
   const timelineStatusText = isRejected
     ? `Rejected${pausedGateName ? ` at ${pausedGateName}` : ''}`
     : pausedGateName
@@ -750,6 +753,25 @@ function App() {
         <AppBar position="static" sx={{ color: 'primary.main' }}>
           <Toolbar>
             <Box sx={{ flex: 1 }}>Threat Modeler Control Console</Box>
+            {selectedRunId && showHeaderRuntimeIndicator && (
+              <Chip
+                icon={<DirectionsRunRoundedIcon sx={{ fontSize: 18, animation: 'headerRunnerStride 0.85s ease-in-out infinite' }} />}
+                label={headerRuntimeLabel}
+                size="small"
+                sx={{
+                  mr: 1.5,
+                  color: '#e3f2fd',
+                  background: 'linear-gradient(135deg, rgba(21, 101, 192, 0.32), rgba(2, 136, 209, 0.18))',
+                  border: '1px solid rgba(144, 202, 249, 0.35)',
+                  '& .MuiChip-icon': { color: '#90caf9' },
+                  '@keyframes headerRunnerStride': {
+                    '0%': { transform: 'translateX(0) rotate(0deg)' },
+                    '50%': { transform: 'translateX(1.5px) rotate(-10deg)' },
+                    '100%': { transform: 'translateX(0) rotate(0deg)' },
+                  },
+                }}
+              />
+            )}
             <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: health ? '#4caf50' : '#f44336', mr: 1 }} />
             <Box>{health ? 'Connected' : 'Disconnected'}</Box>
           </Toolbar>
@@ -824,14 +846,6 @@ function App() {
             {selectedRunId && wizardStep !== 'creating-run' && (
               <>
                 {currentRun && <Alert severity={isPaused ? 'warning' : isRejected ? 'error' : 'info'} sx={{ mb: 2 }}>Status: <strong>{displayRunStatus}</strong></Alert>}
-                {!loading && !isPaused && isRunActivelyExecuting && currentRun?.settings != null && currentRun?.heartbeat_age_seconds != null && currentRun?.heartbeat_timeout_seconds != null && (
-                  <Alert
-                    severity={currentRun.heartbeat_age_seconds > currentRun.heartbeat_timeout_seconds ? 'error' : 'info'}
-                    sx={{ mb: 2 }}
-                  >
-                    LLM Watchdog: heartbeat age {currentRun.heartbeat_age_seconds.toFixed(1)}s / timeout {currentRun.heartbeat_timeout_seconds.toFixed(1)}s
-                  </Alert>
-                )}
                 {loading && <CircularProgress />}
                 {!loading && tabValue === 'gates' && (
                   <HITLGateManager
@@ -850,7 +864,7 @@ function App() {
           </Container>
         </Box>
 
-        {selectedRunId && <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.12)', backgroundColor: 'background.paper', p: 1.5 }}><ExecutionProgress stages={stages} currentStage={timelineCurrentStage} gates={gates} pausedGateId={pausedGateId} statusText={timelineStatusText} /></Box>}
+        {selectedRunId && <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.12)', backgroundColor: 'background.paper', p: 1.5 }}><ExecutionProgress stages={stages} currentStage={timelineCurrentStage} currentStageLabel={currentStageLabel} gates={gates} pausedGateId={pausedGateId} statusText={timelineStatusText} showRuntimeActivity={showHeaderRuntimeIndicator} heartbeatAgeSeconds={currentRun?.heartbeat_age_seconds ?? null} heartbeatTimeoutSeconds={currentRun?.heartbeat_timeout_seconds ?? null} /></Box>}
       </Box>
     </Box>
   )

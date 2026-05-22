@@ -1,5 +1,6 @@
 import React from 'react'
-import { Box, Typography, Tooltip } from '@mui/material'
+import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded'
+import { Box, Chip, Typography, Tooltip } from '@mui/material'
 import type { Stage, Gate } from '../types/api'
 
 const TIMELINE_GATE_IDS = [
@@ -59,16 +60,36 @@ const ALL_STAGES: Stage[] = [
 interface ExecutionProgressProps {
   stages: Stage[]
   currentStage?: string | null
+  currentStageLabel?: string | null
   gates?: Gate[] | null
   pausedGateId?: string | null
   statusText?: string | null
+  showRuntimeActivity?: boolean
+  heartbeatAgeSeconds?: number | null
+  heartbeatTimeoutSeconds?: number | null
 }
 
-export const ExecutionProgress: React.FC<ExecutionProgressProps> = ({ stages, currentStage, gates, pausedGateId, statusText }) => {
+export const ExecutionProgress: React.FC<ExecutionProgressProps> = ({
+  stages,
+  currentStage,
+  currentStageLabel,
+  gates,
+  pausedGateId,
+  statusText,
+  showRuntimeActivity = false,
+  heartbeatAgeSeconds = null,
+  heartbeatTimeoutSeconds = null,
+}) => {
   const stageMap = new Map(stages.map((stage) => [stage.stage_id, stage]))
   const displayedStages = ALL_STAGES.map((stage) => stageMap.get(stage.stage_id) ?? stage)
   const completedCount = displayedStages.filter((s) => s.status === 'complete').length
   const progressPercent = displayedStages.length > 0 ? (completedCount / displayedStages.length) * 100 : 0
+  const hasWatchdogTelemetry = heartbeatAgeSeconds != null && heartbeatTimeoutSeconds != null
+  const isHeartbeatStale = hasWatchdogTelemetry ? heartbeatAgeSeconds > heartbeatTimeoutSeconds : false
+  const runtimeLabel = currentStageLabel ? `Running ${currentStageLabel}` : 'Pipeline running'
+  const watchdogLabel = hasWatchdogTelemetry
+    ? `Watchdog ${isHeartbeatStale ? 'Stale' : 'Healthy'} ${heartbeatAgeSeconds.toFixed(1)}s / ${heartbeatTimeoutSeconds.toFixed(1)}s`
+    : null
 
   const isGatePausedForStage = (stageId: string): boolean => {
     const stageGates = (gates ?? []).filter((gate) => gate.stage_id === stageId)
@@ -168,9 +189,44 @@ export const ExecutionProgress: React.FC<ExecutionProgressProps> = ({ stages, cu
         <Typography variant="caption" sx={{ fontWeight: 600, color: 'primary.main', textTransform: 'uppercase', letterSpacing: 0.5 }}>
           Execution Timeline
         </Typography>
-        <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
-          {completedCount}/{displayedStages.length} • {Math.round(progressPercent)}%
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          {showRuntimeActivity && (
+            <Chip
+              icon={<DirectionsRunRoundedIcon sx={{ fontSize: 18, animation: 'timelineRunnerStride 0.85s ease-in-out infinite' }} />}
+              label={runtimeLabel}
+              size="small"
+              color="info"
+              variant="filled"
+              sx={{
+                backgroundColor: 'rgba(33, 150, 243, 0.18)',
+                color: '#e3f2fd',
+                border: '1px solid rgba(100, 181, 246, 0.4)',
+                '& .MuiChip-icon': { color: '#90caf9' },
+                '@keyframes timelineRunnerStride': {
+                  '0%': { transform: 'translateX(0) rotate(0deg)' },
+                  '50%': { transform: 'translateX(1.5px) rotate(-10deg)' },
+                  '100%': { transform: 'translateX(0) rotate(0deg)' },
+                },
+              }}
+            />
+          )}
+          {watchdogLabel && (
+            <Chip
+              label={watchdogLabel}
+              size="small"
+              color={isHeartbeatStale ? 'error' : 'success'}
+              variant={isHeartbeatStale ? 'filled' : 'outlined'}
+              sx={{
+                fontWeight: 600,
+                borderColor: isHeartbeatStale ? 'transparent' : 'rgba(129, 199, 132, 0.45)',
+                backgroundColor: isHeartbeatStale ? 'rgba(211, 47, 47, 0.16)' : 'rgba(56, 142, 60, 0.12)',
+              }}
+            />
+          )}
+          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.7)' }}>
+            {completedCount}/{displayedStages.length} • {Math.round(progressPercent)}%
+          </Typography>
+        </Box>
       </Box>
 
       {/* Timeline Visualization */}

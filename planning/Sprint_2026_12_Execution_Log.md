@@ -388,7 +388,7 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
 - Updated HITL Gate ledger ordering to include the new normalization review gate.
 - Updated footer timeline triangle positioning logic to support before-stage and after-stage gate markers with deterministic ordering and overlap spreading.
 
-### Validation
+### Monitoring Visibility Validation
 
 - `PYTHONPATH=src python -m pytest Tests/test_hmi_backend_api.py -q` -> `18 passed`
 - `PYTHONPATH=src python -m pytest Tests/integration/test_avionics_expected_results.py -q` -> `2 passed`
@@ -417,7 +417,28 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
 - Component diagnostics: `get_errors` on `frontend/src/components/ArtifactsViewer.tsx` -> no file diagnostics.
 - Browser flow evidence: `PYTHONPATH=src .venv\Scripts\python.exe scripts/live_browser_e2e_smoke_react.py` -> `LIVE_BROWSER_SMOKE_OK` with artifact loading and progression evidence.
 
+### Monitoring Visibility Governance Synchronization
+
+## 2026-05-21 (Update 12 - Runtime Monitoring Status Visibility Refinement)
+
+### Monitoring Visibility Completion
+
+- Restored a compact animated running-state indicator in the React header while a stage is actively running.
+- Moved watchdog heartbeat telemetry out of the transient main-body alert treatment and into persistent execution-status chrome adjacent to the execution timeline.
+- Preserved centered plain-language timeline status text so runtime state remains readable from the HITL Gate page.
+- Added focused component coverage in `frontend/src/components/ExecutionProgress.test.tsx` and header-shell validation in `frontend/src/App.test.tsx`.
+
+### Validation
+
+- `frontend: npm run test -- --run src/App.test.tsx src/components/ExecutionProgress.test.tsx src/components/HITLGateManager.test.tsx` -> `9 passed` in `19.46s`
+- `frontend: npm run build` -> passed in `42.89s`
+
 ### Governance Synchronization
+
+- Refined RHMI-005 in `Requirements/11_React_HMI_Refactor_Requirements.md` to cover timeline-adjacent watchdog telemetry and animated header running-state cue behavior.
+- Updated `Requirements/12_React_HMI_Traceability_To_Tests.md` for RHMI-005 test linkage.
+- Updated `planning/Sprint_2026_12_Traceability_Matrix.md` row `S12-REQ-012` for the runtime monitoring refinement.
+- Updated Sprint 2026-12 issue tracking for `S12-012 / #63` and added dedicated issue artifact `planning/issues/issue_2026_12_S12_012_Runtime_Monitoring_Status_Continuity.md`.
 
 - Added `GUI-034` in `Requirements/10_GUI_Requirements.md` for Mermaid multi-diagram review behavior.
 - Added `RHMI-010` in `Requirements/11_React_HMI_Refactor_Requirements.md` and mapped it in `Requirements/12_React_HMI_Traceability_To_Tests.md`.

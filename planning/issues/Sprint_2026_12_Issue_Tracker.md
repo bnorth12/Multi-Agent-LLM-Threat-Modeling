@@ -9,7 +9,7 @@ Sprint Goal: Keep Sprint 2026-12 React HMI/API delivery fully traceable through 
 | ID | GitHub Issue | Type | Priority | Status | Summary | Related Requirements | Primary Files |
 |---|---|---|---|---|---|---|---|
 | S12-011 | #64 | UI Workflow / HITL | P1 | In Review | Convert the HITL screen into an ordered gate ledger with lifecycle counts and clear row-level review behavior. | GUI-030 | frontend/src/components/HITLGateManager.tsx, frontend/src/components/HITLGateManager.test.tsx, Requirements/10_GUI_Requirements.md |
-| S12-012 | #63 | UI Workflow / Monitoring | P1 | In Review | Keep operators on the HITL Gate page during execution and show centered plain-language footer status text across pages. | GUI-031 | frontend/src/App.tsx, frontend/src/components/ExecutionProgress.tsx, Requirements/10_GUI_Requirements.md |
+| S12-012 | #63 | UI Workflow / Monitoring | P1 | In Review | Keep operators on the HITL Gate page during execution, show centered plain-language footer status text across pages, restore timeline-adjacent watchdog heartbeat telemetry, and restore an animated header running indicator while a stage is active. | GUI-031, RHMI-005 | frontend/src/App.tsx, frontend/src/App.test.tsx, frontend/src/components/ExecutionProgress.tsx, frontend/src/components/ExecutionProgress.test.tsx, Requirements/10_GUI_Requirements.md, Requirements/11_React_HMI_Refactor_Requirements.md |
 | S12-013 | #67 | HITL Governance / Preflight | P1 | In Progress | Enforce Gate 0 preflight review with human-readable parsed input summaries before Stage 1 execution. | GUI-032 | src/threat_modeler/orchestrator.py, src/threat_modeler/hitl/service.py, frontend/src/components/HITLGateManager.tsx, Requirements/10_GUI_Requirements.md |
 | S12-014 | #66 | HITL Governance / Stage Handoff | P1 | In Progress | Add mandatory post-Stage-1 normalization review gate and block Stage 2 until analyst decision with readable normalization summaries. | GUI-033 | src/threat_modeler/hitl/gate_engine.py, src/threat_modeler/orchestrator.py, frontend/src/components/HITLGateManager.tsx, frontend/src/components/ExecutionProgress.tsx, Requirements/10_GUI_Requirements.md |
 | S12-015 | #68 | Artifact UX / Mermaid Review | P1 | In Review | Add parsed Mermaid diagram selector, split/diagram/text modes, editable source plus rendered preview, and visible `x of n - diagram name` indicator. | GUI-034, RHMI-010 | frontend/src/components/ArtifactsViewer.tsx, Requirements/10_GUI_Requirements.md, Requirements/11_React_HMI_Refactor_Requirements.md |
@@ -40,7 +40,7 @@ Each Sprint 2026-12 issue is only closed when all are true:
 
 ## 4. Current State
 
-- Actual requirement updates completed for GUI-030 and GUI-031.
+- Actual requirement updates completed for GUI-030, GUI-031, and RHMI-005 runtime monitoring continuity refinement.
 - Actual requirement updates completed for GUI-034 and RHMI-010.
 - Actual requirement updates completed for GUI-037 and RHMI-015.
 - Actual requirement updates completed for RHMI-016 (restart-safe artifact addressability).

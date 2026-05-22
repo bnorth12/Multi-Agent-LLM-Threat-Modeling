@@ -9,9 +9,9 @@ const mockRun = vi.hoisted(() => ({
   status: 'running',
   pause_gate: null,
   error: null,
-  last_heartbeat_time: null,
-  heartbeat_timeout_seconds: null,
-  heartbeat_age_seconds: null,
+  last_heartbeat_time: 1716282600,
+  heartbeat_timeout_seconds: 30,
+  heartbeat_age_seconds: 5,
   start_time: null,
   end_time: null,
   settings: null,
@@ -26,11 +26,11 @@ vi.mock('./api/client', () => ({
     getFullState: vi.fn().mockResolvedValue({
       metadata: {},
       state: {
-        next_stage_id: null,
+        next_stage_id: 'agent_03',
         hitl_paused_at_gate: null,
         hitl_rejected_at_gate: null,
       },
-      stages: [],
+      stages: [{ stage_id: 'agent_03', label: 'Trust Boundary Validator', status: 'running' }],
       threats: [],
       gates: [],
       metrics: null,
@@ -128,6 +128,7 @@ describe('App shell', () => {
     expect(screen.getByRole('tab', { name: 'Mermaid Diagrams' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'STIX Bundle' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Report' })).toBeInTheDocument()
+    expect(screen.getByText('Running Trust Boundary Validator')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Last Prompt' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Prompt Editor' })).toBeInTheDocument()
   })

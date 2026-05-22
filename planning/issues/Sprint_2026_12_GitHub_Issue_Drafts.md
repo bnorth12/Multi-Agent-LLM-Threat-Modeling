@@ -87,29 +87,32 @@ This issue restores ingestion parity with the Streamlit path by parsing CSV/XLSX
 
 ## S12-012
 
-Title: Sprint 2026-12: Persistent footer status and HITL-page monitoring continuity
+Title: Sprint 2026-12: Persistent monitoring status, watchdog telemetry, and HITL-page continuity
 
 Body:
 
 ```md
 ## Summary
 
-Operators should be able to stay on the HITL Gate page while a run continues or resumes, with the persistent footer timeline providing centered plain-language status text across the application.
+Operators should be able to stay on the HITL Gate page while a run continues or resumes, with the persistent execution-status chrome providing centered plain-language status text, visible watchdog heartbeat telemetry, and an animated header running indicator while a stage is active.
 
-## Related Requirement
+## Related Requirements
 
 - GUI-031 in Requirements/10_GUI_Requirements.md
+- RHMI-005 in Requirements/11_React_HMI_Refactor_Requirements.md
 
 ## Acceptance Criteria
 
 - Resuming from a gate does not force navigation back to the execution page.
 - Footer timeline shows centered plain-language run status.
+- Watchdog telemetry remains visible beside the execution timeline with explicit heartbeat age versus timeout.
+- An animated running-state indicator is visible in the header while a stage is actively running.
 - Backend/runtime state and footer status remain coherent for paused, running, and completed states.
 - Sprint 2026-12 traceability and execution log are updated.
 
 ## Validation
 
-- frontend: npm run test -- --run src/components/HITLGateManager.test.tsx
+- frontend: npm run test -- --run src/App.test.tsx src/components/ExecutionProgress.test.tsx src/components/HITLGateManager.test.tsx
 - PYTHONPATH=src python -m pytest Tests/test_hmi_backend_api.py -q
 
 ## Closure Evidence
@@ -117,6 +120,13 @@ Operators should be able to stay on the HITL Gate page while a run continues or 
 - planning/Sprint_2026_12_Traceability_Matrix.md
 - planning/Sprint_2026_12_Execution_Log.md
 - Requirements/10_GUI_Requirements.md
+- Requirements/11_React_HMI_Refactor_Requirements.md
+
+---
+
+## S12-012 Implementation Note
+
+Use this issue to track the post-refinement monitoring polish that restores a visible watchdog surface near the execution timeline and the animated header running cue from the earlier operator experience, rather than opening a separate issue unless monitoring scope expands beyond the current runtime-status surfaces.
 ```
 
 ---
