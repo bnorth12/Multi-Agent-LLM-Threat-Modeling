@@ -14,12 +14,15 @@ import {
   MenuItem,
   TextField,
   Typography,
+  Chip,
 } from '@mui/material'
 import { apiClient } from '../api/client'
 import mermaid from 'mermaid'
 
 interface ArtifactsViewerProps {
   runId: string
+  initialTab?: number
+  onTabChange?: (tabIndex: number) => void
 }
 
 interface TrustBoundaryRow {
@@ -43,6 +46,16 @@ interface StrideRow {
     D: number
     E: number
   }
+}
+
+interface ThreatRow {
+  id: string
+  interfaceName: string
+  name: string
+  description: string
+  taxonomy: string[]
+  likelihood: number
+  impact: number
 }
 
 interface MermaidDiagramOption {
@@ -93,6 +106,30 @@ function extractStrideRows(canonicalContent: any): StrideRow[] {
         E: toScore(iface?.stride?.E),
       },
     }))
+}
+
+function extractThreatRows(canonicalContent: any): ThreatRow[] {
+  const interfaces = Array.isArray(canonicalContent?.interfaces) ? canonicalContent.interfaces : []
+  const rows: ThreatRow[] = []
+
+  interfaces.forEach((iface: any, ifaceIndex: number) => {
+    const threats = Array.isArray(iface?.threats) ? iface.threats : []
+    threats.forEach((threat: any, threatIndex: number) => {
+      rows.push({
+        id: String(threat?.id ?? `${iface?.id ?? `iface-${ifaceIndex + 1}`}-${threatIndex + 1}`),
+        interfaceName: String(iface?.name ?? iface?.id ?? 'Unnamed Interface'),
+        name: String(threat?.name ?? 'Unnamed Threat'),
+        description: String(threat?.description ?? ''),
+        taxonomy: [threat?.mitre_attack_technique, threat?.capec_id, threat?.cwe_id]
+          .flatMap((item) => (Array.isArray(item) ? item : [item]))
+          .filter((item): item is string => typeof item === 'string' && item.trim().length > 0),
+        likelihood: typeof threat?.likelihood === 'number' ? threat.likelihood : Number(threat?.likelihood ?? 0),
+        impact: typeof threat?.impact === 'number' ? threat.impact : Number(threat?.impact ?? 0),
+      })
+    })
+  })
+
+  return rows
 }
 
 function stripMermaidFence(text: string): string {
@@ -207,8 +244,8 @@ function extractMermaidDiagrams(content: unknown): MermaidDiagramOption[] {
   return []
 }
 
-export function ArtifactsViewer({ runId }: ArtifactsViewerProps) {
-  const [tabValue, setTabValue] = React.useState(0)
+export function ArtifactsViewer({ runId, initialTab = 0, onTabChange }: ArtifactsViewerProps) {
+  const [tabValue, setTabValue] = React.useState(initialTab)
   const [artifacts, setArtifacts] = React.useState<Record<string, any>>({})
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
@@ -217,6 +254,11 @@ export function ArtifactsViewer({ runId }: ArtifactsViewerProps) {
   const [editableMermaidText, setEditableMermaidText] = React.useState<string>('')
   const [mermaidSvg, setMermaidSvg] = React.useState<string>('')
   const [mermaidRenderError, setMermaidRenderError] = React.useState<string | null>(null)
+
+  const threatRows = React.useMemo(
+    () => extractThreatRows(artifacts.canonical?.content),
+    [artifacts.canonical?.content],
+  )
 
   const mermaidDiagrams = React.useMemo(
     () => extractMermaidDiagrams(artifacts.mermaid?.content),
@@ -287,6 +329,14 @@ export function ArtifactsViewer({ runId }: ArtifactsViewerProps) {
   }, [editableMermaidText])
 
   React.useEffect(() => {
+    setTabValue(initialTab)
+  }, [initialTab])
+
+  React.useEffect(() => {
+    onTabChange?.(tabValue)
+  }, [tabValue, onTabChange])
+
+  React.useEffect(() => {
     const loadArtifacts = async () => {
       setLoading(true)
       setError(null)
@@ -314,6 +364,7 @@ export function ArtifactsViewer({ runId }: ArtifactsViewerProps) {
         <Tab label="📊 Canonical Graph" />
         <Tab label="🛡️ Trust Boundaries" />
         <Tab label="🎯 STRIDE Viewer" />
+        <Tab label="💥 Threats" />
         <Tab label="🎨 Mermaid Diagrams" />
         <Tab label="📋 STIX Bundle" />
         <Tab label="📄 Report" />
@@ -395,6 +446,32 @@ export function ArtifactsViewer({ runId }: ArtifactsViewerProps) {
       )}
 
       {!loading && tabValue === 3 && (
+        <Paper sx={{ p: 3 }}>
+          <Box sx={{ fontWeight: 600, mb: 2 }}>Threats</Box>
+          {threatRows.length === 0 ? (
+            <Alert severity="info">No threats available yet</Alert>
+          ) : (
+            <Box sx={{ display: 'grid', gap: 1.25 }}>
+              {threatRows.map((row) => (
+                <Paper key={row.id} variant="outlined" sx={{ p: 1.5, borderRadius: 2 }}>
+                  <Box sx={{ fontWeight: 700 }}>{row.name}</Box>
+                  <Box sx={{ fontSize: '0.85rem', opacity: 0.8, mb: 0.5 }}>Interface: {row.interfaceName}</Box>
+                  <Box sx={{ fontSize: '0.9rem', mb: 1 }}>{row.description}</Box>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.75 }}>
+                    <Chip size="small" label={`Likelihood ${row.likelihood}`} />
+                    <Chip size="small" label={`Impact ${row.impact}`} />
+                    {row.taxonomy.map((item) => (
+                      <Chip key={item} size="small" variant="outlined" label={item} />
+                    ))}
+                  </Box>
+                </Paper>
+              ))}
+            </Box>
+          )}
+        </Paper>
+      )}
+
+      {!loading && tabValue === 4 && (
         <Paper sx={{ p: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2, flexWrap: 'wrap', gap: 1 }}>
             <Box sx={{ fontWeight: 600 }}>Mermaid Diagrams</Box>
@@ -490,7 +567,7 @@ export function ArtifactsViewer({ runId }: ArtifactsViewerProps) {
         </Paper>
       )}
 
-      {!loading && tabValue === 4 && (
+      {!loading && tabValue === 5 && (
         <Paper sx={{ p: 3 }}>
           <Box sx={{ fontWeight: 600, mb: 2 }}>STIX 2.1 Bundle (JSON)</Box>
           <Box sx={{ fontFamily: 'monospace', fontSize: '0.85rem', overflow: 'auto', maxHeight: '400px' }}>
@@ -499,7 +576,7 @@ export function ArtifactsViewer({ runId }: ArtifactsViewerProps) {
         </Paper>
       )}
 
-      {!loading && tabValue === 5 && (
+      {!loading && tabValue === 6 && (
         <Paper sx={{ p: 3 }}>
           <Box sx={{ fontWeight: 600, mb: 2 }}>Final Report</Box>
           {artifacts.report?.content ? (

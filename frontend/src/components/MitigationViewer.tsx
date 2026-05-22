@@ -42,7 +42,7 @@ export const MitigationViewer: React.FC<MitigationViewerProps> = ({ threats }) =
                 <TableCell><Chip label={type} size="small" color={type === 'Technical' ? 'primary' : 'secondary'} /></TableCell>
                 <TableCell>{mitigation.title}</TableCell>
                 <TableCell>{mitigation.description}</TableCell>
-                <TableCell>{mitigation.residual_risk}</TableCell>
+                <TableCell>{mitigation.residual_risk_after_control ?? 'N/A'}</TableCell>
               </TableRow>
             ))}
           </TableBody>

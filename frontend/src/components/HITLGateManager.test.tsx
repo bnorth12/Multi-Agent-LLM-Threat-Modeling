@@ -1,7 +1,11 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen, within, cleanup } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { HITLGateManager } from './HITLGateManager'
 import type { Gate } from '../types/api'
+
+afterEach(() => {
+  cleanup()
+})
 
 function buildGate(overrides: Partial<Gate>): Gate {
   return {
@@ -249,5 +253,46 @@ describe('HITLGateManager', () => {
 
     fireEvent.click(lockedButtons[0])
     expect(onGateDecision).not.toHaveBeenCalled()
+  })
+
+  it('allows decisions when paused gate arrives as pending', async () => {
+    const onGateDecision = vi.fn<
+      (gateId: string, action: string, rationale: string) => Promise<void>
+    >().mockResolvedValue(undefined)
+
+    render(
+      <HITLGateManager
+        gates={[
+          buildGate({
+            gate_id: 'gate_0_input_integrity',
+            gate_name: 'Input Integrity Gate',
+            stage_id: 'agent_01',
+            status: 'pending',
+          }),
+        ]}
+        onGateDecision={onGateDecision}
+        pausedGateId="gate_0_input_integrity"
+      />,
+    )
+
+    const gateTitle = screen.getByText(/Gate 0 .* Input Integrity Gate/)
+    const gateRow = gateTitle.closest('.MuiCardContent-root')
+    expect(gateRow).not.toBeNull()
+    fireEvent.click(within(gateRow as HTMLElement).getByRole('button', { name: 'Review' }))
+    const dialog = await screen.findByRole('dialog')
+
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'Rationale' }), {
+      target: { value: 'Input preflight checks look correct.' },
+    })
+
+    const approveButton = within(dialog).getByRole('button', { name: 'Approve' })
+    expect(approveButton).toBeEnabled()
+    fireEvent.click(approveButton)
+
+    expect(onGateDecision).toHaveBeenCalledWith(
+      'gate_0_input_integrity',
+      'accept_as_is',
+      'Input preflight checks look correct.',
+    )
   })
 })

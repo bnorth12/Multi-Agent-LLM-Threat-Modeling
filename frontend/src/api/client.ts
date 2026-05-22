@@ -114,6 +114,7 @@ export const apiClient = {
       settings?: RuntimeSettings
       initialState?: {
         raw_text?: string
+        tables?: Array<Record<string, string>>
       }
     },
   ) =>

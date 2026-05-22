@@ -18,23 +18,29 @@ import {
   FormControlLabel,
   Paper,
   Typography,
+  Chip,
 } from '@mui/material'
+import * as XLSX from 'xlsx'
 import { apiClient } from './api/client'
-import type { RunEntry, FullStateResponse, Stage, Gate, Threat, LLMMetrics } from './types/api'
+import type { RunEntry, FullStateResponse, Stage, Gate, LLMMetrics } from './types/api'
 import { RoleSelect } from './components/RoleSelect'
 import { PipelineConfig } from './components/PipelineConfig'
 import type { PipelineConfigData } from './components/PipelineConfig'
 import { InputEntry } from './components/InputEntry'
 import { ExecutionProgress } from './components/ExecutionProgress'
 import { HITLGateManager } from './components/HITLGateManager'
-import { ThreatReview } from './components/ThreatReview'
 import { TokenUsageDashboard } from './components/TokenUsageDashboard'
 import { ArtifactsViewer } from './components/ArtifactsViewer'
 import { LastPromptViewer } from './components/LastPromptViewer'
 import { PromptEditor } from './components/PromptEditor'
 
-type TabValue = 'execution' | 'threats' | 'gates' | 'tokens' | 'artifacts' | 'last_prompt' | 'prompt_editor'
+type TabValue = 'gates' | 'tokens' | 'artifacts' | 'last_prompt' | 'prompt_editor'
 type WizardStep = 'home' | 'role-select' | 'pipeline-config' | 'input-entry' | 'creating-run' | 'monitoring'
+type ParsedInputBundle = {
+  rawText: string
+  tables: Array<Record<string, string>>
+  parseWarnings: string[]
+}
 
 function uuidv4() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -68,6 +74,104 @@ function mapPipelineConfigToRuntimeSettings(config: PipelineConfigData) {
   }
 }
 
+function _sheetToRows(sheet: XLSX.WorkSheet, sourceFile: string): Array<Record<string, string>> {
+  const grid = XLSX.utils.sheet_to_json<(string | number | boolean | null)[]>(sheet, {
+    header: 1,
+    defval: '',
+    raw: false,
+    blankrows: false,
+  })
+
+  if (!grid.length) {
+    return []
+  }
+
+  const headerRow = (grid[0] ?? []) as Array<string | number | boolean | null>
+  const headerCells = headerRow.map((value: string | number | boolean | null, index: number) => {
+    const text = String(value ?? '').trim()
+    return text || `col_${index}`
+  })
+
+  const dedupedHeaders: string[] = []
+  const used = new Map<string, number>()
+  for (const header of headerCells) {
+    const seen = used.get(header) ?? 0
+    used.set(header, seen + 1)
+    dedupedHeaders.push(seen === 0 ? header : `${header}_${seen + 1}`)
+  }
+
+  return (grid.slice(1) as Array<Array<string | number | boolean | null>>).map((row) => {
+    const entry: Record<string, string> = { _source_file: sourceFile }
+    dedupedHeaders.forEach((header, index) => {
+      entry[header] = String(row[index] ?? '')
+    })
+    return entry
+  })
+}
+
+async function _parseInputFiles(files: File[]): Promise<ParsedInputBundle> {
+  const rawParts: string[] = []
+  const tables: Array<Record<string, string>> = []
+  const parseWarnings: string[] = []
+
+  for (const file of files) {
+    const lower = file.name.toLowerCase()
+    const ext = lower.includes('.') ? lower.split('.').pop() ?? '' : ''
+
+    if (ext === 'md' || ext === 'txt' || ext === 'yaml' || ext === 'yml') {
+      const text = await file.text()
+      rawParts.push(`# --- ${file.name} ---\n${text}`)
+      continue
+    }
+
+    if (ext === 'csv') {
+      try {
+        const text = await file.text()
+        const workbook = XLSX.read(text, { type: 'string', raw: false })
+        const firstSheetName = workbook.SheetNames[0]
+        const firstSheet = firstSheetName ? workbook.Sheets[firstSheetName] : undefined
+        if (!firstSheet) {
+          parseWarnings.push(`CSV file '${file.name}' had no readable sheet.`)
+          continue
+        }
+        tables.push(..._sheetToRows(firstSheet, file.name))
+      } catch {
+        parseWarnings.push(`Failed to parse CSV file '${file.name}'.`)
+      }
+      continue
+    }
+
+    if (ext === 'xlsx') {
+      try {
+        const buffer = await file.arrayBuffer()
+        const workbook = XLSX.read(buffer, { type: 'array', raw: false })
+        if (!workbook.SheetNames.length) {
+          parseWarnings.push(`XLSX file '${file.name}' had no worksheets.`)
+          continue
+        }
+        for (const sheetName of workbook.SheetNames) {
+          const sheet = workbook.Sheets[sheetName]
+          if (!sheet) {
+            continue
+          }
+          tables.push(..._sheetToRows(sheet, `${file.name}:${sheetName}`))
+        }
+      } catch {
+        parseWarnings.push(`Failed to parse XLSX file '${file.name}'.`)
+      }
+      continue
+    }
+
+    parseWarnings.push(`Unsupported file extension for '${file.name}'.`)
+  }
+
+  return {
+    rawText: rawParts.join('\n\n'),
+    tables,
+    parseWarnings,
+  }
+}
+
 function App() {
   const [wizardStep, setWizardStep] = useState<WizardStep>('home')
   const [selectedRole, setSelectedRole] = useState<string | null>(null)
@@ -76,15 +180,17 @@ function App() {
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null)
   const [fullState, setFullState] = useState<FullStateResponse | null>(null)
   const [stages, setStages] = useState<Stage[]>([])
-  const [threats, setThreats] = useState<Threat[]>([])
   const [gates, setGates] = useState<Gate[]>([])
   const [metrics, setMetrics] = useState<LLMMetrics | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [tabValue, setTabValue] = useState<TabValue>('execution')
-  const [drawerOpen, setDrawerOpen] = useState(true)
+  const [tabValue, setTabValue] = useState<TabValue>('gates')
+  const [artifactTabIndex, setArtifactTabIndex] = useState(0)
   const [showAllRuns, setShowAllRuns] = useState(false)
   const [selectedRunIds, setSelectedRunIds] = useState<Set<string>>(new Set())
+  const [selectedRunSetAt, setSelectedRunSetAt] = useState<number>(0)
+  const [pendingWizardRunId, setPendingWizardRunId] = useState<string | null>(null)
+  const [pendingWizardRunSetAt, setPendingWizardRunSetAt] = useState<number>(0)
   const [health, setHealth] = useState(false)
 
   useEffect(() => {
@@ -127,10 +233,67 @@ function App() {
     }
     const selectedStillExists = runs.some((run) => run.run_id === selectedRunId)
     if (!selectedStillExists) {
+      const withinSelectionGrace = Date.now() - selectedRunSetAt < 15000
+      if (withinSelectionGrace) {
+        return
+      }
       setSelectedRunId(null)
       setWizardStep('home')
     }
-  }, [runs, selectedRunId])
+  }, [runs, selectedRunId, selectedRunSetAt])
+
+  useEffect(() => {
+    if (wizardStep !== 'monitoring' || selectedRunId || runs.length === 0) {
+      return
+    }
+
+    if (pendingWizardRunId) {
+      const wizardRun = runs.find((run) => run.run_id === pendingWizardRunId)
+      if (wizardRun) {
+        setSelectedRunId(wizardRun.run_id)
+        setSelectedRunSetAt(Date.now())
+        return
+      }
+
+      // Do not auto-select a different run while the just-created run is still being indexed.
+      if (Date.now() - pendingWizardRunSetAt < 30000) {
+        return
+      }
+
+      setPendingWizardRunId(null)
+      setPendingWizardRunSetAt(0)
+    }
+
+    const newestRun = [...runs].sort((a, b) => {
+      const ta = a.start_time ? Date.parse(a.start_time) : 0
+      const tb = b.start_time ? Date.parse(b.start_time) : 0
+      return tb - ta
+    })[0]
+    if (newestRun?.run_id) {
+      setSelectedRunId(newestRun.run_id)
+      setSelectedRunSetAt(Date.now())
+    }
+  }, [wizardStep, selectedRunId, runs, pendingWizardRunId, pendingWizardRunSetAt])
+
+  useEffect(() => {
+    if (!pendingWizardRunId || pendingWizardRunSetAt <= 0) {
+      return
+    }
+
+    const remainingMs = 30000 - (Date.now() - pendingWizardRunSetAt)
+    if (remainingMs <= 0) {
+      setPendingWizardRunId(null)
+      setPendingWizardRunSetAt(0)
+      return
+    }
+
+    const timer = setTimeout(() => {
+      setPendingWizardRunId(null)
+      setPendingWizardRunSetAt(0)
+    }, remainingMs)
+
+    return () => clearTimeout(timer)
+  }, [pendingWizardRunId, pendingWizardRunSetAt])
 
   const loadRunState = useCallback(async (runId: string, options?: { silent?: boolean }) => {
     const silent = options?.silent ?? false
@@ -142,7 +305,6 @@ function App() {
       const response = await apiClient.getFullState(runId)
       setFullState(response)
       setStages(response.stages)
-      setThreats(response.threats)
       setGates(response.gates)
       setMetrics(response.metrics)
     } catch (err) {
@@ -153,7 +315,6 @@ function App() {
       if (!silent) {
         setFullState(null)
         setStages([])
-        setThreats([])
         setGates([])
         setMetrics(null)
       }
@@ -192,6 +353,8 @@ function App() {
   const handleStartWizard = () => {
     setSelectedRole(null)
     setPipelineConfig(null)
+    setPendingWizardRunId(null)
+    setPendingWizardRunSetAt(0)
     setWizardStep('role-select')
   }
 
@@ -226,22 +389,38 @@ function App() {
     try {
       setWizardStep('creating-run')
       const newRunId = uuidv4()
-      const fileTexts = await Promise.all(files.map(async (file) => `## ${file.name}\n${await file.text()}`))
-      const rawText = [`# System: ${systemName}`, `# Role: ${selectedRole ?? 'Author'}`, ...fileTexts].join('\n\n')
+      setPendingWizardRunId(newRunId)
+      setPendingWizardRunSetAt(Date.now())
+      const parsedInputs = await _parseInputFiles(files)
+      const rawTextParts = [`# System: ${systemName}`, `# Role: ${selectedRole ?? 'Author'}`]
+      if (parsedInputs.rawText.trim()) {
+        rawTextParts.push(parsedInputs.rawText)
+      }
+      const rawText = rawTextParts.join('\n\n')
 
       await apiClient.createRun(newRunId, {
         runName: systemName,
         settings: pipelineConfig ? mapPipelineConfigToRuntimeSettings(pipelineConfig) : undefined,
-        initialState: { raw_text: rawText },
+        initialState: {
+          raw_text: rawText,
+          tables: parsedInputs.tables,
+        },
       })
 
+      if (parsedInputs.parseWarnings.length) {
+        setError(`Input parse warnings: ${parsedInputs.parseWarnings.join(' ')}`)
+      }
+
       setSelectedRunId(newRunId)
+      setSelectedRunSetAt(Date.now())
       const response = await apiClient.getRuns()
       setRuns(response.runs)
-      setTabValue('execution')
+      setTabValue('gates')
       setWizardStep('monitoring')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create run')
+      setPendingWizardRunId(null)
+      setPendingWizardRunSetAt(0)
       setWizardStep('input-entry')
     }
   }
@@ -265,16 +444,6 @@ function App() {
       await loadRunState(selectedRunId)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to resume pipeline')
-    }
-  }
-
-  const handleThreatDecision = async (threatId: string, decision: string, notes: string) => {
-    if (!selectedRunId) return
-    try {
-      await apiClient.submitThreatDecision(selectedRunId, threatId, { decision, notes, reviewer: 'web_ui' })
-      await loadRunState(selectedRunId)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to submit threat decision')
     }
   }
 
@@ -369,6 +538,56 @@ function App() {
     return tb - ta
   })
   const visibleRuns = showAllRuns ? sortedRuns : sortedRuns.slice(0, 12)
+  const artifactsAvailable = !!currentRun && ['complete', 'completed', 'success', 'succeeded'].includes(normalizedRunStatus)
+  const gateApproved = !!currentRun && !pausedGateId && artifactsAvailable
+
+  const navButtonTone = (view: TabValue) => {
+    if (tabValue === view) {
+      return '#ffffff'
+    }
+    if (view === 'artifacts' || view === 'last_prompt' || view === 'prompt_editor' || view === 'tokens') {
+      if (gateApproved) {
+        return '#40c4ff'
+      }
+      if (artifactsAvailable) {
+        return '#66bb6a'
+      }
+    }
+    return 'rgba(255,255,255,0.72)'
+  }
+
+  const navButtonSx = (view: TabValue) => ({
+    justifyContent: 'flex-start',
+    borderRadius: 1,
+    color: navButtonTone(view),
+    backgroundColor: tabValue === view ? 'rgba(62, 168, 255, 0.2)' : 'transparent',
+    '&:hover': {
+      backgroundColor: tabValue === view ? 'rgba(62, 168, 255, 0.28)' : 'rgba(255,255,255,0.06)',
+    },
+  })
+
+  const artifactButtons = [
+    { label: 'Canonical Graph', index: 0 },
+    { label: 'Trust Boundaries', index: 1 },
+    { label: 'STRIDE Viewer', index: 2 },
+    { label: 'Threats', index: 3 },
+    { label: 'Mermaid Diagrams', index: 4 },
+    { label: 'STIX Bundle', index: 5 },
+    { label: 'Report', index: 6 },
+  ]
+
+  const artifactButtonSx = (index: number) => ({
+    justifyContent: 'flex-start',
+    borderRadius: 1,
+    color: tabValue === 'artifacts' && artifactTabIndex === index ? '#ffffff' : 'rgba(255,255,255,0.72)',
+    backgroundColor: tabValue === 'artifacts' && artifactTabIndex === index ? 'rgba(62, 168, 255, 0.2)' : 'transparent',
+    '&:hover': {
+      backgroundColor: tabValue === 'artifacts' && artifactTabIndex === index ? 'rgba(62, 168, 255, 0.28)' : 'rgba(255,255,255,0.06)',
+    },
+  })
+
+  const isWizardBadgeActive = (runId: string) =>
+    pendingWizardRunId === runId && pendingWizardRunSetAt > 0 && Date.now() - pendingWizardRunSetAt < 30000
 
   return (
     <Box sx={{ display: 'flex', height: '100vh', backgroundColor: 'background.default' }}>
@@ -386,7 +605,7 @@ function App() {
         onCancel={handleCancelWizard}
       />
 
-      <Drawer variant="persistent" anchor="left" open={drawerOpen} sx={{ width: 320, flexShrink: 0, '& .MuiDrawer-paper': { width: 320, boxSizing: 'border-box', overflowY: 'auto' } }}>
+      <Drawer variant="persistent" anchor="left" open sx={{ width: 320, flexShrink: 0, '& .MuiDrawer-paper': { width: 320, boxSizing: 'border-box', overflowY: 'auto' } }}>
         <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
           <Box sx={{ fontSize: 16, fontWeight: 700, mb: 1 }}>Threat Modeler</Box>
           <Box sx={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>Control Console v0.1</Box>
@@ -423,15 +642,43 @@ function App() {
 
         {selectedRunId && (
           <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
-            <Box sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'primary.main', mb: 1, textTransform: 'uppercase' }}>Analysis</Box>
+            <Box sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'primary.main', mb: 1, textTransform: 'uppercase' }}>HITL GATES</Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              <Button fullWidth size="small" variant={tabValue === 'execution' ? 'contained' : 'text'} onClick={() => setTabValue('execution')} sx={{ justifyContent: 'flex-start' }}>Execution</Button>
-              <Button fullWidth size="small" variant={tabValue === 'gates' ? 'contained' : 'text'} onClick={() => setTabValue('gates')} sx={{ justifyContent: 'flex-start' }}>HITL Gate ({gates.length})</Button>
-              <Button fullWidth size="small" variant={tabValue === 'artifacts' ? 'contained' : 'text'} onClick={() => setTabValue('artifacts')} sx={{ justifyContent: 'flex-start' }}>Artifacts</Button>
-              <Button fullWidth size="small" variant={tabValue === 'tokens' ? 'contained' : 'text'} onClick={() => setTabValue('tokens')} sx={{ justifyContent: 'flex-start' }}>Tokens</Button>
-              <Button fullWidth size="small" variant={tabValue === 'last_prompt' ? 'contained' : 'text'} onClick={() => setTabValue('last_prompt')} sx={{ justifyContent: 'flex-start' }}>Last Prompt</Button>
-              <Button fullWidth size="small" variant={tabValue === 'prompt_editor' ? 'contained' : 'text'} onClick={() => setTabValue('prompt_editor')} sx={{ justifyContent: 'flex-start' }}>Prompt Editor</Button>
-              <Button fullWidth size="small" variant={tabValue === 'threats' ? 'contained' : 'text'} onClick={() => setTabValue('threats')} sx={{ justifyContent: 'flex-start' }}>Threats ({threats.length})</Button>
+              <Button fullWidth size="small" variant={tabValue === 'gates' ? 'contained' : 'text'} onClick={() => setTabValue('gates')} sx={navButtonSx('gates')}>HITL Gates ({gates.length})</Button>
+            </Box>
+          </Box>
+        )}
+
+        {selectedRunId && (
+          <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
+            <Box sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'primary.main', mb: 1, textTransform: 'uppercase' }}>Artifacts</Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+              {artifactButtons.map((artifact) => (
+                <Button
+                  key={artifact.label}
+                  fullWidth
+                  size="small"
+                  variant={tabValue === 'artifacts' && artifactTabIndex === artifact.index ? 'contained' : 'text'}
+                  onClick={() => {
+                    setTabValue('artifacts')
+                    setArtifactTabIndex(artifact.index)
+                  }}
+                  sx={artifactButtonSx(artifact.index)}
+                >
+                  {artifact.label}
+                </Button>
+              ))}
+            </Box>
+          </Box>
+        )}
+
+        {selectedRunId && (
+          <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
+            <Box sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'primary.main', mb: 1, textTransform: 'uppercase' }}>Operator Views</Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+              <Button fullWidth size="small" variant={tabValue === 'tokens' ? 'contained' : 'text'} onClick={() => setTabValue('tokens')} sx={navButtonSx('tokens')}>Tokens</Button>
+              <Button fullWidth size="small" variant={tabValue === 'last_prompt' ? 'contained' : 'text'} onClick={() => setTabValue('last_prompt')} sx={navButtonSx('last_prompt')}>Last Prompt</Button>
+              <Button fullWidth size="small" variant={tabValue === 'prompt_editor' ? 'contained' : 'text'} onClick={() => setTabValue('prompt_editor')} sx={navButtonSx('prompt_editor')}>Prompt Editor</Button>
             </Box>
           </Box>
         )}
@@ -469,8 +716,29 @@ function App() {
                   size="small"
                   sx={{ mr: 0.5 }}
                 />
-                <ListItemButton selected={selectedRunId === run.run_id} onClick={() => { setSelectedRunId(run.run_id); setDrawerOpen(false); setWizardStep('monitoring') }} sx={{ backgroundColor: selectedRunId === run.run_id ? 'rgba(62, 168, 255, 0.2)' : 'transparent', borderRadius: 1 }}>
-                  <ListItemText primary={run.run_name || `${run.run_id.slice(0, 10)}...`} secondary={`${run.status}${run.archived ? ' · archived' : ''}`} primaryTypographyProps={{ fontSize: '0.85rem' }} secondaryTypographyProps={{ fontSize: '0.7rem' }} />
+                <ListItemButton
+                  selected={selectedRunId === run.run_id}
+                  onClick={() => {
+                    setSelectedRunId(run.run_id)
+                    setSelectedRunSetAt(Date.now())
+                    setPendingWizardRunId(null)
+                    setPendingWizardRunSetAt(0)
+                    setWizardStep('monitoring')
+                  }}
+                  sx={{ backgroundColor: selectedRunId === run.run_id ? 'rgba(62, 168, 255, 0.2)' : 'transparent', borderRadius: 1 }}
+                >
+                  <ListItemText
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                        <Box component="span" sx={{ fontSize: '0.85rem' }}>{run.run_name || `${run.run_id.slice(0, 10)}...`}</Box>
+                        {isWizardBadgeActive(run.run_id) && (
+                          <Chip label="Created by wizard" size="small" color="info" sx={{ height: 18, fontSize: '0.62rem' }} />
+                        )}
+                      </Box>
+                    }
+                    secondary={`${run.status}${run.archived ? ' · archived' : ''}`}
+                    secondaryTypographyProps={{ fontSize: '0.7rem' }}
+                  />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -481,11 +749,48 @@ function App() {
       <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <AppBar position="static" sx={{ color: 'primary.main' }}>
           <Toolbar>
-            <Button onClick={() => setDrawerOpen(!drawerOpen)} sx={{ color: 'primary.main', mr: 2 }}>Menu</Button>
             <Box sx={{ flex: 1 }}>Threat Modeler Control Console</Box>
             <Box sx={{ width: 12, height: 12, borderRadius: '50%', backgroundColor: health ? '#4caf50' : '#f44336', mr: 1 }} />
             <Box>{health ? 'Connected' : 'Disconnected'}</Box>
           </Toolbar>
+          {selectedRunId && wizardStep !== 'creating-run' && (
+            <Box sx={{ px: 2, pb: 1.5 }}>
+              <Paper sx={{ mb: 1, px: 1, py: 0.5 }}>
+                <Tabs
+                  value={tabValue === 'artifacts' ? false : tabValue}
+                  onChange={(_, next) => setTabValue(next as TabValue)}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  allowScrollButtonsMobile
+                >
+                  <Tab label="HITL GATES" value="gates" />
+                  <Tab label="TOKENS" value="tokens" />
+                  <Tab label="Last Prompt" value="last_prompt" />
+                  <Tab label="Prompt Editor" value="prompt_editor" />
+                </Tabs>
+              </Paper>
+              <Paper sx={{ px: 1, py: 0.5 }}>
+                <Tabs
+                  value={artifactTabIndex}
+                  onChange={(_, next) => {
+                    setArtifactTabIndex(next as number)
+                    setTabValue('artifacts')
+                  }}
+                  variant="scrollable"
+                  scrollButtons="auto"
+                  allowScrollButtonsMobile
+                >
+                  <Tab label="Canonical Graph" value={0} />
+                  <Tab label="Trust Boundaries" value={1} />
+                  <Tab label="STRIDE Viewer" value={2} />
+                  <Tab label="Threats" value={3} />
+                  <Tab label="Mermaid Diagrams" value={4} />
+                  <Tab label="STIX Bundle" value={5} />
+                  <Tab label="Report" value={6} />
+                </Tabs>
+              </Paper>
+            </Box>
+          )}
         </AppBar>
 
         <Box sx={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column' }}>
@@ -519,15 +824,6 @@ function App() {
             {selectedRunId && wizardStep !== 'creating-run' && (
               <>
                 {currentRun && <Alert severity={isPaused ? 'warning' : isRejected ? 'error' : 'info'} sx={{ mb: 2 }}>Status: <strong>{displayRunStatus}</strong></Alert>}
-                <Tabs value={tabValue} onChange={(_, v) => setTabValue(v as TabValue)} sx={{ mb: 2 }}>
-                  <Tab label="Execution" value="execution" />
-                  <Tab label="HITL Gate" value="gates" />
-                  <Tab label="Artifacts" value="artifacts" />
-                  <Tab label="Tokens" value="tokens" />
-                  <Tab label="Last Prompt" value="last_prompt" />
-                  <Tab label="Prompt Editor" value="prompt_editor" />
-                  <Tab label="Threats" value="threats" />
-                </Tabs>
                 {!loading && !isPaused && isRunActivelyExecuting && currentRun?.settings != null && currentRun?.heartbeat_age_seconds != null && currentRun?.heartbeat_timeout_seconds != null && (
                   <Alert
                     severity={currentRun.heartbeat_age_seconds > currentRun.heartbeat_timeout_seconds ? 'error' : 'info'}
@@ -537,8 +833,6 @@ function App() {
                   </Alert>
                 )}
                 {loading && <CircularProgress />}
-                {!loading && tabValue === 'execution' && <Alert severity="info">Real-time execution monitoring</Alert>}
-                {!loading && tabValue === 'threats' && <ThreatReview threats={threats} onThreatDecision={handleThreatDecision} />}
                 {!loading && tabValue === 'gates' && (
                   <HITLGateManager
                     gates={gates}
@@ -548,7 +842,7 @@ function App() {
                   />
                 )}
                 {!loading && tabValue === 'tokens' && metrics && <TokenUsageDashboard metrics={metrics} />}
-                {!loading && tabValue === 'artifacts' && <ArtifactsViewer runId={selectedRunId} />}
+                {!loading && tabValue === 'artifacts' && <ArtifactsViewer runId={selectedRunId} initialTab={artifactTabIndex} onTabChange={setArtifactTabIndex} />}
                 {!loading && tabValue === 'last_prompt' && <LastPromptViewer runId={selectedRunId} />}
                 {!loading && tabValue === 'prompt_editor' && <PromptEditor />}
               </>

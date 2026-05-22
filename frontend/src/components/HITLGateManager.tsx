@@ -206,10 +206,18 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
 
     return baseline
   }, [gates])
+  const effectiveGateStatus = (gate: Gate): string => {
+    const normalized = gate.status.toLowerCase()
+    if (pausedGateId && gate.gate_id === pausedGateId && normalized === 'pending') {
+      return 'open'
+    }
+    return normalized
+  }
+
   const gateCounts = useMemo(() => {
     return orderedGates.reduce(
       (counts, gate) => {
-        const normalizedStatus = gate.status.toLowerCase()
+        const normalizedStatus = effectiveGateStatus(gate)
         if (gate.is_rejected || normalizedStatus === 'rejected') {
           counts.rejected += 1
         } else if (normalizedStatus === 'bypassed') {
@@ -223,7 +231,7 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
       },
       { approved: 0, rejected: 0, bypassed: 0, pending: 0 },
     )
-  }, [orderedGates])
+  }, [orderedGates, pausedGateId])
   const resumableGate = useMemo(
     () => gates.find((gate) => gate.gate_id === pausedGateId && gate.is_resolved),
     [gates, pausedGateId],
@@ -277,7 +285,7 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
   }
 
   const selectedArtifactSummary = gateReadableSummary(selectedGate)
-  const selectedStatus = (selectedGate?.status ?? '').toLowerCase()
+  const selectedStatus = selectedGate ? effectiveGateStatus(selectedGate) : ''
   const isPausedLockActive = !!pausedGateId
   const isSelectedPausedGate = !!selectedGate && selectedGate.gate_id === pausedGateId
   const canDecide = ['open', 'draft', 'rejected'].includes(selectedStatus) && (!isPausedLockActive || isSelectedPausedGate)
@@ -303,7 +311,7 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
     background: string
     label: string
   } => {
-    const normalizedStatus = gate.status.toLowerCase()
+    const normalizedStatus = effectiveGateStatus(gate)
     if (gate.is_rejected || normalizedStatus === 'rejected') {
       return {
         icon: <CancelIcon sx={{ color: 'error.main' }} />,
@@ -471,7 +479,7 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
                 Current Status
               </Typography>
               <Typography variant="body2" sx={{ fontWeight: 500, textTransform: 'capitalize' }}>
-                {selectedGate?.status}
+                {selectedStatus || selectedGate?.status}
               </Typography>
             </Box>
             {selectedArtifactSummary.length > 0 && (

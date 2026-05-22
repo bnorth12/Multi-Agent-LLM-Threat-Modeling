@@ -126,6 +126,7 @@ export interface Mitigation {
   control_id: string
   title: string
   description: string
+  residual_risk_after_control?: number
 }
 
 export interface Threat {
