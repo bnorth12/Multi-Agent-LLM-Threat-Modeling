@@ -318,7 +318,7 @@ def _wait_for_full_pipeline_completion(
                     pauses_detected.append(gate_id)
             last_pause_gate = pause_markers[0]
             if page is not None:
-                gates_tab = page.get_by_role("tab", name="Gates")
+                gates_tab = page.get_by_role("tab", name="HITL GATES")
                 if gates_tab.count() > 0:
                     _retry_click(gates_tab, attempts=3, timeout_ms=4000)
                     page.wait_for_timeout(500)
@@ -330,9 +330,9 @@ def _wait_for_full_pipeline_completion(
         threats_reviewed_total += _review_threats(cfg, run_id, reviewer="smoke_runner")
 
         if not pause_markers and last_pause_gate is not None and page is not None:
-            exec_tab = page.get_by_role("tab", name="Execution")
-            if exec_tab.count() > 0:
-                _retry_click(exec_tab, attempts=3, timeout_ms=4000)
+            gates_tab = page.get_by_role("tab", name="HITL GATES")
+            if gates_tab.count() > 0:
+                _retry_click(gates_tab, attempts=3, timeout_ms=4000)
                 page.wait_for_timeout(500)
             last_pause_gate = None
 
@@ -712,10 +712,15 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
             raise SmokeFailure("Could not click Start Threat Model Run.")
 
         run_id = _wait_for_new_run_id(cfg, baseline_runs, timeout_seconds=60)
+
+        # Verify wizard run pin transparency: the newly created run is marked for operators.
+        wizard_badge = page.get_by_text("Created by wizard", exact=True)
+        wizard_badge.first.wait_for(timeout=30000)
+
         page.wait_for_timeout(2000)
-        exec_tab = page.get_by_role("tab", name="Execution")
-        if exec_tab.count() > 0:
-            _retry_click(exec_tab, attempts=3, timeout_ms=4000)
+        gates_tab = page.get_by_role("tab", name="HITL GATES")
+        if gates_tab.count() > 0:
+            _retry_click(gates_tab, attempts=3, timeout_ms=4000)
             page.wait_for_timeout(500)
         page.screenshot(path=str(screenshots / "03_run_created.png"))
 
@@ -728,7 +733,19 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
         )
 
         # Exercise every analysis display in the HMI after the pipeline completes.
-        tab_names = ["Execution", "Threats", "Gates", "Tokens", "Artifacts", "Last Prompt", "Prompt Editor"]
+        tab_names = [
+            "HITL GATES",
+            "TOKENS",
+            "Last Prompt",
+            "Prompt Editor",
+            "Canonical Graph",
+            "Trust Boundaries",
+            "STRIDE Viewer",
+            "Threats",
+            "Mermaid Diagrams",
+            "STIX Bundle",
+            "Report",
+        ]
         for idx, tab_name in enumerate(tab_names, start=3):
             tab = page.get_by_role("tab", name=tab_name)
             if tab.count() > 0:
@@ -736,10 +753,10 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
                 page.wait_for_timeout(500)
                 page.screenshot(path=str(screenshots / f"{idx:02d}_{tab_name.lower().replace(' ', '_')}.png"))
 
-        # Return to execution display and capture final completed state.
-        exec_tab = page.get_by_role("tab", name="Execution")
-        if exec_tab.count() > 0:
-            _retry_click(exec_tab, attempts=3, timeout_ms=4000)
+        # Return to HITL gate view and capture final completed state.
+        gates_tab = page.get_by_role("tab", name="HITL GATES")
+        if gates_tab.count() > 0:
+            _retry_click(gates_tab, attempts=3, timeout_ms=4000)
         page.wait_for_timeout(500)
         page.screenshot(path=str(screenshots / "99_completed.png"))
 
@@ -754,18 +771,34 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
         "input_files": [str(path) for path in cfg.input_files],
         "live_provider_used": bool(cfg.grok_api_key),
         "pipeline_progression": progression,
-        "displays_covered": ["execution", "threats", "gates", "tokens", "artifacts", "last_prompt", "prompt_editor"],
+        "displays_covered": [
+            "hitl_gates",
+            "tokens",
+            "last_prompt",
+            "prompt_editor",
+            "canonical_graph",
+            "trust_boundaries",
+            "stride_viewer",
+            "threats",
+            "mermaid_diagrams",
+            "stix_bundle",
+            "report",
+        ],
         "screenshots": [
             str(screenshots / "01_home.png"),
             str(screenshots / "02_uploaded_files.png"),
             str(screenshots / "03_run_created.png"),
-            str(screenshots / "03_execution.png"),
-            str(screenshots / "04_threats.png"),
-            str(screenshots / "05_gates.png"),
-            str(screenshots / "06_tokens.png"),
-            str(screenshots / "07_artifacts.png"),
-            str(screenshots / "08_last_prompt.png"),
-            str(screenshots / "09_prompt_editor.png"),
+            str(screenshots / "03_hitl_gates.png"),
+            str(screenshots / "04_tokens.png"),
+            str(screenshots / "05_last_prompt.png"),
+            str(screenshots / "06_prompt_editor.png"),
+            str(screenshots / "07_canonical_graph.png"),
+            str(screenshots / "08_trust_boundaries.png"),
+            str(screenshots / "09_stride_viewer.png"),
+            str(screenshots / "10_threats.png"),
+            str(screenshots / "11_mermaid_diagrams.png"),
+            str(screenshots / "12_stix_bundle.png"),
+            str(screenshots / "13_report.png"),
             str(screenshots / "99_completed.png"),
         ],
     }

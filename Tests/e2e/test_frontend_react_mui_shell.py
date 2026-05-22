@@ -8,9 +8,11 @@ import socket
 import subprocess
 import sys
 import time
+import json
 from pathlib import Path
 
 import pytest
+from urllib.request import Request, urlopen
 
 
 def _wait_for_port(host: str, port: int, timeout_seconds: float = 60.0) -> None:
@@ -31,10 +33,22 @@ def _find_free_port() -> int:
         return int(sock.getsockname()[1])
 
 
+def _post_json(url: str, payload: dict) -> dict:
+    req = Request(
+        url,
+        data=str.encode(json.dumps(payload)),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urlopen(req, timeout=10) as resp:  # nosec B310 - controlled local test URL
+        raw = resp.read().decode("utf-8")
+        return json.loads(raw) if raw else {}
+
+
 @pytest.mark.llm_live_browser
 @pytest.mark.frontend_shell
 def test_react_mui_shell_navigation_and_hitl_controls():
-    """Validate frame navigation and footer/page HITL controls on the React shell."""
+    """Validate frame navigation and HITL/top-control visibility on the React shell."""
     if os.environ.get("RUN_VISIBLE_BROWSER_TESTS") != "1":
         pytest.skip("Set RUN_VISIBLE_BROWSER_TESTS=1 to run frontend browser automation.")
 
@@ -98,23 +112,26 @@ def test_react_mui_shell_navigation_and_hitl_controls():
             page.goto(f"http://127.0.0.1:{frontend_port}", wait_until="domcontentloaded")
 
             page.get_by_text("Threat Modeler Control Console", exact=True).wait_for(timeout=30000)
-            page.get_by_text("Backend:", exact=False).first.wait_for(timeout=30000)
+            page.get_by_role("button", name="New Run Wizard").wait_for(timeout=30000)
+            assert page.get_by_role("button", name="Menu").count() == 0
 
-            page.get_by_role("button", name="Runs").click(timeout=10000)
-            page.get_by_role("heading", name="Runs").first.wait_for(timeout=10000)
+            run_id = "run-s12-browser"
+            _post_json(
+                f"http://127.0.0.1:{backend_port}/runs",
+                {
+                    "run_id": run_id,
+                    "run_name": "run-s12-browser",
+                    "initial_state": {"raw_text": "browser shell smoke"},
+                },
+            )
 
-            page.get_by_label("Run ID").first.fill("run-s12-browser")
-            page.get_by_label("Gate ID").fill("gate_1")
-            page.get_by_role("button", name="Footer Resume").wait_for(timeout=10000)
-            page.get_by_role("button", name="Footer Cancel").wait_for(timeout=10000)
+            page.reload(wait_until="domcontentloaded")
+            page.get_by_role("button", name="run-s12-browser queued").click(timeout=15000)
 
-            page.get_by_role("button", name="Prompt Control").click(timeout=10000)
-            page.get_by_role("heading", name="Prompt Control").wait_for(timeout=10000)
-
-            page.get_by_role("button", name="Artifacts").click(timeout=10000)
-            page.get_by_role("heading", name="Artifacts").wait_for(timeout=10000)
-            page.get_by_role("button", name="Load").click(timeout=10000)
-            page.get_by_role("heading", name="Artifacts").wait_for(timeout=10000)
+            page.get_by_role("tab", name="HITL GATES").wait_for(timeout=15000)
+            page.get_by_role("tab", name="TOKENS").wait_for(timeout=15000)
+            page.get_by_role("tab", name="Canonical Graph").wait_for(timeout=15000)
+            page.get_by_text("Status:", exact=False).first.wait_for(timeout=15000)
 
             browser.close()
     finally:
@@ -203,7 +220,6 @@ def test_react_mui_shell_shows_clear_unauthorized_message_when_auth_required():
             page.goto(f"http://127.0.0.1:{frontend_port}", wait_until="domcontentloaded")
 
             page.get_by_text("Threat Modeler Control Console", exact=True).wait_for(timeout=30000)
-            page.get_by_role("button", name="Runs").click(timeout=10000)
             alert = page.get_by_role("alert").first
             alert.wait_for(timeout=30000)
             assert "Unauthorized" in alert.inner_text()

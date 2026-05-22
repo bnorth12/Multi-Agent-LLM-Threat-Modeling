@@ -8,7 +8,9 @@ import socket
 import subprocess
 import sys
 import time
+import json
 from pathlib import Path
+from urllib.request import Request, urlopen
 
 import pytest
 
@@ -31,10 +33,22 @@ def _find_free_port() -> int:
         return int(sock.getsockname()[1])
 
 
+def _post_json(url: str, payload: dict) -> dict:
+    req = Request(
+        url,
+        data=str.encode(json.dumps(payload)),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    with urlopen(req, timeout=10) as resp:  # nosec B310 - controlled local test URL
+        raw = resp.read().decode("utf-8")
+        return json.loads(raw) if raw else {}
+
+
 @pytest.mark.llm_live_browser
 @pytest.mark.frontend_full
 def test_react_mui_full_workflow_page_actions():
-    """Validate the full React shell workflow actions end-to-end."""
+    """Validate run selection and top-row navigation workflows end-to-end."""
     if os.environ.get("RUN_VISIBLE_BROWSER_TESTS") != "1":
         pytest.skip("Set RUN_VISIBLE_BROWSER_TESTS=1 to run frontend browser automation.")
 
@@ -105,27 +119,32 @@ def test_react_mui_full_workflow_page_actions():
             page.get_by_text("Threat Modeler Control Console", exact=True).wait_for(timeout=30000)
 
             run_id = "run-s12-full-workflow"
+            _post_json(
+                f"http://127.0.0.1:{backend_port}/runs",
+                {
+                    "run_id": run_id,
+                    "run_name": "run-s12-full-workflow",
+                    "initial_state": {"raw_text": "browser full workflow smoke"},
+                },
+            )
 
-            page.get_by_role("button", name="Runs").click(timeout=10000)
-            page.get_by_label("Run ID").first.fill(run_id)
-            page.get_by_role("button", name="Submit Run").click(timeout=10000)
-            page.get_by_text(run_id).first.wait_for(timeout=15000)
+            page.reload(wait_until="domcontentloaded")
+            page.get_by_role("button", name="run-s12-full-workflow queued").click(timeout=15000)
 
-            page.get_by_role("button", name="Prompt Control").click(timeout=10000)
-            page.get_by_label("Prompt Text").fill("S12 full workflow prompt update")
-            page.get_by_role("button", name="Save Prompt").click(timeout=10000)
-            page.get_by_text("S12 full workflow prompt update").first.wait_for(timeout=15000)
+            page.get_by_role("tab", name="Prompt Editor").click(timeout=10000)
+            page.get_by_text("Prompt Editor", exact=False).first.wait_for(timeout=15000)
 
-            page.get_by_role("button", name="Configuration").click(timeout=10000)
-            page.get_by_label("Provider").fill("fixture")
-            page.get_by_label("Model Name").fill("fixture-s12-full")
-            page.get_by_role("button", name="Save Config").click(timeout=10000)
-            page.get_by_text("fixture-s12-full").first.wait_for(timeout=15000)
+            page.get_by_role("tab", name="Last Prompt").click(timeout=10000)
+            page.get_by_text("Last Prompt", exact=False).first.wait_for(timeout=15000)
 
-            page.get_by_role("button", name="Artifacts").click(timeout=10000)
-            page.get_by_label("Run ID").first.fill(run_id)
-            page.get_by_role("button", name="Load").click(timeout=10000)
-            page.get_by_role("heading", name="Artifacts").wait_for(timeout=10000)
+            page.get_by_role("tab", name="Canonical Graph").click(timeout=10000)
+            page.get_by_text("Artifacts", exact=False).first.wait_for(timeout=15000)
+
+            page.get_by_role("tab", name="Threats").click(timeout=10000)
+            page.get_by_text("Artifacts", exact=False).first.wait_for(timeout=15000)
+
+            page.get_by_role("tab", name="HITL GATES").click(timeout=10000)
+            page.get_by_text("HITL Gates", exact=False).first.wait_for(timeout=15000)
 
             browser.close()
     finally:
