@@ -39,6 +39,52 @@ Sprint 2026-12 introduced a gate-centric HMI workflow refinement. The HITL Gate 
 
 ---
 
+## S12-018
+
+Title: Sprint 2026-12: React input file parsing parity and spreadsheet binary-injection guard
+
+Body:
+
+```md
+## Summary
+
+Full UAS suite runs in the React HMI degraded because CSV/XLSX uploads were forwarded as raw file text only, and XLSX payload bytes could be injected into `initial_state.raw_text` rather than parsed into structured table rows. This reduced Agent 01 parse quality and cascaded into sparse context-builder, trust-boundary, STRIDE, and threat outputs.
+
+This issue restores ingestion parity with the Streamlit path by parsing CSV/XLSX client-side into `initial_state.tables` and keeping `initial_state.raw_text` for narrative text inputs.
+
+## Related Requirements
+
+- RHMI-017 in Requirements/11_React_HMI_Refactor_Requirements.md
+- S12-REQ-018 in planning/Sprint_2026_12_Traceability_Matrix.md
+
+## Acceptance Criteria
+
+- React run creation parses CSV and XLSX files into structured row dictionaries under `initial_state.tables`.
+- Raw spreadsheet binary payloads are not injected into `initial_state.raw_text`.
+- Narrative files (md/txt/yaml/yml) remain available in `initial_state.raw_text`.
+- Full UAS suite run shows restored downstream data richness in context, trust boundaries, STRIDE, and threat generation stages.
+- Sprint 2026-12 traceability and execution log are updated.
+
+## Validation
+
+- frontend: npm install
+- frontend: npm run test -- --run src/components/HITLGateManager.test.tsx
+- manual: run full UAS suite through React wizard and verify populated trust boundaries / STRIDE / threats
+
+## Closure Evidence
+
+- frontend/src/App.tsx
+- frontend/src/api/client.ts
+- frontend/package.json
+- Requirements/11_React_HMI_Refactor_Requirements.md
+- Requirements/12_React_HMI_Traceability_To_Tests.md
+- planning/Sprint_2026_12_Traceability_Matrix.md
+- planning/Sprint_2026_12_Execution_Log.md
+- planning/issues/Sprint_2026_12_Issue_Tracker.md
+```
+
+---
+
 ## S12-012
 
 Title: Sprint 2026-12: Persistent footer status and HITL-page monitoring continuity
@@ -217,4 +263,49 @@ Improve Mermaid artifact review usability by parsing multi-diagram payloads into
 - Requirements/12_React_HMI_Traceability_To_Tests.md
 - planning/Sprint_2026_12_Traceability_Matrix.md
 - planning/Sprint_2026_12_Execution_Log.md
+```
+
+---
+
+## S12-017
+
+Title: Sprint 2026-12: Preserve completed-run artifact retrieval after backend restart
+
+Linked GitHub Issue: #70 (https://github.com/bnorth12/Multi-Agent-LLM-Threat-Modeling/issues/70)
+
+Body:
+
+```md
+## Summary
+
+Completed and paused runs remained visible in the run list after backend restart but artifact endpoints returned `404 Unknown or incomplete run_id` because only metadata persisted and in-memory runtime state was unavailable.
+
+This issue hardens restart behavior by persisting a restorable run-state projection and rehydrating artifact-serving state when needed.
+
+## Related Requirements
+
+- RHMI-016 in Requirements/11_React_HMI_Refactor_Requirements.md
+- S12-REQ-017 in planning/Sprint_2026_12_Traceability_Matrix.md
+
+## Acceptance Criteria
+
+- Completed and paused runs listed by `GET /runs` remain artifact-addressable after backend restart.
+- `GET /runs/{run_id}/artifacts/canonical`, `/mermaid`, `/stix`, and `/report` succeed for restorable historical runs.
+- API no longer exhibits run-list-only ghost entries for completed runs.
+- Sprint 2026-12 traceability and execution log are updated.
+
+## Validation
+
+- PYTHONPATH=src .venv\Scripts\python.exe -m pytest Tests/test_hmi_backend_api.py -q
+- Manual restart probe of health endpoint and artifact endpoint retrieval for historical run IDs
+
+## Closure Evidence
+
+- src/threat_modeler/backend/run_manager.py
+- src/threat_modeler/server/api.py
+- Requirements/11_React_HMI_Refactor_Requirements.md
+- Requirements/12_React_HMI_Traceability_To_Tests.md
+- planning/Sprint_2026_12_Traceability_Matrix.md
+- planning/Sprint_2026_12_Execution_Log.md
+- planning/issues/Sprint_2026_12_Issue_Tracker.md
 ```

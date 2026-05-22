@@ -259,7 +259,99 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
 - Removed the forced tab switch to the execution page when resuming from a resolved gate.
 - Renamed navigation label from `HITL` to `HITL Gate` for operator clarity.
 
+## 2026-05-21 (Update 10 - Completed Run Artifact Persistence Defect)
+
+### Problem Observed
+
+- Completed runs remained visible in `GET /runs` and the React run list.
+- Artifact endpoints for those runs returned `404 Unknown or incomplete run_id` after backend restart.
+- Impact: operators could select a completed run but could not open Canonical Graph, Mermaid, STIX, or Report artifact screens.
+
+### Root Cause
+
+- `backend/run_manager.py` restored metadata-only run entries from
+  `~/.multi_agent_threat_modeler_runs.json`.
+- `server/api.py::_resolve_run_state()` required in-memory `FrameworkState`
+  (`result_state`/`live_state`) and returned `None` for restored metadata-only entries.
+- Result: run list and artifact retrieval paths diverged after process restart.
+
+### Remediation Implemented
+
+- Added persisted restorable state projection into run checkpoint records in
+  `src/threat_modeler/backend/run_manager.py` (`persisted_state`).
+- Updated checkpoint restore path to keep `persisted_state` in registry entries.
+- Updated `src/threat_modeler/server/api.py::_resolve_run_state()` to rehydrate
+  `FrameworkState` from `persisted_state` when in-memory state is absent.
+
+### Verification
+
+- `PYTHONPATH=src .venv\Scripts\python.exe -m pytest Tests/test_hmi_backend_api.py -q` -> `18 passed`.
+- Backend stability probes confirmed listener + health endpoint continuity during screen navigation.
+
+### Governance Linkage
+
+- Requirement added: RHMI-016 in `Requirements/11_React_HMI_Refactor_Requirements.md`.
+- Traceability added in `Requirements/12_React_HMI_Traceability_To_Tests.md`.
+- Issue tracking added under Sprint 2026-12 issue tracker as S12-017.
+
+## 2026-05-21 (Update 10 - Navigation Placement and Wizard-Run Selection Stability)
+
+### UX Stabilization Completion
+
+- Moved two-row top controls from main content area to the upper header section directly below the Threat Modeler Control Console title and connectivity indicator.
+- Preserved persistent left rail and synchronized artifact selection between left rail and top artifact row.
+- Implemented deterministic wizard-created run pinning in `frontend/src/App.tsx`:
+  - exact new run ID is prioritized for auto-selection,
+  - initial run-list refresh race windows no longer select a different run,
+  - manual operator run selection cleanly overrides pending auto-selection.
+- Added temporary `Created by wizard` visual badge in All Runs for the pinned run during the 30-second visibility window.
+
+### Validation Snapshot
+
+- `frontend: npm test -- --run src/App.test.tsx src/components/ArtifactsViewer.test.tsx` -> passed.
+- Browser verification confirms restored visibility of header controls, left nav controls, and HITL Gate main-area status when selecting or launching runs.
+
+### Governance and Traceability Updates
+
+- Requirements updated: `Requirements/10_GUI_Requirements.md` (GUI-037), `Requirements/11_React_HMI_Refactor_Requirements.md` (RHMI-015 and RHMI-013 location correction), `Requirements/12_React_HMI_Traceability_To_Tests.md`.
+- Architecture authority updated: `docs/HMI_Architecture_Blueprint.md` for header control placement and wizard-run pin/badge behavior.
+- Sprint issue tracker updated: `planning/issues/Sprint_2026_12_Issue_Tracker.md` row `S12-016 / #69`.
+
 ### HITL Workflow Refinement Validation
+
+## 2026-05-21 (Update 11 - React Input File Injection and Parsing Parity Defect)
+
+### Problem Observed
+
+- Full UAS suite runs from the React Input Entry wizard produced sparse downstream outputs in Context Builder, Trust Boundaries, STRIDE Viewer, and Threat Generator views.
+- Symptoms indicated Agent 01 was receiving low-quality or non-parseable structured input for spreadsheet-heavy bundles.
+
+### Root Cause
+
+- React run creation in `frontend/src/App.tsx` built `initial_state.raw_text` using `file.text()` for every uploaded file type.
+- For `.xlsx` uploads, this can pass spreadsheet byte payload text into `raw_text` (binary-like content) instead of structured ICD rows.
+- Unlike Streamlit `ui/screens/input_entry.py`, the React path did not populate `initial_state.tables` for CSV/XLSX.
+
+### Remediation Implemented
+
+- Added browser-side CSV and XLSX parsing in `frontend/src/App.tsx` using `xlsx`.
+- Added normalized table-row projection to `initial_state.tables` for CSV/XLSX uploads.
+- Kept narrative inputs (`md`, `txt`, `yaml`, `yml`) in `initial_state.raw_text`.
+- Extended frontend create-run payload typing in `frontend/src/api/client.ts` to include `initial_state.tables`.
+- Added frontend dependency `xlsx` in `frontend/package.json`.
+
+### Verification
+
+- `frontend: npm install` -> completed successfully with dependency update.
+- `frontend: npm run test -- --run src/components/HITLGateManager.test.tsx` -> `6 passed`.
+- Manual full UAS suite revalidation requested to confirm restored stage data richness in live run outputs.
+
+### Governance Linkage
+
+- Requirement added: RHMI-017 in `Requirements/11_React_HMI_Refactor_Requirements.md`.
+- Traceability added in `Requirements/12_React_HMI_Traceability_To_Tests.md`.
+- Sprint traceability row added: S12-REQ-018 in `planning/Sprint_2026_12_Traceability_Matrix.md`.
+- Issue tracker row added: S12-018 in `planning/issues/Sprint_2026_12_Issue_Tracker.md`.
 
 - `frontend: npm run test -- --run src/components/HITLGateManager.test.tsx` -> `5 passed`
 - `PYTHONPATH=src python -m pytest Tests/test_hmi_backend_api.py Tests/integration/test_hitl_gate_set_2.py Tests/integration/test_avionics_expected_results.py -q` -> `35 passed`

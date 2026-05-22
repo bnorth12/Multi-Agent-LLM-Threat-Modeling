@@ -14,6 +14,13 @@ This matrix traces new refactor requirements to automated tests and generated ev
 | RHMI-007 Bulk select and lifecycle actions | Requirements/11_React_HMI_Refactor_Requirements.md | DELETE /runs/{run_id}/purge | scripts/live_browser_e2e_smoke_react.py | FQT/fqt_react_*/screenshots/02_run_created.png |
 | RHMI-008 Historical lifecycle endpoint support | Requirements/11_React_HMI_Refactor_Requirements.md | POST /runs/purge, DELETE /runs/{run_id}/purge | Tests/test_hmi_backend_api.py | pytest terminal report |
 | RHMI-010 Mermaid multi-diagram selector and split view | Requirements/11_React_HMI_Refactor_Requirements.md | GET /runs/{run_id}/artifacts/mermaid | scripts/live_browser_e2e_smoke_react.py; Tests/e2e/test_frontend_react_mui_full_workflow.py | FQT/fqt_react_*/test_report.json |
+| RHMI-011 Persistent left navigation rail | Requirements/11_React_HMI_Refactor_Requirements.md | N/A (shell layout requirement) | frontend/src/App.test.tsx | frontend vitest output |
+| RHMI-012 Threats under Artifacts | Requirements/11_React_HMI_Refactor_Requirements.md | GET /runs/{run_id}/artifacts/canonical | frontend/src/components/ArtifactsViewer.test.tsx | frontend vitest output |
+| RHMI-013 Header-anchored two-row top control strip | Requirements/11_React_HMI_Refactor_Requirements.md | N/A (shell layout requirement) | frontend/src/App.test.tsx | frontend vitest output |
+| RHMI-014 Expanded left navigation rail | Requirements/11_React_HMI_Refactor_Requirements.md | N/A (shell layout requirement) | frontend/src/App.test.tsx | frontend vitest output |
+| RHMI-015 Wizard-created run pin and badge visibility window | Requirements/11_React_HMI_Refactor_Requirements.md | POST /runs, GET /runs | scripts/live_browser_e2e_smoke_react.py | FQT/fqt_react_*/test_report.json |
+| RHMI-016 Completed/paused run artifact availability after backend restart | Requirements/11_React_HMI_Refactor_Requirements.md | GET /runs/{run_id}/artifacts/canonical, /mermaid, /stix, /report | Tests/test_hmi_backend_api.py; backend restart health + artifact endpoint probes | pytest terminal report and planning/Sprint_2026_12_Execution_Log.md |
+| RHMI-017 React CSV/XLSX parsing parity and spreadsheet binary-injection guard | Requirements/11_React_HMI_Refactor_Requirements.md | POST /runs (`initial_state.raw_text`, `initial_state.tables`) | scripts/live_browser_e2e_smoke_react.py; manual full UAS suite run verification | planning/Sprint_2026_12_Execution_Log.md and frontend payload behavior evidence |
 
 ## Existing Requirement Mapping Review
 

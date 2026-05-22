@@ -12,7 +12,7 @@
 This matrix records requirement-to-implementation-to-test traceability for Sprint 2026-12 web interface and operational API enablement.
 
 **Completion Target**: 100%
-**Current Status**: 15/15 requirements implemented and verified (1 item deferred by approved decision record)
+**Current Status**: 18/18 requirements implemented and verified (1 item deferred by approved decision record)
 
 ---
 
@@ -35,6 +35,9 @@ This matrix records requirement-to-implementation-to-test traceability for Sprin
 | 13 | S12-REQ-013 | Enforced Gate 0 preflight review with human-readable input summaries | S12-EXEC-013 | Completed | Copilot | Tests/integration/test_avionics_expected_results.py | ✅ PASS | Gate 0 now pauses before Stage 1 and renders preflight intent/integrity checks for approval/rejection |
 | 14 | S12-REQ-014 | Mandatory post-Stage-1 normalization review gate before Stage 2 | S12-EXEC-014 | Completed | Copilot | Tests/integration/test_avionics_expected_results.py; frontend/src/components/HITLGateManager.test.tsx | ✅ PASS | New normalization review gate blocks Stage 2 until analyst decision; timeline markers include before/after stage gate positions |
 | 15 | S12-REQ-015 | Mermaid artifact reviewer with multi-diagram navigation and split view modes | S12-EXEC-015 | Completed | Copilot | Tests/e2e/test_frontend_react_mui_full_workflow.py; scripts/live_browser_e2e_smoke_react.py | ✅ PASS | Artifacts viewer supports parsed diagram selection, editable source, rendered preview, and `x of n - diagram name` navigator label |
+| 16 | S12-REQ-016 | Wizard-created run auto-selection pin and temporary badge visibility | S12-EXEC-016 | Completed | Copilot | frontend/src/App.test.tsx; scripts/live_browser_e2e_smoke_react.py | ✅ PASS | Setup wizard pins the exact new run ID and shows `Created by wizard` badge for 30 seconds while preserving operator override behavior |
+| 17 | S12-REQ-017 | Restart-safe completed-run artifact retrieval via persisted run state rehydration | S12-EXEC-017 | Completed | Copilot | Tests/test_hmi_backend_api.py | ✅ PASS | Added persisted state snapshots and API rehydration fallback so `/runs/{run_id}/artifacts/*` remains available for completed/paused runs after backend restart |
+| 18 | S12-REQ-018 | React input file parsing parity with binary spreadsheet injection guard | S12-EXEC-018 | Completed | Copilot | scripts/live_browser_e2e_smoke_react.py | ✅ PASS | React wizard now parses CSV/XLSX to `initial_state.tables` and prevents raw XLSX binary payload injection into `initial_state.raw_text`, restoring Agent 01+ downstream data completeness for UAS suite runs |
 
 ---
 
@@ -50,13 +53,14 @@ This matrix records requirement-to-implementation-to-test traceability for Sprin
 
 - Unit/API: `python -m pytest Tests/unit/test_operational_api_server.py -q` -> `9 passed`
 - Frontend quality: `npm run lint` and `npm run build` in `frontend/` -> both passed
-- Focused frontend behavior: `npm run test -- --run src/components/HITLGateManager.test.tsx` in `frontend/` -> `5 passed`
+- Focused frontend behavior: `npm run test -- --run src/components/HITLGateManager.test.tsx` in `frontend/` -> `6 passed`
 - Gate enforcement flow: `PYTHONPATH=src python -m pytest Tests/integration/test_avionics_expected_results.py -q` -> `2 passed`
 - Artifact reviewer flow: `PYTHONPATH=src .venv\Scripts\python.exe scripts/live_browser_e2e_smoke_react.py` -> `LIVE_BROWSER_SMOKE_OK` with frontend artifact loading and navigation evidence
 - Dependency boundary: `python scripts/verify_dependency_boundary.py` -> `DEPENDENCY_BOUNDARY_CHECK_PASSED`
 - Browser shell lane: `pytest Tests/e2e/test_frontend_react_mui_shell.py -q -m "llm_live_browser and frontend_shell"` -> `1 passed, 1 skipped`
 - Browser auth UI lane: `pytest Tests/e2e/test_frontend_react_mui_shell.py -q -k unauthorized -m "llm_live_browser and frontend_shell"` -> `1 passed, 1 deselected`
 - Browser full workflow lane: `pytest Tests/e2e/test_frontend_react_mui_full_workflow.py -q -m "llm_live_browser and frontend_full"` with `FRONTEND_FULL_BROWSER_TESTS=1` -> `1 passed`
+- Restart artifact persistence: `PYTHONPATH=src .venv\Scripts\python.exe -m pytest Tests/test_hmi_backend_api.py -q` -> `18 passed`
 
 ---
 

@@ -50,6 +50,15 @@ The architecture is designed to allow migration to a React (web) or PySide6/Qt (
 
 The HMI is organized as a **single-page application with a left-sidebar navigation rail**. The sidebar is always visible. The main content area renders the active screen.
 
+The upper header section (directly below the Threat Modeler Control Console title and connection indicator) repeats primary workflow sections as two always-visible control rows so operators can navigate via either the persistent left rail or top controls.
+
+- Header Row 1 mirrors monitoring-focused workflow grouping: HITL GATES, TOKENS, Last Prompt, Prompt Editor.
+- Header Row 2 provides direct artifact-screen switching: Canonical Graph, Trust Boundaries, STRIDE Viewer, Threats, Mermaid Diagrams, STIX Bundle, Report.
+
+Artifact browsing remains available in the left rail artifact group and in the header artifact row.
+
+When a run is created from the setup wizard, the shell pins that exact run ID as the active run and marks its row in All Runs with a temporary `Created by wizard` badge for 30 seconds to make auto-selection intent explicit.
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  LOGO / APP NAME                              [Role: Analyst ▼] │
@@ -72,9 +81,8 @@ The HMI is organized as a **single-page application with a left-sidebar navigati
 
 | Section | Nav Label | Screens Included | GUI Requirements |
 |---|---|---|---|
-| Analysis Workflow | Analysis | Input Entry, Pipeline Status, Stage Results, Threat Review | GUI-001, GUI-003, GUI-004, GUI-005 |
-| HITL Review | HITL Review | Gate Screen (per gate), Audit Trail | GUI-002 |
-| Results and Archive | Results & Archive | Export, Snapshot Export, Snapshot Restore | GUI-006, GUI-007, GUI-008 |
+| HITL Gates | HITL GATES | Gate Screen (per gate), Audit Trail, footer status timeline | GUI-002, GUI-030, GUI-031 |
+| Artifacts | Artifacts | Canonical Graph, Threats, STIX, Mermaid, Tokens, Last Prompt, Prompt Editor, Export, Snapshot Export, Snapshot Restore | GUI-005, GUI-006, GUI-007, GUI-008, GUI-009, GUI-010, GUI-015, GUI-018, GUI-019, GUI-020, GUI-021, GUI-022, GUI-023, GUI-024, GUI-025 |
 | Configuration | Config | Agent Prompt Editor, Prompt History, Model Provider, Model Connection, Connection Validation | GUI-009, GUI-010, GUI-012, GUI-013, GUI-014 |
 
 ### 3.2 Configuration Ordering Dependency
@@ -87,15 +95,15 @@ The HMI is organized as a **single-page application with a left-sidebar navigati
 
 | Screen ID | Screen Name | Nav Section | GUI Req | Sub-path | Min Role |
 |---|---|---|---|---|---|
-| SCR-001 | Input Entry Form | Analysis | GUI-001 | /analysis/input | Analyst |
-| SCR-002 | Pipeline Status Dashboard | Analysis | GUI-003 | /analysis/status | Analyst |
-| SCR-003 | Stage Results Viewer | Analysis | GUI-004 | /analysis/results/{stage_id} | Analyst |
-| SCR-004 | Threat and Mitigation Review | Analysis | GUI-005 | /analysis/threats | Analyst |
-| SCR-005 | HITL Gate Screen | HITL Review | GUI-002 | /hitl/gate/{gate_id} | Analyst |
-| SCR-006 | HITL Audit Trail | HITL Review | GUI-002 | /hitl/audit | Analyst |
-| SCR-007 | Results Export | Results & Archive | GUI-006 | /archive/export | Analyst |
-| SCR-008 | Snapshot Export | Results & Archive | GUI-007 | /archive/snapshot/export | Analyst |
-| SCR-009 | Snapshot Restore | Results & Archive | GUI-008 | /archive/snapshot/restore | Analyst |
+| SCR-001 | Input Entry Form | Config | GUI-001 | /analysis/input | Analyst |
+| SCR-002 | HITL Gates Screen | HITL Gates | GUI-002, GUI-030, GUI-031 | /hitl/gates | Analyst |
+| SCR-003 | Artifact Browser | Artifacts | GUI-005, GUI-006, GUI-007, GUI-008, GUI-015, GUI-018, GUI-019, GUI-020, GUI-021, GUI-022, GUI-023, GUI-024, GUI-025 | /artifacts | Analyst |
+| SCR-004 | Stage Results Viewer | Artifacts | GUI-004 | /analysis/results/{stage_id} | Analyst |
+| SCR-005 | HITL Audit Trail | HITL Gates | GUI-002 | /hitl/audit | Analyst |
+| SCR-006 | Results Export | Artifacts | GUI-006 | /archive/export | Analyst |
+| SCR-007 | Snapshot Export | Artifacts | GUI-007 | /archive/snapshot/export | Analyst |
+| SCR-008 | Snapshot Restore | Artifacts | GUI-008 | /archive/snapshot/restore | Analyst |
+| SCR-009 | Threat Artifact Review | Artifacts | GUI-005 | /artifacts/threats | Analyst |
 | SCR-010 | Agent Prompt Editor | Config | GUI-009 | /config/prompts/{agent_id} | PromptEditor |
 | SCR-011 | Prompt Version History | Config | GUI-010 | /config/prompts/{agent_id}/history | PromptEditor |
 | SCR-012 | Model Provider Selection | Config | GUI-012 | /config/model/provider | Admin |
@@ -115,7 +123,7 @@ The HITL flow is updated with two enforced controls:
 
 These controls SHALL be represented on the footer execution timeline with gate markers before Stage 1 and after each gated stage boundary so operators can track review points in execution order.
 
-### 5.1 Primary Analysis Workflow
+### 5.1 Primary HITL and Artifact Workflow
 
 ```mermaid
 flowchart TD
@@ -128,13 +136,11 @@ flowchart TD
     VAL -- Fail --> CONN
     CHECK -- Yes --> INPUT[SCR-001\nInput Entry Form]
     INPUT --> RUN[Initiate Pipeline Run]
-    RUN --> STATUS[SCR-002\nPipeline Status\nDashboard]
-    STATUS -- Stage complete --> RESULTS[SCR-003\nStage Results\nViewer]
-    RESULTS -- HITL gate triggered --> GATE[SCR-005\nHITL Gate Screen]
-    GATE -- Approve / Edit / Override --> STATUS
-    RESULTS -- All stages done --> THREATS[SCR-004\nThreat and\nMitigation Review]
-    THREATS --> EXPORT[SCR-007\nResults Export]
-    THREATS --> SNAP[SCR-008\nSnapshot Export]
+  RUN --> GATE[SCR-002\nHITL Gates\nScreen]
+  GATE -- Approve / Edit / Override --> ARTIFACTS[SCR-003\nArtifact Browser]
+  ARTIFACTS --> THREATS[SCR-009\nThreat Artifact\nReview]
+  ARTIFACTS --> EXPORT[SCR-006\nResults Export]
+  ARTIFACTS --> SNAP[SCR-007\nSnapshot Export]
 ```
 
 ### 5.2 Configuration Workflow
@@ -226,6 +232,7 @@ Renders:
   - table    → sortable dataframe table (st.dataframe)
   - mermaid  → rendered diagram via st.components.v1.html
 Includes: [Copy] [Download] action buttons in top-right corner
+```
 
 ### 6.7 Gate-Specific Human Readable Review Panels
 
@@ -345,6 +352,34 @@ keys into `st.session_state`.  Screens MUST NOT access `_RUN_REGISTRY` directly.
 | Stage output artifacts | `run_manager.get_run_status()` | `session_state["stage_artifacts"][stage_id]` |
 | HITL gate open/closed state | `run_manager.get_run_status()` | `session_state["hitl_gates"]` |
 | Canonical threat model graph | `run_manager.get_run_status()` → `result_state` | `session_state["canonical_graph"]` |
+
+### 8.1.1 Restart Persistence Constraint for Artifact Addressability
+
+To prevent run-list entries that are visible but artifact-inaccessible after process restart,
+the backend runtime SHALL persist a restorable run-state projection for completed and paused
+runs. On restart, the API layer SHALL be able to rehydrate enough state to serve:
+
+- `GET /runs/{run_id}/artifacts/canonical`
+- `GET /runs/{run_id}/artifacts/mermaid`
+- `GET /runs/{run_id}/artifacts/stix`
+- `GET /runs/{run_id}/artifacts/report`
+
+This constraint ensures that historical runs exposed by `GET /runs` are not presented as
+operationally complete while returning `Unknown or incomplete run_id` for artifact retrieval.
+
+### 8.1.2 React Input Ingestion Parity Constraint (CSV/XLSX)
+
+To preserve Agent 01 parse quality and downstream data completeness for Context Builder,
+Trust Boundary, STRIDE, and Threat stages, the React Input Entry workflow SHALL enforce:
+
+- CSV and XLSX uploads are parsed into structured rows and submitted via
+  `initial_state.tables`.
+- Narrative text files (`md`, `txt`, `yaml`, `yml`) are submitted via
+  `initial_state.raw_text`.
+- Raw spreadsheet binary payloads SHALL NOT be injected into `initial_state.raw_text`.
+
+This keeps React behavior aligned with the established Streamlit ingestion model and
+prevents spreadsheet byte-stream contamination that degrades LLM parse reliability.
 
 ### 8.2 Local UI State (Session State)
 

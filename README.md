@@ -78,6 +78,8 @@ Planned next-sprint architecture direction (deferred from 2026-11 scope):
 - **`backend/run_manager.py`** — Pure-Python pipeline execution engine; no Streamlit dependency.
   Owns `_RUN_REGISTRY`, background threads, orchestrator lifecycle, and HITL gate handling.
   Persists run metadata to `~/.multi_agent_threat_modeler_runs.json` for reload recovery.
+  Persists a restorable run-state snapshot for completed/paused runs so artifact endpoints remain
+  available after backend restart.
   Public API: `submit_run()`, `resume_run()`, `cancel_run()`, `wait_for_run()`, `get_run_status()`.
 - **`backend/prompt_store.py`** — Thread-safe, file-backed agent prompt store.
   Persists prompt text, version history, and temperature settings to
@@ -85,6 +87,8 @@ Planned next-sprint architecture direction (deferred from 2026-11 scope):
 - **`ui/execution.py`** (refactored) — Now a thin Streamlit adapter; all execution logic
   delegated to `backend/run_manager.py`.
 - **`server/api.py`** — operational non-Streamlit HTTP server for run control and LangGraph execution-plan APIs.
+  Rehydrates run state from persisted snapshots when in-memory state is unavailable, preventing
+  run-list entries from becoming artifact-inaccessible after restart.
 - **`__main__.py`** — `python -m threat_modeler` CLI entry point for the operational API server.
 - **55 new backend tests** added (total: 259 passing).
 - Requirement PRJ-019 (Asynchronous Backend State Authority) fully implemented.
