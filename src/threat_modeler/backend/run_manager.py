@@ -36,6 +36,7 @@ from threat_modeler.backend.runtime_state import (
     mark_run_status,
     remember_settings,
 )
+from threat_modeler.ui.runtime_io import framework_state_to_dict
 
 # ---------------------------------------------------------------------------
 # Status enum
@@ -108,6 +109,17 @@ def _persist_run_metadata(run_id: str) -> None:
         entry = _RUN_REGISTRY.get(run_id)
     if not entry:
         return
+
+    persisted_state: dict[str, Any] | None = None
+    candidate_state = entry.get("result_state") if isinstance(entry.get("result_state"), FrameworkState) else None
+    if candidate_state is None:
+        candidate_state = entry.get("live_state") if isinstance(entry.get("live_state"), FrameworkState) else None
+    if candidate_state is not None:
+        try:
+            persisted_state = framework_state_to_dict(candidate_state)
+        except Exception:
+            persisted_state = None
+
     record = {
         "run_id": run_id,
         "status": entry.get("status", ExecutionStatus.IDLE.value),
@@ -118,6 +130,7 @@ def _persist_run_metadata(run_id: str) -> None:
         "last_heartbeat_time": entry.get("last_heartbeat_time"),
         "heartbeat_timeout_seconds": entry.get("heartbeat_timeout_seconds"),
         "settings": _serialize_settings(entry.get("settings")),
+        "persisted_state": persisted_state,
     }
     try:
         existing: dict = {}
@@ -162,6 +175,7 @@ def _restore_metadata_from_checkpoint() -> None:
                     ),
                     "result_state": None,
                     "live_state": None,
+                    "persisted_state": record.get("persisted_state") if isinstance(record.get("persisted_state"), dict) else None,
                     "settings": None,  # settings are re-hydrated from runtime_state on next run
                 }
 

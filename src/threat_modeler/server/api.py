@@ -43,6 +43,7 @@ from threat_modeler.config import (
 from threat_modeler.llm import OpenAiCompatibleAdapter
 from threat_modeler.orchestrator import FrameworkOrchestrator
 from threat_modeler.state import FrameworkState
+from threat_modeler.ui.runtime_io import framework_state_from_dict
 
 _LOGGER = logging.getLogger(__name__)
 _CONFIG_LOCK = threading.Lock()
@@ -364,6 +365,12 @@ def _resolve_run_state(run_id: str) -> FrameworkState | None:
     live_state = entry.get("live_state")
     if isinstance(live_state, FrameworkState):
         return live_state
+    persisted_state = entry.get("persisted_state")
+    if isinstance(persisted_state, dict):
+        try:
+            return framework_state_from_dict(persisted_state)
+        except Exception:
+            return None
     return None
 
 
