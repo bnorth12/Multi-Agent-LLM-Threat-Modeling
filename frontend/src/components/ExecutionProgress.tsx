@@ -100,17 +100,19 @@ export const ExecutionProgress: React.FC<ExecutionProgressProps> = ({
   }
 
   const getStageColor = (status: string, stageId: string): string => {
+    const normalized = status.toLowerCase()
     if (isGatePausedForStage(stageId)) return '#ffa726'
+    if (normalized === 'failed' || normalized === 'error') return '#ef5350'
     if (stageId === currentStage) return '#2196f3'
-    if (status === 'complete') return '#4caf50'
-    if (status === 'running') return '#2196f3'
-    if (status === 'skipped') return '#9e9e9e'
+    if (normalized === 'complete') return '#4caf50'
+    if (normalized === 'running') return '#2196f3'
+    if (normalized === 'skipped') return '#9e9e9e'
     return '#757575'
   }
 
   const getStageOpacity = (stageId: string): number => {
     if (stageId === currentStage) return 1
-    if (displayedStages.find((s) => s.stage_id === stageId)?.status === 'complete') return 1
+    if (['complete', 'failed', 'error'].includes((displayedStages.find((s) => s.stage_id === stageId)?.status ?? '').toLowerCase())) return 1
     return 0.5
   }
 
@@ -121,6 +123,23 @@ export const ExecutionProgress: React.FC<ExecutionProgressProps> = ({
     if (['rejected'].includes(normalized)) return '#ef5350'
     if (['pending', 'bypassed'].includes(normalized)) return '#9e9e9e'
     return '#90a4ae'
+  }
+
+  const isGateParseComplete = (status: string): boolean => {
+    return status.toLowerCase() !== 'pending'
+  }
+
+  const isGateParsingInProgress = (gate: Gate): boolean => {
+    if (isGateParseComplete(gate.status)) {
+      return false
+    }
+    if (gate.stage_id === currentStage) {
+      return true
+    }
+    if (gate.gate_id === 'gate_0_input_integrity' && currentStage === 'agent_01') {
+      return true
+    }
+    return false
   }
 
   const gateMarkers = React.useMemo(() => {
@@ -182,6 +201,42 @@ export const ExecutionProgress: React.FC<ExecutionProgressProps> = ({
     })
   }, [gates, displayedStages])
 
+  const parseSegments = React.useMemo(() => {
+    if (displayedStages.length === 0) {
+      return [] as Array<{ gate: Gate; xPos: number; color: string; stateLabel: string }>
+    }
+
+    const gateById = new Map((gates ?? []).map((gate) => [gate.gate_id, gate]))
+
+    return TIMELINE_GATE_IDS.map((gateId) => {
+      const gate = gateById.get(gateId) ?? {
+        gate_id: gateId,
+        gate_name: gateId,
+        stage_id: GATE_STAGE_ID[gateId] ?? 'agent_01',
+        status: 'pending',
+        artifact_snapshot: null,
+        draft_artifact: null,
+        is_resolved: false,
+        is_rejected: false,
+        decision: null,
+      }
+
+      const boundaryIndex = GATE_BOUNDARY_INDEX[gate.gate_id] ?? 0
+      const xPos = (boundaryIndex / displayedStages.length) * 100
+      const parseComplete = isGateParseComplete(gate.status)
+      const parsingNow = !parseComplete && isGateParsingInProgress(gate)
+      const color = parseComplete ? '#4caf50' : parsingNow ? '#8d6e63' : '#616161'
+      const stateLabel = parseComplete ? 'Parse Complete' : parsingNow ? 'Parsing In Progress' : 'Awaiting Parse'
+
+      return {
+        gate,
+        xPos,
+        color,
+        stateLabel,
+      }
+    })
+  }, [gates, displayedStages, currentStage])
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
       {/* Compact Status Row */}
@@ -231,6 +286,25 @@ export const ExecutionProgress: React.FC<ExecutionProgressProps> = ({
 
       {/* Timeline Visualization */}
       <Box sx={{ position: 'relative', height: 40, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 1, border: '1px solid rgba(62, 168, 255, 0.2)', overflow: 'visible' }}>
+        {/* Narrow Parse Segments Before Each Gate Boundary */}
+        {parseSegments.map(({ gate, xPos, color, stateLabel }) => (
+          <Tooltip key={`parse-${gate.gate_id}`} title={`Parse: ${gate.gate_id} - ${stateLabel}`} arrow placement="top">
+            <Box
+              data-testid={`parsing-segment-${gate.gate_id}`}
+              sx={{
+                position: 'absolute',
+                left: `calc(${xPos}% - 2px)`,
+                top: 0,
+                width: '4px',
+                height: '100%',
+                backgroundColor: color,
+                zIndex: 2,
+                opacity: 0.95,
+              }}
+            />
+          </Tooltip>
+        ))}
+
         {/* Stage Segments */}
         <Box sx={{ display: 'flex', height: '100%', position: 'relative' }}>
           {displayedStages.map((stage, index) => {
@@ -314,6 +388,20 @@ export const ExecutionProgress: React.FC<ExecutionProgressProps> = ({
           <Box sx={{ width: 10, height: 10, backgroundColor: '#2196f3', borderRadius: 0.5 }} />
                     <span>Running</span>
         </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Box sx={{ width: 10, height: 10, backgroundColor: '#8d6e63', borderRadius: 0.5 }} />
+          <span>Parsing In Progress</span>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+          <Box sx={{ width: 10, height: 10, backgroundColor: '#4caf50', borderRadius: 0.5 }} />
+          <span>Parse Complete</span>
+        </Box>
+        {displayedStages.some((stage) => ['failed', 'error'].includes(stage.status.toLowerCase())) && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            <Box sx={{ width: 10, height: 10, backgroundColor: '#ef5350', borderRadius: 0.5 }} />
+            <span>Failed</span>
+          </Box>
+        )}
         {gates && gates.some((g) => ['open', 'draft', 'paused'].includes(g.status.toLowerCase())) && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Box sx={{ width: 10, height: 8, clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)', backgroundColor: '#ffa726' }} />

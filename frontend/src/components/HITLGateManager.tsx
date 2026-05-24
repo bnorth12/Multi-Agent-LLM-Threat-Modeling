@@ -82,6 +82,25 @@ function gateExecutionLabel(gateId: string): string {
   return 'Gate ?'
 }
 
+function hasReviewData(gate: Gate | null | undefined): boolean {
+  if (!gate?.artifact_snapshot || typeof gate.artifact_snapshot !== 'object') {
+    return false
+  }
+  return Object.keys(gate.artifact_snapshot).length > 0
+}
+
+function gateNeedsReviewData(
+  gate: Gate | null | undefined,
+  status: string,
+  pausedGateId: string | null | undefined,
+): boolean {
+  if (!gate) {
+    return false
+  }
+  const isPendingPausedProjection = status === 'pending' && !!pausedGateId && gate.gate_id === pausedGateId
+  return (['open', 'draft'].includes(status) || isPendingPausedProjection) && !hasReviewData(gate)
+}
+
 interface HITLGateManagerProps {
   gates: Gate[]
   onGateDecision?: (gateId: string, action: string, rationale: string) => Promise<void>
@@ -148,6 +167,111 @@ function gateReadableSummary(gate: Gate | null): string[] {
   }
 
   return summarizeArtifact(snapshot)
+}
+
+function gateInputPreflightDetails(gate: Gate | null): {
+  rawTextPreview: string
+  tableHeaders: string[]
+} {
+  if (!gate?.artifact_snapshot || gate.gate_id !== 'gate_0_input_integrity') {
+    return { rawTextPreview: '', tableHeaders: [] }
+  }
+
+  const snapshot = gate.artifact_snapshot as Record<string, unknown>
+  const preflight = snapshot.input_preflight as Record<string, unknown> | undefined
+  if (!preflight || typeof preflight !== 'object') {
+    return { rawTextPreview: '', tableHeaders: [] }
+  }
+
+  const rawTextPreview = typeof preflight.raw_text_preview === 'string' ? preflight.raw_text_preview : ''
+  const tableHeadersRaw = Array.isArray(preflight.table_headers_preview) ? preflight.table_headers_preview : []
+  const tableHeaders = tableHeadersRaw
+    .map((value) => String(value || '').trim())
+    .filter((value) => value.length > 0)
+
+  return { rawTextPreview, tableHeaders }
+}
+
+type NormalizationInterfacePreview = {
+  id: string
+  name: string
+  from: string
+  to: string
+  protocol: string
+  trustBoundaryCrossing: boolean
+}
+
+function gateNormalizationDetails(gate: Gate | null): {
+  status: string
+  systemName: string
+  systemDescription: string
+  missionCriticality: string
+  safetyCriticality: string
+  subsystemCount: number
+  componentCount: number
+  functionCount: number
+  interfaceCount: number
+  interfaces: NormalizationInterfacePreview[]
+} {
+  if (!gate?.artifact_snapshot || gate.gate_id !== 'gate_1_normalization_review') {
+    return {
+      status: '',
+      systemName: '',
+      systemDescription: '',
+      missionCriticality: '',
+      safetyCriticality: '',
+      subsystemCount: 0,
+      componentCount: 0,
+      functionCount: 0,
+      interfaceCount: 0,
+      interfaces: [],
+    }
+  }
+
+  const snapshot = gate.artifact_snapshot as Record<string, unknown>
+  const review = snapshot.normalization_review as Record<string, unknown> | undefined
+  if (!review || typeof review !== 'object') {
+    return {
+      status: '',
+      systemName: '',
+      systemDescription: '',
+      missionCriticality: '',
+      safetyCriticality: '',
+      subsystemCount: 0,
+      componentCount: 0,
+      functionCount: 0,
+      interfaceCount: 0,
+      interfaces: [],
+    }
+  }
+
+  const system = (review.system as Record<string, unknown> | undefined) ?? {}
+  const counts = (review.counts as Record<string, unknown> | undefined) ?? {}
+  const interfacesRaw = Array.isArray(review.interfaces_preview) ? review.interfaces_preview : []
+
+  const interfaces = interfacesRaw
+    .filter((entry): entry is Record<string, unknown> => !!entry && typeof entry === 'object')
+    .map((entry) => ({
+      id: String(entry.id ?? ''),
+      name: String(entry.name ?? ''),
+      from: String(entry.from ?? ''),
+      to: String(entry.to ?? ''),
+      protocol: String(entry.protocol ?? ''),
+      trustBoundaryCrossing: Boolean(entry.trust_boundary_crossing ?? false),
+    }))
+
+  return {
+    status: String(review.status ?? ''),
+    systemName: String(system.name ?? ''),
+    systemDescription: String(system.description ?? ''),
+    missionCriticality: String(system.mission_criticality ?? ''),
+    safetyCriticality: String(system.safety_criticality ?? ''),
+    subsystemCount: Number(counts.subsystems ?? 0),
+    componentCount: Number(counts.components ?? 0),
+    functionCount: Number(counts.functions ?? 0),
+    interfaceCount: Number(counts.interfaces ?? 0),
+    interfaces,
+  }
 }
 
 export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
@@ -236,6 +360,16 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
     () => gates.find((gate) => gate.gate_id === pausedGateId && gate.is_resolved),
     [gates, pausedGateId],
   )
+  const pausedGate = useMemo(
+    () => orderedGates.find((gate) => gate.gate_id === pausedGateId),
+    [orderedGates, pausedGateId],
+  )
+  const pausedGateStatus = pausedGate ? effectiveGateStatus(pausedGate) : ''
+  const pausedGateWaitingOnData =
+    !!pausedGate &&
+    !!pausedGateId &&
+    !pausedGate.is_resolved &&
+    gateNeedsReviewData(pausedGate, pausedGateStatus, pausedGateId)
 
   const closeDialog = () => {
     setSelectedGate(null)
@@ -285,10 +419,17 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
   }
 
   const selectedArtifactSummary = gateReadableSummary(selectedGate)
+  const selectedInputPreflight = gateInputPreflightDetails(selectedGate)
+  const selectedNormalizationDetails = gateNormalizationDetails(selectedGate)
   const selectedStatus = selectedGate ? effectiveGateStatus(selectedGate) : ''
   const isPausedLockActive = !!pausedGateId
   const isSelectedPausedGate = !!selectedGate && selectedGate.gate_id === pausedGateId
-  const canDecide = ['open', 'draft', 'rejected'].includes(selectedStatus) && (!isPausedLockActive || isSelectedPausedGate)
+  const selectedGateWaitingOnData =
+    gateNeedsReviewData(selectedGate, selectedStatus, pausedGateId)
+  const canDecide =
+    ['open', 'draft', 'rejected'].includes(selectedStatus) &&
+    (!isPausedLockActive || isSelectedPausedGate) &&
+    !selectedGateWaitingOnData
   const canResumeSelected = !!selectedGate && !!pausedGateId && selectedGate.gate_id === pausedGateId && selectedGate.is_resolved
 
   const isGateLocked = (gate: Gate): boolean => {
@@ -299,7 +440,9 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
   }
 
   const handleReviewGate = (gate: Gate) => {
-    if (isGateLocked(gate)) {
+    const gateStatus = effectiveGateStatus(gate)
+    const waitingOnData = gateNeedsReviewData(gate, gateStatus, pausedGateId)
+    if (isGateLocked(gate) || waitingOnData) {
       return
     }
     setSelectedGate(gate)
@@ -369,7 +512,9 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
         <Alert severity={resumableGate ? 'success' : 'warning'} sx={{ mb: 2 }}>
           {resumableGate
             ? `${resumableGate.gate_name} is approved. Resume the pipeline to continue execution.`
-            : `Pipeline paused at ${pausedGateId}. Review and decide this gate before continuing.`}
+            : pausedGateWaitingOnData
+              ? `Pipeline paused at ${pausedGateId}. Waiting for parser data before gate review is enabled.`
+              : `Pipeline paused at ${pausedGateId}. Review and decide this gate before continuing.`}
         </Alert>
       )}
 
@@ -382,15 +527,17 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
       <Stack spacing={1.25}>
         {orderedGates.map((gate) => {
           const visual = gateVisual(gate)
+          const gateStatus = effectiveGateStatus(gate)
+          const gateWaitingOnData = gateNeedsReviewData(gate, gateStatus, pausedGateId)
           return (
             <Card
               key={gate.gate_id}
               sx={{
-                cursor: isGateLocked(gate) ? 'not-allowed' : 'pointer',
-                opacity: isGateLocked(gate) ? 0.6 : 1,
+                cursor: isGateLocked(gate) || gateWaitingOnData ? 'not-allowed' : 'pointer',
+                opacity: isGateLocked(gate) || gateWaitingOnData ? 0.6 : 1,
                 backgroundColor: visual.background,
                 border: `1px solid ${visual.accent}33`,
-                '&:hover': isGateLocked(gate) ? undefined : { boxShadow: 3 },
+                '&:hover': isGateLocked(gate) || gateWaitingOnData ? undefined : { boxShadow: 3 },
               }}
               onClick={() => handleReviewGate(gate)}
             >
@@ -428,9 +575,9 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
                         e.stopPropagation()
                         handleReviewGate(gate)
                       }}
-                      disabled={isGateLocked(gate)}
+                      disabled={isGateLocked(gate) || gateWaitingOnData}
                     >
-                      {isGateLocked(gate) ? 'Locked' : 'Review'}
+                      {isGateLocked(gate) ? 'Locked' : gateWaitingOnData ? 'Waiting on Data' : 'Review'}
                     </Button>
                     {pausedGateId === gate.gate_id && gate.is_resolved && (
                       <Button
@@ -499,6 +646,101 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
                 </Box>
               </>
             )}
+            {selectedGate?.gate_id === 'gate_0_input_integrity' && (
+              <>
+                <Divider />
+                <Box>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Raw Text Preview
+                  </Typography>
+                  <Paper variant="outlined" sx={{ p: 1.5, maxHeight: 180, overflow: 'auto', bgcolor: 'rgba(255,255,255,0.02)' }}>
+                    <Typography variant="caption" sx={{ whiteSpace: 'pre-wrap', fontFamily: 'monospace', color: 'text.secondary' }}>
+                      {selectedInputPreflight.rawTextPreview || 'No raw text preview available.'}
+                    </Typography>
+                  </Paper>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Detected Table Headers
+                  </Typography>
+                  {selectedInputPreflight.tableHeaders.length > 0 ? (
+                    <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                      {selectedInputPreflight.tableHeaders.map((header) => (
+                        <Chip key={header} label={header} size="small" variant="outlined" sx={{ mb: 0.75 }} />
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      No table headers were detected in preflight.
+                    </Typography>
+                  )}
+                </Box>
+              </>
+            )}
+            {selectedGate?.gate_id === 'gate_1_normalization_review' && (
+              <>
+                <Divider />
+                <Box>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Normalization Summary
+                  </Typography>
+                  {selectedNormalizationDetails.status ? (
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
+                      Status: {selectedNormalizationDetails.status}
+                    </Typography>
+                  ) : null}
+                  <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', mb: 1 }}>
+                    <Chip label={`Subsystems: ${selectedNormalizationDetails.subsystemCount}`} size="small" variant="outlined" sx={{ mb: 0.75 }} />
+                    <Chip label={`Components: ${selectedNormalizationDetails.componentCount}`} size="small" variant="outlined" sx={{ mb: 0.75 }} />
+                    <Chip label={`Functions: ${selectedNormalizationDetails.functionCount}`} size="small" variant="outlined" sx={{ mb: 0.75 }} />
+                    <Chip label={`Interfaces: ${selectedNormalizationDetails.interfaceCount}`} size="small" variant="outlined" sx={{ mb: 0.75 }} />
+                  </Stack>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    System: {selectedNormalizationDetails.systemName || 'missing'}
+                  </Typography>
+                  {selectedNormalizationDetails.systemDescription ? (
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                      Description: {selectedNormalizationDetails.systemDescription}
+                    </Typography>
+                  ) : null}
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                    Mission criticality: {selectedNormalizationDetails.missionCriticality || 'unspecified'}
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                    Safety criticality: {selectedNormalizationDetails.safetyCriticality || 'unspecified'}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Interface Preview
+                  </Typography>
+                  {selectedNormalizationDetails.interfaces.length > 0 ? (
+                    <Stack spacing={1}>
+                      {selectedNormalizationDetails.interfaces.map((item) => (
+                        <Paper key={`${item.id}-${item.name}-${item.from}-${item.to}`} variant="outlined" sx={{ p: 1.25, bgcolor: 'rgba(255,255,255,0.02)' }}>
+                          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            {item.name || item.id || 'Unnamed interface'}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
+                            From: {item.from || 'unknown'} {' -> '} To: {item.to || 'unknown'}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
+                            Protocol: {item.protocol || 'unspecified'}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
+                            Trust boundary crossing: {item.trustBoundaryCrossing ? 'true' : 'false'}
+                          </Typography>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  ) : (
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      No interface preview records were available for Gate 1.
+                    </Typography>
+                  )}
+                </Box>
+              </>
+            )}
             <TextField
               label="Rationale"
               multiline
@@ -507,8 +749,13 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
               placeholder="Explain your decision..."
               value={decisionRationale}
               onChange={(e) => setDecisionRationale(e.target.value)}
-              disabled={selectedGate?.is_resolved || (isPausedLockActive && !isSelectedPausedGate)}
+              disabled={selectedGate?.is_resolved || (isPausedLockActive && !isSelectedPausedGate) || selectedGateWaitingOnData}
             />
+            {selectedGateWaitingOnData && (
+              <Alert severity="info">
+                Gate review is temporarily unavailable while parser data is still being prepared.
+              </Alert>
+            )}
           </Box>
         </DialogContent>
         <DialogActions>

@@ -295,4 +295,44 @@ describe('HITLGateManager', () => {
       'Input preflight checks look correct.',
     )
   })
+
+  it('shows waiting state and disables review when paused gate has no context data yet', () => {
+    render(
+      <HITLGateManager
+        gates={[
+          buildGate({
+            gate_id: 'gate_7_export_consistency',
+            gate_name: 'Export Consistency Gate',
+            stage_id: 'agent_09',
+            status: 'open',
+            artifact_snapshot: null,
+          }),
+        ]}
+        pausedGateId="gate_7_export_consistency"
+      />,
+    )
+
+    expect(screen.getByText('Pipeline paused at gate_7_export_consistency. Waiting for parser data before gate review is enabled.')).toBeInTheDocument()
+    const waitingButton = screen.getByRole('button', { name: 'Waiting on Data' })
+    expect(waitingButton).toBeDisabled()
+  })
+
+  it('disables review when an open gate has no context data even outside pause mode', () => {
+    render(
+      <HITLGateManager
+        gates={[
+          buildGate({
+            gate_id: 'gate_3_stride_calibration',
+            gate_name: 'Gate 3 STRIDE Calibration',
+            stage_id: 'agent_04',
+            status: 'open',
+            artifact_snapshot: null,
+          }),
+        ]}
+      />,
+    )
+
+    const waitingButton = screen.getByRole('button', { name: 'Waiting on Data' })
+    expect(waitingButton).toBeDisabled()
+  })
 })

@@ -85,11 +85,31 @@ vi.mock('./components/PromptEditor', () => ({
   PromptEditor: () => null,
 }))
 
+vi.mock('./components/ResultsExportPanel', () => ({
+  ResultsExportPanel: () => null,
+}))
+
 import App from './App'
+import { apiClient } from './api/client'
 
 describe('App shell', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mockRun.status = 'running'
+    mockRun.pause_gate = null
+    mockRun.error = null
+    vi.mocked(apiClient.getFullState).mockResolvedValue({
+      metadata: {},
+      state: {
+        next_stage_id: 'agent_03',
+        hitl_paused_at_gate: null,
+        hitl_rejected_at_gate: null,
+      },
+      stages: [{ stage_id: 'agent_03', label: 'Trust Boundary Validator', status: 'running' }],
+      threats: [],
+      gates: [],
+      metrics: null,
+    })
   })
 
   it('keeps the navigation pane visible and does not render a menu toggle', async () => {
@@ -110,15 +130,11 @@ describe('App shell', () => {
     expect(screen.getByText('Threat Modeler')).toBeVisible()
     expect(screen.queryByRole('button', { name: 'Menu' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Execution' })).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Canonical Graph' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Trust Boundaries' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'STRIDE Viewer' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Threats' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Mermaid Diagrams' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'STIX Bundle' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Report' })).toBeInTheDocument()
+    expect(screen.queryByText('Artifacts')).not.toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'HITL GATES' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'TOKENS' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Threat Review' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'Results Export' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Last Prompt' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Prompt Editor' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Canonical Graph' })).toBeInTheDocument()
@@ -129,7 +145,43 @@ describe('App shell', () => {
     expect(screen.getByRole('tab', { name: 'STIX Bundle' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Report' })).toBeInTheDocument()
     expect(screen.getByText('Running Trust Boundary Validator')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Results Export' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Last Prompt' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Prompt Editor' })).toBeInTheDocument()
+  }, 15000)
+
+  it('shows cancelled status even when stale gate pause data exists', async () => {
+    mockRun.status = 'cancelled'
+    mockRun.pause_gate = 'gate_0_input_integrity'
+
+    vi.mocked(apiClient.getFullState).mockResolvedValue({
+      metadata: {},
+      state: {
+        next_stage_id: null,
+        hitl_paused_at_gate: 'gate_0_input_integrity',
+        hitl_rejected_at_gate: null,
+      },
+      stages: [{ stage_id: 'agent_01', label: 'Input Normalizer', status: 'complete' }],
+      threats: [],
+      gates: [
+        {
+          gate_id: 'gate_0_input_integrity',
+          gate_name: 'Input Integrity Gate',
+          stage_id: 'agent_01',
+          status: 'open',
+          artifact_snapshot: null,
+          draft_artifact: null,
+          is_resolved: false,
+          is_rejected: false,
+          decision: null,
+        },
+      ],
+      metrics: null,
+    })
+
+    render(<App />)
+
+    await waitFor(() => expect(screen.getAllByText('cancelled').length).toBeGreaterThan(0))
+    expect(screen.queryByText(/Paused for/)).not.toBeInTheDocument()
   })
 })

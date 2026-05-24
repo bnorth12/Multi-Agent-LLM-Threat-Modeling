@@ -19,6 +19,9 @@ import {
 } from '@mui/material'
 import { apiClient } from '../api/client'
 
+const LLM_REQUEST_TIMEOUT_SECONDS = 900
+const LLM_REQUEST_MAX_ATTEMPTS = 2
+
 const PROVIDERS = [
   { id: 'fixture', label: 'Local/Fixture (Offline)' },
   { id: 'xai', label: 'xAI Grok' },
@@ -164,8 +167,8 @@ export function PipelineConfig({ open, onConfirm, onBack, onCancel }: PipelineCo
           offline_only: provider === 'fixture',
           connection_url: connectionUrl,
           endpoint_mode: 'chat_completions',
-          request_timeout_seconds: 90,
-          request_max_attempts: 2,
+          request_timeout_seconds: LLM_REQUEST_TIMEOUT_SECONDS,
+          request_max_attempts: LLM_REQUEST_MAX_ATTEMPTS,
         },
         pipeline: {
           execution_mode: 'langgraph-compatible',

@@ -19,8 +19,18 @@ import {
   Paper,
   Typography,
   Chip,
+  Stack,
 } from '@mui/material'
 import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded'
+import AccountTreeOutlinedIcon from '@mui/icons-material/AccountTreeOutlined'
+import BorderOuterOutlinedIcon from '@mui/icons-material/BorderOuterOutlined'
+import SecurityOutlinedIcon from '@mui/icons-material/SecurityOutlined'
+import WarningAmberOutlinedIcon from '@mui/icons-material/WarningAmberOutlined'
+import AutoGraphOutlinedIcon from '@mui/icons-material/AutoGraphOutlined'
+import HubOutlinedIcon from '@mui/icons-material/HubOutlined'
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
+import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined'
+import IosShareOutlinedIcon from '@mui/icons-material/IosShareOutlined'
 import * as XLSX from 'xlsx'
 import { apiClient } from './api/client'
 import type { RunEntry, FullStateResponse, Stage, Gate, LLMMetrics } from './types/api'
@@ -34,14 +44,20 @@ import { TokenUsageDashboard } from './components/TokenUsageDashboard'
 import { ArtifactsViewer } from './components/ArtifactsViewer'
 import { LastPromptViewer } from './components/LastPromptViewer'
 import { PromptEditor } from './components/PromptEditor'
+import { ThreatReview } from './components/ThreatReview'
+import { MitigationViewer } from './components/MitigationViewer'
+import { ResultsExportPanel } from './components/ResultsExportPanel'
 
-type TabValue = 'gates' | 'tokens' | 'artifacts' | 'last_prompt' | 'prompt_editor'
+type TabValue = 'gates' | 'tokens' | 'artifacts' | 'review' | 'export' | 'last_prompt' | 'prompt_editor'
 type WizardStep = 'home' | 'role-select' | 'pipeline-config' | 'input-entry' | 'creating-run' | 'monitoring'
 type ParsedInputBundle = {
   rawText: string
   tables: Array<Record<string, string>>
   parseWarnings: string[]
 }
+
+const LLM_REQUEST_TIMEOUT_SECONDS = 900
+const LLM_REQUEST_MAX_ATTEMPTS = 2
 
 function uuidv4() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
@@ -63,8 +79,8 @@ function mapPipelineConfigToRuntimeSettings(config: PipelineConfigData) {
       offline_only: config.provider === 'fixture',
       connection_url: config.connectionUrl,
       endpoint_mode: 'chat_completions',
-      request_timeout_seconds: 90,
-      request_max_attempts: 2,
+      request_timeout_seconds: LLM_REQUEST_TIMEOUT_SECONDS,
+      request_max_attempts: LLM_REQUEST_MAX_ATTEMPTS,
     },
     pipeline: {
       execution_mode: 'langgraph-compatible',
@@ -86,7 +102,6 @@ function _sheetToRows(sheet: XLSX.WorkSheet, sourceFile: string): Array<Record<s
   if (!grid.length) {
     return []
   }
-
   const headerRow = (grid[0] ?? []) as Array<string | number | boolean | null>
   const headerCells = headerRow.map((value: string | number | boolean | null, index: number) => {
     const text = String(value ?? '').trim()
@@ -339,9 +354,7 @@ function App() {
 
     const selectedRun = runs.find((run) => run.run_id === selectedRunId)
     const selectedStatus = (selectedRun?.status ?? '').toLowerCase()
-    const pausedByState = !!(fullState?.state.hitl_paused_at_gate ?? selectedRun?.pause_gate)
-    const pausedByGates = gates.some((gate) => ['open', 'draft', 'paused'].includes(gate.status.toLowerCase()))
-    const shouldPoll = selectedStatus === 'running' || pausedByState || pausedByGates
+    const shouldPoll = ['queued', 'running', 'paused'].includes(selectedStatus)
 
     if (shouldPoll) {
       const poll = setInterval(() => {
@@ -448,6 +461,21 @@ function App() {
     }
   }
 
+  const handleThreatDecision = async (threatId: string, decision: string, notes: string) => {
+    if (!selectedRunId) return
+    try {
+      await apiClient.submitThreatDecision(selectedRunId, threatId, {
+        actor: 'web_ui',
+        role: selectedRole ?? 'analyst',
+        action: decision,
+        rationale: notes,
+      })
+      await loadRunState(selectedRunId)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit threat review decision')
+    }
+  }
+
   const handleRenameRun = async () => {
     if (!selectedRunId) return
     const currentName = currentRun?.run_name || selectedRunId
@@ -463,6 +491,25 @@ function App() {
     await apiClient.updateRunMetadata(selectedRunId, { archived: !currentRun.archived })
     const response = await apiClient.getRuns()
     setRuns(response.runs)
+  }
+
+  const handleCancelRun = async () => {
+    if (!selectedRunId || !currentRun) return
+    const status = (currentRun.status || '').toLowerCase()
+    if (!['queued', 'running', 'paused'].includes(status)) {
+      setError(`Run cannot be cancelled from status: ${currentRun.status}`)
+      return
+    }
+    const confirmed = window.confirm(`Cancel run ${currentRun.run_name || selectedRunId}?`)
+    if (!confirmed) return
+
+    try {
+      await apiClient.cancelRun(selectedRunId)
+      await loadRuns()
+      await loadRunState(selectedRunId)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to cancel run')
+    }
   }
 
   const handlePurgeSelected = async () => {
@@ -512,18 +559,29 @@ function App() {
   const currentRun = runs.find((r) => r.run_id === selectedRunId)
   const normalizedRunStatus = (currentRun?.status ?? '').toLowerCase()
   const pausedGateId = fullState?.state.hitl_paused_at_gate ?? currentRun?.pause_gate ?? null
+  const statusSupportsPauseOverlay = ['queued', 'running', 'paused'].includes(normalizedRunStatus)
+  const effectivePausedGateId = statusSupportsPauseOverlay ? pausedGateId : null
   const hasOpenGate = gates.some((gate) => ['open', 'draft', 'paused'].includes(gate.status.toLowerCase()))
-  const isPaused = !!pausedGateId || hasOpenGate
+  const isPaused = statusSupportsPauseOverlay && (!!effectivePausedGateId || hasOpenGate)
   const isRejected = !!fullState?.state.hitl_rejected_at_gate || normalizedRunStatus === 'rejected'
-  const displayRunStatus = isRejected ? 'rejected' : isPaused ? 'paused' : currentRun?.status ?? 'unknown'
+  const isFailed = ['failed', 'error', 'provider_throttled'].includes(normalizedRunStatus)
+  const isCancelled = normalizedRunStatus === 'cancelled'
+  const failedStageLabel = stages.find((stage) => ['failed', 'error'].includes(stage.status.toLowerCase()))?.label ?? null
+  const displayRunStatus = isRejected ? 'rejected' : isCancelled ? 'cancelled' : isPaused ? 'paused' : isFailed ? 'failed' : currentRun?.status ?? 'unknown'
   const isRunActivelyExecuting = ['queued', 'running', 'paused'].includes(normalizedRunStatus) || isPaused
   const timelineCurrentStage = isRunActivelyExecuting ? fullState?.state.next_stage_id : null
   const currentStageLabel = stages.find((stage) => stage.stage_id === timelineCurrentStage)?.label ?? null
-  const pausedGateName = gates.find((gate) => gate.gate_id === pausedGateId)?.gate_name ?? pausedGateId ?? null
+  const pausedGateName = gates.find((gate) => gate.gate_id === effectivePausedGateId)?.gate_name ?? effectivePausedGateId ?? null
   const showHeaderRuntimeIndicator = normalizedRunStatus === 'running' && !isPaused && !isRejected
   const headerRuntimeLabel = currentStageLabel ? `Running ${currentStageLabel}` : 'Pipeline running'
+  const failureReason = currentRun?.error ? currentRun.error.replace(/^RuntimeError:\s*/i, '') : null
+  const shortFailureReason = failureReason && failureReason.length > 140 ? `${failureReason.slice(0, 137)}...` : failureReason
   const timelineStatusText = isRejected
     ? `Rejected${pausedGateName ? ` at ${pausedGateName}` : ''}`
+    : isFailed
+      ? `Failed${failedStageLabel ? ` at ${failedStageLabel}` : ''}${shortFailureReason ? `: ${shortFailureReason}` : ''}`
+    : isCancelled
+      ? 'Cancelled by user'
     : pausedGateName
       ? `Paused for ${pausedGateName}`
       : normalizedRunStatus === 'running' && currentStageLabel
@@ -542,7 +600,7 @@ function App() {
   })
   const visibleRuns = showAllRuns ? sortedRuns : sortedRuns.slice(0, 12)
   const artifactsAvailable = !!currentRun && ['complete', 'completed', 'success', 'succeeded'].includes(normalizedRunStatus)
-  const gateApproved = !!currentRun && !pausedGateId && artifactsAvailable
+  const gateApproved = !!currentRun && !effectivePausedGateId && artifactsAvailable
 
   const navButtonTone = (view: TabValue) => {
     if (tabValue === view) {
@@ -566,26 +624,6 @@ function App() {
     backgroundColor: tabValue === view ? 'rgba(62, 168, 255, 0.2)' : 'transparent',
     '&:hover': {
       backgroundColor: tabValue === view ? 'rgba(62, 168, 255, 0.28)' : 'rgba(255,255,255,0.06)',
-    },
-  })
-
-  const artifactButtons = [
-    { label: 'Canonical Graph', index: 0 },
-    { label: 'Trust Boundaries', index: 1 },
-    { label: 'STRIDE Viewer', index: 2 },
-    { label: 'Threats', index: 3 },
-    { label: 'Mermaid Diagrams', index: 4 },
-    { label: 'STIX Bundle', index: 5 },
-    { label: 'Report', index: 6 },
-  ]
-
-  const artifactButtonSx = (index: number) => ({
-    justifyContent: 'flex-start',
-    borderRadius: 1,
-    color: tabValue === 'artifacts' && artifactTabIndex === index ? '#ffffff' : 'rgba(255,255,255,0.72)',
-    backgroundColor: tabValue === 'artifacts' && artifactTabIndex === index ? 'rgba(62, 168, 255, 0.2)' : 'transparent',
-    '&:hover': {
-      backgroundColor: tabValue === 'artifacts' && artifactTabIndex === index ? 'rgba(62, 168, 255, 0.28)' : 'rgba(255,255,255,0.06)',
     },
   })
 
@@ -639,6 +677,15 @@ function App() {
             <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
               <Button size="small" variant="outlined" onClick={handleRenameRun}>Rename</Button>
               <Button size="small" variant="outlined" onClick={handleArchiveToggle}>{currentRun.archived ? 'Unarchive' : 'Archive'}</Button>
+              <Button
+                size="small"
+                variant="outlined"
+                color="error"
+                onClick={handleCancelRun}
+                disabled={!['queued', 'running', 'paused'].includes((currentRun.status || '').toLowerCase())}
+              >
+                Cancel Run
+              </Button>
             </Box>
           </Box>
         )}
@@ -654,31 +701,9 @@ function App() {
 
         {selectedRunId && (
           <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
-            <Box sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'primary.main', mb: 1, textTransform: 'uppercase' }}>Artifacts</Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-              {artifactButtons.map((artifact) => (
-                <Button
-                  key={artifact.label}
-                  fullWidth
-                  size="small"
-                  variant={tabValue === 'artifacts' && artifactTabIndex === artifact.index ? 'contained' : 'text'}
-                  onClick={() => {
-                    setTabValue('artifacts')
-                    setArtifactTabIndex(artifact.index)
-                  }}
-                  sx={artifactButtonSx(artifact.index)}
-                >
-                  {artifact.label}
-                </Button>
-              ))}
-            </Box>
-          </Box>
-        )}
-
-        {selectedRunId && (
-          <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.12)' }}>
             <Box sx={{ fontSize: '0.75rem', fontWeight: 700, color: 'primary.main', mb: 1, textTransform: 'uppercase' }}>Operator Views</Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+              <Button fullWidth size="small" variant={tabValue === 'export' ? 'contained' : 'text'} onClick={() => setTabValue('export')} sx={navButtonSx('export')}>Results Export</Button>
               <Button fullWidth size="small" variant={tabValue === 'tokens' ? 'contained' : 'text'} onClick={() => setTabValue('tokens')} sx={navButtonSx('tokens')}>Tokens</Button>
               <Button fullWidth size="small" variant={tabValue === 'last_prompt' ? 'contained' : 'text'} onClick={() => setTabValue('last_prompt')} sx={navButtonSx('last_prompt')}>Last Prompt</Button>
               <Button fullWidth size="small" variant={tabValue === 'prompt_editor' ? 'contained' : 'text'} onClick={() => setTabValue('prompt_editor')} sx={navButtonSx('prompt_editor')}>Prompt Editor</Button>
@@ -787,6 +812,8 @@ function App() {
                 >
                   <Tab label="HITL GATES" value="gates" />
                   <Tab label="TOKENS" value="tokens" />
+                  <Tab icon={<RateReviewOutlinedIcon fontSize="small" />} iconPosition="start" label="Threat Review" value="review" />
+                  <Tab icon={<IosShareOutlinedIcon fontSize="small" />} iconPosition="start" label="Results Export" value="export" />
                   <Tab label="Last Prompt" value="last_prompt" />
                   <Tab label="Prompt Editor" value="prompt_editor" />
                 </Tabs>
@@ -802,13 +829,13 @@ function App() {
                   scrollButtons="auto"
                   allowScrollButtonsMobile
                 >
-                  <Tab label="Canonical Graph" value={0} />
-                  <Tab label="Trust Boundaries" value={1} />
-                  <Tab label="STRIDE Viewer" value={2} />
-                  <Tab label="Threats" value={3} />
-                  <Tab label="Mermaid Diagrams" value={4} />
-                  <Tab label="STIX Bundle" value={5} />
-                  <Tab label="Report" value={6} />
+                  <Tab icon={<AccountTreeOutlinedIcon fontSize="small" />} iconPosition="start" label="Canonical Graph" value={0} />
+                  <Tab icon={<BorderOuterOutlinedIcon fontSize="small" />} iconPosition="start" label="Trust Boundaries" value={1} />
+                  <Tab icon={<SecurityOutlinedIcon fontSize="small" />} iconPosition="start" label="STRIDE Viewer" value={2} />
+                  <Tab icon={<WarningAmberOutlinedIcon fontSize="small" />} iconPosition="start" label="Threats" value={3} />
+                  <Tab icon={<AutoGraphOutlinedIcon fontSize="small" />} iconPosition="start" label="Mermaid Diagrams" value={4} />
+                  <Tab icon={<HubOutlinedIcon fontSize="small" />} iconPosition="start" label="STIX Bundle" value={5} />
+                  <Tab icon={<DescriptionOutlinedIcon fontSize="small" />} iconPosition="start" label="Report" value={6} />
                 </Tabs>
               </Paper>
             </Box>
@@ -846,17 +873,31 @@ function App() {
             {selectedRunId && wizardStep !== 'creating-run' && (
               <>
                 {currentRun && <Alert severity={isPaused ? 'warning' : isRejected ? 'error' : 'info'} sx={{ mb: 2 }}>Status: <strong>{displayRunStatus}</strong></Alert>}
+                {currentRun?.error && isFailed && (
+                  <Alert severity="error" sx={{ mb: 2 }}>
+                    Stage failure detail: {currentRun.error}
+                  </Alert>
+                )}
                 {loading && <CircularProgress />}
                 {!loading && tabValue === 'gates' && (
                   <HITLGateManager
                     gates={gates}
                     onGateDecision={handleGateDecision}
                     onResumePipeline={handleResumePipeline}
-                    pausedGateId={pausedGateId}
+                    pausedGateId={effectivePausedGateId}
                   />
                 )}
                 {!loading && tabValue === 'tokens' && metrics && <TokenUsageDashboard metrics={metrics} />}
                 {!loading && tabValue === 'artifacts' && <ArtifactsViewer runId={selectedRunId} initialTab={artifactTabIndex} onTabChange={setArtifactTabIndex} />}
+                {!loading && tabValue === 'review' && (
+                  <Stack spacing={2}>
+                    <ThreatReview threats={fullState?.threats ?? []} onThreatDecision={handleThreatDecision} />
+                    <MitigationViewer threats={fullState?.threats ?? []} />
+                  </Stack>
+                )}
+                {!loading && tabValue === 'export' && (
+                  <ResultsExportPanel runId={selectedRunId} threats={fullState?.threats ?? []} artifactsEnabled={artifactsAvailable} />
+                )}
                 {!loading && tabValue === 'last_prompt' && <LastPromptViewer runId={selectedRunId} />}
                 {!loading && tabValue === 'prompt_editor' && <PromptEditor />}
               </>
@@ -864,7 +905,7 @@ function App() {
           </Container>
         </Box>
 
-        {selectedRunId && <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.12)', backgroundColor: 'background.paper', p: 1.5 }}><ExecutionProgress stages={stages} currentStage={timelineCurrentStage} currentStageLabel={currentStageLabel} gates={gates} pausedGateId={pausedGateId} statusText={timelineStatusText} showRuntimeActivity={showHeaderRuntimeIndicator} heartbeatAgeSeconds={currentRun?.heartbeat_age_seconds ?? null} heartbeatTimeoutSeconds={currentRun?.heartbeat_timeout_seconds ?? null} /></Box>}
+        {selectedRunId && <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.12)', backgroundColor: 'background.paper', p: 1.5 }}><ExecutionProgress stages={stages} currentStage={timelineCurrentStage} currentStageLabel={currentStageLabel} gates={gates} pausedGateId={effectivePausedGateId} statusText={timelineStatusText} showRuntimeActivity={showHeaderRuntimeIndicator} heartbeatAgeSeconds={currentRun?.heartbeat_age_seconds ?? null} heartbeatTimeoutSeconds={currentRun?.heartbeat_timeout_seconds ?? null} /></Box>}
       </Box>
     </Box>
   )
