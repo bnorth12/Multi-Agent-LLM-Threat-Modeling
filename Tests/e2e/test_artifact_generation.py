@@ -409,6 +409,7 @@ class TestLlmLiveSprintValidation:
             model=ModelSelection(
                 provider="xai",
                 model_name=model_name,
+                api_key=api_key,
                 offline_only=False,
                 endpoint_mode=endpoint_mode,
             ),

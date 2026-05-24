@@ -74,11 +74,14 @@ class _TeeLogger(io.TextIOBase):
 
 
 _EXPECTED_MANDATORY_GATE_IDS = [
+    "gate_1_normalization_review",
     "gate_1_scope_confirmation",
     "gate_2_boundary_approval",
     "gate_3_stride_calibration",
     "gate_4_threat_plausibility",
     "gate_5_mitigation_adequacy",
+    "gate_8_diagram_review",
+    "gate_9_stix_packaging_review",
 ]
 
 # ---------------------------------------------------------------------------
@@ -1194,11 +1197,14 @@ def _approve_and_resume_current_gate(page, gate_counter: dict[str, int], rng: ra
         gate_id = paused_gate_match.group(1)
         gate_label_map = {
             "gate_0_input_integrity": "Gate 0 · Input Integrity",
+            "gate_1_normalization_review": "Gate 1 · Normalization Review",
             "gate_1_scope_confirmation": "Gate 1 · Scope Confirmation",
             "gate_2_boundary_approval": "Gate 2 · Trust Boundary Approval",
             "gate_3_stride_calibration": "Gate 3 · STRIDE Calibration",
             "gate_4_threat_plausibility": "Gate 4 · Threat Plausibility",
             "gate_5_mitigation_adequacy": "Gate 5 · Mitigation Adequacy",
+            "gate_8_diagram_review": "Gate 8 · Diagram Review",
+            "gate_9_stix_packaging_review": "Gate 9 · STIX Packaging Review",
             "gate_6_merge_conflict_resolution": "Gate 6 · Merge Conflict Resolution",
             "gate_7_export_consistency": "Gate 7 · Export Consistency",
         }
@@ -1445,11 +1451,16 @@ def _wait_until_complete_with_gate_progression(page, cfg: SmokeConfig, screensho
             })
             raise SmokeFailure(f"Pipeline transitioned to FAILED state.\n{error_snip}")
 
+        # Detect explicit HITL pause text in the UI before watchdog checks.
+        pause_match = re.search(r"Pipeline\s+is\s+paused\s+at\s*:?\s*(gate_[a-z0-9_]+)", body, flags=re.IGNORECASE)
+        paused_gate_name = pause_match.group(1) if pause_match else ""
+        is_hitl_paused = bool(paused_gate_name) or last_run_state == "PAUSED"
+
         # Primary stall detector: if the UI heartbeat age exceeds the configured limit,
         # fail fast with actionable diagnostics instead of waiting for long idle timeouts.
         heartbeat_watchdog_triggered = False
         heartbeat_reason = ""
-        if last_run_state in {"RUNNING", "QUEUED"} and pause_started_at is None:
+        if last_run_state in {"RUNNING", "QUEUED"} and pause_started_at is None and not is_hitl_paused:
             idle_for = now - last_activity_time
             if last_heartbeat_age is None and idle_for > heartbeat_stale_limit:
                 heartbeat_watchdog_triggered = True
@@ -1483,20 +1494,25 @@ def _wait_until_complete_with_gate_progression(page, cfg: SmokeConfig, screensho
                 f"{last_run_state or 'unknown'} at stage {last_stage or 'unknown'}."
             )
 
-        pause_match = re.search(r"Pipeline is paused at (gate_[a-z0-9_]+)", body)
         if pause_match:
-            gate_name = pause_match.group(1)
+            gate_name = paused_gate_name
             if gate_name not in observed_mandatory_gate_ids:
                 observed_mandatory_gate_ids.append(gate_name)
             if gate_name not in observed_gate_list:
                 observed_gate_list.append(gate_name)
+
+            # Pause active-time accounting while a HITL gate is waiting for operator action.
+            if pause_started_at is None:
+                pause_started_at = time.time()
+
             if cfg.keep_open_until_input:
-                if pause_started_at is None:
-                    pause_started_at = time.time()
-                    print(f"[SMOKE] Pipeline paused at {gate_name} — manual mode enabled; timer paused until resume.", flush=True)
+                if summary.get("paused_gates") is None:
+                    summary["paused_gates"] = []
+                if gate_name not in summary.get("paused_gates", []):
                     approved = summary.setdefault("paused_gates", [])
                     if isinstance(approved, list):
                         approved.append(gate_name)
+                    print(f"[SMOKE] Pipeline paused at {gate_name} — manual mode enabled; timer paused until resume.", flush=True)
                 else:
                     print(f"[SMOKE] Pipeline still paused at {gate_name} — timer remains paused.", flush=True)
                 last_activity_time = time.time()

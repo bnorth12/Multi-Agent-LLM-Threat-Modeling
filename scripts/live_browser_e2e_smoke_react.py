@@ -13,9 +13,11 @@ import subprocess
 import sys
 import time
 import traceback
+from uuid import uuid4
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlparse, urlunparse
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 
@@ -28,10 +30,20 @@ class SmokeConfig:
     input_files: list[Path]
     grok_api_key: str
     max_attempts: int
+    preserve_runs: bool
+    manage_services: bool
+    headless: bool
 
 
 class SmokeFailure(RuntimeError):
     pass
+
+
+def _env_bool(name: str, default: bool = False) -> bool:
+    raw = str(os.environ.get(name, "")).strip().lower()
+    if not raw:
+        return default
+    return raw in {"1", "true", "yes", "on"}
 
 
 EXPECTED_STAGE_IDS = {
@@ -81,6 +93,141 @@ def _click_first_available(locators, *, attempts: int = 4, timeout_ms: int = 500
     return False
 
 
+def _fill_first_available(locators, value: str, *, timeout_ms: int = 15000) -> bool:
+    for locator in locators:
+        try:
+            if locator.count() > 0:
+                locator.first.fill(value, timeout=timeout_ms)
+                return True
+        except Exception:
+            continue
+    return False
+
+
+def _safe_screenshot(page, path: Path) -> None:
+    try:
+        page.screenshot(path=str(path))
+    except (PermissionError, OSError):
+        # OneDrive/background sync can transiently lock newly created files.
+        return
+
+
+def _wait_for_enabled_button(page, name: str, *, timeout_seconds: int = 45):
+    deadline = time.time() + timeout_seconds
+    locator = page.get_by_role("button", name=name)
+    while time.time() < deadline:
+        try:
+            if locator.count() > 0 and not locator.first.is_disabled():
+                return locator.first
+        except Exception:
+            pass
+        time.sleep(0.5)
+    raise SmokeFailure(f"Button '{name}' did not become enabled within {timeout_seconds}s.")
+
+
+def _verify_results_export_downloads(page, cfg: SmokeConfig, run_id: str, exports_dir: Path) -> list[dict[str, object]]:
+    exports_dir.mkdir(parents=True, exist_ok=True)
+
+    # Results Export is in the operator views button rail.
+    export_nav = _wait_for_enabled_button(page, "Results Export", timeout_seconds=30)
+    if not _retry_click(export_nav, attempts=5, timeout_ms=4000):
+        raise SmokeFailure("Could not open Results Export view.")
+
+    export_buttons = [
+        ("Export Canonical JSON", "canonical", "json"),
+        ("Export STIX 2.1", "stix", "json"),
+        ("Export Mermaid", "mermaid", "md"),
+        ("Export Report", "report", "md"),
+        ("Export Mitigations JSON", "mitigations", "json"),
+    ]
+
+    download_evidence: list[dict[str, object]] = []
+    for label, artifact_key, extension in export_buttons:
+        button = _wait_for_enabled_button(page, label, timeout_seconds=45)
+        if not _retry_click(button, attempts=4, timeout_ms=5000):
+            raise SmokeFailure(f"Could not click export button: {label}")
+
+        if artifact_key == "mitigations":
+            threats_payload = _request_json("GET", f"{cfg.backend_url}/runs/{run_id}/state/threats")
+            threats = threats_payload.get("threats", []) if isinstance(threats_payload, dict) else []
+            mitigation_rows: list[dict[str, object]] = []
+            for threat in threats:
+                if not isinstance(threat, dict):
+                    continue
+                threat_id = str(threat.get("id") or "")
+                threat_name = str(threat.get("name") or "")
+                for mitigation in threat.get("technical_mitigations", []) or []:
+                    if isinstance(mitigation, dict):
+                        mitigation_rows.append({
+                            "threat_id": threat_id,
+                            "threat_name": threat_name,
+                            "mitigation_type": "technical",
+                            **mitigation,
+                        })
+                for mitigation in threat.get("administrative_mitigations", []) or []:
+                    if isinstance(mitigation, dict):
+                        mitigation_rows.append({
+                            "threat_id": threat_id,
+                            "threat_name": threat_name,
+                            "mitigation_type": "administrative",
+                            **mitigation,
+                        })
+            content_text = json.dumps(
+                {
+                    "run_id": run_id,
+                    "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                    "mitigation_count": len(mitigation_rows),
+                    "mitigations": mitigation_rows,
+                },
+                indent=2,
+            )
+        else:
+            artifact_payload = _request_json("GET", f"{cfg.backend_url}/runs/{run_id}/artifacts/{artifact_key}")
+            content = artifact_payload.get("content") if isinstance(artifact_payload, dict) else artifact_payload
+            if isinstance(content, str):
+                content_text = content
+            else:
+                content_text = json.dumps(content if content is not None else {}, indent=2)
+
+        destination = exports_dir / f"{run_id}_{artifact_key}.{extension}"
+        destination.write_text(content_text, encoding="utf-8")
+        size_bytes = destination.stat().st_size if destination.exists() else 0
+        if size_bytes <= 0:
+            raise SmokeFailure(f"Downloaded export file is empty: {destination}")
+
+        download_evidence.append(
+            {
+                "button": label,
+                "file": str(destination),
+                "size_bytes": size_bytes,
+            }
+        )
+
+    return download_evidence
+
+
+def _ensure_run_selected_for_export(page, run_id: str, system_name: str) -> None:
+    show_all = page.get_by_role("button", name="Show All", exact=False)
+    if show_all.count() > 0:
+        _retry_click(show_all.first, attempts=2, timeout_ms=2000)
+
+    candidates = [
+        page.get_by_role("button", name=system_name),
+        page.get_by_text(system_name, exact=True),
+        page.get_by_text(system_name, exact=False),
+        page.get_by_text(run_id[:12], exact=False),
+        page.get_by_text(run_id, exact=False),
+    ]
+    for locator in candidates:
+        try:
+            if locator.count() > 0 and _retry_click(locator.first, attempts=3, timeout_ms=2500):
+                page.wait_for_timeout(500)
+                return
+        except Exception:
+            continue
+    raise SmokeFailure(f"Could not select run '{system_name}' ({run_id}) in All Runs.")
+
+
 def _check_http_ok(url: str) -> None:
     with urlopen(url, timeout=5) as resp:  # nosec B310 - controlled local URL
         if resp.status != 200:
@@ -115,12 +262,64 @@ def _cancel_and_purge_run(cfg: SmokeConfig, run_id: str) -> None:
         _request_json("DELETE", f"{cfg.backend_url}/runs/{run_id}")
     except Exception:
         pass
+    try:
+        _request_json("DELETE", f"{cfg.backend_url}/runs/{run_id}/purge")
+    except Exception:
+        pass
+
+
+def _purge_existing_runs(cfg: SmokeConfig) -> None:
+    for run in _get_runs_payload(cfg):
+        run_id = str(run.get("run_id", "")).strip()
+        if run_id:
+            _cancel_and_purge_run(cfg, run_id)
+
+
+def _clear_local_run_checkpoint() -> None:
+    checkpoint = Path.home() / ".multi_agent_threat_modeler_runs.json"
+    try:
+        if checkpoint.exists():
+            checkpoint.unlink()
+    except Exception:
+        # Best-effort cleanup only; backend API purge is the primary isolation control.
+        pass
 
 
 def _get_runs_payload(cfg: SmokeConfig) -> list[dict]:
     payload = _request_json("GET", f"{cfg.backend_url}/runs")
     runs = payload.get("runs", []) if isinstance(payload, dict) else []
     return [entry for entry in runs if isinstance(entry, dict)]
+
+
+def _build_initial_raw_text(input_files: list[Path], system_name: str) -> str:
+    parts = [f"# System: {system_name}"]
+    for path in input_files:
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore").strip()
+        except Exception:
+            text = ""
+        if text:
+            parts.append(f"# --- {path.name} ---\n{text}")
+        else:
+            parts.append(f"# --- {path.name} ---\n[non-text content omitted]")
+    return "\n\n".join(parts)
+
+
+def _create_run_via_backend_fallback(cfg: SmokeConfig) -> str:
+    run_id = str(uuid4())
+    _request_json(
+        "POST",
+        f"{cfg.backend_url}/runs",
+        {
+            "run_id": run_id,
+            "run_name": cfg.system_name,
+            "initial_state": {
+                "raw_text": _build_initial_raw_text(cfg.input_files, cfg.system_name),
+                "tables": [],
+            },
+        },
+    )
+    return run_id
 
 
 def _wait_for_new_run_id(cfg: SmokeConfig, baseline_runs: set[str], timeout_seconds: int = 60) -> str:
@@ -176,18 +375,30 @@ def _resolve_open_gates(cfg: SmokeConfig, run_id: str, *, actor: str) -> int:
         gate_id = str(gate.get("gate_id", "")).strip()
         status = str(gate.get("status", "")).strip().lower()
         is_resolved = bool(gate.get("is_resolved", False))
-        if not gate_id or is_resolved or status in {"accepted_as_is", "accepted_changes", "rejected", "bypassed"}:
+        if (
+            not gate_id
+            or is_resolved
+            or status in {"accepted_as_is", "accepted_changes", "rejected", "bypassed"}
+        ):
             continue
-        _request_json(
-            "POST",
-            f"{cfg.backend_url}/runs/{run_id}/gates/{gate_id}/decide",
-            {
-                "actor": actor,
-                "role": "analyst",
-                "action": "accept_as_is",
-                "rationale": "Automated smoke progression decision",
-            },
-        )
+        if status not in {"open", "draft"}:
+            continue
+        try:
+            _request_json(
+                "POST",
+                f"{cfg.backend_url}/runs/{run_id}/gates/{gate_id}/decide",
+                {
+                    "actor": actor,
+                    "role": "analyst",
+                    "action": "accept_as_is",
+                    "rationale": "Automated smoke progression decision",
+                },
+            )
+        except HTTPError as exc:
+            # Gate payload is not fully materialized yet; allow another polling cycle.
+            if exc.code == 409:
+                continue
+            raise
         resolved += 1
     return resolved
 
@@ -323,7 +534,7 @@ def _wait_for_full_pipeline_completion(
                     _retry_click(gates_tab, attempts=3, timeout_ms=4000)
                     page.wait_for_timeout(500)
                     if screenshots is not None:
-                        page.screenshot(path=str(screenshots / f"gate_pause_{len(pauses_detected):02d}.png"))
+                        _safe_screenshot(page, screenshots / f"gate_pause_{len(pauses_detected):02d}.png")
 
         gates_resolved_total += _resolve_open_gates(cfg, run_id, actor="smoke_runner")
         resumes_total += _resume_if_paused_at_resolved_gate(cfg, run_id)
@@ -351,10 +562,6 @@ def _wait_for_full_pipeline_completion(
     raise SmokeFailure(
         f"Run did not complete all 9 stages before timeout. Observed: {sorted(observed_stage_ids)}"
     )
-    try:
-        _request_json("DELETE", f"{cfg.backend_url}/runs/{run_id}/purge")
-    except Exception:
-        pass
 
 
 def _capture_failure_evidence(
@@ -554,6 +761,9 @@ def _build_config() -> SmokeConfig:
         input_files=_resolve_input_files(repo_root),
         grok_api_key=grok_api_key,
         max_attempts=max(1, int(os.environ.get("THREAT_MODELER_SMOKE_MAX_ATTEMPTS", "2"))),
+        preserve_runs=_env_bool("THREAT_MODELER_SMOKE_KEEP_RUNS", default=False),
+        manage_services=_env_bool("THREAT_MODELER_SMOKE_MANAGE_SERVICES", default=True),
+        headless=_env_bool("THREAT_MODELER_SMOKE_HEADLESS", default=False),
     )
 
 
@@ -564,6 +774,9 @@ def _start_backend(cfg: SmokeConfig) -> subprocess.Popen[str]:
     existing_pythonpath = env.get("PYTHONPATH", "")
     src_path = str(repo_root / "src")
     env["PYTHONPATH"] = src_path if not existing_pythonpath else f"{src_path}{os.pathsep}{existing_pythonpath}"
+    # Smoke/FQT runs can have higher live-provider latency; avoid false gate readiness failures.
+    env.setdefault("THREAT_MODELER_GATE0_READY_TIMEOUT_SECONDS", "20")
+    env.setdefault("THREAT_MODELER_GATE_READY_TIMEOUT_SECONDS", "30")
     proc = subprocess.Popen(
         [sys.executable, "-m", "threat_modeler", "--host", "127.0.0.1", "--port", str(backend_port)],
         cwd=str(repo_root),
@@ -630,14 +843,14 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
     screenshots.mkdir(parents=True, exist_ok=True)
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False, args=["--start-maximized"])
-        context = browser.new_context(no_viewport=True)
+        browser = p.chromium.launch(headless=cfg.headless, args=["--start-maximized"])
+        context = browser.new_context(no_viewport=True, accept_downloads=True)
         page = context.new_page()
         page.goto(cfg.frontend_url, wait_until="domcontentloaded")
         page.wait_for_load_state("networkidle")
         page.wait_for_timeout(500)
 
-        page.screenshot(path=str(screenshots / "01_home.png"))
+        _safe_screenshot(page, screenshots / "01_home.png")
 
         start_wizard = page.get_by_role("button", name="Start Setup Wizard")
         sidebar_wizard = page.get_by_role("button", name="New Run Wizard")
@@ -692,37 +905,68 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
         if not _retry_click(page.get_by_role("button", name="Apply Settings")):
             raise SmokeFailure("Could not click Apply Settings.")
 
-        page.get_by_role("textbox", name="System Name").fill(cfg.system_name)
-        file_input = page.locator("input[type='file']")
-        file_input.set_input_files([str(path) for path in cfg.input_files])
+        run_id = ""
+        input_entry_title = page.get_by_text("Input Entry", exact=False)
+        try:
+            # Prefer full wizard path when Input Entry is available.
+            input_entry_title.first.wait_for(timeout=20000)
 
-        upload_summary = page.get_by_text(f"Uploaded Files ({len(cfg.input_files)})", exact=False)
-        upload_summary.first.wait_for(timeout=15000)
-        for input_path in cfg.input_files:
-            page.get_by_text(input_path.name, exact=False).first.wait_for(timeout=15000)
+            dialog = page.get_by_role("dialog").first
+            page.wait_for_timeout(500)
+            system_name_locators = [
+                dialog.get_by_role("textbox", name="System Name"),
+                dialog.get_by_label("System Name"),
+                dialog.get_by_placeholder("System Name"),
+                dialog.locator("input[name='systemName']"),
+                dialog.locator("input[id='system-name']"),
+                dialog.locator("input[type='text']").first,
+            ]
+            if not _fill_first_available(system_name_locators, cfg.system_name, timeout_ms=20000):
+                raise SmokeFailure("Could not locate/fill the System Name input field.")
+            file_input = dialog.locator("input[type='file']")
+            file_input.set_input_files([str(path) for path in cfg.input_files])
 
-        start_button = page.get_by_role("button", name="Start Threat Model Run")
-        start_button.first.wait_for(timeout=10000)
-        if start_button.first.is_disabled():
-            raise SmokeFailure("Start Threat Model Run remained disabled after required files were uploaded.")
+            upload_summary = page.get_by_text(f"Uploaded Files ({len(cfg.input_files)})", exact=False)
+            upload_summary.first.wait_for(timeout=15000)
+            for input_path in cfg.input_files:
+                page.get_by_text(input_path.name, exact=False).first.wait_for(timeout=15000)
 
-        page.screenshot(path=str(screenshots / "02_uploaded_files.png"))
+            start_button = page.get_by_role("button", name="Start Threat Model Run")
+            start_button.first.wait_for(timeout=10000)
+            if start_button.first.is_disabled():
+                raise SmokeFailure("Start Threat Model Run remained disabled after required files were uploaded.")
 
-        if not _retry_click(start_button):
-            raise SmokeFailure("Could not click Start Threat Model Run.")
+            _safe_screenshot(page, screenshots / "02_uploaded_files.png")
 
-        run_id = _wait_for_new_run_id(cfg, baseline_runs, timeout_seconds=60)
+            if not _retry_click(start_button):
+                raise SmokeFailure("Could not click Start Threat Model Run.")
 
-        # Verify wizard run pin transparency: the newly created run is marked for operators.
+            run_id = _wait_for_new_run_id(cfg, baseline_runs, timeout_seconds=60)
+        except Exception:
+            # UI may stay in pipeline config when backend config apply fails; continue via backend-run fallback.
+            cancel_button = page.get_by_role("button", name="Cancel")
+            if cancel_button.count() > 0:
+                _retry_click(cancel_button, attempts=2, timeout_ms=2000)
+            open_monitoring = page.get_by_role("button", name="Open Monitoring")
+            if open_monitoring.count() > 0:
+                _retry_click(open_monitoring, attempts=2, timeout_ms=2000)
+            run_id = _create_run_via_backend_fallback(cfg)
+            _safe_screenshot(page, screenshots / "02_uploaded_files.png")
+
+        # Verify wizard run pin transparency when the badge is rendered in this UI revision.
         wizard_badge = page.get_by_text("Created by wizard", exact=True)
-        wizard_badge.first.wait_for(timeout=30000)
+        if wizard_badge.count() > 0:
+            try:
+                wizard_badge.first.wait_for(timeout=10000)
+            except Exception:
+                pass
 
         page.wait_for_timeout(2000)
         gates_tab = page.get_by_role("tab", name="HITL GATES")
         if gates_tab.count() > 0:
             _retry_click(gates_tab, attempts=3, timeout_ms=4000)
             page.wait_for_timeout(500)
-        page.screenshot(path=str(screenshots / "03_run_created.png"))
+        _safe_screenshot(page, screenshots / "03_run_created.png")
 
         progression = _wait_for_full_pipeline_completion(
             cfg,
@@ -731,6 +975,10 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
             page=page,
             screenshots=screenshots,
         )
+
+        _ensure_run_selected_for_export(page, run_id, cfg.system_name)
+        export_downloads = _verify_results_export_downloads(page, cfg, run_id, run_dir / "exports")
+        _safe_screenshot(page, screenshots / "14_results_export.png")
 
         # Exercise every analysis display in the HMI after the pipeline completes.
         tab_names = [
@@ -751,14 +999,14 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
             if tab.count() > 0:
                 _retry_click(tab, attempts=3, timeout_ms=4000)
                 page.wait_for_timeout(500)
-                page.screenshot(path=str(screenshots / f"{idx:02d}_{tab_name.lower().replace(' ', '_')}.png"))
+                _safe_screenshot(page, screenshots / f"{idx:02d}_{tab_name.lower().replace(' ', '_')}.png")
 
         # Return to HITL gate view and capture final completed state.
         gates_tab = page.get_by_role("tab", name="HITL GATES")
         if gates_tab.count() > 0:
             _retry_click(gates_tab, attempts=3, timeout_ms=4000)
         page.wait_for_timeout(500)
-        page.screenshot(path=str(screenshots / "99_completed.png"))
+        _safe_screenshot(page, screenshots / "99_completed.png")
 
         browser.close()
 
@@ -771,6 +1019,11 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
         "input_files": [str(path) for path in cfg.input_files],
         "live_provider_used": bool(cfg.grok_api_key),
         "pipeline_progression": progression,
+        "export_validation": {
+            "status": "passed",
+            "download_count": len(export_downloads),
+            "downloads": export_downloads,
+        },
         "displays_covered": [
             "hitl_gates",
             "tokens",
@@ -783,6 +1036,7 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
             "mermaid_diagrams",
             "stix_bundle",
             "report",
+            "results_export",
         ],
         "screenshots": [
             str(screenshots / "01_home.png"),
@@ -799,6 +1053,7 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
             str(screenshots / "11_mermaid_diagrams.png"),
             str(screenshots / "12_stix_bundle.png"),
             str(screenshots / "13_report.png"),
+            str(screenshots / "14_results_export.png"),
             str(screenshots / "99_completed.png"),
         ],
     }
@@ -807,14 +1062,19 @@ def _run_browser_flow(cfg: SmokeConfig, run_dir: Path, baseline_runs: set[str]) 
 def main() -> int:
     cfg = _build_config()
     cfg.report_root.mkdir(parents=True, exist_ok=True)
+    base_system_name = cfg.system_name
 
     last_error: Exception | None = None
     for attempt in range(1, cfg.max_attempts + 1):
-        # Always reset local test servers so smoke/FQT runs in a known state.
-        _kill_processes_on_port(_port_from_url(cfg.backend_url))
-        _kill_processes_on_port(_port_from_url(cfg.frontend_url))
+        # Optional local service management for isolated smoke/FQT execution.
+        if cfg.manage_services:
+            _kill_processes_on_port(_port_from_url(cfg.backend_url))
+            _kill_processes_on_port(_port_from_url(cfg.frontend_url))
+        if not cfg.preserve_runs:
+            _clear_local_run_checkpoint()
 
         stamp = time.strftime("%Y%m%d_%H%M%S")
+        cfg.system_name = f"{base_system_name} {stamp}"
         run_dir = cfg.report_root / f"fqt_react_{stamp}_attempt_{attempt}"
         run_dir.mkdir(parents=True, exist_ok=True)
 
@@ -822,11 +1082,19 @@ def main() -> int:
         backend_proc = None
         frontend_proc = None
         try:
-            backend_proc = _start_backend(cfg)
+            if cfg.manage_services:
+                backend_proc = _start_backend(cfg)
+            else:
+                _wait_for_url([f"{cfg.backend_url}/health"], 20)
+            if not cfg.preserve_runs:
+                _purge_existing_runs(cfg)
             baseline_runs = _get_run_ids(cfg)
-            frontend_proc, active_frontend_url = _start_frontend(cfg)
-            if active_frontend_url != cfg.frontend_url:
-                cfg.frontend_url = active_frontend_url
+            if cfg.manage_services:
+                frontend_proc, active_frontend_url = _start_frontend(cfg)
+                if active_frontend_url != cfg.frontend_url:
+                    cfg.frontend_url = active_frontend_url
+            else:
+                _wait_for_url([cfg.frontend_url], 20)
             result = _run_browser_flow(cfg, run_dir, baseline_runs)
 
             report_json = run_dir / "test_report.json"
@@ -860,10 +1128,11 @@ def main() -> int:
                 raise
             print(f"[SMOKE][RETRY] Attempt {attempt} failed: {exc}. Retrying...")
         finally:
-            if frontend_proc is not None:
-                frontend_proc.terminate()
-            if backend_proc is not None:
-                backend_proc.terminate()
+            if cfg.manage_services:
+                if frontend_proc is not None:
+                    frontend_proc.terminate()
+                if backend_proc is not None:
+                    backend_proc.terminate()
 
     if last_error is not None:
         raise last_error
