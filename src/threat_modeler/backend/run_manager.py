@@ -47,6 +47,7 @@ class ExecutionStatus(Enum):
     QUEUED = "queued"
     RUNNING = "running"
     PAUSED = "paused"
+    CANCELLED = "cancelled"
     PROVIDER_THROTTLED = "provider_throttled"
     COMPLETED = "completed"
     FAILED = "failed"
@@ -88,6 +89,33 @@ def _heartbeat_timeout_seconds() -> float:
         os.environ.get("THREAT_MODELER_HEARTBEAT_TIMEOUT_SECONDS"),
         _HEARTBEAT_TIMEOUT_SECONDS_DEFAULT,
     )
+
+
+def _gate_status_from_checkpoint(state: FrameworkState, gate_id: str) -> str | None:
+    checkpoint = getattr(state, "hitl_gate_checkpoint", None)
+    if not isinstance(checkpoint, dict):
+        return None
+    gates = checkpoint.get("gates")
+    if not isinstance(gates, dict):
+        return None
+    gate_record = gates.get(gate_id)
+    if not isinstance(gate_record, dict):
+        return None
+    status = gate_record.get("status")
+    if status is None:
+        return None
+    return str(status).strip().lower()
+
+
+def _is_final_gate_9_signed_off(state: FrameworkState) -> bool:
+    status = _gate_status_from_checkpoint(state, "gate_9_stix_packaging_review")
+    return status in {"accepted_as_is", "accepted_changes", "bypassed"}
+
+
+def _should_hold_for_final_hitl(settings: RuntimeSettings, state: FrameworkState) -> bool:
+    if not settings.pipeline.require_hitl_gates:
+        return False
+    return not _is_final_gate_9_signed_off(state)
 
 
 # ---------------------------------------------------------------------------
@@ -245,6 +273,8 @@ def _run_heartbeat_watchdog(run_id: str, stop_event: threading.Event) -> None:
             if not entry:
                 break
             status = entry.get("status")
+            pause_gate = entry.get("pause_gate")
+            watchdog_mode = entry.get("watchdog_mode")
             last_heartbeat_time = float(entry.get("last_heartbeat_time") or 0.0)
             heartbeat_timeout_seconds = _coerce_positive_float(
                 entry.get("heartbeat_timeout_seconds"),
@@ -253,6 +283,12 @@ def _run_heartbeat_watchdog(run_id: str, stop_event: threading.Event) -> None:
 
         if status not in (ExecutionStatus.QUEUED.value, ExecutionStatus.RUNNING.value):
             break
+
+        # Gate 0 is a pre-LLM preflight checkpoint and should not be governed by
+        # stale-heartbeat failure semantics used for post-LLM execution phases.
+        if watchdog_mode == "preflight" or pause_gate == "gate_0_input_integrity":
+            continue
+
         if last_heartbeat_time <= 0:
             continue
 
@@ -315,6 +351,7 @@ def submit_run(
             "result_state": None,
             "live_state": initial_state,
             "pause_gate": None,
+            "watchdog_mode": "preflight" if settings.pipeline.require_hitl_gates else "active",
             "settings": settings,
         }
 
@@ -347,6 +384,8 @@ def submit_run(
                 with _REGISTRY_LOCK:
                     if run_id in _RUN_REGISTRY:
                         _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.RUNNING.value
+                        if not settings.pipeline.require_hitl_gates:
+                            _RUN_REGISTRY[run_id]["watchdog_mode"] = "active"
                 mark_run_status(ExecutionStatus.RUNNING.value)
                 _set_heartbeat(run_id)
 
@@ -355,8 +394,25 @@ def submit_run(
                     if run_id in _RUN_REGISTRY:
                         _RUN_REGISTRY[run_id]["live_state"] = initial_state
 
-                orchestrator = FrameworkOrchestrator(settings)
+                orchestrator = FrameworkOrchestrator(settings, run_id=run_id)
                 final_state = orchestrator.run_planned_stages(initial_state)
+                if _should_hold_for_final_hitl(settings, final_state):
+                    final_state.hitl_paused_at_gate = "gate_9_stix_packaging_review"
+                    with _REGISTRY_LOCK:
+                        if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                            ExecutionStatus.QUEUED.value,
+                            ExecutionStatus.RUNNING.value,
+                        ):
+                            _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.PAUSED.value
+                            _RUN_REGISTRY[run_id]["pause_gate"] = "gate_9_stix_packaging_review"
+                            _RUN_REGISTRY[run_id]["watchdog_mode"] = "active"
+                            _RUN_REGISTRY[run_id]["result_state"] = final_state
+                    with _REGISTRY_LOCK:
+                        run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+                    if run_status == ExecutionStatus.PAUSED.value:
+                        mark_run_status(ExecutionStatus.PAUSED.value, pause_gate="gate_9_stix_packaging_review")
+                    break
+
                 setattr(final_state, "next_stage_id", None)
 
                 with _REGISTRY_LOCK:
@@ -421,6 +477,11 @@ def submit_run(
                     ):
                         _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.PAUSED.value
                         _RUN_REGISTRY[run_id]["pause_gate"] = exc.gate_record.gate_id
+                        _RUN_REGISTRY[run_id]["watchdog_mode"] = (
+                            "preflight"
+                            if exc.gate_record.gate_id == "gate_0_input_integrity"
+                            else "active"
+                        )
                         _RUN_REGISTRY[run_id]["result_state"] = initial_state
                 with _REGISTRY_LOCK:
                     run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
@@ -509,6 +570,7 @@ def resume_run(
             _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.RUNNING.value
             _RUN_REGISTRY[run_id]["end_time"] = None
             _RUN_REGISTRY[run_id]["pause_gate"] = None
+            _RUN_REGISTRY[run_id]["watchdog_mode"] = "active"
             _RUN_REGISTRY[run_id]["error"] = None
             _RUN_REGISTRY[run_id]["last_heartbeat_time"] = now
             _RUN_REGISTRY[run_id]["heartbeat_timeout_seconds"] = heartbeat_timeout_seconds
@@ -528,6 +590,7 @@ def resume_run(
                 "result_state": None,
                 "live_state": pipeline_state,
                 "pause_gate": None,
+                "watchdog_mode": "active",
                 "settings": settings,
             }
 
@@ -555,6 +618,24 @@ def resume_run(
                 orchestrator.hitl_service.restore_checkpoint_state(checkpoint)
 
             final_state = orchestrator.resume_from_checkpoint(pipeline_state, gate_id)
+            if _should_hold_for_final_hitl(settings, final_state):
+                final_state.hitl_paused_at_gate = "gate_9_stix_packaging_review"
+                with _REGISTRY_LOCK:
+                    if run_id in _RUN_REGISTRY and _RUN_REGISTRY[run_id].get("status") in (
+                        ExecutionStatus.QUEUED.value,
+                        ExecutionStatus.RUNNING.value,
+                    ):
+                        _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.PAUSED.value
+                        _RUN_REGISTRY[run_id]["pause_gate"] = "gate_9_stix_packaging_review"
+                        _RUN_REGISTRY[run_id]["watchdog_mode"] = "active"
+                        _RUN_REGISTRY[run_id]["error"] = None
+                        _RUN_REGISTRY[run_id]["result_state"] = final_state
+                with _REGISTRY_LOCK:
+                    run_status = _RUN_REGISTRY.get(run_id, {}).get("status")
+                if run_status == ExecutionStatus.PAUSED.value:
+                    mark_run_status(ExecutionStatus.PAUSED.value, pause_gate="gate_9_stix_packaging_review")
+                return
+
             setattr(final_state, "next_stage_id", None)
 
             with _REGISTRY_LOCK:
@@ -580,6 +661,11 @@ def resume_run(
                 ):
                     _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.PAUSED.value
                     _RUN_REGISTRY[run_id]["pause_gate"] = exc.gate_record.gate_id
+                    _RUN_REGISTRY[run_id]["watchdog_mode"] = (
+                        "preflight"
+                        if exc.gate_record.gate_id == "gate_0_input_integrity"
+                        else "active"
+                    )
                     _RUN_REGISTRY[run_id]["error"] = None
                     _RUN_REGISTRY[run_id]["result_state"] = pipeline_state
             with _REGISTRY_LOCK:
@@ -636,26 +722,36 @@ def resume_run(
 # ---------------------------------------------------------------------------
 
 def cancel_run(run_id: str) -> bool:
-    """Mark *run_id* as failed / cancelled.
+    """Mark *run_id* as cancelled.
 
     Note: graceful thread cancellation is not supported; this only marks the
-    status so the UI shows the run as failed.
+    status so the UI shows the run as cancelled.
 
     Returns:
-        ``True`` if the run was active and has been marked failed.
+        ``True`` if the run was active and has been marked cancelled.
     """
     with _REGISTRY_LOCK:
         entry = _RUN_REGISTRY.get(run_id)
     if not entry or entry.get("status") not in (
         ExecutionStatus.RUNNING.value,
         ExecutionStatus.QUEUED.value,
+        ExecutionStatus.PAUSED.value,
     ):
         return False
     with _REGISTRY_LOCK:
         if run_id in _RUN_REGISTRY:
-            _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.FAILED.value
+            _RUN_REGISTRY[run_id]["status"] = ExecutionStatus.CANCELLED.value
             _RUN_REGISTRY[run_id]["error"] = "Cancelled by user"
             _RUN_REGISTRY[run_id]["end_time"] = time.time()
+            _RUN_REGISTRY[run_id]["pause_gate"] = None
+            _RUN_REGISTRY[run_id]["watchdog_mode"] = "inactive"
+            live_state = _RUN_REGISTRY[run_id].get("live_state")
+            if isinstance(live_state, FrameworkState):
+                live_state.hitl_paused_at_gate = None
+            result_state = _RUN_REGISTRY[run_id].get("result_state")
+            if isinstance(result_state, FrameworkState):
+                result_state.hitl_paused_at_gate = None
+    mark_run_status(ExecutionStatus.CANCELLED.value, error="Cancelled by user")
     _persist_run_metadata(run_id)
     return True
 

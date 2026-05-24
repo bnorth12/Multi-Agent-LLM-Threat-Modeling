@@ -183,7 +183,7 @@ class GateEngine:
             "gate_9_stix_packaging_review": HitlGateRecord(
                 gate_id="gate_9_stix_packaging_review",
                 gate_name="STIX Packaging Review Gate",
-                stage_id="agent_06",
+                stage_id="agent_09",
             ),
             "gate_6_merge_conflict_resolution": HitlGateRecord(
                 gate_id="gate_6_merge_conflict_resolution",

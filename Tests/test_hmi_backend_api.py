@@ -14,7 +14,7 @@ from unittest.mock import patch
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
 
-from threat_modeler.server.api import start_server
+from threat_modeler.server.api import start_server, _serialize_run_entry
 from threat_modeler.backend.run_manager import _REGISTRY_LOCK, _RUN_REGISTRY, ExecutionStatus
 from threat_modeler.config import build_default_settings
 from threat_modeler.hitl.models import GateAction, GateStatus, HitlGateRecord
@@ -195,8 +195,8 @@ def test_gate_decision_endpoint(base_url):
         headers={'Content-Type': 'application/json'}
     )
 
-    # Will vary based on whether gate exists
-    assert response.status_code in [200, 404, 400]
+    # Will vary based on whether gate exists and whether payload readiness guard blocks early decision.
+    assert response.status_code in [200, 404, 400, 409]
 
 
 def test_gate_endpoints_return_all_checkpoint_gates_from_dict(base_url):
@@ -284,6 +284,40 @@ def test_gate_decision_endpoint_updates_checkpoint_status(base_url):
     assert gate['status'] == GateStatus.ACCEPTED_AS_IS.value
     assert gate['decision']['actor'] == 'test_user'
     assert gate['decision']['rationale'] == 'Boundary review accepted.'
+
+
+def test_gate_decision_endpoint_rejects_when_artifact_snapshot_missing(base_url):
+    """Gate review must be blocked until parser/processing payload is present."""
+    run_id = 'gate-decision-payload-not-ready-test'
+    checkpoint = {
+        'run_id': run_id,
+        'gates': {
+            'gate_8_diagram_review': HitlGateRecord(
+                gate_id='gate_8_diagram_review',
+                gate_name='Gate 8 Diagram Review',
+                stage_id='agent_08',
+                status=GateStatus.OPEN,
+                artifact_snapshot=None,
+            ).to_dict(),
+        },
+        'audit_log': {'run_id': run_id, 'entries': []},
+    }
+    _register_run_with_checkpoint(run_id, checkpoint)
+
+    response = requests.post(
+        f'{base_url}/runs/{run_id}/gates/gate_8_diagram_review/decide',
+        json={
+            'actor': 'test_user',
+            'role': 'analyst',
+            'action': GateAction.ACCEPT_AS_IS.value,
+            'rationale': 'Approve once available.',
+        },
+        headers={'Content-Type': 'application/json'},
+    )
+
+    assert response.status_code == 409
+    payload = response.json()
+    assert 'not ready' in payload.get('error', '').lower()
 
 
 def test_resume_endpoint_uses_server_side_state_when_payload_omitted(base_url):
@@ -512,6 +546,99 @@ def test_config_verify_real_provider_rejects_offline_only_mode(base_url):
     body = response.json()
     assert body['ok'] is False
     assert 'offline_only=false' in body['message']
+
+
+def test_serialize_run_entry_gate0_pause_hidden_until_preflight_ready():
+    run_id = 'gate0-projection-race'
+    state = FrameworkState()
+    state.hitl_gate_checkpoint = {
+        'run_id': run_id,
+        'gates': {
+            'gate_0_input_integrity': {
+                'gate_id': 'gate_0_input_integrity',
+                'gate_name': 'Input Integrity Gate',
+                'stage_id': 'agent_01',
+                'status': GateStatus.OPEN.value,
+                'artifact_snapshot': None,
+                'draft_artifact': None,
+                'decision': None,
+                'diff': {},
+            }
+        },
+        'audit_log': {'run_id': run_id, 'entries': []},
+    }
+
+    projected = _serialize_run_entry(
+        {
+            'run_id': run_id,
+            'status': ExecutionStatus.PAUSED.value,
+            'pause_gate': 'gate_0_input_integrity',
+            'result_state': state,
+            'live_state': state,
+            'settings': build_default_settings(),
+            'start_time': None,
+            'end_time': None,
+            'error': None,
+            'last_heartbeat_time': time.time(),
+            'heartbeat_timeout_seconds': 10.0,
+        }
+    )
+
+    assert projected is not None
+    assert projected['status'] == ExecutionStatus.RUNNING.value
+    assert projected['pause_gate'] is None
+
+
+def test_serialize_run_entry_gate0_pause_visible_when_preflight_ready():
+    run_id = 'gate0-projection-ready'
+    state = FrameworkState()
+    state.hitl_gate_checkpoint = {
+        'run_id': run_id,
+        'gates': {
+            'gate_0_input_integrity': {
+                'gate_id': 'gate_0_input_integrity',
+                'gate_name': 'Input Integrity Gate',
+                'stage_id': 'agent_01',
+                'status': GateStatus.OPEN.value,
+                'artifact_snapshot': {
+                    'input_preflight': {
+                        'raw_text_length': 32,
+                        'raw_text_preview': 'Preflight payload',
+                        'table_count': 0,
+                        'checks': {
+                            'source_present': True,
+                            'has_raw_text': True,
+                            'has_tables': False,
+                        },
+                    }
+                },
+                'draft_artifact': None,
+                'decision': None,
+                'diff': {},
+            }
+        },
+        'audit_log': {'run_id': run_id, 'entries': []},
+    }
+
+    projected = _serialize_run_entry(
+        {
+            'run_id': run_id,
+            'status': ExecutionStatus.PAUSED.value,
+            'pause_gate': 'gate_0_input_integrity',
+            'result_state': state,
+            'live_state': state,
+            'settings': build_default_settings(),
+            'start_time': None,
+            'end_time': None,
+            'error': None,
+            'last_heartbeat_time': time.time(),
+            'heartbeat_timeout_seconds': 10.0,
+        }
+    )
+
+    assert projected is not None
+    assert projected['status'] == ExecutionStatus.PAUSED.value
+    assert projected['pause_gate'] == 'gate_0_input_integrity'
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v', '--tb=short'])

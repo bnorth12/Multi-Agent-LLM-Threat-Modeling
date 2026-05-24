@@ -106,9 +106,9 @@ class TestAvionicsHitlGateOutcomes:
             "gate_2_boundary_approval",
             "gate_3_stride_calibration",
             "gate_4_threat_plausibility",
-            "gate_9_stix_packaging_review",
             "gate_5_mitigation_adequacy",
             "gate_8_diagram_review",
+            "gate_9_stix_packaging_review",
         ]
 
         paused_gate = first_pause.value.gate_record.gate_id

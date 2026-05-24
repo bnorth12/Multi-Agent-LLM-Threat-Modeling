@@ -19,11 +19,19 @@ class ContextBuilderAgent(BaseAgent):
     def _apply(self, state: FrameworkState, llm_response: str) -> FrameworkState:
         graph = parse_graph_json(llm_response)
         if graph is not None:
-            # Preserve system name and description from previous graph if not set in new graph
+            # Preserve prior graph fields when a partial response omits collections.
             if state.canonical_graph is not None:
                 if not graph.system.name and state.canonical_graph.system.name:
                     graph.system.name = state.canonical_graph.system.name
                 if not graph.system.description and state.canonical_graph.system.description:
                     graph.system.description = state.canonical_graph.system.description
+                if not graph.subsystems and state.canonical_graph.subsystems:
+                    graph.subsystems = list(state.canonical_graph.subsystems)
+                if not graph.components and state.canonical_graph.components:
+                    graph.components = list(state.canonical_graph.components)
+                if not graph.functions and state.canonical_graph.functions:
+                    graph.functions = list(state.canonical_graph.functions)
+                if not graph.interfaces and state.canonical_graph.interfaces:
+                    graph.interfaces = list(state.canonical_graph.interfaces)
             state.canonical_graph = graph
         return state

@@ -117,9 +117,24 @@ def extract_stages_from_messages(
     normalized_run_status = str(run_status or "").strip().lower()
     active_statuses = {"queued", "running", "paused"}
     terminal_completed_statuses = {"completed", "complete", "succeeded", "success"}
-    current_stage_id = str(next_stage_id or "").strip()
+    terminal_failed_statuses = {"failed", "error", "provider_throttled"}
+    raw_current_stage_id = str(next_stage_id or "").strip()
+    current_stage_id = raw_current_stage_id
     if normalized_run_status not in active_statuses:
         current_stage_id = ""
+
+    failed_stage_id = ""
+    if normalized_run_status in terminal_failed_statuses:
+        for msg in reversed(messages):
+            stage_id = str(msg.get("stage_id", "")).strip()
+            text = str(msg.get("text", "")).strip().lower()
+            if stage_id and " failed:" in text:
+                failed_stage_id = stage_id
+                break
+
+        # Fallback to live next_stage projection when no explicit failure message exists.
+        if not failed_stage_id and raw_current_stage_id:
+            failed_stage_id = raw_current_stage_id
 
     stage_order = list(stage_labels.keys())
     stage_index_by_id = {stage_id: index for index, stage_id in enumerate(stage_order)}
@@ -127,7 +142,9 @@ def extract_stages_from_messages(
 
     for stage_id, label in stage_labels.items():
         status = "pending"
-        if normalized_run_status in terminal_completed_statuses:
+        if failed_stage_id and stage_id == failed_stage_id:
+            status = "failed"
+        elif normalized_run_status in terminal_completed_statuses:
             status = "complete"
         elif stage_id in stage_ids_seen:
             status = "complete"

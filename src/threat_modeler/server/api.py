@@ -304,6 +304,75 @@ def _serialize_framework_state(state: FrameworkState | None) -> dict[str, Any] |
     }
 
 
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _gate_record_from_checkpoint(
+    checkpoint: dict[str, Any] | None,
+    gate_id: str,
+) -> dict[str, Any] | None:
+    if not isinstance(checkpoint, dict):
+        return None
+
+    gates_raw = checkpoint.get("gates", {})
+    if isinstance(gates_raw, dict):
+        gate_data = gates_raw.get(gate_id)
+        return gate_data if isinstance(gate_data, dict) else None
+
+    if isinstance(gates_raw, list):
+        for item in gates_raw:
+            if isinstance(item, dict) and str(item.get("gate_id", "")) == gate_id:
+                return item
+
+    return None
+
+
+def _gate_payload_ready(state: FrameworkState | None, gate_id: str) -> bool:
+    if not isinstance(state, FrameworkState):
+        return False
+
+    checkpoint = state.hitl_gate_checkpoint if isinstance(state.hitl_gate_checkpoint, dict) else {}
+    gate_data = _gate_record_from_checkpoint(checkpoint, gate_id)
+    if not isinstance(gate_data, dict):
+        return False
+
+    snapshot = gate_data.get("artifact_snapshot")
+    return isinstance(snapshot, dict) and len(snapshot) > 0
+
+
+def _gate_0_preflight_payload_ready(state: FrameworkState | None) -> bool:
+    if not isinstance(state, FrameworkState):
+        return False
+
+    checkpoint = state.hitl_gate_checkpoint if isinstance(state.hitl_gate_checkpoint, dict) else {}
+    gate_data = _gate_record_from_checkpoint(checkpoint, "gate_0_input_integrity")
+
+    if not isinstance(gate_data, dict):
+        return False
+
+    snapshot = gate_data.get("artifact_snapshot")
+    if not isinstance(snapshot, dict):
+        return False
+
+    preflight = snapshot.get("input_preflight")
+    if not isinstance(preflight, dict):
+        return False
+
+    raw_text_length = _safe_int(preflight.get("raw_text_length", 0))
+    table_count = _safe_int(preflight.get("table_count", 0))
+    raw_text_preview = preflight.get("raw_text_preview")
+    has_preview = isinstance(raw_text_preview, str) and bool(raw_text_preview.strip())
+
+    checks = preflight.get("checks") if isinstance(preflight.get("checks"), dict) else {}
+    source_present = bool(checks.get("source_present", False))
+
+    return source_present and (raw_text_length > 0 or table_count > 0 or has_preview)
+
+
 def _serialize_run_entry(entry: dict[str, Any] | None) -> dict[str, Any] | None:
     if not isinstance(entry, dict):
         return None
@@ -315,7 +384,20 @@ def _serialize_run_entry(entry: dict[str, Any] | None) -> dict[str, Any] | None:
     pause_gate = entry.get("pause_gate")
     live_state = entry.get("live_state") if isinstance(entry.get("live_state"), FrameworkState) else None
     result_state = entry.get("result_state") if isinstance(entry.get("result_state"), FrameworkState) else None
-    paused_at_gate = pause_gate or getattr(live_state, "hitl_paused_at_gate", None) or getattr(result_state, "hitl_paused_at_gate", None)
+    projected_status = str(entry.get("status") or "")
+    normalized_status = projected_status.strip().lower()
+
+    # Do not expose Gate 0 as PAUSED until its preflight artifact is visible in checkpoint state.
+    if normalized_status == "paused" and pause_gate == "gate_0_input_integrity":
+        gate_0_ready = _gate_0_preflight_payload_ready(result_state) or _gate_0_preflight_payload_ready(live_state)
+        if not gate_0_ready:
+            projected_status = "running"
+            normalized_status = "running"
+            pause_gate = None
+
+    paused_at_gate = None
+    if normalized_status == "paused":
+        paused_at_gate = pause_gate or getattr(live_state, "hitl_paused_at_gate", None) or getattr(result_state, "hitl_paused_at_gate", None)
     try:
         heartbeat_age_seconds = None if paused_at_gate else (max(0.0, time.time() - float(last_heartbeat)) if last_heartbeat else None)
     except Exception:
@@ -325,7 +407,7 @@ def _serialize_run_entry(entry: dict[str, Any] | None) -> dict[str, Any] | None:
         "run_id": entry.get("run_id"),
         "run_name": metadata.get("name") or str(entry.get("run_id") or ""),
         "archived": bool(metadata.get("archived", False)),
-        "status": entry.get("status"),
+        "status": projected_status,
         "start_time": entry.get("start_time"),
         "end_time": entry.get("end_time"),
         "pause_gate": pause_gate,
@@ -841,6 +923,18 @@ def build_handler() -> type[BaseHTTPRequestHandler]:
                         checkpoint = state.hitl_gate_checkpoint or {}
                         if checkpoint:
                             orchestrator.hitl_service.restore_checkpoint_state(checkpoint)
+
+                        if not _gate_payload_ready(state, gate_id):
+                            self._json_response(
+                                409,
+                                {
+                                    "error": (
+                                        f"Gate {gate_id} review payload is not ready yet. "
+                                        "Wait for parsing/processing to populate artifact_snapshot before review."
+                                    )
+                                },
+                            )
+                            return
 
                         gate_record = orchestrator.hitl_service.submit_decision(
                             gate_id=gate_id,

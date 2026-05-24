@@ -27,7 +27,7 @@ from threat_modeler.backend.run_manager import (
     _RUN_REGISTRY,
     _REGISTRY_LOCK,
 )
-from threat_modeler.config import build_default_settings
+from threat_modeler.config import ModelSelection, PipelineSettings, RuntimeSettings, build_default_settings
 from threat_modeler.state import FrameworkState
 
 
@@ -43,6 +43,17 @@ def _fixture_settings():
     return build_default_settings()
 
 
+def _hitl_settings() -> RuntimeSettings:
+    return RuntimeSettings(
+        model=ModelSelection(provider="test", model_name="mock", offline_only=True),
+        pipeline=PipelineSettings(
+            execution_mode="langgraph-compatible",
+            require_hitl_gates=True,
+            stop_on_validation_error=True,
+        ),
+    )
+
+
 # ---------------------------------------------------------------------------
 # ExecutionStatus enum
 # ---------------------------------------------------------------------------
@@ -54,6 +65,7 @@ class TestExecutionStatus:
         assert "queued" in statuses
         assert "running" in statuses
         assert "paused" in statuses
+        assert "cancelled" in statuses
         assert "completed" in statuses
         assert "failed" in statuses
 
@@ -187,12 +199,37 @@ class TestCancelRun:
                 "run_id": run_id,
                 "end_time": None,
                 "error": None,
+                "pause_gate": None,
+                "watchdog_mode": "active",
             }
         try:
             result = cancel_run(run_id)
             assert result is True
             entry = get_run_status(run_id)
-            assert entry["status"] == ExecutionStatus.FAILED.value
+            assert entry["status"] == ExecutionStatus.CANCELLED.value
+            assert entry["pause_gate"] is None
+        finally:
+            with _REGISTRY_LOCK:
+                _RUN_REGISTRY.pop(run_id, None)
+
+    def test_cancel_paused_run_returns_true_and_clears_pause_gate(self):
+        run_id = _fresh_run_id()
+        with _REGISTRY_LOCK:
+            _RUN_REGISTRY[run_id] = {
+                "status": ExecutionStatus.PAUSED.value,
+                "run_id": run_id,
+                "end_time": None,
+                "error": None,
+                "pause_gate": "gate_0_input_integrity",
+                "watchdog_mode": "preflight",
+            }
+        try:
+            result = cancel_run(run_id)
+            assert result is True
+            entry = get_run_status(run_id)
+            assert entry["status"] == ExecutionStatus.CANCELLED.value
+            assert entry["pause_gate"] is None
+            assert entry["watchdog_mode"] == "inactive"
         finally:
             with _REGISTRY_LOCK:
                 _RUN_REGISTRY.pop(run_id, None)
@@ -247,6 +284,24 @@ class TestWaitForRun:
 # ---------------------------------------------------------------------------
 
 class TestSubmitRun:
+    def test_submit_run_constructs_orchestrator_with_run_id(self):
+        run_id = _fresh_run_id()
+        state = FrameworkState(raw_text="test run id binding")
+        settings = _fixture_settings()
+
+        with patch("threat_modeler.backend.run_manager.FrameworkOrchestrator") as orchestrator_cls:
+            orchestrator = MagicMock()
+            final_state = FrameworkState(raw_text="done")
+            orchestrator.run_planned_stages.return_value = final_state
+            orchestrator_cls.return_value = orchestrator
+
+            submit_run(run_id, state, settings)
+            assert wait_for_run(run_id, timeout=10.0), "Run did not finish in test timeout"
+            orchestrator_cls.assert_called_once_with(settings, run_id=run_id)
+
+        with _REGISTRY_LOCK:
+            _RUN_REGISTRY.pop(run_id, None)
+
     def test_submit_run_registers_run_id(self):
         run_id = _fresh_run_id()
         state = FrameworkState(raw_text="test system description")
@@ -313,3 +368,67 @@ class TestSubmitRun:
         import sys
         # Verify the module itself does not hold a 'st' attribute.
         assert not hasattr(rm, "st"), "run_manager must not import streamlit as 'st'"
+
+    def test_submit_run_holds_completion_until_gate_9_signed_off(self):
+        run_id = _fresh_run_id()
+        state = FrameworkState(raw_text="hold-for-final-hitl")
+        settings = _hitl_settings()
+
+        unresolved = FrameworkState(
+            raw_text="done-but-awaiting-hitl",
+            hitl_gate_checkpoint={
+                "gates": {
+                    "gate_9_stix_packaging_review": {"status": "pending"},
+                }
+            },
+        )
+
+        with patch("threat_modeler.backend.run_manager.FrameworkOrchestrator") as orchestrator_cls:
+            orchestrator = MagicMock()
+            orchestrator.run_planned_stages.return_value = unresolved
+            orchestrator_cls.return_value = orchestrator
+
+            submit_run(run_id, state, settings)
+            assert wait_for_run(run_id, timeout=10.0), "Run did not finish in test timeout"
+
+        try:
+            entry = get_run_status(run_id)
+            assert entry is not None
+            assert entry["status"] == ExecutionStatus.PAUSED.value
+            assert entry["pause_gate"] == "gate_9_stix_packaging_review"
+        finally:
+            with _REGISTRY_LOCK:
+                _RUN_REGISTRY.pop(run_id, None)
+
+
+class TestResumeRun:
+    def test_resume_run_holds_completion_until_gate_9_signed_off(self):
+        run_id = _fresh_run_id()
+        state = FrameworkState(raw_text="resume-hold")
+        settings = _hitl_settings()
+
+        unresolved = FrameworkState(
+            raw_text="resumed-but-awaiting-hitl",
+            hitl_gate_checkpoint={
+                "gates": {
+                    "gate_9_stix_packaging_review": {"status": "open"},
+                }
+            },
+        )
+
+        with patch("threat_modeler.backend.run_manager.FrameworkOrchestrator") as orchestrator_cls:
+            orchestrator = MagicMock()
+            orchestrator.resume_from_checkpoint.return_value = unresolved
+            orchestrator_cls.return_value = orchestrator
+
+            resume_run(run_id, "gate_8_diagram_review", state, settings)
+            assert wait_for_run(run_id, timeout=10.0), "Resume run did not finish in test timeout"
+
+        try:
+            entry = get_run_status(run_id)
+            assert entry is not None
+            assert entry["status"] == ExecutionStatus.PAUSED.value
+            assert entry["pause_gate"] == "gate_9_stix_packaging_review"
+        finally:
+            with _REGISTRY_LOCK:
+                _RUN_REGISTRY.pop(run_id, None)

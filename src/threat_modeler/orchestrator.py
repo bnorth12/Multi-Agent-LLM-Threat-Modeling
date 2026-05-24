@@ -1,5 +1,7 @@
 """Stage orchestration with LangGraph-backed execution."""
 
+import os
+import time
 from dataclasses import dataclass
 from typing import Any, Callable, TypedDict
 
@@ -26,9 +28,9 @@ _MANDATORY_POST_STAGE_GATES: dict[str, str] = {
     "agent_03": "gate_2_boundary_approval",
     "agent_04": "gate_3_stride_calibration",
     "agent_05": "gate_4_threat_plausibility",
-    "agent_06": "gate_9_stix_packaging_review",
     "agent_07": "gate_5_mitigation_adequacy",
     "agent_08": "gate_8_diagram_review",
+    "agent_09": "gate_9_stix_packaging_review",
 }
 
 
@@ -71,12 +73,125 @@ class FrameworkOrchestrator:
         except Exception:
             return {}
 
-    def _open_mandatory_gate(self, gate_id: str, active_state: FrameworkState) -> None:
-        snapshot = active_state.canonical_graph_dict()
+    @staticmethod
+    def _canonical_snapshot_ready(snapshot: dict[str, Any]) -> bool:
+        if not isinstance(snapshot, dict) or not snapshot:
+            return False
+        system = snapshot.get("system")
+        if not isinstance(system, dict) or not str(system.get("name", "")).strip():
+            return False
+        interfaces = snapshot.get("interfaces")
+        if isinstance(interfaces, list) and interfaces:
+            return True
+        components = snapshot.get("components")
+        if isinstance(components, list) and components:
+            return True
+        functions = snapshot.get("functions")
+        return isinstance(functions, list) and bool(functions)
+
+    @staticmethod
+    def _diagram_snapshot_ready(snapshot: dict[str, Any]) -> bool:
+        if not isinstance(snapshot, dict):
+            return False
+        diagrams = snapshot.get("mermaid_diagrams")
+        if not isinstance(diagrams, dict) or not diagrams:
+            return False
+        return any(bool(str(v).strip()) for v in diagrams.values())
+
+    @staticmethod
+    def _stix_snapshot_ready(snapshot: dict[str, Any]) -> bool:
+        if not isinstance(snapshot, dict):
+            return False
+        bundle = snapshot.get("stix_bundle")
+        if not isinstance(bundle, dict):
+            return False
+        objects = bundle.get("objects")
+        return isinstance(objects, list) and len(objects) > 0
+
+    @staticmethod
+    def _threat_snapshot_ready(snapshot: dict[str, Any]) -> bool:
+        if not isinstance(snapshot, dict):
+            return False
+        interfaces = snapshot.get("interfaces")
+        if not isinstance(interfaces, list) or not interfaces:
+            return False
+        for interface in interfaces:
+            if not isinstance(interface, dict):
+                continue
+            threats = interface.get("threats")
+            if isinstance(threats, list) and len(threats) > 0:
+                return True
+        return False
+
+    def _build_mandatory_gate_snapshot(self, gate_id: str, active_state: FrameworkState) -> dict[str, Any]:
         if gate_id == "gate_1_normalization_review":
-            self.hitl_service.open_normalization_review_gate(
-                artifact_snapshot=self._build_normalization_review_snapshot(active_state)
+            return self._build_normalization_review_snapshot(active_state)
+        if gate_id == "gate_8_diagram_review":
+            return {"mermaid_diagrams": dict(active_state.mermaid_diagrams or {})}
+        if gate_id == "gate_9_stix_packaging_review":
+            return {"stix_bundle": dict(active_state.stix_bundle or {})}
+        return active_state.canonical_graph_dict()
+
+    def _mandatory_gate_snapshot_ready(
+        self,
+        gate_id: str,
+        snapshot: dict[str, Any],
+        active_state: FrameworkState | None = None,
+    ) -> bool:
+        if gate_id == "gate_1_normalization_review":
+            review = snapshot.get("normalization_review") if isinstance(snapshot, dict) else None
+            if not isinstance(review, dict):
+                return False
+            checks = review.get("checks") if isinstance(review.get("checks"), dict) else {}
+            return bool(checks.get("system_name_present", False))
+        if gate_id == "gate_4_threat_plausibility":
+            if not self._canonical_snapshot_ready(snapshot):
+                return False
+            # If the threat-generation stage has completed, allow an explicit
+            # zero-threat output to proceed to analyst review without deadlock.
+            if active_state is not None and bool(getattr(active_state, "threats_generated", False)):
+                return True
+            return self._threat_snapshot_ready(snapshot)
+        if gate_id == "gate_8_diagram_review":
+            return self._diagram_snapshot_ready(snapshot)
+        if gate_id == "gate_9_stix_packaging_review":
+            return self._stix_snapshot_ready(snapshot)
+        return self._canonical_snapshot_ready(snapshot)
+
+    def _await_mandatory_gate_snapshot_ready(
+        self,
+        gate_id: str,
+        active_state: FrameworkState,
+    ) -> dict[str, Any]:
+        try:
+            timeout_seconds = max(
+                0.0,
+                float(os.environ.get("THREAT_MODELER_GATE_READY_TIMEOUT_SECONDS", "8.0")),
             )
+        except (TypeError, ValueError):
+            timeout_seconds = 8.0
+
+        deadline = time.monotonic() + timeout_seconds
+        snapshot = self._build_mandatory_gate_snapshot(gate_id, active_state)
+        while (
+            not self._mandatory_gate_snapshot_ready(gate_id, snapshot, active_state)
+            and time.monotonic() < deadline
+        ):
+            time.sleep(0.1)
+            snapshot = self._build_mandatory_gate_snapshot(gate_id, active_state)
+
+        if self._mandatory_gate_snapshot_ready(gate_id, snapshot, active_state):
+            return snapshot
+
+        raise RuntimeError(
+            f"Required data for {gate_id} is not ready; refusing to open gate after waiting "
+            f"{timeout_seconds:.1f}s."
+        )
+
+    def _open_mandatory_gate(self, gate_id: str, active_state: FrameworkState) -> None:
+        snapshot = self._await_mandatory_gate_snapshot_ready(gate_id, active_state)
+        if gate_id == "gate_1_normalization_review":
+            self.hitl_service.open_normalization_review_gate(artifact_snapshot=snapshot)
         elif gate_id == "gate_1_scope_confirmation":
             self.hitl_service.open_scope_confirmation_gate(artifact_snapshot=snapshot)
         elif gate_id == "gate_2_boundary_approval":
@@ -135,10 +250,46 @@ class FrameworkOrchestrator:
     def _record_gate_pause_or_reject(self, active_state: FrameworkState, exc: Exception) -> None:
         if isinstance(exc, (GatePausedError, GateRejectedError)):
             active_state.hitl_gate_checkpoint = self.hitl_service.checkpoint_state()
+            active_state.next_stage_id = None
             if isinstance(exc, GatePausedError):
                 active_state.hitl_paused_at_gate = exc.gate_record.gate_id
             else:
                 active_state.hitl_rejected_at_gate = exc.gate_record.gate_id
+
+    @staticmethod
+    def _gate_0_snapshot_ready(snapshot: dict[str, Any]) -> bool:
+        preflight = snapshot.get("input_preflight") if isinstance(snapshot, dict) else None
+        if not isinstance(preflight, dict):
+            return False
+
+        checks = preflight.get("checks") if isinstance(preflight.get("checks"), dict) else {}
+        source_present = bool(checks.get("source_present", False))
+        raw_text_length = FrameworkOrchestrator._safe_int(preflight.get("raw_text_length", 0))
+        table_count = FrameworkOrchestrator._safe_int(preflight.get("table_count", 0))
+        return source_present and (raw_text_length > 0 or table_count > 0)
+
+    def _await_gate_0_snapshot_ready(self, active_state: FrameworkState) -> dict[str, Any]:
+        try:
+            timeout_seconds = max(
+                0.0,
+                float(os.environ.get("THREAT_MODELER_GATE0_READY_TIMEOUT_SECONDS", "8.0")),
+            )
+        except (TypeError, ValueError):
+            timeout_seconds = 8.0
+        deadline = time.monotonic() + timeout_seconds
+        snapshot = self._build_input_integrity_snapshot(active_state)
+
+        while not self._gate_0_snapshot_ready(snapshot) and time.monotonic() < deadline:
+            time.sleep(0.1)
+            snapshot = self._build_input_integrity_snapshot(active_state)
+
+        if self._gate_0_snapshot_ready(snapshot):
+            return snapshot
+
+        raise RuntimeError(
+            "Gate 0 preflight data is not ready; refusing to open input integrity gate "
+            f"after waiting {timeout_seconds:.1f}s."
+        )
 
     def _build_input_integrity_snapshot(self, active_state: FrameworkState) -> dict[str, Any]:
         raw_text = active_state.raw_text or ""
@@ -348,7 +499,7 @@ class FrameworkOrchestrator:
         if self.settings.pipeline.require_hitl_gates:
             try:
                 self.hitl_service.open_input_integrity_gate(
-                    artifact_snapshot=self._build_input_integrity_snapshot(active_state),
+                    artifact_snapshot=self._await_gate_0_snapshot_ready(active_state),
                 )
             except GatePausedError as exc:
                 active_state.hitl_paused_at_gate = exc.gate_record.gate_id

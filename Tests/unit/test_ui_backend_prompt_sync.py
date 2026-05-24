@@ -11,8 +11,7 @@ from pathlib import Path
 import pytest
 
 # Test both UI and backend stores together
-from threat_modeler.backend.prompt_store import PromptStore
-from threat_modeler.ui.prompt_store import _validate_agent, _utc_now, VersionEntry
+from threat_modeler.backend.prompt_store import PromptStore, VersionEntry, _utc_now
 
 
 class TestUIBackendPromptSync:
