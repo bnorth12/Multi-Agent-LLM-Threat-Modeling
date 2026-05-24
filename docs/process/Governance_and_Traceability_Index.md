@@ -258,6 +258,24 @@ Scripts and workflows that automatically enforce traceability:
    3. Developer creates PR on GitHub
    4. GitHub Actions AUTOMATICALLY runs sprint-traceability.yml
    5. Workflow checks commit message for "HITL-012" or similar issue ID
+
+---
+
+## 🧾 Resolution Records
+
+### 9. **Runtime State and Gate Contract Resolution (2026-05)**
+   📄 [docs/process/Runtime_State_And_Gate_Contract_Resolution_2026_05.md](../docs/process/Runtime_State_And_Gate_Contract_Resolution_2026_05.md)
+
+   **What**: Formal resolution record for Gate 0 readiness sequencing, terminal cancelled-state behavior, UI status precedence, and requirement/issue synchronization.
+
+   **Links**:
+   - Requirement set: `Requirements/13_Runtime_State_And_Input_Contract_Requirements.md`
+   - Issue record: `planning/issues/issue_2026_13_D_S13_022_Run_State_And_Gate_Contract_Corrections.md`
+
+   **When to Use**:
+   - Reviewing cancellation and Gate 0 behavior corrections
+   - Verifying traceability package completeness for this defect cluster
+   - Preparing sprint closeout evidence and governance sign-off
    6. Workflow runs verification script to check requirement link
    7. Workflow checks for test file in issue description
    8. Result: Green ✅ or Red ❌ shown in PR

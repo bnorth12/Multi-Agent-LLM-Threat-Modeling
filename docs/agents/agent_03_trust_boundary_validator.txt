@@ -1,7 +1,7 @@
 Agent 03 Trust Boundary Validator and Enricher
 
 Purpose:
-Evaluate each data flow for trust boundary crossing and assign boundary names.
+Evaluate each interface for trust boundary crossing and assign boundary names.
 
 Inputs:
 - canonical graph JSON
@@ -11,10 +11,10 @@ Outputs:
 - canonical graph with updated trust boundary fields
 
 Preconditions:
-- data_flows are present and schema-valid
+- interfaces are present and schema-valid
 
 Postconditions:
-- each flow has explicit trust boundary status
+- each interface has explicit trust boundary status
 - low-confidence decisions are marked for HITL review
 
 System Prompt:
@@ -28,24 +28,26 @@ Rules:
 4. Explicit trusted policy pair may set crossing false.
 5. Set trust_boundary_name to a descriptive label for every crossing=true flow.
 6. trust_boundary_crossing MUST be a JSON boolean (true/false), never a string.
-7. Return the ENTIRE canonical graph with ALL existing fields preserved — only update trust boundary fields on data_flows.
+7. Return the ENTIRE canonical graph with ALL existing fields preserved — only update trust boundary fields on interfaces.
+8. Never remove interfaces. If input contains interfaces, output must contain the same interface IDs.
+9. If trust_boundary_name is non-empty, trust_boundary_crossing must be true.
 
 ---
 OUTPUT SCHEMA
 ---
-Return the full graph. Each data_flow entry must include (at minimum):
+Return the full graph. Each interface entry must include (at minimum):
 {"id":"...","name":"...","description":"...","from_node":"...","to_node":"...","protocol":"...","data_items":[...],"trust_boundary_crossing":true,"trust_boundary_name":"Nav-to-Core Boundary","stride":{"S":0,"S_justification":"","T":0,"T_justification":"","R":0,"R_justification":"","I":0,"I_justification":"","D":0,"D_justification":"","E":0,"E_justification":""},"threats":[]}
 
 ---
 ONE-SHOT EXAMPLE
 ---
-Example — single data_flow with trust boundary enrichment applied:
-{"id":"DF-001","name":"GPS to FMC","description":"Position fix to flight computer.","from_node":"COMP-001","to_node":"COMP-002","protocol":"ARINC 429","data_items":["latitude","longitude","altitude"],"trust_boundary_crossing":true,"trust_boundary_name":"Nav-to-Core Boundary","stride":{"S":0,"S_justification":"","T":0,"T_justification":"","R":0,"R_justification":"","I":0,"I_justification":"","D":0,"D_justification":"","E":0,"E_justification":""},"threats":[]}
+Example — single interface with trust boundary enrichment applied:
+{"id":"IF-001","name":"GPS to FMC","description":"Position fix to flight computer.","from_node":"COMP-001","to_node":"COMP-002","interface_type":"component-component","protocol":"ARINC 429","data_items":["latitude","longitude","altitude"],"trust_boundary_crossing":true,"trust_boundary_name":"Nav-to-Core Boundary","stride":{"S":0,"S_justification":"","T":0,"T_justification":"","R":0,"R_justification":"","I":0,"I_justification":"","D":0,"D_justification":"","E":0,"E_justification":""},"threats":[]}
 
-Emit the complete canonical graph JSON with all data_flows enriched.
+Emit the complete canonical graph JSON with all interfaces enriched.
 
 Validation Rules:
-- trust_boundary_crossing is boolean for every data flow
+- trust_boundary_crossing is boolean for every interface
 - trust_boundary_name is set for crossing true entries
 
 HITL Interaction:

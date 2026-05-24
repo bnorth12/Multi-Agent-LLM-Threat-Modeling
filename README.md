@@ -201,6 +201,23 @@ python scripts/verify_dependency_boundary.py
 python scripts/run_and_log.py scripts/live_browser_e2e_smoke.py
 ```
 
+### Sprint 2026-12 Live Test Policy
+
+- Live test execution is standardized to Grok-only in this repository for Sprint 2026-12.
+- Required credential for live lanes: `GROK_API` (or `GROK_API_KEY` where supported by script wrappers).
+- OpenAI-live execution is excluded by default and is not required for sprint validation in this environment.
+- Default CI-safe lane remains:
+
+```bash
+python -m pytest Tests/ -q -m "not llm_live and not llm_live_browser"
+```
+
+- Approved live validation lane (Grok only):
+
+```bash
+python -m pytest Tests/e2e/test_live_llm_validation.py -v -m llm_live -s
+```
+
 ### Test Organization
 
 - **Unit tests** → `Tests/unit/` — Fast validation of core functions

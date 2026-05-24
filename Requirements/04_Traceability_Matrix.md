@@ -1,6 +1,6 @@
 # Traceability Matrix
 
-**Last Updated:** Sprint 2026-12 HMI/HITL workflow refinement
+**Last Updated:** Sprint 2026-12 HMI/HITL workflow refinement and header navigation consolidation
 **Status:** Active reconciliation — Delivered vs Deferred columns now separate GUI requirements by sprint delivery
 
 ## React Refactor Addendum
@@ -30,7 +30,7 @@ Project to component and interface mapping:
 - PRJ-013 -> C03-A02-001, C01-STATE-002, C12-HITL-004
 - PRJ-014 -> C09-A08-003, INT-007
 - PRJ-015 -> C01-STATE-003, C04-A03-002
-- PRJ-016 -> **GUI-001 (Delivered S06-07), GUI-002 (Delivered S06-07), GUI-002B (Delivered S08), GUI-003 (Delivered S06-07), GUI-003B (Delivered S08), GUI-003C (Delivered S08), GUI-004 (Deferred to S07-05), GUI-005 (Deferred to S07-05), GUI-006 (Deferred to S07-06), GUI-011 (Deferred to S07-03), GUI-012 (Delivered S07-02), GUI-013 (Delivered S07-02), GUI-014 (Delivered S07-03), GUI-015 (Delivered S08), GUI-030 (Delivered S12), GUI-031 (Delivered S12), GUI-032 (Delivered S12), GUI-033 (Delivered S12)**, docs/HMI_Architecture_Blueprint.md
+- PRJ-016 -> **GUI-001 (Delivered S06-07), GUI-002 (Delivered S06-07), GUI-002B (Delivered S08), GUI-003 (Delivered S06-07), GUI-003B (Delivered S08), GUI-003C (Delivered S08), GUI-004 (Deferred to S07-05), GUI-005 (Deferred to S07-05), GUI-006 (Deferred to S07-06), GUI-011 (Deferred to S07-03), GUI-012 (Delivered S07-02), GUI-013 (Delivered S07-02), GUI-014 (Delivered S07-03), GUI-015 (Delivered S08), GUI-030 (Delivered S12), GUI-031 (Delivered S12), GUI-032 (Delivered S12), GUI-033 (Delivered S12), GUI-041 (Delivered S12), GUI-042 (Delivered S12)**, docs/HMI_Architecture_Blueprint.md
 - PRJ-017 -> **GUI-007 (Deferred to S07-06), GUI-008 (Deferred to S07-06)**
 - PRJ-018 -> **GUI-009 (Deferred to S07-04), GUI-010 (Deferred to S07-04)**
 - PRJ-019 -> C01-ORCH-001, C01-STATE-002, INT-005, **GUI-016 (Planned S08 hotfix stream)**
@@ -71,6 +71,8 @@ Project to component and interface mapping:
 | GUI-031 | Persistent Timeline Status and Gate-Centric Monitoring | SCR-002 / SCR-005 / footer | S12 | ✅ Delivered S12 | Centered footer status text persists across pages and resume does not force navigation away from the HITL Gate page |
 | GUI-032 | Input Integrity Preflight Review Gate | SCR-001 / SCR-005 pre-stage governance | S12 | ✅ Delivered S12 | Gate 0 now provides enforceable preflight review with human-readable input checks before Stage 1 execution |
 | GUI-033 | Post-Stage-1 Normalization Review Gate | SCR-005 post-stage governance | S12 | ✅ Delivered S12 | New normalization review gate blocks Stage 2 until analyst approval of Stage 1 normalized artifact summary |
+| GUI-041 | Header-Authoritative Artifact Domain Navigation | SCR-003 / header control rows | S12 | ✅ Delivered S12 | Artifact-domain switching moved to header tabs; left rail retained as persistent global navigation without duplicate artifact selector controls |
+| GUI-042 | Header Review and Export Icon Entry Points | SCR-003 / SCR-006 | S12 | ✅ Delivered S12 | Header now exposes icon-labeled Threat Review and Results Export tabs; export surface includes mitigations export control |
 
 ---
 
@@ -83,6 +85,7 @@ Project to component and interface mapping:
 - Tests/unit/test_execution_mode_governance.py -> PRJ-023, C01-ORCH-003
 - Tests/integration/test_agent_pipeline_completeness.py -> PRJ-003, PRJ-023, C01-ORCH-003
 - Tests/e2e/test_browser_cav_markdown_upload.py -> PRJ-016, PRJ-024, VS-009
+- frontend/src/App.test.tsx -> GUI-041, GUI-042
 - frontend/src/components/HITLGateManager.test.tsx -> GUI-030, GUI-031
 - Tests/integration/test_avionics_expected_results.py -> GUI-032, GUI-033
 - Tests/Formal_Qualification_Test_Plan.md -> PRJ-001 through PRJ-028, HITL-001 through HITL-012, GUI-001A, GUI-002, GUI-003, GUI-003A, GUI-003B, GUI-003C, GUI-004, GUI-005, GUI-006, GUI-007, GUI-008, GUI-009, GUI-010, GUI-012, GUI-012A, GUI-013, GUI-014, GUI-015, GUI-016, GUI-017

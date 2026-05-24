@@ -259,6 +259,27 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
 - Removed the forced tab switch to the execution page when resuming from a resolved gate.
 - Renamed navigation label from `HITL` to `HITL Gate` for operator clarity.
 
+## 2026-05-22 (Update 10 - Dev Stack Restart Script Operational Logging)
+
+### Operational Administration Completion
+
+- Executed sprint operational restart flow using `scripts/restart_dev_stack.ps1`.
+- Restart command standardized for local backend/frontend recovery and readiness checks.
+- Captured readiness evidence for both services with HTTP 200 health checks.
+
+### Restart Evidence
+
+- Command: `PowerShell -ExecutionPolicy Bypass -File .\\scripts\\restart_dev_stack.ps1`
+- Backend readiness: `True` (ready in 9.40s)
+- Frontend readiness: `True` (ready in 10.88s)
+- Backend launcher PID: `321952` (listener PID: `333708`)
+- Frontend launcher PID: `333416` (listener PID: `332792`)
+
+### Governance Note
+
+- This entry is administrative/operational evidence (repo maintenance and sprint support), not application behavior change.
+- Kept in Sprint 2026-12 execution log to preserve traceability continuity for environment-control actions used during verification and triage.
+
 ## 2026-05-21 (Update 10 - Completed Run Artifact Persistence Defect)
 
 ### Problem Observed

@@ -26,19 +26,20 @@ Rules:
 2. Preserve approved baseline entities and their IDs.
 3. Prefer most detailed value when fields conflict.
 4. Add merge note metadata for analyst review when conflicts remain.
-5. Return the ENTIRE canonical graph with ALL arrays (subsystems, components, functions, data_flows) fully populated.
+5. Return the ENTIRE canonical graph with ALL arrays (subsystems, components, functions, interfaces) fully populated.
+6. Never drop interfaces present in input; preserve IDs and endpoint nodes.
 
 ---
 OUTPUT SCHEMA
 ---
 Return exactly this top-level structure (all keys required):
-{"metadata":{"generation_timestamp":"...","model_level":"system"},"system":{"name":"...","description":"...","mission_criticality":"HIGH|MEDIUM|LOW","safety_criticality":"HIGH|MEDIUM|LOW"},"subsystems":[{"id":"...","name":"...","description":"...","parent_system":"..."}],"components":[{"id":"...","name":"...","parent_subsystem":"...","hardware":"...","software_modules":[...],"description":"..."}],"functions":[],"data_flows":[{"id":"...","name":"...","description":"...","from_node":"...","to_node":"...","protocol":"...","data_items":[...],"trust_boundary_crossing":true,"trust_boundary_name":"...","stride":{"S":0,"S_justification":"","T":0,"T_justification":"","R":0,"R_justification":"","I":0,"I_justification":"","D":0,"D_justification":"","E":0,"E_justification":""},"threats":[]}]}
+{"metadata":{"generation_timestamp":"...","model_level":"system"},"system":{"name":"...","description":"...","mission_criticality":"HIGH|MEDIUM|LOW","safety_criticality":"HIGH|MEDIUM|LOW"},"subsystems":[{"id":"...","name":"...","description":"...","parent_system":"..."}],"components":[{"id":"...","name":"...","parent_subsystem":"...","hardware":"...","software_modules":[...],"description":"..."}],"functions":[],"interfaces":[{"id":"...","name":"...","description":"...","from_node":"...","to_node":"...","interface_type":"component-component","protocol":"...","data_items":[...],"trust_boundary_crossing":true,"trust_boundary_name":"...","stride":{"S":0,"S_justification":"","T":0,"T_justification":"","R":0,"R_justification":"","I":0,"I_justification":"","D":0,"D_justification":"","E":0,"E_justification":""},"threats":[]}]}
 
 ---
 ONE-SHOT EXAMPLE
 ---
 Example merged output (emit this exact format):
-{"metadata":{"generation_timestamp":"2025-01-01T00:00:00Z","model_level":"system"},"system":{"name":"Flight Management System","description":"Integrated aerospace navigation and guidance system.","mission_criticality":"HIGH","safety_criticality":"HIGH"},"subsystems":[{"id":"SS-NAV-01","name":"Navigation Subsystem","description":"Provides position and timing.","parent_system":"Flight Management System"}],"components":[{"id":"COMP-001","name":"GPS Receiver","parent_subsystem":"SS-NAV-01","hardware":"GTN 750","software_modules":["NavEngine","WaypointDB"],"description":"Processes satellite signals."}],"functions":[],"data_flows":[{"id":"DF-001","name":"GPS to FMC","description":"Position fix to flight computer.","from_node":"COMP-001","to_node":"COMP-002","protocol":"ARINC 429","data_items":["latitude","longitude","altitude"],"trust_boundary_crossing":true,"trust_boundary_name":"Nav-to-Core","stride":{"S":0,"S_justification":"","T":0,"T_justification":"","R":0,"R_justification":"","I":0,"I_justification":"","D":0,"D_justification":"","E":0,"E_justification":""},"threats":[]}]}
+{"metadata":{"generation_timestamp":"2025-01-01T00:00:00Z","model_level":"system"},"system":{"name":"Flight Management System","description":"Integrated aerospace navigation and guidance system.","mission_criticality":"HIGH","safety_criticality":"HIGH"},"subsystems":[{"id":"SS-NAV-01","name":"Navigation Subsystem","description":"Provides position and timing.","parent_system":"Flight Management System"}],"components":[{"id":"COMP-001","name":"GPS Receiver","parent_subsystem":"SS-NAV-01","hardware":"GTN 750","software_modules":["NavEngine","WaypointDB"],"description":"Processes satellite signals."}],"functions":[],"interfaces":[{"id":"IF-001","name":"GPS to FMC","description":"Position fix to flight computer.","from_node":"COMP-001","to_node":"COMP-002","interface_type":"component-component","protocol":"ARINC 429","data_items":["latitude","longitude","altitude"],"trust_boundary_crossing":true,"trust_boundary_name":"Nav-to-Core","stride":{"S":0,"S_justification":"","T":0,"T_justification":"","R":0,"R_justification":"","I":0,"I_justification":"","D":0,"D_justification":"","E":0,"E_justification":""},"threats":[]}]}
 
 Validation Rules:
 - merged output must remain schema-valid

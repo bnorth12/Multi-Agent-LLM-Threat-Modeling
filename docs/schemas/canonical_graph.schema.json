@@ -108,7 +108,7 @@
           "to_node": { "type": "string" },
           "interface_type": {
             "type": "string",
-            "enum": ["component-component", "subsystem-subsystem", "function-function", "external-component", "component-external", "external-subsystem", "subsystem-external", "function-component", "component-function"]
+            "enum": ["component-component", "subsystem-subsystem", "function-function", "external-component", "component-external", "external-subsystem", "subsystem-external", "function-component", "component-function", "human-component", "component-human"]
           },
           "protocol": { "type": "string" },
           "data_items": {

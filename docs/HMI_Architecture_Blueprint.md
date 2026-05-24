@@ -50,12 +50,12 @@ The architecture is designed to allow migration to a React (web) or PySide6/Qt (
 
 The HMI is organized as a **single-page application with a left-sidebar navigation rail**. The sidebar is always visible. The main content area renders the active screen.
 
-The upper header section (directly below the Threat Modeler Control Console title and connection indicator) repeats primary workflow sections as two always-visible control rows so operators can navigate via either the persistent left rail or top controls.
+The upper header section (directly below the Threat Modeler Control Console title and connection indicator) provides two always-visible control rows. The header is the authoritative navigation surface for artifact-domain and review/export workflows, while the persistent left rail remains the global app and run/workspace control surface.
 
-- Header Row 1 mirrors monitoring-focused workflow grouping: HITL GATES, TOKENS, Last Prompt, Prompt Editor.
-- Header Row 2 provides direct artifact-screen switching: Canonical Graph, Trust Boundaries, STRIDE Viewer, Threats, Mermaid Diagrams, STIX Bundle, Report.
+- Header Row 1 provides operator workflow switching: HITL GATES, TOKENS, Threat Review, Results Export, Last Prompt, Prompt Editor.
+- Header Row 2 provides artifact-screen switching with icon-labeled tabs: Canonical Graph, Trust Boundaries, STRIDE Viewer, Threats, Mermaid Diagrams, STIX Bundle, Report.
 
-Artifact browsing remains available in the left rail artifact group and in the header artifact row.
+The left rail does not duplicate artifact-domain switching and is reserved for setup, active run controls, operator shortcuts, and run inventory management.
 
 When a run is created from the setup wizard, the shell pins that exact run ID as the active run and marks its row in All Runs with a temporary `Created by wizard` badge for 30 seconds to make auto-selection intent explicit.
 
@@ -82,7 +82,7 @@ When a run is created from the setup wizard, the shell pins that exact run ID as
 | Section | Nav Label | Screens Included | GUI Requirements |
 |---|---|---|---|
 | HITL Gates | HITL GATES | Gate Screen (per gate), Audit Trail, footer status timeline | GUI-002, GUI-030, GUI-031 |
-| Artifacts | Artifacts | Canonical Graph, Threats, STIX, Mermaid, Tokens, Last Prompt, Prompt Editor, Export, Snapshot Export, Snapshot Restore | GUI-005, GUI-006, GUI-007, GUI-008, GUI-009, GUI-010, GUI-015, GUI-018, GUI-019, GUI-020, GUI-021, GUI-022, GUI-023, GUI-024, GUI-025 |
+| Artifact and Review Header | Header Rows 1 and 2 | Canonical Graph, Trust Boundaries, STRIDE Viewer, Threats, Mermaid, STIX, Report, Threat Review, Results Export, Tokens, Last Prompt, Prompt Editor | GUI-005, GUI-006, GUI-015, GUI-018, GUI-019, GUI-020, GUI-021, GUI-022, GUI-023, GUI-024, GUI-025, GUI-041, GUI-042 |
 | Configuration | Config | Agent Prompt Editor, Prompt History, Model Provider, Model Connection, Connection Validation | GUI-009, GUI-010, GUI-012, GUI-013, GUI-014 |
 
 ### 3.2 Configuration Ordering Dependency
