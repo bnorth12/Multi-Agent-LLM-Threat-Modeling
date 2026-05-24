@@ -1,0 +1,119 @@
+{
+  "attempt": 1,
+  "error": "[Errno 13] Permission denied: 'C:\\\\Users\\\\brian\\\\OneDrive\\\\Documents\\\\GitHubRepos\\\\Multi Agent Threat Modeler\\\\FQT\\\\fqt_react_20260523_092142_attempt_1\\\\screenshots\\\\gate_pause_11.png'",
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 865, in main\n    result = _run_browser_flow(cfg, run_dir, baseline_runs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 760, in _run_browser_flow\n    progression = _wait_for_full_pipeline_completion(\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 360, in _wait_for_full_pipeline_completion\n    page.screenshot(path=str(screenshots / f\"gate_pause_{len(pauses_detected):02d}.png\"))\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Lib\\site-packages\\playwright\\sync_api\\_generated.py\", line 10129, in screenshot\n    self._sync(\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Lib\\site-packages\\playwright\\_impl\\_sync_base.py\", line 115, in _sync\n    return task.result()\n           ^^^^^^^^^^^^^\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Lib\\site-packages\\playwright\\_impl\\_page.py\", line 820, in screenshot\n    await async_writefile(path, decoded_binary)\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Lib\\site-packages\\playwright\\_impl\\_helper.py\", line 526, in async_writefile\n    await loop.run_in_executor(None, inner)\n  File \"C:\\Program Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.11_3.11.2544.0_x64__qbz5n2kfra8p0\\Lib\\concurrent\\futures\\thread.py\", line 58, in run\n    result = self.fn(*self.args, **self.kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Lib\\site-packages\\playwright\\_impl\\_helper.py\", line 522, in inner\n    with open(file, \"w\" if isinstance(data, str) else \"wb\") as fh:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nPermissionError: [Errno 13] Permission denied: 'C:\\\\Users\\\\brian\\\\OneDrive\\\\Documents\\\\GitHubRepos\\\\Multi Agent Threat Modeler\\\\FQT\\\\fqt_react_20260523_092142_attempt_1\\\\screenshots\\\\gate_pause_11.png'\n",
+  "timestamp": "2026-05-23 09:27:17",
+  "backend_url": "http://127.0.0.1:8600",
+  "frontend_url": "http://localhost:5174",
+  "input_files": [
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_uas_weapon_system_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_uas_weapon_system.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_alpha_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_alpha_comprehensive.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_alpha_mission_computer_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_alpha_mission_computer.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_bravo_v2.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_bravo_comprehensive.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_charlie_v1.xlsx",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_charlie_comprehensive.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_charlie_mission_planning_computer_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_charlie_mission_planning_computer.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_ground_maintenance_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_ground_maintenance_comprehensive.md"
+  ],
+  "backend_health": {
+    "status": "ok"
+  },
+  "runs": {
+    "runs": [
+      {
+        "run_id": "5809f565-b72c-4735-9256-daecff4c984e",
+        "run_name": "React FQT System",
+        "archived": false,
+        "status": "running",
+        "start_time": 1779546124.2016249,
+        "end_time": null,
+        "pause_gate": null,
+        "error": null,
+        "last_heartbeat_time": 1779546435.635824,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": 1.9699161052703857,
+        "settings": {
+          "model": {
+            "provider": "xai",
+            "model_name": "grok-4",
+            "api_key": "",
+            "offline_only": false,
+            "connection_url": "https://api.x.ai/v1",
+            "endpoint_mode": "chat_completions",
+            "request_timeout_seconds": 900,
+            "request_max_attempts": 2
+          },
+          "pipeline": {
+            "execution_mode": "langgraph-compatible",
+            "enabled_stage_ids": [
+              "agent_01",
+              "agent_02",
+              "agent_03",
+              "agent_04",
+              "agent_05",
+              "agent_06",
+              "agent_07",
+              "agent_08",
+              "agent_09"
+            ],
+            "stop_on_validation_error": false,
+            "require_hitl_gates": true
+          }
+        },
+        "result_state": null,
+        "live_state": {
+          "next_stage_id": "agent_04",
+          "messages": [
+            {
+              "stage_id": "agent_01",
+              "text": "Input Normalizer completed."
+            },
+            {
+              "stage_id": "agent_02",
+              "text": "Context Builder completed."
+            },
+            {
+              "stage_id": "agent_03",
+              "text": "Trust Boundary Validator completed."
+            }
+          ],
+          "hitl_paused_at_gate": null,
+          "hitl_rejected_at_gate": null,
+          "llm_usage_totals": {
+            "prompt_tokens": 46996,
+            "completion_tokens": 51883,
+            "reasoning_tokens": 2049,
+            "cached_tokens": 18624,
+            "total_tokens": 100928,
+            "request_count": 3
+          },
+          "llm_attempt_totals": {
+            "submitted": 4,
+            "completed": 3,
+            "failed": 0,
+            "total": 7
+          },
+          "has_canonical_graph": true,
+          "has_stix_bundle": false,
+          "has_mermaid_diagrams": false,
+          "has_final_report": false
+        }
+      }
+    ]
+  },
+  "new_run_ids_since_attempt_start": [
+    "5809f565-b72c-4735-9256-daecff4c984e"
+  ],
+  "backend_port_pids": [
+    344104
+  ],
+  "frontend_port_pids": [
+    340884
+  ]
+}

@@ -1,0 +1,2440 @@
+{
+  "metadata": {
+    "generation_timestamp": "",
+    "model_level": "system"
+  },
+  "system": {
+    "name": "UAS Weapon System",
+    "description": "Severable but integrated mission system composed of Alpha, Bravo, Charlie, and Delta segments supporting Strike, SEAD, DEAD, ISR, and peacetime ISR missions.",
+    "mission_criticality": "undetermined",
+    "safety_criticality": "undetermined"
+  },
+  "subsystems": [
+    {
+      "id": "SS-ALPHA-01",
+      "name": "UAS Air Vehicle Segment",
+      "description": "Airborne platform carrying sensor payloads and command relay functions",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-BRAVO-01",
+      "name": "Mission Processing Ground Station",
+      "description": "Fixed-site mission processing and intelligence dissemination segment",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-CHARLIE-01",
+      "name": "Satellite Communications Terminal",
+      "description": "Ground relay and crypto gateway for all air-to-ground traffic",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-DELTA-01",
+      "name": "Ground Maintenance System",
+      "description": "Diagnostic calibration and software loading segment for air vehicle sustainment",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-NAV-01",
+      "name": "Navigation Subsystem",
+      "description": "Provides position attitude and timing data for mission execution",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-CMD-01",
+      "name": "Command and Control Subsystem",
+      "description": "Receives and validates operator and mission directives",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-MSN-01",
+      "name": "Mission Management Subsystem",
+      "description": "Plans and executes strike SEAD DEAD and ISR mission tasks onboard Alpha",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-ALPHA-MSN-01",
+      "name": "Alpha Mission Management Subsystem",
+      "description": "Hosts mission computer logic for mission planning execution and monitoring on Alpha",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-PROC-01",
+      "name": "Processing Subsystem",
+      "description": "Executes mission payload analytics and sensor fusion",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-ROUTE-01",
+      "name": "Mission Routing Subsystem",
+      "description": "Validates and relays mission planning products between Charlie and Alpha",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-STORE-01",
+      "name": "Storage Subsystem",
+      "description": "Manages persistent mission and intelligence data recording",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-EGW-01",
+      "name": "Encryption Gateway Subsystem",
+      "description": "Performs in-line encryption and decryption of all satellite link traffic",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-TRF-01",
+      "name": "Traffic Shaping Subsystem",
+      "description": "Controls data flow rates and priority queuing for the satellite link",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-MSN-01-CHARLIE",
+      "name": "Mission Planning Subsystem",
+      "description": "Generates mission packages from all-source intelligence and flight-planning resources",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-CHARLIE-MP-01",
+      "name": "Charlie Mission Planning Subsystem",
+      "description": "Generates and refines mission plans before relay through Bravo to Alpha",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-DIAG-01",
+      "name": "Diagnostic Computer Subsystem",
+      "description": "Hosts maintenance workstation software and provides the technician HMI for fault isolation and health monitoring",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-SLS-01",
+      "name": "Software Load Station Subsystem",
+      "description": "Manages storage integrity verification and transfer of authorised software loads to Alpha",
+      "parent_system": "UAS Weapon System"
+    },
+    {
+      "id": "SS-TIM-01",
+      "name": "Test Interface Module Subsystem",
+      "description": "Physical and logical interface between the GMS and the Alpha maintenance port",
+      "parent_system": "UAS Weapon System"
+    }
+  ],
+  "components": [
+    {
+      "id": "C-ALPHA-01",
+      "name": "Flight Control Computer",
+      "parent_subsystem": "SS-ALPHA-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "flight.control",
+        "flight.health"
+      ],
+      "description": "Executes autonomous flight logic and consumes navigation health and maintenance inputs"
+    },
+    {
+      "id": "C-ALPHA-02",
+      "name": "Payload Controller",
+      "parent_subsystem": "SS-ALPHA-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "payload.controller",
+        "payload.health"
+      ],
+      "description": "Manages sensor payload collection and mission-mode selection"
+    },
+    {
+      "id": "C-ALPHA-03",
+      "name": "Telemetry Router",
+      "parent_subsystem": "SS-ALPHA-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "telemetry.router"
+      ],
+      "description": "Formats telemetry and command acknowledgements for the satellite link"
+    },
+    {
+      "id": "C-ALPHA-04",
+      "name": "Aircraft Key Store",
+      "parent_subsystem": "SS-ALPHA-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "crypto.keystore"
+      ],
+      "description": "Stores link keys and command authorization material"
+    },
+    {
+      "id": "C-ALPHA-05",
+      "name": "Mission Computer",
+      "parent_subsystem": "SS-ALPHA-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "mission.manager",
+        "mission.sensor_planner",
+        "mission.route_exec"
+      ],
+      "description": "Manages mission sensors radios data links and EGI-assisted mission execution for Alpha"
+    },
+    {
+      "id": "C-BRAVO-01",
+      "name": "Mission Processing Server",
+      "parent_subsystem": "SS-BRAVO-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "mission.processing",
+        "intel.fusion"
+      ],
+      "description": "Runs payload analytics and intelligence fusion jobs"
+    },
+    {
+      "id": "C-BRAVO-02",
+      "name": "Intelligence Storage Cluster",
+      "parent_subsystem": "SS-BRAVO-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "storage.cluster",
+        "storage.audit"
+      ],
+      "description": "Retains mission outputs flight logs and processed intelligence"
+    },
+    {
+      "id": "C-BRAVO-03",
+      "name": "Dissemination Gateway",
+      "parent_subsystem": "SS-BRAVO-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "dissemination.gateway",
+        "distribution.policy"
+      ],
+      "description": "Publishes approved products to downstream consumers and maintenance services"
+    },
+    {
+      "id": "C-BRAVO-04",
+      "name": "Operator Analyst Workstation",
+      "parent_subsystem": "SS-BRAVO-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "operator.ui",
+        "operator.review"
+      ],
+      "description": "Issues tasking updates and reviews processed mission results"
+    },
+    {
+      "id": "C-BRAVO-05",
+      "name": "Mission Package Broker",
+      "parent_subsystem": "SS-BRAVO-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "route.broker",
+        "route.policy",
+        "route.audit"
+      ],
+      "description": "Validates and relays mission packages between Charlie planning and Alpha execution"
+    },
+    {
+      "id": "C-CHARLIE-01",
+      "name": "Satcom Modem",
+      "parent_subsystem": "SS-CHARLIE-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "satcom.modem",
+        "satcom.link_monitor"
+      ],
+      "description": "Handles encrypted RF relay between the air vehicle and ground segments"
+    },
+    {
+      "id": "C-CHARLIE-02",
+      "name": "Crypto Gateway",
+      "parent_subsystem": "SS-CHARLIE-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "crypto.gateway",
+        "crypto.policy"
+      ],
+      "description": "Performs AES-256-GCM encryption and decryption for the satellite link"
+    },
+    {
+      "id": "C-CHARLIE-03",
+      "name": "Key Management Module",
+      "parent_subsystem": "SS-CHARLIE-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "key.management",
+        "key.rotation"
+      ],
+      "description": "Maintains session keys and rotation state for the relay boundary"
+    },
+    {
+      "id": "C-CHARLIE-04",
+      "name": "Mission Planning Computer",
+      "parent_subsystem": "SS-CHARLIE-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "planning.engine",
+        "planning.deconfliction",
+        "planning.weapon_release"
+      ],
+      "description": "Generates multi-mission plans from all-source intelligence and routes plans through Bravo to Alpha"
+    },
+    {
+      "id": "C-DELTA-01",
+      "name": "Maintenance Test Set",
+      "parent_subsystem": "SS-DELTA-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "maintenance.testset",
+        "maintenance.checks"
+      ],
+      "description": "Performs diagnostic queries and validation checks on the air vehicle"
+    },
+    {
+      "id": "C-DELTA-02",
+      "name": "Software Load Manager",
+      "parent_subsystem": "SS-DELTA-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "software.loader",
+        "software.validation"
+      ],
+      "description": "Stages and transfers authenticated software packages to the air vehicle"
+    },
+    {
+      "id": "C-DELTA-03",
+      "name": "Diagnostics Recorder",
+      "parent_subsystem": "SS-DELTA-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "diagnostics.recorder",
+        "maintenance.audit"
+      ],
+      "description": "Captures HUMS data fault codes and maintenance session logs"
+    },
+    {
+      "id": "C-GPS-01",
+      "name": "GPS Receiver",
+      "parent_subsystem": "SS-NAV-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "nav.gps_driver"
+      ],
+      "description": "Acquires GNSS signals and outputs position fixes and timing"
+    },
+    {
+      "id": "C-IMU-01",
+      "name": "Inertial Measurement Unit",
+      "parent_subsystem": "SS-NAV-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "nav.imu_driver"
+      ],
+      "description": "Measures angular rate and acceleration for inertial navigation"
+    },
+    {
+      "id": "C-EGI-01",
+      "name": "Embedded GPS INS Unit",
+      "parent_subsystem": "SS-NAV-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "nav.egi_fusion",
+        "nav.egi_monitor"
+      ],
+      "description": "Performs EGI fusion for robust navigation under GNSS degradation"
+    },
+    {
+      "id": "C-CMD-01",
+      "name": "Command Processor",
+      "parent_subsystem": "SS-CMD-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "cmd.processor",
+        "cmd.validator"
+      ],
+      "description": "Parses and validates operator uplink and relayed mission updates"
+    },
+    {
+      "id": "C-MSN-01",
+      "name": "Mission Computer",
+      "parent_subsystem": "SS-MSN-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "mission.manager",
+        "mission.sensor_planner",
+        "mission.route_exec"
+      ],
+      "description": "Manages mission sensors communication radios data links and EGI-informed mission execution"
+    },
+    {
+      "id": "C-ALPHA-MSN-01",
+      "name": "Alpha Mission Computer",
+      "parent_subsystem": "SS-ALPHA-MSN-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "mission.manager",
+        "mission.sensor_planner",
+        "mission.route_exec",
+        "mission.weapon_solver"
+      ],
+      "description": "Manages mission sensors communication radios data links and EGI-aided mission execution"
+    },
+    {
+      "id": "C-ALPHA-NAV-01",
+      "name": "EGI Navigation Manager",
+      "parent_subsystem": "SS-ALPHA-MSN-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "nav.egi_fusion",
+        "nav.quality_manager"
+      ],
+      "description": "Provides EGI-fused navigation state quality and contingency guidance"
+    },
+    {
+      "id": "C-ALPHA-DL-01",
+      "name": "Data Link Scheduler",
+      "parent_subsystem": "SS-ALPHA-MSN-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "comms.schedule",
+        "datalink.policy"
+      ],
+      "description": "Schedules mission communications frequencies windows and relay timing"
+    },
+    {
+      "id": "C-PROC-01",
+      "name": "Mission Processing Server",
+      "parent_subsystem": "SS-PROC-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "proc.mission",
+        "proc.logger",
+        "proc.isr_analytics"
+      ],
+      "description": "Runs payload analytics and logs mission results"
+    },
+    {
+      "id": "C-ROUTE-01",
+      "name": "Mission Package Broker",
+      "parent_subsystem": "SS-ROUTE-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "route.broker",
+        "route.policy",
+        "route.audit"
+      ],
+      "description": "Validates mission plans and routes approved mission packages to Charlie for Alpha delivery"
+    },
+    {
+      "id": "C-STORE-01",
+      "name": "Solid State Recorder",
+      "parent_subsystem": "SS-STORE-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "store.recorder"
+      ],
+      "description": "Records high-rate sensor and mission execution data"
+    },
+    {
+      "id": "C-STORE-02",
+      "name": "Key Management Module",
+      "parent_subsystem": "SS-STORE-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "store.kms"
+      ],
+      "description": "Manages encryption keys for stored data and mission-package signatures"
+    },
+    {
+      "id": "C-BEM-01",
+      "name": "Bulk Encryption Module",
+      "parent_subsystem": "SS-EGW-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "egw.aes_engine"
+      ],
+      "description": "Applies AES-256-GCM encryption and decryption to satellite data frames"
+    },
+    {
+      "id": "C-KDM-01",
+      "name": "Key Distribution Module",
+      "parent_subsystem": "SS-EGW-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "egw.key_dist"
+      ],
+      "description": "Receives keying material and distributes keys to the encryption module on schedule"
+    },
+    {
+      "id": "C-TRF-01",
+      "name": "Traffic Shaper",
+      "parent_subsystem": "SS-TRF-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "trf.shaper",
+        "trf.queue_mgr"
+      ],
+      "description": "Manages queuing prioritization and rate limiting for satellite link data"
+    },
+    {
+      "id": "C-MSN-01-CHARLIE",
+      "name": "Mission Planning Computer",
+      "parent_subsystem": "SS-MSN-01-CHARLIE",
+      "hardware": "hosted",
+      "software_modules": [
+        "planning.engine",
+        "planning.route_solver",
+        "planning.weapon_release"
+      ],
+      "description": "Builds strike SEAD DEAD and ISR mission packages for Bravo validation and Alpha execution"
+    },
+    {
+      "id": "C-MSN-02",
+      "name": "Planning Data Fusion Service",
+      "parent_subsystem": "SS-MSN-01-CHARLIE",
+      "hardware": "hosted",
+      "software_modules": [
+        "planning.data_fusion",
+        "planning.constraint_engine"
+      ],
+      "description": "Normalizes all-source intelligence terrain weather and airspace constraints"
+    },
+    {
+      "id": "C-CHARLIE-MP-01",
+      "name": "Mission Planning Computer",
+      "parent_subsystem": "SS-CHARLIE-MP-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "planning.engine",
+        "planning.route_solver",
+        "planning.sensor_optimizer",
+        "planning.weapon_release"
+      ],
+      "description": "Builds mission plans from all-source intelligence and flight-planning resources"
+    },
+    {
+      "id": "C-CHARLIE-MP-02",
+      "name": "Planning Data Fusion Service",
+      "parent_subsystem": "SS-CHARLIE-MP-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "planning.data_fusion",
+        "planning.constraint_engine"
+      ],
+      "description": "Normalizes all-source intelligence terrain weather and airspace constraints"
+    },
+    {
+      "id": "C-DIAG-01",
+      "name": "Maintenance Workstation",
+      "parent_subsystem": "SS-DIAG-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "diag.workstation",
+        "diag.hmi"
+      ],
+      "description": "Technician HMI presenting BIT results fault codes calibration data and maintenance history"
+    },
+    {
+      "id": "C-DIAG-02",
+      "name": "Maintenance Data Recorder",
+      "parent_subsystem": "SS-DIAG-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "diag.recorder"
+      ],
+      "description": "Encrypted local storage for all maintenance session logs BIT results and HUMS downloads"
+    },
+    {
+      "id": "C-SLS-01",
+      "name": "Software Load Controller",
+      "parent_subsystem": "SS-SLS-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "sls.controller",
+        "sls.keystore"
+      ],
+      "description": "Manages software baseline for all loadable software parts and coordinates with Bravo for approved packages"
+    },
+    {
+      "id": "C-SLS-02",
+      "name": "Load Verification Module",
+      "parent_subsystem": "SS-SLS-01",
+      "hardware": "hosted",
+      "software_modules": [
+        "sls.verifier"
+      ],
+      "description": "Executes post-load integrity checks by reading back installed part numbers and checksums"
+    },
+    {
+      "id": "C-TIM-01",
+      "name": "Bus Controller",
+      "parent_subsystem": "SS-TIM-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "tim.bus_controller"
+      ],
+      "description": "Manages MIL-STD-1553 bus master operations and schedules message transfers to Alpha LRUs"
+    },
+    {
+      "id": "C-TIM-02",
+      "name": "RS-422 Serial Interface",
+      "parent_subsystem": "SS-TIM-01",
+      "hardware": "embedded",
+      "software_modules": [
+        "tim.rs422"
+      ],
+      "description": "Low-speed serial channel for Alpha LRUs that do not support MIL-STD-1553"
+    }
+  ],
+  "functions": [
+    {
+      "id": "F-BEM-01",
+      "name": "Encrypt Outbound Frame",
+      "parent_component": "C-BEM-01",
+      "description": "Accepts a plaintext frame from the Traffic Shaper and applies AES-256-GCM encryption"
+    },
+    {
+      "id": "F-BEM-02",
+      "name": "Decrypt Inbound Frame",
+      "parent_component": "C-BEM-01",
+      "description": "Receives a ciphertext frame and decrypts it before forwarding to the Operations Network Interface"
+    },
+    {
+      "id": "F-KDM-01",
+      "name": "Receive Key Material",
+      "parent_component": "C-KDM-01",
+      "description": "Accepts new keying material from the Key Management Authority over the Key Distribution Interface"
+    },
+    {
+      "id": "F-KDM-02",
+      "name": "Activate Key",
+      "parent_component": "C-KDM-01",
+      "description": "Activates the next scheduled key and notifies the Bulk Encryption Module"
+    },
+    {
+      "id": "F-TRF-01",
+      "name": "Queue Data Frame",
+      "parent_component": "C-TRF-01",
+      "description": "Assigns a priority class to an incoming frame and places it in the transmit queue"
+    },
+    {
+      "id": "F-TRF-02",
+      "name": "Shape Transmit Rate",
+      "parent_component": "C-TRF-01",
+      "description": "Regulates outbound transmit rate and forwards frames to the Encryption Gateway"
+    },
+    {
+      "id": "F-MSN-01",
+      "name": "Generate Mission Package",
+      "parent_component": "C-MSN-01-CHARLIE",
+      "description": "Generates mission package content including waypoints routes targeting and sensor coverage"
+    },
+    {
+      "id": "F-MSN-02",
+      "name": "Fuse Planning Inputs",
+      "parent_component": "C-MSN-02",
+      "description": "Combines all-source intelligence and flight-planning resources into normalized planning inputs"
+    }
+  ],
+  "interfaces": [
+    {
+      "id": "IF-001",
+      "name": "Telemetry and Sensor Data Downlink",
+      "description": "Telemetry and Sensor Data Downlink",
+      "from_node": "C-ALPHA-03",
+      "to_node": "C-CHARLIE-01",
+      "interface_type": "component-component",
+      "protocol": "Encrypted RF (AES-256-GCM)",
+      "data_items": [
+        "telemetry_frame",
+        "sensor_data",
+        "health_status"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Satellite Link Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "RF exposure enables spoofed telemetry frames.",
+        "T": 4,
+        "T_justification": "Tampering possible on encrypted RF link.",
+        "R": 3,
+        "R_justification": "Non-repudiation weak on downlink.",
+        "I": 3,
+        "I_justification": "Sensor data leakage risk if crypto fails.",
+        "D": 4,
+        "D_justification": "Jamming or flooding can deny service.",
+        "E": 3,
+        "E_justification": "Elevation limited by encryption but possible via key compromise."
+      },
+      "threats": [
+        {
+          "name": "Telemetry spoofing and jamming on downlink",
+          "description": "Adversary spoofs or jams RF telemetry frames to mislead operators or deny service.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 4,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-001",
+              "title": "RF frame authentication and sequencing",
+              "description": "Enforce per-frame MAC and monotonic sequence numbers on all downlink telemetry frames.",
+              "residual_risk_after_control": 2
+            },
+            {
+              "control_id": "M-002",
+              "title": "Adaptive anti-jam waveform selection",
+              "description": "Implement frequency hopping and spread-spectrum techniques with automatic fallback under detected jamming.",
+              "residual_risk_after_control": 3
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-010",
+              "title": "Downlink monitoring and anomaly response policy",
+              "description": "Define operator procedures for telemetry loss or anomaly detection including alternate comms activation.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-002",
+      "name": "Command and Control Uplink",
+      "description": "Command and Control Uplink",
+      "from_node": "C-CHARLIE-02",
+      "to_node": "C-ALPHA-01",
+      "interface_type": "component-component",
+      "protocol": "Encrypted RF (AES-256-GCM)",
+      "data_items": [
+        "command_message",
+        "auth_token",
+        "session_nonce"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Satellite Link Boundary",
+      "stride": {
+        "S": 5,
+        "S_justification": "Spoofed commands critical for flight safety.",
+        "T": 4,
+        "T_justification": "Command tampering alters mission behavior.",
+        "R": 3,
+        "R_justification": "Uplink actions hard to repudiate.",
+        "I": 3,
+        "I_justification": "Token disclosure enables replay.",
+        "D": 4,
+        "D_justification": "Uplink denial prevents control.",
+        "E": 4,
+        "E_justification": "Compromised auth allows privilege gain."
+      },
+      "threats": [
+        {
+          "name": "Command spoofing and replay on uplink",
+          "description": "Adversary spoofs or replays authenticated commands to seize flight control.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 4,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-003",
+              "title": "Challenge-response command authentication",
+              "description": "Require fresh nonces and signed challenges for every uplink command set.",
+              "residual_risk_after_control": 2
+            },
+            {
+              "control_id": "M-004",
+              "title": "Replay protection via timestamp windows",
+              "description": "Enforce strict time-bounded validity for all command tokens and nonces.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-011",
+              "title": "Uplink command authorization policy",
+              "description": "Require dual-operator confirmation for safety-critical commands and maintain signed audit logs.",
+              "residual_risk_after_control": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-003",
+      "name": "Processed Mission Data Forward",
+      "description": "Processed Mission Data Forward",
+      "from_node": "C-CHARLIE-01",
+      "to_node": "C-BRAVO-01",
+      "interface_type": "component-component",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "decrypted_sensor_frame",
+        "metadata",
+        "link_status"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Ops Network Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofing mitigated by TLS but boundary exposed.",
+        "T": 3,
+        "T_justification": "Data tampering possible on network segment.",
+        "R": 2,
+        "R_justification": "TLS provides some non-repudiation.",
+        "I": 3,
+        "I_justification": "Sensor frames may leak ISR data.",
+        "D": 3,
+        "D_justification": "Network DoS affects processing.",
+        "E": 2,
+        "E_justification": "TLS limits elevation risk."
+      },
+      "threats": [
+        {
+          "name": "Spoofed sensor data injection",
+          "description": "Adversary injects falsified sensor frames at the ground boundary.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-005",
+              "title": "TLS mutual authentication and certificate pinning",
+              "description": "Enforce client certificate validation and pin trusted certificates for all HTTPS endpoints.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-012",
+              "title": "Sensor data source validation policy",
+              "description": "Require cryptographic signing of all sensor frames and periodic source attestation audits.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-004",
+      "name": "Mission Tasking and Retasking",
+      "description": "Mission Tasking and Retasking",
+      "from_node": "C-BRAVO-04",
+      "to_node": "C-CHARLIE-02",
+      "interface_type": "component-component",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "mission_task",
+        "waypoint_update",
+        "payload_mode"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Ops Network Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Task spoofing alters mission intent.",
+        "T": 3,
+        "T_justification": "Waypoint tampering changes targeting.",
+        "R": 2,
+        "R_justification": "Audit logs reduce repudiation.",
+        "I": 3,
+        "I_justification": "Task data reveals operational plans.",
+        "D": 3,
+        "D_justification": "Tasking denial blocks retask.",
+        "E": 3,
+        "E_justification": "Compromised workstation enables elevation."
+      },
+      "threats": [
+        {
+          "name": "Tasking spoof and waypoint tampering",
+          "description": "Adversary spoofs tasking to redirect strikes or sensor coverage.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-006",
+              "title": "Signed tasking packages with hash chaining",
+              "description": "Require digital signatures and hash-linked task updates for all retasking operations.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-013",
+              "title": "Tasking approval and dual-control policy",
+              "description": "Enforce two-person approval workflow for any waypoint or payload changes.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-005",
+      "name": "Maintenance Diagnostic Query",
+      "description": "Maintenance Diagnostic Query",
+      "from_node": "C-DELTA-01",
+      "to_node": "C-ALPHA-01",
+      "interface_type": "component-component",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "bit_command",
+        "lru_status_request",
+        "session_token"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed BIT commands risk safety.",
+        "T": 3,
+        "T_justification": "Status tampering hides faults.",
+        "R": 2,
+        "R_justification": "Bus logs provide traceability.",
+        "I": 3,
+        "I_justification": "Status reveals LRU health.",
+        "D": 3,
+        "D_justification": "Bus flooding disrupts diagnostics.",
+        "E": 3,
+        "E_justification": "Token compromise allows control."
+      },
+      "threats": [
+        {
+          "name": "Spoofed BIT command injection",
+          "description": "Adversary spoofs maintenance commands to mask faults or trigger unsafe states.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-007",
+              "title": "1553 bus message authentication extension",
+              "description": "Add cryptographic MAC to 1553 messages using pre-shared maintenance keys.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-014",
+              "title": "Maintenance port access control policy",
+              "description": "Require physical and logical authentication tokens for all maintenance bus access.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-006",
+      "name": "Post-Flight HUMS Download",
+      "description": "Post-Flight HUMS Download",
+      "from_node": "C-ALPHA-03",
+      "to_node": "C-DELTA-03",
+      "interface_type": "component-component",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "hums_data",
+        "fault_codes",
+        "flight_log"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed HUMS can mask issues.",
+        "T": 3,
+        "T_justification": "Log tampering conceals faults.",
+        "R": 2,
+        "R_justification": "Download traceable via bus.",
+        "I": 3,
+        "I_justification": "Flight logs expose operations.",
+        "D": 3,
+        "D_justification": "Bus DoS blocks download.",
+        "E": 2,
+        "E_justification": "Limited elevation via maintenance port."
+      },
+      "threats": [
+        {
+          "name": "HUMS log tampering",
+          "description": "Adversary tampers with health logs to conceal prior damage or faults.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 3,
+          "mitigations_technical": [
+            {
+              "control_id": "M-008",
+              "title": "Signed and timestamped HUMS records",
+              "description": "Require cryptographic signatures on all HUMS downloads before storage.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-015",
+              "title": "HUMS integrity audit policy",
+              "description": "Mandate post-download integrity verification and retention of signed logs for 90 days.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-007",
+      "name": "Software Load Transfer",
+      "description": "Software Load Transfer",
+      "from_node": "C-DELTA-02",
+      "to_node": "C-ALPHA-02",
+      "interface_type": "component-component",
+      "protocol": "RS-422",
+      "data_items": [
+        "software_package",
+        "checksum",
+        "load_command"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed loads can inject malware.",
+        "T": 4,
+        "T_justification": "Package tampering bypasses checks.",
+        "R": 2,
+        "R_justification": "Checksums aid traceability.",
+        "I": 3,
+        "I_justification": "Load content reveals baseline.",
+        "D": 3,
+        "D_justification": "Interface DoS prevents loading.",
+        "E": 4,
+        "E_justification": "Malicious load grants high privilege."
+      },
+      "threats": [
+        {
+          "name": "Malicious software load injection",
+          "description": "Adversary injects unauthenticated or tampered software packages via maintenance port.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-009",
+              "title": "Hardware-enforced load signing verification",
+              "description": "Require hardware root-of-trust verification of package signatures before any write to flash.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-016",
+              "title": "Software load authorization and chain-of-custody policy",
+              "description": "Enforce signed release notes and two-person verification for every software load.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-008",
+      "name": "Software Package Distribution",
+      "description": "Software Package Distribution",
+      "from_node": "C-BRAVO-03",
+      "to_node": "C-DELTA-02",
+      "interface_type": "component-component",
+      "protocol": "Ethernet (LAN)",
+      "data_items": [
+        "signed_software_package",
+        "digital_signature",
+        "baseline_manifest"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance LAN Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed packages risk integrity.",
+        "T": 3,
+        "T_justification": "Signature bypass possible on LAN.",
+        "R": 2,
+        "R_justification": "Signature provides non-repudiation.",
+        "I": 2,
+        "I_justification": "Manifest leaks baseline info.",
+        "D": 3,
+        "D_justification": "LAN DoS blocks distribution.",
+        "E": 3,
+        "E_justification": "Compromised host elevates access."
+      },
+      "threats": [
+        {
+          "name": "Signed package tampering on LAN",
+          "description": "Adversary tampers with signed packages to introduce malicious code.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-017",
+              "title": "LAN segment isolation and integrity gateway",
+              "description": "Route all software packages through an authenticated integrity gateway with mandatory signature validation.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-018",
+              "title": "Package distribution change control policy",
+              "description": "Require change board approval and cryptographic signing of every baseline manifest update.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-010",
+      "name": "Key Provisioning",
+      "description": "Key Provisioning",
+      "from_node": "C-CHARLIE-03",
+      "to_node": "C-ALPHA-04",
+      "interface_type": "component-component",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "key_material",
+        "rotation_policy",
+        "revocation_status"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Key Management Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed keys enable link compromise.",
+        "T": 4,
+        "T_justification": "Key tampering breaks crypto.",
+        "R": 3,
+        "R_justification": "Key ops require audit.",
+        "I": 4,
+        "I_justification": "Key disclosure breaks encryption.",
+        "D": 3,
+        "D_justification": "Key denial blocks secure ops.",
+        "E": 4,
+        "E_justification": "Stolen keys grant full access."
+      },
+      "threats": [
+        {
+          "name": "Key material spoofing and disclosure",
+          "description": "Adversary spoofs or exfiltrates key material to decrypt satellite links.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-019",
+              "title": "Hardware security module key wrapping",
+              "description": "Wrap and unwrap all keys inside FIPS-validated HSM before transmission or storage.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-020",
+              "title": "Key rotation and escrow policy",
+              "description": "Enforce automated quarterly key rotation with offline escrow and immediate revocation capability.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-011",
+      "name": "All-Source Intelligence Ingest to Mission Planning",
+      "description": "All-Source Intelligence Ingest to Mission Planning",
+      "from_node": "ALL_SOURCE_INTEL",
+      "to_node": "C-CHARLIE-04",
+      "interface_type": "component-component",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "intel_summary",
+        "threat_updates",
+        "target_dossiers"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Planning Intelligence Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed intel misleads planning.",
+        "T": 3,
+        "T_justification": "Intel tampering alters targets.",
+        "R": 2,
+        "R_justification": "TLS supports audit.",
+        "I": 4,
+        "I_justification": "Intel exposure reveals targets.",
+        "D": 3,
+        "D_justification": "Intel denial blocks planning.",
+        "E": 2,
+        "E_justification": "Limited elevation via intel feed."
+      },
+      "threats": [
+        {
+          "name": "Spoofed intelligence feed injection",
+          "description": "Adversary injects falsified intelligence to misdirect mission planning.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-021",
+              "title": "Intel source attestation and signing",
+              "description": "Require signed and attested intelligence summaries from all external feeds.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-022",
+              "title": "Intelligence source vetting policy",
+              "description": "Maintain approved source list and require periodic re-validation of all intel providers.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-012",
+      "name": "Mission Plan Transfer to Bravo Broker",
+      "description": "Mission Plan Transfer to Bravo Broker",
+      "from_node": "C-CHARLIE-04",
+      "to_node": "C-BRAVO-05",
+      "interface_type": "component-component",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "mission_id",
+        "waypoints",
+        "flight_plan",
+        "weapon_profile",
+        "sensor_plan"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Ops Network Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed plans change missions.",
+        "T": 4,
+        "T_justification": "Plan tampering alters targeting.",
+        "R": 2,
+        "R_justification": "TLS provides traceability.",
+        "I": 3,
+        "I_justification": "Plans leak operational intent.",
+        "D": 3,
+        "D_justification": "Plan denial blocks execution.",
+        "E": 3,
+        "E_justification": "Compromised broker elevates access."
+      },
+      "threats": [
+        {
+          "name": "Mission plan tampering",
+          "description": "Adversary tampers with mission plans to alter targeting or routes.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-023",
+              "title": "End-to-end plan signing and verification",
+              "description": "Sign every mission plan at creation and verify signature at every relay hop.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-024",
+              "title": "Plan change control board policy",
+              "description": "Require formal change board approval and cryptographic attestation for any plan modification.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-013",
+      "name": "Approved Mission Package to Alpha Mission Computer",
+      "description": "Approved Mission Package to Alpha Mission Computer",
+      "from_node": "C-BRAVO-05",
+      "to_node": "C-ALPHA-05",
+      "interface_type": "component-component",
+      "protocol": "Encrypted RF (AES-256-GCM)",
+      "data_items": [
+        "approved_mission_package",
+        "route_plan",
+        "comm_schedule",
+        "frequency_plan",
+        "targeting_data"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Satellite Link Boundary",
+      "stride": {
+        "S": 5,
+        "S_justification": "Spoofed packages control weapons.",
+        "T": 5,
+        "T_justification": "Tampered packages enable wrong strikes.",
+        "R": 3,
+        "R_justification": "Crypto limits repudiation.",
+        "I": 4,
+        "I_justification": "Package leaks targeting data.",
+        "D": 4,
+        "D_justification": "Link DoS prevents delivery.",
+        "E": 4,
+        "E_justification": "Compromised package grants control."
+      },
+      "threats": [
+        {
+          "name": "Weapon package spoof and tampering",
+          "description": "Adversary spoofs or tampers with approved mission packages to redirect weapons.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 4,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-025",
+              "title": "Multi-party package approval with threshold signatures",
+              "description": "Require threshold signatures from at least two independent approvers before package execution.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-026",
+              "title": "Weapon release authorization policy",
+              "description": "Mandate positive visual confirmation and two-person control for any weapon release package.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-014",
+      "name": "Alpha Mission Execution Feedback to Bravo",
+      "description": "Alpha Mission Execution Feedback to Bravo",
+      "from_node": "C-ALPHA-05",
+      "to_node": "C-BRAVO-05",
+      "interface_type": "component-component",
+      "protocol": "Encrypted RF (AES-256-GCM)",
+      "data_items": [
+        "mission_status",
+        "route_progress",
+        "weapon_release_status",
+        "isr_collection_status"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Satellite Link Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed status misleads operators.",
+        "T": 3,
+        "T_justification": "Status tampering hides events.",
+        "R": 2,
+        "R_justification": "Crypto supports audit.",
+        "I": 3,
+        "I_justification": "Status reveals mission progress.",
+        "D": 4,
+        "D_justification": "Feedback denial blinds operators.",
+        "E": 3,
+        "E_justification": "Limited elevation via status."
+      },
+      "threats": [
+        {
+          "name": "Spoofed mission status feedback",
+          "description": "Adversary spoofs mission status to conceal weapon releases or progress.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-027",
+              "title": "Status message signing and sequence validation",
+              "description": "Sign all status messages and validate monotonic sequence numbers at the broker.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-028",
+              "title": "Status anomaly escalation policy",
+              "description": "Define escalation procedures for status sequence failures or signature mismatches.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-019",
+      "name": "Operator Command Uplink",
+      "description": "Operator Command Uplink",
+      "from_node": "GCS",
+      "to_node": "C-CMD-01",
+      "interface_type": "component-component",
+      "protocol": "TLS",
+      "data_items": [
+        "command_message",
+        "auth_token"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "External Radio Link",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed GCS commands critical.",
+        "T": 3,
+        "T_justification": "Command tampering alters control.",
+        "R": 2,
+        "R_justification": "TLS aids traceability.",
+        "I": 2,
+        "I_justification": "Commands leak intent.",
+        "D": 4,
+        "D_justification": "Uplink loss prevents control.",
+        "E": 3,
+        "E_justification": "Compromised token elevates."
+      },
+      "threats": [
+        {
+          "name": "GCS command spoofing",
+          "description": "Adversary spoofs operator commands to seize aircraft control.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-029",
+              "title": "Mutual TLS with operator certificate pinning",
+              "description": "Enforce mutual TLS and pin operator certificates for all GCS sessions.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-030",
+              "title": "GCS operator credential policy",
+              "description": "Require hardware tokens and session timeouts for all GCS operators.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-020",
+      "name": "Mission Package Receipt",
+      "description": "Mission Package Receipt",
+      "from_node": "BRAVO_RELAY",
+      "to_node": "C-CMD-01",
+      "interface_type": "component-component",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "mission_id",
+        "waypoints",
+        "flight_plan",
+        "targeting_data",
+        "comm_plan"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Ops Network Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed packages alter missions.",
+        "T": 3,
+        "T_justification": "Package tampering changes routes.",
+        "R": 2,
+        "R_justification": "TLS supports audit.",
+        "I": 3,
+        "I_justification": "Packages leak targeting.",
+        "D": 3,
+        "D_justification": "Receipt denial blocks ops.",
+        "E": 3,
+        "E_justification": "Compromised relay elevates."
+      },
+      "threats": [
+        {
+          "name": "Spoofed mission package relay",
+          "description": "Adversary spoofs relayed mission packages to alter execution.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-031",
+              "title": "Package relay signature verification",
+              "description": "Validate end-to-end signatures at receipt before accepting any mission package.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-032",
+              "title": "Relay integrity monitoring policy",
+              "description": "Log and alert on any signature verification failure at the relay boundary.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-024",
+      "name": "Mission Package Ingest",
+      "description": "Mission Package Ingest",
+      "from_node": "BRAVO_RELAY",
+      "to_node": "C-ALPHA-MSN-01",
+      "interface_type": "component-component",
+      "protocol": "Encrypted RF (AES-256-GCM)",
+      "data_items": [
+        "mission_id",
+        "waypoints",
+        "flight_plan",
+        "route_plan",
+        "targeting_data",
+        "weapon_profile",
+        "comm_plan",
+        "sensor_plan"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Satellite Link Boundary",
+      "stride": {
+        "S": 5,
+        "S_justification": "Spoofed packages control weapons.",
+        "T": 5,
+        "T_justification": "Tampered packages enable wrong strikes.",
+        "R": 3,
+        "R_justification": "Crypto limits repudiation.",
+        "I": 4,
+        "I_justification": "Package leaks targeting.",
+        "D": 4,
+        "D_justification": "Ingest denial stops mission.",
+        "E": 4,
+        "E_justification": "Compromised package grants control."
+      },
+      "threats": [
+        {
+          "name": "Weaponized mission package spoof",
+          "description": "Adversary spoofs mission packages to redirect weapons or sensors.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 4,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-033",
+              "title": "Threshold-signed weapon packages",
+              "description": "Require threshold signatures from planning authority and broker before execution.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-034",
+              "title": "Weapon package release board policy",
+              "description": "Require formal release board approval for any package containing weapon profiles.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-026",
+      "name": "Mission Execution Status",
+      "description": "Mission Execution Status",
+      "from_node": "C-ALPHA-MSN-01",
+      "to_node": "BRAVO_RELAY",
+      "interface_type": "component-component",
+      "protocol": "Encrypted RF (AES-256-GCM)",
+      "data_items": [
+        "mission_status",
+        "route_progress",
+        "weapon_release_status",
+        "isr_collection_status",
+        "peace_time_isr_flags"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Satellite Link Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed status misleads.",
+        "T": 3,
+        "T_justification": "Status tampering hides events.",
+        "R": 2,
+        "R_justification": "Crypto traceable.",
+        "I": 3,
+        "I_justification": "Status leaks progress.",
+        "D": 4,
+        "D_justification": "Status loss blinds ops.",
+        "E": 3,
+        "E_justification": "Limited elevation."
+      },
+      "threats": [
+        {
+          "name": "Spoofed execution status feedback",
+          "description": "Adversary spoofs status to conceal weapon employment or progress.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-035",
+              "title": "Signed status telemetry with monotonic counters",
+              "description": "Sign every status frame and validate counters at the relay.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-036",
+              "title": "Status integrity alert policy",
+              "description": "Define real-time alerts and operator response for status signature failures.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-030",
+      "name": "All-Source Intelligence Input",
+      "description": "All-Source Intelligence Input",
+      "from_node": "ALL_SOURCE_INTEL",
+      "to_node": "C-ROUTE-01",
+      "interface_type": "component-component",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "intel_summary",
+        "threat_updates",
+        "target_dossiers"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Intelligence Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed intel misleads.",
+        "T": 3,
+        "T_justification": "Intel tampering alters routes.",
+        "R": 2,
+        "R_justification": "TLS traceable.",
+        "I": 4,
+        "I_justification": "Intel leaks targets.",
+        "D": 3,
+        "D_justification": "Input denial blocks planning.",
+        "E": 2,
+        "E_justification": "Low elevation."
+      },
+      "threats": [
+        {
+          "name": "Spoofed intel feed injection",
+          "description": "Adversary injects falsified intelligence to misdirect routing.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-037",
+              "title": "Feed source certificate pinning",
+              "description": "Pin trusted certificates for all intelligence ingest endpoints.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-038",
+              "title": "Intel source accreditation policy",
+              "description": "Maintain formal accreditation list and periodic re-validation of intel sources.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-031",
+      "name": "Mission Plan from Charlie Planner",
+      "description": "Mission Plan from Charlie Planner",
+      "from_node": "C-CHARLIE-MP-01",
+      "to_node": "C-ROUTE-01",
+      "interface_type": "component-component",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "mission_id",
+        "flight_plan",
+        "weapon_profile",
+        "sensor_plan"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Ops Network Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed plans change routes.",
+        "T": 3,
+        "T_justification": "Plan tampering alters missions.",
+        "R": 2,
+        "R_justification": "TLS traceable.",
+        "I": 3,
+        "I_justification": "Plans leak intent.",
+        "D": 3,
+        "D_justification": "Plan denial blocks.",
+        "E": 2,
+        "E_justification": "Low elevation."
+      },
+      "threats": [
+        {
+          "name": "Mission plan tampering",
+          "description": "Adversary tampers with plans to alter routes or targeting.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-039",
+              "title": "Plan integrity gateway at broker",
+              "description": "Validate plan signatures at the route broker before forwarding.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-040",
+              "title": "Plan change approval policy",
+              "description": "Require documented approval for any plan modification before broker acceptance.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-037",
+      "name": "Key Distribution Interface",
+      "description": "Carries keying material from the Key Management Authority to the Key Distribution Module",
+      "from_node": "KEY_MGMT_AUTHORITY",
+      "to_node": "C-KDM-01",
+      "interface_type": "external-component",
+      "protocol": "HTTPS",
+      "data_items": [
+        "key_material",
+        "key_id"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Key Management Authority Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed keys break crypto.",
+        "T": 4,
+        "T_justification": "Key tampering critical.",
+        "R": 3,
+        "R_justification": "HTTPS traceable.",
+        "I": 4,
+        "I_justification": "Key disclosure breaks link.",
+        "D": 3,
+        "D_justification": "Key denial blocks crypto.",
+        "E": 4,
+        "E_justification": "Stolen keys elevate access."
+      },
+      "threats": [
+        {
+          "name": "Key material spoofing",
+          "description": "Adversary spoofs or exfiltrates key material to break encryption.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-041",
+              "title": "HSM-protected key transport",
+              "description": "Transport all keys inside HSM-protected envelopes with mutual authentication.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-042",
+              "title": "Key authority access control policy",
+              "description": "Restrict key authority access to cleared personnel with two-person rule.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-042",
+      "name": "All-Source Intelligence Intake",
+      "description": "Carries all-source intelligence updates into the planning data fusion service",
+      "from_node": "ALL_SOURCE_INTEL",
+      "to_node": "C-MSN-02",
+      "interface_type": "external-component",
+      "protocol": "HTTPS",
+      "data_items": [
+        "intel_summary",
+        "threat_updates",
+        "target_dossiers"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Planning Intelligence Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed intel misleads.",
+        "T": 3,
+        "T_justification": "Intel tampering alters.",
+        "R": 2,
+        "R_justification": "HTTPS traceable.",
+        "I": 4,
+        "I_justification": "Intel leaks targets.",
+        "D": 3,
+        "D_justification": "Denial blocks planning.",
+        "E": 2,
+        "E_justification": "Low elevation."
+      },
+      "threats": [
+        {
+          "name": "Spoofed intelligence injection",
+          "description": "Adversary injects falsified intelligence into planning fusion.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-043",
+              "title": "Signed intel summaries with source attestation",
+              "description": "Require signed and attested intel packages from accredited sources only.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-044",
+              "title": "Intel source accreditation and monitoring policy",
+              "description": "Maintain and audit accredited source list with periodic re-validation.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-045",
+      "name": "Mission Plan to Bravo Broker",
+      "description": "Carries generated mission plans from Charlie planning to Bravo mission package broker",
+      "from_node": "C-MSN-01-CHARLIE",
+      "to_node": "BRAVO_MISSION_BROKER",
+      "interface_type": "component-external",
+      "protocol": "HTTPS",
+      "data_items": [
+        "mission_id",
+        "waypoints",
+        "flight_plan",
+        "route_plan",
+        "targeting_data",
+        "weapon_profile",
+        "comm_plan",
+        "sensor_plan"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Ops Network Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed plans mislead.",
+        "T": 3,
+        "T_justification": "Plan tampering alters.",
+        "R": 2,
+        "R_justification": "HTTPS traceable.",
+        "I": 3,
+        "I_justification": "Plans leak intent.",
+        "D": 3,
+        "D_justification": "Denial blocks broker.",
+        "E": 2,
+        "E_justification": "Low elevation."
+      },
+      "threats": [
+        {
+          "name": "Plan tampering at broker",
+          "description": "Adversary tampers with mission plans during broker relay.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-045",
+              "title": "Broker-side plan signature validation",
+              "description": "Validate plan signatures at broker ingress before any processing.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-046",
+              "title": "Broker change control policy",
+              "description": "Require formal approval and logging of any plan modification at the broker.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-046",
+      "name": "All-Source Intelligence Intake",
+      "description": "All-Source Intelligence Intake",
+      "from_node": "ALL_SOURCE_INTEL",
+      "to_node": "C-CHARLIE-MP-02",
+      "interface_type": "component-component",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "intel_summary",
+        "threat_updates",
+        "target_dossiers"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Planning Intelligence Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed intel misleads.",
+        "T": 3,
+        "T_justification": "Intel tampering alters.",
+        "R": 2,
+        "R_justification": "TLS traceable.",
+        "I": 4,
+        "I_justification": "Intel leaks targets.",
+        "D": 3,
+        "D_justification": "Denial blocks planning.",
+        "E": 2,
+        "E_justification": "Low elevation."
+      },
+      "threats": [
+        {
+          "name": "Spoofed intel feed injection",
+          "description": "Adversary injects falsified intelligence to mislead planning.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-047",
+              "title": "TLS client certificate pinning for intel feeds",
+              "description": "Pin certificates for all intelligence ingest connections.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-048",
+              "title": "Intel feed accreditation policy",
+              "description": "Maintain and periodically audit list of accredited intelligence sources.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-049",
+      "name": "Generated Mission Plan to Bravo Broker",
+      "description": "Generated Mission Plan to Bravo Broker",
+      "from_node": "C-CHARLIE-MP-01",
+      "to_node": "C-BRAVO-ROUTER",
+      "interface_type": "component-component",
+      "protocol": "HTTPS TLS 1.3",
+      "data_items": [
+        "mission_id",
+        "waypoints",
+        "flight_plan",
+        "route_plan",
+        "targeting_data",
+        "weapon_profile",
+        "comm_plan",
+        "sensor_plan"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Ops Network Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed plans mislead.",
+        "T": 3,
+        "T_justification": "Plan tampering alters.",
+        "R": 2,
+        "R_justification": "TLS traceable.",
+        "I": 3,
+        "I_justification": "Plans leak intent.",
+        "D": 3,
+        "D_justification": "Denial blocks broker.",
+        "E": 2,
+        "E_justification": "Low elevation."
+      },
+      "threats": [
+        {
+          "name": "Plan tampering during broker relay",
+          "description": "Adversary tampers with plans during broker handoff.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-049",
+              "title": "End-to-end plan integrity checks",
+              "description": "Validate cryptographic signatures at every hop including the broker.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-050",
+              "title": "Broker relay audit policy",
+              "description": "Log all plan relay events with signature verification results.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-052",
+      "name": "1553 BIT Execution",
+      "description": "1553 BIT Execution",
+      "from_node": "C-TIM-01",
+      "to_node": "ALPHA_MAINTENANCE_PORT",
+      "interface_type": "component-component",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "bit_command",
+        "session_token"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed BIT risks safety.",
+        "T": 3,
+        "T_justification": "Command tampering hides faults.",
+        "R": 2,
+        "R_justification": "Bus traceable.",
+        "I": 2,
+        "I_justification": "Commands expose health.",
+        "D": 3,
+        "D_justification": "Bus DoS blocks diag.",
+        "E": 3,
+        "E_justification": "Token compromise elevates."
+      },
+      "threats": [
+        {
+          "name": "Spoofed BIT command injection",
+          "description": "Adversary spoofs maintenance commands to mask or induce faults.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-051",
+              "title": "1553 message authentication codes",
+              "description": "Add MAC to all 1553 BIT commands using maintenance session keys.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-052",
+              "title": "Maintenance bus access logging policy",
+              "description": "Require physical presence logging and session token issuance for all BIT sessions.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-053",
+      "name": "LRU Status Response",
+      "description": "LRU Status Response",
+      "from_node": "ALPHA_MAINTENANCE_PORT",
+      "to_node": "C-TIM-01",
+      "interface_type": "component-component",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "lru_status",
+        "fault_codes",
+        "bit_result"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed status misleads.",
+        "T": 3,
+        "T_justification": "Status tampering hides faults.",
+        "R": 2,
+        "R_justification": "Bus traceable.",
+        "I": 3,
+        "I_justification": "Status leaks health.",
+        "D": 3,
+        "D_justification": "Response loss blocks.",
+        "E": 2,
+        "E_justification": "Low elevation."
+      },
+      "threats": [
+        {
+          "name": "Spoofed LRU status response",
+          "description": "Adversary spoofs status responses to conceal aircraft health.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 3,
+          "mitigations_technical": [
+            {
+              "control_id": "M-053",
+              "title": "Signed LRU status frames",
+              "description": "Require LRU-level signatures on all status responses.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-054",
+              "title": "Status response verification policy",
+              "description": "Mandate verification of signatures before accepting LRU health data.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-054",
+      "name": "HUMS Data Download",
+      "description": "HUMS Data Download",
+      "from_node": "ALPHA_MAINTENANCE_PORT",
+      "to_node": "C-TIM-01",
+      "interface_type": "component-component",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "hums_data",
+        "flight_log"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed HUMS masks issues.",
+        "T": 3,
+        "T_justification": "Log tampering conceals.",
+        "R": 2,
+        "R_justification": "Bus traceable.",
+        "I": 3,
+        "I_justification": "Logs expose ops.",
+        "D": 3,
+        "D_justification": "Loss blocks download.",
+        "E": 2,
+        "E_justification": "Low elevation."
+      },
+      "threats": [
+        {
+          "name": "HUMS tampering",
+          "description": "Adversary tampers with health and usage logs to conceal damage.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 3,
+          "mitigations_technical": [
+            {
+              "control_id": "M-055",
+              "title": "Cryptographic signing of HUMS downloads",
+              "description": "Sign all HUMS frames before transmission over the maintenance bus.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-056",
+              "title": "HUMS download verification policy",
+              "description": "Require signature verification and archival of signed HUMS records.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-056",
+      "name": "Software Package Receive from Bravo",
+      "description": "Software Package Receive from Bravo",
+      "from_node": "BRAVO_MAINT_LAN",
+      "to_node": "C-SLS-01",
+      "interface_type": "component-component",
+      "protocol": "Ethernet (LAN)",
+      "data_items": [
+        "signed_software_package",
+        "digital_signature",
+        "baseline_manifest"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance LAN Boundary",
+      "stride": {
+        "S": 3,
+        "S_justification": "Spoofed packages risk integrity.",
+        "T": 3,
+        "T_justification": "Signature bypass possible.",
+        "R": 2,
+        "R_justification": "Signature traceable.",
+        "I": 2,
+        "I_justification": "Manifest leaks baseline.",
+        "D": 3,
+        "D_justification": "LAN DoS blocks.",
+        "E": 3,
+        "E_justification": "Compromised host elevates."
+      },
+      "threats": [
+        {
+          "name": "Signed package tampering",
+          "description": "Adversary tampers with signed packages before load station transfer.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 4,
+          "mitigations_technical": [
+            {
+              "control_id": "M-057",
+              "title": "LAN gateway package validation",
+              "description": "Validate signatures at a dedicated integrity gateway before SLS acceptance.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-058",
+              "title": "Package receipt audit policy",
+              "description": "Log all package receipts with signature verification outcomes.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-058",
+      "name": "Software Load to Alpha via 1553",
+      "description": "Software Load to Alpha via 1553",
+      "from_node": "C-TIM-01",
+      "to_node": "ALPHA_MAINTENANCE_PORT",
+      "interface_type": "component-component",
+      "protocol": "MIL-STD-1553",
+      "data_items": [
+        "software_package",
+        "load_command",
+        "sequence_number"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed loads inject malware.",
+        "T": 4,
+        "T_justification": "Package tampering bypasses.",
+        "R": 2,
+        "R_justification": "Bus traceable.",
+        "I": 3,
+        "I_justification": "Packages reveal baseline.",
+        "D": 3,
+        "D_justification": "Bus DoS blocks load.",
+        "E": 4,
+        "E_justification": "Malicious load elevates."
+      },
+      "threats": [
+        {
+          "name": "Malicious software load via 1553",
+          "description": "Adversary injects tampered software packages over maintenance bus.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-059",
+              "title": "Hardware root-of-trust load verification",
+              "description": "Verify package signatures in hardware before any write operation.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-060",
+              "title": "1553 load session authorization policy",
+              "description": "Require two-person authorization and session token for all 1553 loads.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "IF-059",
+      "name": "Software Load to Alpha via RS-422",
+      "description": "Software Load to Alpha via RS-422",
+      "from_node": "C-TIM-02",
+      "to_node": "ALPHA_MAINTENANCE_PORT",
+      "interface_type": "component-component",
+      "protocol": "RS-422",
+      "data_items": [
+        "software_package",
+        "load_command",
+        "checksum"
+      ],
+      "trust_boundary_crossing": true,
+      "trust_boundary_name": "Maintenance Bus Boundary",
+      "stride": {
+        "S": 4,
+        "S_justification": "Spoofed loads inject malware.",
+        "T": 4,
+        "T_justification": "Package tampering bypasses.",
+        "R": 2,
+        "R_justification": "Checksum traceable.",
+        "I": 3,
+        "I_justification": "Packages reveal baseline.",
+        "D": 3,
+        "D_justification": "Serial DoS blocks.",
+        "E": 4,
+        "E_justification": "Malicious load elevates."
+      },
+      "threats": [
+        {
+          "name": "Malicious software load via RS-422",
+          "description": "Adversary injects tampered software packages over serial maintenance link.",
+          "mitre_attack_technique": [
+            "ATT&CK:T0856 - Spoof Reporting Message"
+          ],
+          "capec_id": "CAPEC-148 - Content Spoofing",
+          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",
+          "likelihood": 3,
+          "impact": 5,
+          "mitigations_technical": [
+            {
+              "control_id": "M-061",
+              "title": "Serial load integrity with hardware verification",
+              "description": "Verify checksums and signatures in hardware before accepting RS-422 loads.",
+              "residual_risk_after_control": 2
+            }
+          ],
+          "mitigations_administrative": [
+            {
+              "control_id": "M-062",
+              "title": "Serial load authorization policy",
+              "description": "Require two-person rule and session logging for all RS-422 software loads.",
+              "residual_risk_after_control": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
