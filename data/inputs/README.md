@@ -4,10 +4,12 @@
 
 ## Subdirectories
 
-### `architecture_docs/`
-System and operational documentation for ingestion into RAG pipeline.
+### `Aerospace_Architecture/`
+
+Aerospace system and operational documentation for ingestion into RAG pipeline.
 
 **Expected contents:**
+
 - System architecture diagrams and descriptions
 - API specifications and contracts
 - Design decision records (ADRs)
@@ -17,9 +19,11 @@ System and operational documentation for ingestion into RAG pipeline.
 **Usage:** Source documents from this directory will be embedded and stored in `vector_db/indexes/`.
 
 ### `threat_libraries/`
+
 Reference threat models, vulnerabilities, and security patterns.
 
 **Expected contents:**
+
 - STRIDE threat templates
 - OWASP Top 10 / OWASP API Security mappings
 - Common vulnerability patterns (CWE/CVE reference data)
@@ -29,9 +33,11 @@ Reference threat models, vulnerabilities, and security patterns.
 **Usage:** Provide context for threat generation and validation in RAG pipeline.
 
 ### `fixtures/`
+
 Test data and validation fixtures for RAG system.
 
 **Expected contents:**
+
 - Sample threat models for pipeline validation
 - Reference architecture documents
 - Test cases for embedding quality assurance
@@ -42,9 +48,9 @@ Test data and validation fixtures for RAG system.
 ## Ingestion Workflow
 
 1. **Place documents** in appropriate subdirectory
-2. **Run ingestion script** (future): `python scripts/generators/ingest_data.py`
-3. **Embeddings generated** and stored in `data/vector_db/indexes/`
-4. **Retrieval enabled** for RAG queries
+1. **Run ingestion script** (future): `python scripts/generators/ingest_data.py`
+1. **Embeddings generated** and stored in `data/vector_db/indexes/`
+1. **Retrieval enabled** for RAG queries
 
 ## Notes
 

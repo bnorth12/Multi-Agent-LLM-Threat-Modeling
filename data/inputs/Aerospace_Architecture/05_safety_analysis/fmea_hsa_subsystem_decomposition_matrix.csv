@@ -1,0 +1,13 @@
+decomposition_id,system_domain,subsystem_id,subsystem_name,tranche_id,fm_id_scope,hz_id_scope,fm_count,hz_count,reference_alignment_target,gap_analysis_ready,notes
+DEC-001,Core Baseline,SS-00,Initial Seed Baseline,00,FM-001..FM-030,HZ-001..HZ-026,30,26,L0_all,yes,Foundational seed set before tranche expansion
+DEC-002,Aviate/Navigate/Communicate,SS-01|SS-02|SS-03,Primary Flight Ops Core,01,FM-031..FM-048,HZ-027..HZ-035,18,9,L0_aviate|L0_navigate|L0_communicate,yes,Control mode route and comm surveillance deepening
+DEC-003,Operate/Cross-domain,SS-06|SS-08|SS-09,Vehicle Dynamics Weather Mission Authority,02,FM-049..FM-078,HZ-036..HZ-052,30,17,L0_operate|L0_crosscutting,yes,Hydraulic braking icing and mission authority tranche
+DEC-004,Operate/Cross-domain,SS-04|SS-05|SS-07|SS-10,Propulsion Power Env Ground Ops,03,FM-079..FM-110,HZ-053..HZ-068,32,16,L0_operate|L0_ground,yes,Operational services and ground proximity tranche
+DEC-005,Cross-domain,SS-11,Integrated Coupling and Assurance,04,FM-111..FM-130,HZ-069..HZ-080,20,12,L0_crosscutting,yes,Multi-system coupling and deadlock risks
+DEC-006,Operate,SS-12,Flight Deck HMI and Alerting,05,FM-131..FM-135,HZ-081..HZ-083,5,3,L1_hmi_alerting,yes,Display and alert salience subsystem slice
+DEC-007,Cross-domain,SS-13,Data Networking and Cyber Resilience,06,FM-136..FM-140,HZ-084..HZ-086,5,3,L1_data_network_cyber,yes,Timing trust and semantic integrity slice
+DEC-008,Operate,SS-14,Maintenance Diagnostics and Prognostics,07,FM-141..FM-145,HZ-087..HZ-089,5,3,L1_maintenance_diagnostics,yes,Latent defect and maintenance evidence slice
+DEC-009,Navigate/Communicate,SS-15,External CNS and ATM Integration,08,FM-146..FM-150,HZ-090..HZ-092,5,3,L1_external_cns_atm,yes,External coordination and capability declaration slice
+DEC-010,Cross-domain,SS-16,Autonomy Decision Support and Policy Control,09,FM-151..FM-155,HZ-093..HZ-095,5,3,L1_autonomy_policy,yes,Decision confidence and policy conflict slice
+DEC-011,Cross-domain,SS-17,Human Factors and Procedural Controls,10,FM-156..FM-160,HZ-096..HZ-098,5,3,L1_human_procedural,yes,Procedural branch and confirmation barrier slice
+DEC-012,Cross-domain,SS-18,Assurance Configuration and Release Governance,11,FM-161..FM-165,HZ-099..HZ-101,5,3,L1_assurance_release,yes,Evidence chain release integrity and regression slice
