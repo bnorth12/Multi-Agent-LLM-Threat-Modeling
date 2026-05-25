@@ -30,7 +30,7 @@ Project to component and interface mapping:
 - PRJ-013 -> C03-A02-001, C01-STATE-002, C12-HITL-004
 - PRJ-014 -> C09-A08-003, INT-007
 - PRJ-015 -> C01-STATE-003, C04-A03-002
-- PRJ-016 -> **GUI-001 (Delivered S06-07), GUI-002 (Delivered S06-07), GUI-002B (Delivered S08), GUI-003 (Delivered S06-07), GUI-003B (Delivered S08), GUI-003C (Delivered S08), GUI-004 (Deferred to S07-05), GUI-005 (Deferred to S07-05), GUI-006 (Deferred to S07-06), GUI-011 (Deferred to S07-03), GUI-012 (Delivered S07-02), GUI-013 (Delivered S07-02), GUI-014 (Delivered S07-03), GUI-015 (Delivered S08), GUI-030 (Delivered S12), GUI-031 (Delivered S12), GUI-032 (Delivered S12), GUI-033 (Delivered S12), GUI-041 (Delivered S12), GUI-042 (Delivered S12)**, docs/HMI_Architecture_Blueprint.md
+- PRJ-016 -> **GUI-001 (Delivered S06-07), GUI-002 (Delivered S06-07), GUI-002B (Delivered S08), GUI-003 (Delivered S06-07), GUI-003B (Delivered S08), GUI-003C (Delivered S08), GUI-004 (Deferred to S07-05), GUI-005 (Deferred to S07-05), GUI-006 (Deferred to S07-06), GUI-011 (Deferred to S07-03), GUI-012 (Delivered S07-02), GUI-013 (Delivered S07-02), GUI-014 (Delivered S07-03), GUI-015 (Delivered S08), GUI-030 (Delivered S12), GUI-031 (Delivered S12), GUI-032 (Delivered S12), GUI-033 (Delivered S12), GUI-041 (Delivered S12), GUI-042 (Delivered S12)**, docs/architecture/HMI_Architecture_Blueprint.md
 - PRJ-017 -> **GUI-007 (Deferred to S07-06), GUI-008 (Deferred to S07-06)**
 - PRJ-018 -> **GUI-009 (Deferred to S07-04), GUI-010 (Deferred to S07-04)**
 - PRJ-019 -> C01-ORCH-001, C01-STATE-002, INT-005, **GUI-016 (Planned S08 hotfix stream)**

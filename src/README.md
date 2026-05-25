@@ -22,4 +22,4 @@ This directory is the Python implementation root for runtime code.
 - `export/stix_exporter.py` — STIX 2.1 bundle output
 - `export/diagram_generator.py` — Mermaid diagram generation
 - `export/report_writer.py` — Markdown report generation
-- `hmi/` — Streamlit-based analyst GUI (post-sprint; see docs/HMI_Architecture_Blueprint.md)
+- `hmi/` — Streamlit-based analyst GUI (post-sprint; see docs/architecture/HMI_Architecture_Blueprint.md)

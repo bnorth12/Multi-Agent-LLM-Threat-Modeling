@@ -1,10 +1,10 @@
 # HMI Architecture Blueprint
 
 **Document ID:** HMI-ARCH-001
-**Status:** Draft v0.1
+**Status:** Draft v0.2
 **Date:** 2026-05-03
 **Sprint:** 2026-05 (S05-10 / S05-06 deliverable)
-**Authority:** This document is the design authority for all analyst-facing GUI screens. S05-04 HITL Gate Set 1 screen implementation SHALL conform to the patterns defined here.
+**Authority:** This document is the architecture authority for all analyst-facing GUI screens. Detailed subsystem behavior may be elaborated in software design specifications under `docs/design/software/`, but GUI structure, navigation, role gating, and shared interaction patterns SHALL conform to this blueprint.
 
 ---
 
@@ -22,7 +22,9 @@ This blueprint consolidates all GUI requirements (GUI-001 through GUI-014) into 
 
 All screens implemented in this system SHALL conform to the patterns defined in this document. Changes to the navigation model, shared components, or role gating SHALL require an update to this document before implementation.
 
-**Requirement Links:** PRJ-006, PRJ-008, PRJ-012, PRJ-016, PRJ-017, PRJ-018, INT-013, INT-015, GUI-001 through GUI-014
+**Requirement Links:** PRJ-006 HITL Governance, PRJ-008 Configurable Model Selection, PRJ-012 Role-Based Access Control, PRJ-016 Analyst Graphical Interface, PRJ-017 Run Snapshot Portability, PRJ-018 Agent Prompt Configurability, INT-013 Authorization Contract, INT-015 Model Connection Contract, and the analyst-facing GUI requirement set from GUI-001 Input Entry Form through GUI-014 Model Connection Validation.
+
+The identifiers remain important for traceability, but this blueprint is written so a reviewer can understand the navigation and screen structure without cross-referencing the requirement catalog on every page.
 
 ---
 
@@ -81,13 +83,13 @@ When a run is created from the setup wizard, the shell pins that exact run ID as
 
 | Section | Nav Label | Screens Included | GUI Requirements |
 |---|---|---|---|
-| HITL Gates | HITL GATES | Gate Screen (per gate), Audit Trail, footer status timeline | GUI-002, GUI-030, GUI-031 |
-| Artifact and Review Header | Header Rows 1 and 2 | Canonical Graph, Trust Boundaries, STRIDE Viewer, Threats, Mermaid, STIX, Report, Threat Review, Results Export, Tokens, Last Prompt, Prompt Editor | GUI-005, GUI-006, GUI-015, GUI-018, GUI-019, GUI-020, GUI-021, GUI-022, GUI-023, GUI-024, GUI-025, GUI-041, GUI-042 |
-| Configuration | Config | Agent Prompt Editor, Prompt History, Model Provider, Model Connection, Connection Validation | GUI-009, GUI-010, GUI-012, GUI-013, GUI-014 |
+| HITL Gates | HITL GATES | Gate Screen (per gate), Audit Trail, footer status timeline | GUI-002 HITL Gate Screens; GUI-030 Ordered HITL Gates Ledger; GUI-031 Persistent Timeline Status and Gate-Centric Monitoring |
+| Artifact and Review Header | Header Rows 1 and 2 | Canonical Graph, Trust Boundaries, STRIDE Viewer, Threats, Mermaid, STIX, Report, Threat Review, Results Export, Tokens, Last Prompt, Prompt Editor | GUI-005 Threat Artifact Review Screen; GUI-006 Results Export Interface; GUI-015 Token Usage Telemetry Dashboard and Export; GUI-018 STIX Threat Model Viewer; GUI-019 Canonical Graph Viewer; GUI-020 Mermaid Diagram Viewer; GUI-021 STRIDE Threat Model Viewer; GUI-022 STRIDE Threat Model Export; GUI-023 Results Export Quick Preview Functionality; GUI-024 Component and File Version Visibility; GUI-025 Markdown Viewer and Editor; GUI-041 Header-Authoritative Artifact Domain Navigation; GUI-042 Header Review and Export Icon Entry Points |
+| Configuration | Config | Agent Prompt Editor, Prompt History, Model Provider, Model Connection, Connection Validation | GUI-009 Agent Prompt Editor; GUI-010 Agent Prompt Version History; GUI-012 Model Provider Selection Screen; GUI-013 Model Connection Details Configuration; GUI-014 Model Connection Validation |
 
 ### 3.2 Configuration Ordering Dependency
 
-**Critical constraint:** Configuration screens (GUI-012 through GUI-014) MUST be accessible and a valid model connection MUST be confirmed before the analyst can initiate a pipeline run. The Run button on the Input Entry screen (GUI-001) SHALL remain disabled until `model_connection_valid == True` is present in session state. A banner on GUI-001 SHALL direct the analyst to Config when this condition is not met.
+**Critical constraint:** Configuration screens GUI-012 Model Provider Selection Screen through GUI-014 Model Connection Validation MUST be accessible and a valid model connection MUST be confirmed before the analyst can initiate a pipeline run. The Run button on GUI-001 Input Entry Form SHALL remain disabled until `model_connection_valid == True` is present in session state. A banner on GUI-001 SHALL direct the analyst to Config when this condition is not met.
 
 ---
 
@@ -484,7 +486,7 @@ the `PromptStore` public API; they do not manage the JSON file directly.
 
 ### 9.4 SCR-012/013/014: Model Configuration Screens (GUI-012–014)
 
-See [Model_Configuration_Design_Specification.md](Model_Configuration_Design_Specification.md) for full wireframes and component detail. This blueprint establishes that SCR-012, SCR-013, and SCR-014 reside in the Config navigation section, require Admin role, and feed the `model_connection_valid` flag consumed by SCR-001.
+See [../design/software/Model_Configuration_Design_Specification.md](../design/software/Model_Configuration_Design_Specification.md) for software-design detail and component behavior. This blueprint establishes that SCR-012, SCR-013, and SCR-014 reside in the Config navigation section, require Admin role, and feed the `model_connection_valid` flag consumed by SCR-001.
 
 ---
 
@@ -505,16 +507,16 @@ When implementing S05-04, the following constraints from this blueprint apply:
 
 | Blueprint Section | Requirements |
 |---|---|
-| §3 Application Structure | PRJ-016, GUI-001 through GUI-014 |
-| §3.2 Config Ordering Dependency | GUI-014, PRJ-008 |
-| §4 Screen Inventory | GUI-001 through GUI-014 |
-| §5 Navigation Flows | PRJ-016, PRJ-006 |
-| §6.1 Status Indicator | GUI-003 |
-| §6.2 Action Bar | GUI-002, GUI-005 |
-| §6.3 Artifact Viewer | GUI-004, GUI-005 |
-| §6.4 Role-Gated Button | GUI-011, INT-013, PRJ-012 |
-| §6.5 Pipeline Run Banner | GUI-014 |
-| §7 Role-Based Access | GUI-011, INT-013, PRJ-012 |
-| §8.3 Credential Handling | GUI-013, INT-015, PRJ-008 |
-| §9.4 Model Config Screens | GUI-012, GUI-013, GUI-014, INT-015 |
-| §10 S05-04 Implementation Notes | GUI-002, PRJ-006, HITL-001–011 |
+| §3 Application Structure | PRJ-016 Analyst Graphical Interface; GUI-001 Input Entry Form through GUI-014 Model Connection Validation |
+| §3.2 Config Ordering Dependency | GUI-014 Model Connection Validation; PRJ-008 Configurable Model Selection |
+| §4 Screen Inventory | GUI-001 Input Entry Form through GUI-014 Model Connection Validation |
+| §5 Navigation Flows | PRJ-016 Analyst Graphical Interface; PRJ-006 HITL Governance |
+| §6.1 Status Indicator | GUI-003 Pipeline Status Dashboard |
+| §6.2 Action Bar | GUI-002 HITL Gate Screens; GUI-005 Threat Artifact Review Screen |
+| §6.3 Artifact Viewer | GUI-004 Stage Results Viewer; GUI-005 Threat Artifact Review Screen |
+| §6.4 Role-Gated Button | GUI-011 Role-Enforced GUI Access Control; INT-013 Authorization Contract; PRJ-012 Role-Based Access Control |
+| §6.5 Pipeline Run Banner | GUI-014 Model Connection Validation |
+| §7 Role-Based Access | GUI-011 Role-Enforced GUI Access Control; INT-013 Authorization Contract; PRJ-012 Role-Based Access Control |
+| §8.3 Credential Handling | GUI-013 Model Connection Details Configuration; INT-015 Model Connection Contract; PRJ-008 Configurable Model Selection |
+| §9.4 Model Config Screens | GUI-012 Model Provider Selection Screen; GUI-013 Model Connection Details Configuration; GUI-014 Model Connection Validation; INT-015 Model Connection Contract |
+| §10 S05-04 Implementation Notes | GUI-002 HITL Gate Screens; PRJ-006 HITL Governance; HITL-001 through HITL-011 implementation notes |

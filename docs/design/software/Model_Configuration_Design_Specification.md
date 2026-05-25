@@ -2,11 +2,25 @@
 
 Date: 2026-05-03
 Version: 0.1 (Draft)
-Status: Design for Next Sprint Implementation
+Status: Active software design specification
+
+Governing architecture:
+
+- `../../architecture/HMI_Architecture_Blueprint.md`
+- `../../architecture/Multi_Agent_Interface_Control_Document.md`
+
+Applies to:
+
+- `SCR-012` Model Provider Selection
+- `SCR-013` Model Connection Details
+- `SCR-014` Model Connection Validation
+- backend provider registry and connection validation services
 
 ## Overview
 
 This document specifies the design of the model provider configuration system that enables analysts to select and configure model providers (local, cloud-hosted, commercial LLMs) through a GUI without requiring code changes.
+
+It is a software-level design authority that elaborates the governing HMI architecture blueprint and interface-control architecture for provider configuration behavior.
 
 Scope:
 
@@ -18,14 +32,14 @@ Scope:
 
 ## Related Requirements
 
-- PRJ-008: Configurable Model Selection
-- PRJ-009: Deployment Mode Flexibility
-- PRJ-012: Role-Enforced Access Control
-- INT-012: Provider Config Contract
-- INT-015: Model Connection Contract (NEW)
-- GUI-012: Model Provider Selection Screen (NEW)
-- GUI-013: Model Connection Details Configuration (NEW)
-- GUI-014: Model Connection Validation (NEW)
+- PRJ-008 Configurable Model Selection: analysts and operators must be able to change model-provider selection without source-code edits.
+- PRJ-009 Deployment Mode Flexibility: the configuration design must support offline, local, and policy-approved connected operating modes.
+- PRJ-012 Role-Based Access Control: configuration changes and connection actions must remain limited to authorized roles.
+- INT-012 Provider Config Contract: provider selection must submit explicit provider, model, and mode parameters.
+- INT-015 Model Connection Contract: connection setup and validation must capture endpoint, authentication, and model-specific details in a structured form.
+- GUI-012 Model Provider Selection Screen: the user interface must present available providers and provider-specific options clearly.
+- GUI-013 Model Connection Details Configuration: the user interface must collect and persist the full connection detail set.
+- GUI-014 Model Connection Validation: the user interface must validate connectivity before run initiation.
 
 ## Architecture
 

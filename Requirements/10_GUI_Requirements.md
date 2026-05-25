@@ -3,7 +3,7 @@
 Date: 2026-05-03
 Status: Draft v0.1
 
-**HMI Architecture Blueprint:** [docs/HMI_Architecture_Blueprint.md](../docs/HMI_Architecture_Blueprint.md) is the design authority document that implements these requirements. Refer to it for navigation model, shared component patterns, screen wireframes, role-based access gating, and state management. S05-04 HITL gate implementation SHALL conform to the blueprint.
+**HMI Architecture Blueprint:** [docs/architecture/HMI_Architecture_Blueprint.md](../docs/architecture/HMI_Architecture_Blueprint.md) is the architecture authority document that implements these requirements. Refer to it for navigation model, shared component patterns, screen wireframes, role-based access gating, and state management. S05-04 HITL gate implementation SHALL conform to the blueprint.
 
 Purpose:
 

@@ -2,7 +2,7 @@
 
 This directory holds annotated screenshot evidence for HMI screens delivered in Sprint 2026-06 (S06-07) and ongoing work in Sprint 2026-07 (S07-02 through S07-06).
 
-Each entry maps a screenshot file to its **business logic screen ID** (Blueprint SCR-xxx per docs/HMI_Architecture_Blueprint.md), GUI requirement ID, and the sprint issue that delivered or is developing the screen.
+Each entry maps a screenshot file to its **business logic screen ID** (Blueprint SCR-xxx per docs/architecture/HMI_Architecture_Blueprint.md), GUI requirement ID, and the sprint issue that delivered or is developing the screen.
 
 Captured: 2026-05-04 by BN from Streamlit app running at <http://localhost:8502>.
 

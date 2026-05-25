@@ -11,6 +11,14 @@
 
 - [architecture/framework_overview.md](architecture/framework_overview.md)
 - [architecture/architecture_diagram.mermaid](architecture/architecture_diagram.mermaid)
+- [architecture/Multi_Agent_Architecture_Decomposition_Package.md](architecture/Multi_Agent_Architecture_Decomposition_Package.md)
+- [architecture/Multi_Agent_Threat_Modeler_Architecture_Baseline.md](architecture/Multi_Agent_Threat_Modeler_Architecture_Baseline.md)
+- [architecture/Multi_Agent_Functional_Decomposition.md](architecture/Multi_Agent_Functional_Decomposition.md)
+- [architecture/Multi_Agent_Structural_Decomposition.md](architecture/Multi_Agent_Structural_Decomposition.md)
+- [architecture/Multi_Agent_Logical_Decomposition.md](architecture/Multi_Agent_Logical_Decomposition.md)
+- [architecture/Multi_Agent_Interface_Control_Document.md](architecture/Multi_Agent_Interface_Control_Document.md)
+- [architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md](architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md)
+- [architecture/HMI_Architecture_Blueprint.md](architecture/HMI_Architecture_Blueprint.md) (architecture authority for analyst-facing GUI structure, navigation, role gating, and shared interaction patterns)
 
 ## Backend Module Reference
 
@@ -24,8 +32,15 @@
 
 ## Design Specifications
 
-- [HMI_Architecture_Blueprint.md](HMI_Architecture_Blueprint.md) (**Design authority** for all analyst-facing GUI screens; covers GUI-001 through GUI-014, navigation model, shared components, role gating, and state management)
-- [Model_Configuration_Design_Specification.md](Model_Configuration_Design_Specification.md) (Model provider selection and connection configuration for GUI — see also HMI blueprint §9.4)
+- [design/README.md](design/README.md) (design-document index and architecture-to-design traceability rules)
+- [design/system/External_Interface_And_Integration_Design_Package.md](design/system/External_Interface_And_Integration_Design_Package.md) (system design package for user, system, provider, and artifact interfaces plus integration boundaries)
+- [design/system/System_Deployment_And_Operating_Modes_Design.md](design/system/System_Deployment_And_Operating_Modes_Design.md) (system design for deployment topology, operating modes, and release packaging boundaries)
+- [design/software/Agent_Subsystem_Design_Specification.md](design/software/Agent_Subsystem_Design_Specification.md) (software design for agent roles, stage responsibilities, prompt/configuration inputs, and canonical-graph mutation constraints)
+- [design/software/Canonical_Graph_Lifecycle_And_Validation_Design_Specification.md](design/software/Canonical_Graph_Lifecycle_And_Validation_Design_Specification.md) (software design for canonical-graph state transitions, validation gates, fallback rules, and authoritative mutation control)
+- [design/software/Export_And_Evidence_Packaging_Design_Specification.md](design/software/Export_And_Evidence_Packaging_Design_Specification.md) (software design for export assembly, evidence capture, release-ready packaging, and provenance preservation)
+- [design/software/Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md](design/software/Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md) (software design for persisted run state, prompt version storage, checkpoint continuity, and recovery boundaries)
+- [design/software/Runtime_And_Orchestration_Design_Specification.md](design/software/Runtime_And_Orchestration_Design_Specification.md) (software design for runtime state authority, orchestration control, HITL pause/resume, and evidence flow)
+- [design/software/Model_Configuration_Design_Specification.md](design/software/Model_Configuration_Design_Specification.md) (software design for model provider selection and connection validation; governed by the HMI architecture blueprint for screen behavior)
 
 ## Schemas
 
