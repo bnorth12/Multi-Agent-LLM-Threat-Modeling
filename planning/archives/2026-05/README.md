@@ -17,6 +17,8 @@ This batch archives low-risk historical planning evidence files and records the 
 - `broader_archive_sweep_2026_05_24.md`
 - `s05_summary_cleanup_tranche_2026_05_24.md`
 - `s05_branch_metadata_cleanup_tranche_2026_05_24.md`
+- `s08_s10_planning_evidence_tranche_2026_05_24.md`
+- `t_doc_01_screenshot_evidence_reference_tranche_2026_05_24.md`
 
 ## Rationale
 

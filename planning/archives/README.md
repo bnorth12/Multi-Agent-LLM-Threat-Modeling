@@ -97,4 +97,5 @@ This folder stores completed planning, sprint closeout, and historical governanc
 - 2026-05-24 tranche note recorded at `planning/archives/2026-05/s05_summary_cleanup_tranche_2026_05_24.md`.
 - 2026-05-24 tranche note recorded at `planning/archives/2026-05/s05_branch_metadata_cleanup_tranche_2026_05_24.md`.
 - 2026-05-24 tranche note recorded at `planning/archives/2026-05/s08_s10_planning_evidence_tranche_2026_05_24.md`.
+- 2026-05-24 tranche note recorded at `planning/archives/2026-05/t_doc_01_screenshot_evidence_reference_tranche_2026_05_24.md`.
 - Adjacent docs/process and docs/architecture governance surfaces were reviewed and retained in place when they remained active guidance or policy artifacts.
