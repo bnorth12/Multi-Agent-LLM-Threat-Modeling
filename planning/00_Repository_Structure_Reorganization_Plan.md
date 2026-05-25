@@ -108,7 +108,7 @@ Multi Agent Threat Modeler/
 │   │   └── indexes/             # Persistent vector indexes
 │   ├── inputs/
 │   │   ├── README.md
-│   │   ├── architecture_docs/   # Ingested docs
+│   │   ├── Aerospace_Architecture/   # Aerospace ingested docs
 │   │   ├── threat_libraries/    # Reference threat data
 │   │   └── fixtures/            # Test data
 │   └── models/
@@ -130,6 +130,7 @@ Multi Agent Threat Modeler/
 ## Migration Phases
 
 ### Phase 1: Test Infrastructure Consolidation (Immediate)
+
 **Scope:** Organize test artifacts and move test configs.
 
 - [ ] Move `conftest.py` → `Tests/conftest.py`
@@ -144,6 +145,7 @@ Multi Agent Threat Modeler/
 ---
 
 ### Phase 2: Planning Reorganization (This Sprint)
+
 **Scope:** Hierarchy for sprint-scoped and repo-level planning.
 
 - [ ] Create `planning/Sprints/` directory
@@ -159,10 +161,11 @@ Multi Agent Threat Modeler/
 ---
 
 ### Phase 3: Data Infrastructure Setup (Next Sprint)
+
 **Scope:** Prepare vector DB and RAG input structure (scaffolding only for now).
 
 - [ ] Create `data/vector_db/` with README
-- [ ] Create `data/inputs/` with subdirs: `architecture_docs/`, `threat_libraries/`, `fixtures/`
+- [ ] Create `data/inputs/` with subdirs: `Aerospace_Architecture/`, `threat_libraries/`, `fixtures/`
 - [ ] Document data schema and ingestion patterns in `data/README.md`
 - [ ] Add `.gitignore` entries for vector indexes and temp files
 
@@ -171,6 +174,7 @@ Multi Agent Threat Modeler/
 ---
 
 ### Phase 4: Configuration Consolidation (Post-Phase 1)
+
 **Scope:** Centralize test and build configs.
 
 - [ ] Move `pyproject.toml` configs into `Tests/` as needed

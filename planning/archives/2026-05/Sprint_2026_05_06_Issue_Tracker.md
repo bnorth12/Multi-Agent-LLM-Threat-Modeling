@@ -21,7 +21,7 @@ This tracker is the canonical in-repo status view for sprint issues defined in t
 | S05-06 | issue_2026_05_Documentation_Synchronization.md | Documentation Owner | feature/sprint_2026_05 | Completed | GH #12; 2026-05-03 BN: HMI blueprint, README/src/Tests/fixtures docs updated, fixture format documented, traceability matrix updated |
 | S05-10 | issue_2026_05_HMI_Architecture_Blueprint.md | HMI Architect and Documentation Owner | feature/sprint_2026_05 | Completed | GH #17; 2026-05-03 BN: docs/HMI_Architecture_Blueprint.md v0.1; 11 sections, 3 Mermaid flows, screen inventory SCR-001–014, 6 shared components, role matrix; all 7 ACs met |
 | S05-07 | issue_2026_05_Sprint_Branch_And_PR_Lifecycle.md | Technical Lead and DevOps Engineer | feature/sprint_2026_05 | Completed | GH #13; 2026-05-03 BN: branch created; all sprint work committed; PR created against main; all 4 ACs met |
-| S05-08 | issue_2026_05_Regression_And_Requirement_Test_Execution.md | Test Lead and Validation and Schema Engineer | feature/sprint_2026_05 | Completed | GH #14; 2026-05-03 BN: 85/85 tests passing; requirement mapping in Test_Execution_Summary_Sprint_2026_05.md; all 4 ACs met |
+| S05-08 | issue_2026_05_Regression_And_Requirement_Test_Execution.md | Test Lead and Validation and Schema Engineer | feature/sprint_2026_05 | Completed | GH #14; 2026-05-03 BN: 85/85 tests passing; requirement mapping in planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_05.md; all 4 ACs met |
 | S05-09 | issue_2026_05_Issue_Closure_And_Validation.md | Product Owner and Technical Lead | feature/sprint_2026_05 | Completed | GH #15; 2026-05-03 BN: all 10 issues carry evidence, dates, initials; no issue closed without requirement + test linkage; all 3 ACs met |
 
 ## 3. Sprint 2026-06

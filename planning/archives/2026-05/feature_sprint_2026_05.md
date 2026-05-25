@@ -28,7 +28,7 @@ This sprint uses a single feature branch. Do not create per-issue or per-workstr
 
 - planning/issues/Sprint_2026_05_06_Issue_Tracker.md
 - planning/Sectioned_Implementation_Plan.md
-- planning/feature_branches/Sprint_2026_05_PR_Template.md
+- planning/archives/2026-05/Sprint_2026_05_PR_Template.md
 
 ## PR Target
 
