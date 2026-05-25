@@ -3,6 +3,7 @@
 ## 1. Release Objectives
 
 ### Primary Goals
+
 - Deliver Release Candidate 1 (v1.0.0-rc1) with complete UI viewer suite
 - Validate all 9-stage pipeline with new artifact viewers
 - Establish production-ready documentation and quality standards
@@ -10,6 +11,7 @@
 - Enable community feedback collection before GA release
 
 ### Timeline Target
+
 - **S09 Feature Completion**: May 22, 2026
 - **RC1 QA & Documentation**: May 23-27, 2026
 - **RC1 Release**: May 28, 2026
@@ -25,7 +27,7 @@ During S09 Requirements Phase and S09 Implementation Phase, the release team SHA
 - `Requirements/05_Verification_Strategy.md`
 - `Requirements/07_Release_Process.md`
 - `Tests/Test_Plan.md`
-- `planning/Sprint_2026_09_Traceability_Matrix.md`
+- `planning/archives/2026-05/Sprint_2026_09_Traceability_Matrix.md`
 - `planning/issues/Sprint_2026_09_Issue_Tracker.md`
 - `Releases/Deployment_Guide_v1.0.0-rc1.md`
 
@@ -38,6 +40,7 @@ S09 baseline requirements/features that must remain in scope tracking:
 ## 2. RC1 Readiness Criteria
 
 ### ✅ Feature Completeness (from S09)
+
 - [x] GUI-018: STIX Threat Model Viewer (fully functional in Results Export)
 - [x] GUI-019: Canonical Graph Viewer (fully functional in Results Export)
 - [x] GUI-020: Mermaid Diagram Viewer (fully functional in Results Export)
@@ -48,6 +51,7 @@ S09 baseline requirements/features that must remain in scope tracking:
 **Acceptance**: All S09 GUI features functional end-to-end with live LLM execution
 
 ### ✅ User Documentation Updates
+
 - [ ] [docs/User_Manual.md](docs/User_Manual.md) updated with all new screens
 - [ ] Workflow diagrams updated to show new export/viewer options
 - [ ] Screenshots captured for all 9 result screens
@@ -58,6 +62,7 @@ S09 baseline requirements/features that must remain in scope tracking:
 **Acceptance**: Complete walkthrough of new features documented with screenshots
 
 ### ✅ Quality Gate Requirements
+
 - [ ] Manual RC validation checklist executed and attached as release evidence
 - [ ] No critical bugs in manual regression validation
 - [ ] `verify_sprint_traceability.py --audit --closure` passes for S09
@@ -68,6 +73,7 @@ S09 baseline requirements/features that must remain in scope tracking:
 **Acceptance**: Zero critical bugs, manual validation evidence complete, traceability closure gate passes
 
 ### ✅ RC1 Validation Sequencing Policy
+
 - [x] Clean automated test pass completed for all RC-included S09 features before manual RC start
 - [ ] Manual validation evidence bundle archived with release artifacts
 - [ ] Manual RC validation campaign completed within bounded defect-fix iterations (target <= 2 validation loops)
@@ -76,6 +82,7 @@ S09 baseline requirements/features that must remain in scope tracking:
 **Acceptance**: RC1 decision record explicitly documents automated-pass prerequisite and manual campaign completion
 
 ### ✅ Governance & Traceability
+
 - [ ] S09 Sprint closure checklist complete
 - [ ] All 5 feature issues linked to GUI requirements
 - [ ] All 3 deferred issues tagged with S09 disposition
@@ -85,9 +92,10 @@ S09 baseline requirements/features that must remain in scope tracking:
 **Acceptance**: Traceability matrix audit passes with no gaps
 
 ### ✅ Versioning & Release Artifacts
+
 - [ ] Version bumped to 1.0.0-rc1 in all config files:
   - `pyproject.toml` (version field)
-  - `src/threat_modeler/__init__.py` (__version__)
+  - `src/threat_modeler/__init__.py` (**version**)
   - GitHub Release tag: `v1.0.0-rc1`
 - [ ] Release notes generated from S09 commits
 - [ ] CHANGELOG.md created with feature summary
@@ -98,6 +106,7 @@ S09 baseline requirements/features that must remain in scope tracking:
 ## 3. User Manual Update Plan
 
 ### Documentation Structure (Post-S09)
+
 ```
 docs/User_Manual.md (top-level guide)
 ├── 1. Introduction & Quick Start
@@ -129,15 +138,17 @@ docs/user_manual/screenshots/ (new)
 ```
 
 ### Regeneration Process
+
 1. Capture 4 new viewer screenshots during S09 feature implementation
-2. Update User_Manual.md with viewer interaction steps and use cases
-3. Add section on artifact interpretation (STIX, canonical graph structure, etc.)
-4. Regenerate HTML version via markdown-to-html tool
-5. Validate all images and links in HTML output
+1. Update User_Manual.md with viewer interaction steps and use cases
+1. Add section on artifact interpretation (STIX, canonical graph structure, etc.)
+1. Regenerate HTML version via markdown-to-html tool
+1. Validate all images and links in HTML output
 
 ## 4. Quality Assurance Checklist (Pre-RC1)
 
 ### Functional Testing
+
 - [ ] All 9 pipeline stages complete successfully with live LLM
 - [ ] All 7 HITL gates functional (approve/reject/resume actions)
 - [ ] New viewers render artifacts without errors
@@ -146,12 +157,14 @@ docs/user_manual/screenshots/ (new)
 - [ ] Browser reload preserves run state across all screens
 
 ### Regression Testing
+
 - [ ] Manual regression walkthrough completed for all S09 acceptance criteria
 - [ ] Manual bug triage completed for all open RC1 blockers
 - [x] Automated non-manual gate completed and recorded (`406 passed, 11 deselected`)
 - [ ] Full manual release candidate validation completed and signed off
 
 ### Documentation Validation
+
 - [ ] User Manual renders correctly in browser (HTML)
 - [ ] All code examples execute without errors
 - [ ] All links (internal and external) valid
@@ -166,12 +179,14 @@ RC1 SHALL run a complete manual validation campaign after a clean automated pass
 Required campaign scope:
 
 1. Full end-to-end run validation (input, all 9 stages, all 7 HITL gates, and exports).
-2. UI validation for S09 features (STIX, canonical graph, Mermaid, STRIDE viewer, STRIDE export, quick preview).
-3. Documentation validation for:
-  - User Manual markdown and HTML.
-  - Product documentation used for release operations (requirements/process/release docs).
-  - Deployment guide operational walkthrough.
-4. Evidence bundle generation with screenshots/logs and pass-fail matrix.
+1. UI validation for S09 features (STIX, canonical graph, Mermaid, STRIDE viewer, STRIDE export, quick preview).
+1. Documentation validation for:
+
+- User Manual markdown and HTML.
+- Product documentation used for release operations (requirements/process/release docs).
+- Deployment guide operational walkthrough.
+
+1. Evidence bundle generation with screenshots/logs and pass-fail matrix.
 
 Iteration policy:
 
@@ -183,9 +198,9 @@ Iteration policy:
 To simplify restart and recovery during long live runs, save snapshots at the following checkpoints:
 
 1. Post-configuration validation (before first run start).
-2. First HITL pause reached (baseline gate-state checkpoint).
-3. Mid-pipeline after at least one resume cycle.
-4. Pre-export completion state (all stages complete, before final export checks).
+1. First HITL pause reached (baseline gate-state checkpoint).
+1. Mid-pipeline after at least one resume cycle.
+1. Pre-export completion state (all stages complete, before final export checks).
 
 Snapshot use policy:
 
@@ -194,6 +209,7 @@ Snapshot use policy:
 - If a blocking defect is found after a snapshot, log issue and requirement impact before resuming from checkpoint.
 
 ### Deployment Validation
+
 - [ ] Docker build successful (if applicable)
 - [ ] Installation via pip succeeds
 - [ ] Runtime dependencies complete and documented
@@ -254,18 +270,21 @@ See [Installation Guide](docs/README.md) for setup instructions.
 ## 6. Governance Checklist
 
 ### Release Authority
+
 - [ ] All S09 issues closed and verified
 - [ ] Traceability matrix audit passes
 - [ ] No open critical or high-severity bugs
 - [ ] Sprint closure checklist signed off
 
 ### Communication
+
 - [ ] Release notes published to GitHub Releases
 - [ ] Release announcement posted (if applicable)
 - [ ] Community notified of feedback collection window
 - [ ] RC download links tested and validated
 
 ### Versioning
+
 - [ ] Git tag created: `git tag -a v1.0.0-rc1 -m "Release Candidate 1: UI Viewer Suite Complete"`
 - [ ] Version numbers updated across codebase
 - [ ] Commit log reviewed for release notes accuracy
@@ -273,18 +292,21 @@ See [Installation Guide](docs/README.md) for setup instructions.
 ## 7. Post-RC1 Feedback Integration (Before GA)
 
 ### Feedback Categories
+
 1. **Critical Bugs** (block GA)
-2. **UX Issues** (viewer interaction, export workflows)
-3. **Documentation Gaps** (missing or unclear instructions)
-4. **Feature Requests** (deferred to v1.1 roadmap)
+1. **UX Issues** (viewer interaction, export workflows)
+1. **Documentation Gaps** (missing or unclear instructions)
+1. **Feature Requests** (deferred to v1.1 roadmap)
 
 ### RC Feedback Resolution
+
 - Weekly triage meetings (May 28, 30, June 2)
 - Critical bugs fixed and validated by June 3
 - UX/doc feedback incorporated into v1.0.0 GA build
 - Feature requests documented for future roadmap
 
 ### GA Release Preparation
+
 - Merge all RC feedback fixes to main branch
 - Final regression test run (109+ tests)
 - Tag GA release: `v1.0.0` (no -rc suffix)
@@ -293,6 +315,7 @@ See [Installation Guide](docs/README.md) for setup instructions.
 ## 8. Release Artifacts
 
 ### Deliverables for v1.0.0-rc1
+
 ```
 releases/v1.0.0-rc1/
 ├── threat-modeler-1.0.0rc1-py3-none-any.whl
@@ -306,6 +329,7 @@ releases/v1.0.0-rc1/
 ```
 
 ### Quality Metadata
+
 - Build timestamp and commit SHA
 - Test coverage report (if applicable)
 - Dependency manifest (pinned versions)
@@ -313,13 +337,14 @@ releases/v1.0.0-rc1/
 ## 9. Success Criteria for RC1
 
 ✅ **RC1 is successful if:**
+
 1. All 5 new viewers functional with live LLM execution
-2. Zero critical bugs in regression testing
-3. Documentation complete and validated
-4. Traceability audit passes
-5. Community feedback mechanism active
-6. Artifact generation verified for all formats
-7. Browser compatibility confirmed (Chrome, Firefox, Safari)
+1. Zero critical bugs in regression testing
+1. Documentation complete and validated
+1. Traceability audit passes
+1. Community feedback mechanism active
+1. Artifact generation verified for all formats
+1. Browser compatibility confirmed (Chrome, Firefox, Safari)
 
 ## 10. Timeline & Milestones
 

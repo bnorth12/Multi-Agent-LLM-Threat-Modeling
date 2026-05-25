@@ -17,13 +17,13 @@ Medium - RC publication control and release evidence requirement.
 ## Scope
 
 1. Execute full manual end-to-end functional validation for RC1.
-2. Validate S09 UI feature set and export behavior.
-3. Validate documentation accuracy and operational usability:
+1. Validate S09 UI feature set and export behavior.
+1. Validate documentation accuracy and operational usability:
    - User manual markdown and HTML.
    - Product documentation set used for release operations.
    - Deployment guide walkthrough in clean environment.
-4. Produce release evidence bundle and decision record input.
-5. Apply bounded validation-loop policy (target <=2 loops).
+1. Produce release evidence bundle and decision record input.
+1. Apply bounded validation-loop policy (target <=2 loops).
 
 ## Acceptance Criteria
 
@@ -37,7 +37,7 @@ Medium - RC publication control and release evidence requirement.
 
 ### Planned Evidence Artifacts
 
-- `planning/Test_Execution_Summary_Sprint_2026_09.md`
+- `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_09.md`
 - `Releases/Deployment_Guide_v1.0.0-rc1.md`
 - RC decision record with manual validation references
 
@@ -57,6 +57,6 @@ In Progress
 
 ## Progress Notes (2026-05-10)
 
-- Automated prerequisite completed and recorded in `planning/Test_Execution_Summary_Sprint_2026_09.md`.
+- Automated prerequisite completed and recorded in `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_09.md`.
 - Sweep evidence: `406 passed, 11 deselected` for `pytest Tests/unit Tests/integration Tests/e2e -m "not llm_live"`.
 - Manual RC campaign execution remains pending user-driven test run and evidence capture.

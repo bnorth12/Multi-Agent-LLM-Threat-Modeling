@@ -9,7 +9,7 @@
 
 ## ✅ Traceability Matrix Complete
 
-- [ ] **Matrix exists**: `planning/Sprint_2026_08_Traceability_Matrix.md` present and up-to-date
+- [ ] **Matrix exists**: `planning/archives/2026-05/Sprint_2026_08_Traceability_Matrix.md` present and up-to-date
 - [ ] **All issues listed**: Every issue opened in sprint has matrix row
 - [ ] **All requirements listed**: Every requirement worked on has matrix row
 - [ ] **Issue → Requirement bidirectional**:
@@ -134,6 +134,7 @@
 **Signature/Initials**: ________________
 
 I verify that:
+
 - [ ] All issues closed with proper evidence
 - [ ] Traceability matrix is 100% complete and accurate
 - [ ] Test coverage is adequate for sprint scope
@@ -153,6 +154,7 @@ I verify that:
 **Signature/Initials**: ________________
 
 I accept that:
+
 - [ ] All committed requirements implemented
 - [ ] Acceptance criteria met
 - [ ] No user-facing blockers
@@ -170,7 +172,7 @@ I accept that:
 - [ ] **Carryover items identified**: List below
 - [ ] **Backlog updated**: Deferred items moved back to backlog with rationale
 - [ ] **Next sprint planning prepared**:
-  - Template copied: `planning/Sprint_2026_09_Traceability_Matrix.md`
+  - Template copied: `planning/archives/2026-05/Sprint_2026_09_Traceability_Matrix.md`
   - Process docs referenced: Link to Definition of Done, Requirements & Issues Policy
 - [ ] **Retrospective insights documented**:
   - What worked?
@@ -209,4 +211,3 @@ I accept that:
 - [ ] Sprint marked as "COMPLETE" in tracking system
 
 **Sprint Status**: 🟢 **CLOSED** | Date Closed: ________________
-

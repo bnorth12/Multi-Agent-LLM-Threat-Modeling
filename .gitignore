@@ -31,6 +31,7 @@ htmlcov/
 
 # Jupyter and local runtime artifacts
 .ipynb_checkpoints/
+.tmp/
 
 # OS and editor files
 .DS_Store

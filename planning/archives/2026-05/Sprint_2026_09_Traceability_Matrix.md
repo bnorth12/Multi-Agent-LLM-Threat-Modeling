@@ -37,7 +37,7 @@ This matrix tracks bidirectional traceability between requirements, issues, code
 | # | Requirement ID | Requirement Name | Issue ID | Issue Status | Assigned To | Test File | Verification Status | Notes |
 |---|---|---|---|---|---|---|---|---|
 | R1 | PRJ-011 | Export Artifact Set | D-S09-007 | Resolved | BN | Tests/e2e/test_release_deployment_guide_presence.py | Guide updated; automated evidence recorded | RC1 deployment guide completed and aligned to automated-first sequencing |
-| R2 | VS-008 | Manual RC Validation Campaign | D-S09-008 | In Progress | BN | planning/Test_Execution_Summary_Sprint_2026_09.md | Automated prerequisite complete (`406 passed, 11 deselected`) | Full manual validation evidence pending user-driven campaign execution |
+| R2 | VS-008 | Manual RC Validation Campaign | D-S09-008 | In Progress | BN | planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_09.md | Automated prerequisite complete (`406 passed, 11 deselected`) | Full manual validation evidence pending user-driven campaign execution |
 
 ---
 

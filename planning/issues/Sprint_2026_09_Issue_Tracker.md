@@ -29,8 +29,8 @@ The following documents are controlled artifacts for Sprint 2026-09 and SHALL be
 - `Requirements/05_Verification_Strategy.md`
 - `Requirements/07_Release_Process.md`
 - `Tests/Test_Plan.md`
-- `planning/Sprint_2026_09_Traceability_Matrix.md`
-- `planning/Release_Planning_2026_09.md`
+- `planning/archives/2026-05/Sprint_2026_09_Traceability_Matrix.md`
+- `planning/archives/2026-05/Release_Planning_2026_09.md`
 - `Releases/Deployment_Guide_v1.0.0-rc1.md`
 
 Phase checkpoints:
@@ -82,7 +82,7 @@ S09 scope baseline that SHALL be tracked through completion:
 | D-S09-005 | Low | Results Export Quick Preview | Quick preview options do not function reliably for active run artifacts | Resolved | Pending commit | Tests/integration/test_results_export_quick_preview.py (2 passed) | 2026-05-10 BN: Quick preview coverage expanded and validated against current run payload expectations |
 | D-S09-006 | Medium | Component/File Version Governance | Need component semantic version manifest and component-file version inventory for RC evidence and traceable release auditing | Resolved | Pending commit | Tests/integration/test_component_version_manifest.py + test_component_file_version_inventory.py + test_version_inventory_visibility.py (6 passed) | 2026-05-10 BN: Generators implemented, GUI visibility added, consistency checks passing |
 | D-S09-007 | Medium | Deployment Guide for RC1 | Need release-specific deployment guide covering install, config, operations checks, and rollback | Resolved | Pending commit | Releases/Deployment_Guide_v1.0.0-rc1.md updated | 2026-05-10 BN: Guide aligned to automated-first policy and operational sections completed |
-| D-S09-008 | Medium | Manual RC Validation Campaign and Documentation Proof | Need full manual release-candidate validation evidence including user manual, product documentation, and deployment guide verification after clean automated pass for all RC-included features | In Progress | Pending | Automated gate pass recorded in planning/Test_Execution_Summary_Sprint_2026_09.md | 2026-05-10 BN: Automated prerequisite satisfied; manual campaign remains pending user execution |
+| D-S09-008 | Medium | Manual RC Validation Campaign and Documentation Proof | Need full manual release-candidate validation evidence including user manual, product documentation, and deployment guide verification after clean automated pass for all RC-included features | In Progress | Pending | Automated gate pass recorded in planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_09.md | 2026-05-10 BN: Automated prerequisite satisfied; manual campaign remains pending user execution |
 | D-S09-009 | Medium | Markdown Viewer and Editor | Need integrated markdown viewer/editor for tool-managed files to support in-app updates during requirements and implementation phases | Resolved | 0bd0b89 | Tests/integration/test_markdown_viewer_editor.py (14 passed) | 2026-05-10 BN: Verified in automated sweep `406 passed, 11 deselected` |
 | D-S09-010 | Medium | Automated Test Collection and Browser Token Validation | Automated sweep encountered invalid legacy import paths and browser token-usage validation type handling failure | Resolved | Pending commit | Automated sweep: `pytest Tests/unit Tests/integration Tests/e2e -m "not llm_live"` -> 406 passed, 11 deselected | 2026-05-10 BN: Import and token-validation blockers fixed; non-manual gate clean |
 | D-S09-013 | High | SCR-014 Connection Validation | Invalid API key is accepted as validated; no authenticated provider test call appears to be performed | Deferred | N/A | Manual smoke evidence (invalid key accepted by Validate Connection) | 2026-05-10 BN: Logged and deferred for next implementation slice before release sign-off |

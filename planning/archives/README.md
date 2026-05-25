@@ -60,10 +60,41 @@ This folder stores completed planning, sprint closeout, and historical governanc
   Reason: Historical Sprint 2026-05 PR template retained for provenance after sprint closeout.
   Replacement artifact: none
   Regenerable: no
+- Original path: `planning/Sprint_2026_08_Closure_Checklist.md`
+  Archived path: `planning/archives/2026-05/Sprint_2026_08_Closure_Checklist.md`
+  Archive date: 2026-05-24
+  Reason: Historical Sprint 2026-08 closeout checklist retained for provenance after sprint closure.
+  Replacement artifact: none
+  Regenerable: no
+- Original path: `planning/Release_Planning_2026_09.md`
+  Archived path: `planning/archives/2026-05/Release_Planning_2026_09.md`
+  Archive date: 2026-05-24
+  Reason: Historical release-planning evidence retained for provenance after RC1 closeout.
+  Replacement artifact: none
+  Regenerable: no
+- Original path: `planning/Sprint_2026_09_Traceability_Matrix.md`
+  Archived path: `planning/archives/2026-05/Sprint_2026_09_Traceability_Matrix.md`
+  Archive date: 2026-05-24
+  Reason: Historical Sprint 2026-09 traceability matrix retained for provenance after sprint closeout.
+  Replacement artifact: none
+  Regenerable: no
+- Original path: `planning/Test_Execution_Summary_Sprint_2026_09.md`
+  Archived path: `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_09.md`
+  Archive date: 2026-05-24
+  Reason: Historical Sprint 2026-09 test execution summary retained for provenance after RC1 evidence closeout.
+  Replacement artifact: none
+  Regenerable: no
+- Original path: `planning/Test_Execution_Summary_Sprint_2026_10.md`
+  Archived path: `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_10.md`
+  Archive date: 2026-05-24
+  Reason: Historical Sprint 2026-10 test execution summary retained for provenance after sprint closeout.
+  Replacement artifact: none
+  Regenerable: no
 
 ## Sweep Notes
 
 - 2026-05-24 broader archive sweep note recorded at `planning/archives/2026-05/broader_archive_sweep_2026_05_24.md`.
 - 2026-05-24 tranche note recorded at `planning/archives/2026-05/s05_summary_cleanup_tranche_2026_05_24.md`.
 - 2026-05-24 tranche note recorded at `planning/archives/2026-05/s05_branch_metadata_cleanup_tranche_2026_05_24.md`.
+- 2026-05-24 tranche note recorded at `planning/archives/2026-05/s08_s10_planning_evidence_tranche_2026_05_24.md`.
 - Adjacent docs/process and docs/architecture governance surfaces were reviewed and retained in place when they remained active guidance or policy artifacts.
