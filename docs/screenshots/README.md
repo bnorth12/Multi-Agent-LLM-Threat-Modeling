@@ -68,10 +68,10 @@ Screenshots for S07 screens will be captured and added to this directory as deve
 
 - 4 screenshots (scr_001–scr_004) mapping to 4 delivered screens
 - Test summary: 240 tests passing (unit + integration + E2E)
-- Full test logs in planning/Test_Execution_Summary_Sprint_2026_06.md
+- Full test logs in planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_06.md
 
 **Sprint 2026-07 evidence will be collected incrementally:**
 
 - S07-02 screenshots added when Model Provider/Connection screens complete
 - S07-05/06 screenshots added when Results/Export screens complete
-- Final test and screenshot evidence compiled in planning/Test_Execution_Summary_Sprint_2026_07.md
+- Final test and screenshot evidence compiled in planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_07.md

@@ -93,6 +93,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -107,6 +109,26 @@ jobs:
           # Temporary: full non-live suite still collects tests that import streamlit-backed screens.
           pip install streamlit
           pip install pytest openpyxl
+
+      - name: Enforce archive hygiene on changed files
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            python scripts/archive_hygiene.py check --changed-against "origin/${{ github.base_ref }}" --enforce
+          else
+            python scripts/archive_hygiene.py check --changed-against HEAD~1 --enforce
+          fi
+
+      - name: Generate exception remediation proposals
+        run: |
+          python scripts/validate_cross_domain_exception_policy.py \
+            --proposal-only \
+            --propose-missing \
+            --proposal-out test_reports/cross_domain_exception_proposals.csv
+
+      - name: Enforce cross-domain exception policy gate
+        run: python scripts/validate_cross_domain_exception_policy.py
 
       - name: Run full test suite (Lane A gate)
         run: python -m pytest Tests/ -q --tb=short -m "not llm_live and not llm_live_browser"

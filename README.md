@@ -150,19 +150,33 @@ Install the repo-managed Git hooks (recommended):
 ```
 
 This configures `core.hooksPath` to `.githooks` for this repository. The included `pre-push` hook runs:
+
 - `python -m pytest Tests/unit/ -q`
 - `python scripts/verify_sprint_traceability.py --sprint $TRACEABILITY_SPRINT` (default: `2026_11`)
+- `python scripts/archive_hygiene.py check --upstream --enforce`
+- `python scripts/validate_cross_domain_exception_policy.py`
+- `python scripts/validate_cross_domain_exception_policy.py --proposal-only --propose-missing --proposal-out test_reports/cross_domain_exception_proposals.csv`
+
+The included `pre-commit` and `pre-merge-commit` hooks run:
+
+- `python scripts/archive_hygiene.py check --staged --enforce`
 
 Behavior:
+
 - Unit tests are blocking.
 - Traceability verification is warning-only by default to avoid unnecessary push blockers.
+- Archive hygiene verification is blocking by default on commit, merge, CI, and pre-push.
+- Exception policy verification is blocking by default.
 - Set `TRACEABILITY_ENFORCE=1` to make traceability failures blocking.
+- Set `ARCHIVE_HYGIENE_ENFORCE=0` to make archive hygiene failures warning-only on pre-push.
+- Set `EXCEPTION_POLICY_ENFORCE=0` to make exception policy failures warning-only.
 
 Use this setup to catch local quality and traceability regressions before opening or updating PRs.
 
-### Dependency Strategy
+### Dependency Strategy Summary
 
 **Runtime Dependencies** (`requirements.txt`):
+
 - `openai` — LLM integration
 - `langgraph` — Agent orchestration
 - `chromadb` — Vector store for retrieval
@@ -170,6 +184,7 @@ Use this setup to catch local quality and traceability regressions before openin
 - `python-dotenv` — Environment variable loading
 
 **Test Dependencies** (`Tests/requirements_e2e.txt`):
+
 - Includes all runtime dependencies (via `-r ../requirements.txt`)
 - `pytest`, `pytest-cov` — Unit and integration testing
 - `playwright`, `pytest-playwright` — Browser automation for E2E
@@ -193,6 +208,18 @@ python -m pytest Tests/unit/ -q
 
 # Sprint traceability verification (logs to test_reports/)
 python scripts/run_and_log.py scripts/verify_sprint_traceability.py --sprint 2026_11
+
+# Archive hygiene check for staged, upstream, or explicit paths
+python scripts/archive_hygiene.py check --paths planning/archives/2026-05/README.md
+
+# Archive batch note scaffold
+python scripts/archive_hygiene.py scaffold --archive-root planning/archives --batch 2026-05 --note-name archive_sweep_note.md --title "Planning Archive Sweep"
+
+# Cross-domain exception policy strict gate
+python scripts/validate_cross_domain_exception_policy.py
+
+# Proposal-only remediation output for missing exception rows
+python scripts/validate_cross_domain_exception_policy.py --proposal-only --propose-missing --proposal-out test_reports/cross_domain_exception_proposals.csv
 
 # Dependency boundary hardening (release/runtime must exclude test-only deps)
 python scripts/verify_dependency_boundary.py

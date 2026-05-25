@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+
+echo "[pre-commit] Checking archive hygiene on staged changes..."
+
+if [ -x "$ROOT_DIR/.venv/Scripts/python.exe" ]; then
+  PYTHON_BIN="$ROOT_DIR/.venv/Scripts/python.exe"
+elif [ -x "$ROOT_DIR/.venv/bin/python" ]; then
+  PYTHON_BIN="$ROOT_DIR/.venv/bin/python"
+elif command -v python >/dev/null 2>&1; then
+  PYTHON_BIN="python"
+elif command -v python3 >/dev/null 2>&1; then
+  PYTHON_BIN="python3"
+else
+  echo "[pre-commit] ERROR: Python is required but was not found on PATH."
+  exit 1
+fi
+
+"$PYTHON_BIN" scripts/archive_hygiene.py check --staged --enforce
+
+echo "[pre-commit] Archive hygiene check passed."
