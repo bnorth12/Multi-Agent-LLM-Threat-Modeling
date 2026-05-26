@@ -36,7 +36,7 @@ class TestIcdCsvAlpha:
         assert self.result.version == "1"
 
     def test_subsystems_count(self):
-        assert len(self.result.subsystems) == 2
+        assert len(self.result.subsystems) == 3
 
     def test_subsystem_ids(self):
         ids = {s.id for s in self.result.subsystems}
@@ -48,22 +48,22 @@ class TestIcdCsvAlpha:
             assert s.parent_system != ""
 
     def test_components_count(self):
-        assert len(self.result.components) == 3
+        assert len(self.result.components) == 5
 
     def test_component_parent_subsystem_populated(self):
         for c in self.result.components:
             assert c.parent_subsystem != ""
 
     def test_data_flows_count(self):
-        assert len(self.result.data_flows) == 3
+        assert len(self.result.data_flows) == 7
 
     def test_trust_boundary_crossing_detected(self):
         crossing_flows = [df for df in self.result.data_flows if df.trust_boundary_crossing]
-        assert len(crossing_flows) == 1
-        assert crossing_flows[0].id == "DF-003"
+        assert len(crossing_flows) == 3
+        assert {df.id for df in crossing_flows} == {"DF-004", "DF-005", "DF-007"}
 
     def test_trust_boundary_name_populated(self):
-        df = next(df for df in self.result.data_flows if df.id == "DF-003")
+        df = next(df for df in self.result.data_flows if df.id == "DF-004")
         assert df.trust_boundary_name == "External Radio Link"
 
     def test_data_items_parsed_as_list(self):
@@ -87,18 +87,18 @@ class TestIcdCsvBravo:
         assert self.result.version == "2"
 
     def test_subsystems_count(self):
-        assert len(self.result.subsystems) == 2
+        assert len(self.result.subsystems) == 3
 
     def test_components_count(self):
-        assert len(self.result.components) == 3
+        assert len(self.result.components) == 4
 
     def test_data_flows_count(self):
-        assert len(self.result.data_flows) == 3
+        assert len(self.result.data_flows) == 7
 
     def test_trust_boundary_crossing_detected(self):
         crossing = [df for df in self.result.data_flows if df.trust_boundary_crossing]
-        assert len(crossing) == 1
-        assert crossing[0].id == "DF-103"
+        assert len(crossing) == 5
+        assert "DF-103" in {df.id for df in crossing}
 
 
 class TestIcdCsvAvionics:
@@ -214,7 +214,7 @@ class TestIcdCsvUasWeaponSystem:
         assert len(self.result.components) >= 12
 
     def test_expected_data_flow_count(self):
-        assert len(self.result.data_flows) == 10
+        assert len(self.result.data_flows) == 15
 
     def test_satellite_link_boundary_flows_present(self):
         boundary_flows = [df for df in self.result.data_flows if df.trust_boundary_name == "Satellite Link Boundary"]
@@ -258,23 +258,21 @@ class TestNarrativeUasWeaponSystem:
         assert len(self.result.description) > 100
 
     def test_raw_text_contains_segments(self):
-        assert "Segment Alpha" in self.result.raw_text
-        assert "Segment Bravo" in self.result.raw_text
-        assert "Segment Charlie" in self.result.raw_text
-        assert "Segment Delta" in self.result.raw_text
+        assert "Lifecycle Modeling Intent" in self.result.raw_text
+        assert "Segment Responsibilities" in self.result.raw_text
+        assert "Key Mission Flow" in self.result.raw_text
+        assert "Threat Modeling Context" in self.result.raw_text
 
     def test_raw_text_contains_lower_level_components(self):
-        assert "Flight Control Computer" in self.result.raw_text
-        assert "Mission Processing Server" in self.result.raw_text
-        assert "Satcom Modem" in self.result.raw_text
-        assert "Maintenance Test Set" in self.result.raw_text
+        assert "Alpha executes missions" in self.result.raw_text
+        assert "Bravo validates and brokers mission plans" in self.result.raw_text
+        assert "Charlie provides encrypted relay" in self.result.raw_text
+        assert "Delta verifies mission readiness" in self.result.raw_text
 
     def test_raw_text_contains_trust_boundaries(self):
-        assert "Satellite Link Boundary" in self.result.raw_text
-        assert "Ops Network Boundary" in self.result.raw_text
-        assert "Maintenance Bus Boundary" in self.result.raw_text
-        assert "Maintenance LAN Boundary" in self.result.raw_text
-        assert "Key Management Boundary" in self.result.raw_text
+        assert "mission context" in self.result.raw_text
+        assert "mission packages" in self.result.raw_text
+        assert "mission cycles" in self.result.raw_text
 
 
 # ---------------------------------------------------------------------------

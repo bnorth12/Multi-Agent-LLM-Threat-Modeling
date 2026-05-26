@@ -31,13 +31,14 @@ _BLANK_LINE_RE = re.compile(r"\n{2,}")
 
 def _parse_text(raw: str, source_file: str) -> NarrativeParseResult:
     """Extract system_name and description from plain text."""
-    m = _H1_RE.search(raw)
+    clean_raw = raw.lstrip("\ufeff")
+    m = _H1_RE.search(clean_raw)
     if m:
         system_name = m.group(1).strip()
-        after_heading = raw[m.end():]
+        after_heading = clean_raw[m.end():]
     else:
         system_name = os.path.splitext(os.path.basename(source_file))[0]
-        after_heading = raw
+        after_heading = clean_raw
 
     paragraphs = [p.strip() for p in _BLANK_LINE_RE.split(after_heading.strip()) if p.strip()]
     # Skip any immediate sub-heading lines as the description

@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from threat_modeler.backend import prompt_store as backend_prompt_store
 
+st = None
+
 AGENT_IDS = backend_prompt_store.AGENT_IDS
 AGENT_LABELS = backend_prompt_store.AGENT_LABELS
 VersionEntry = backend_prompt_store.VersionEntry
