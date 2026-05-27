@@ -57,3 +57,12 @@ In Review
 
 - Treat the implemented UI changes as Sprint 2026-12 governed scope.
 - Do not remove the execution page until the product/program decision is captured and traceability is updated.
+
+## Sprint Deferment Language (2026-05-26)
+
+- Defer Decision: Deferred from Sprint 2026-12 closure scope into Sprint 2026-13 intake unless elevated by governance review.
+- Rationale: Minor-to-moderate scope expansion relative to current Sprint 2026-12 critical-path closure work.
+- Risk Level: Controlled and acceptable for defer with explicit tracking.
+- Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
+- Next Sprint Owner: bnorth12
+- Intake Linkage: planning/Sprint_2026_13_Skills_Layer_and_Avionics_Specialization.md

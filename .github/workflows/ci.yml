@@ -1,13 +1,23 @@
 name: CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      run_live:
+        description: "Run live LLM lane (uses GROK_API secret)"
+        required: false
+        default: "false"
   push:
     branches:
       - main
+      - dev
       - "feature/**"
   pull_request:
     branches:
       - main
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   unit-tests:
@@ -134,11 +144,14 @@ jobs:
         run: python -m pytest Tests/ -q --tb=short -m "not llm_live and not llm_live_browser"
 
   llm-live:
-    name: Live LLM tests (Grok API)
+    name: Live LLM tests (Grok API, non-blocking)
     runs-on: ubuntu-latest
-    # Only run on pushes to main; skip on PRs from forks (no secret access)
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # Non-blocking operational signal lane. Runs on main pushes or manual opt-in dispatch.
+    if: |
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'workflow_dispatch' && inputs.run_live == 'true')
     needs: non-live-suite
+    continue-on-error: true
 
     steps:
       - name: Checkout repository

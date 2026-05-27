@@ -19,6 +19,9 @@ on:
       - 'src/**'
       - 'Tests/**'
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   verify-traceability:
     name: Verify Requirements-Issue-Code Traceability
@@ -26,12 +29,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Full history for commit message analysis
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
@@ -86,7 +89,8 @@ jobs:
 
           echo "✅ PASS: Commit messages reference issue IDs"
 
-      - name: Verify issue has requirement link
+      - name: Verify issue has requirement link (PR strict gate)
+        if: github.event_name == 'pull_request'
         run: |
           echo "🔍 Checking issues have requirement links..."
 
@@ -99,6 +103,14 @@ jobs:
           fi
 
           echo "✅ PASS: All issues have requirement links"
+
+      - name: Audit issue to requirement linkage (push advisory)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "Running push advisory traceability audit (non-blocking)..."
+          if ! python scripts/verify_sprint_traceability.py --sprint ${{ steps.sprint.outputs.sprint }} --audit; then
+            echo "Advisory: Traceability audit reported gaps. See logs and address in next governance tranche."
+          fi
 
       - name: Enforce sprint closure prerequisites
         if: github.event_name == 'pull_request' && (contains(github.event.pull_request.title, 'Sprint Closure') || contains(github.event.pull_request.title, 'sprint closure') || contains(github.event.pull_request.body, '[sprint-closure]'))

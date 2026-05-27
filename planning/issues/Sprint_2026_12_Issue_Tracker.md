@@ -4,6 +4,42 @@ Date: 2026-05-21
 Status: Open for late-scope governance reconciliation
 Sprint Goal: Keep Sprint 2026-12 React HMI/API delivery fully traceable through implementation, GitHub issue sync, and sprint-close closure evidence.
 
+## 0. S12 Closeout Matrix (Updated 2026-05-26)
+
+This matrix provides owner assignment, target close date, and defer disposition for all active S12 scope.
+Minor findings may be deferred only when logged with explicit next-sprint intake linkage.
+
+| ID | GitHub Issue | Current Status | Owner | Target Close | Disposition |
+|---|---|---|---|---|---|
+| S12-011 | #64 | In Review | bnorth12 | 2026-05-28 | Close in Sprint 2026-12 after evidence refresh |
+| S12-012 | #63 | In Review | bnorth12 | 2026-05-28 | Close in Sprint 2026-12 after evidence refresh |
+| S12-013 | #67 | In Progress | bnorth12 | 2026-05-31 | Complete implementation and close |
+| S12-014 | #66 | In Progress | bnorth12 | 2026-05-31 | Complete implementation and close |
+| S12-015 | #68 | In Review | bnorth12 | 2026-05-28 | Close in Sprint 2026-12 after evidence refresh |
+| S12-016 | #69 | In Review | bnorth12 | 2026-05-28 | Close in Sprint 2026-12 after evidence refresh |
+| S12-017 | #70 | In Review | bnorth12 | 2026-05-28 | Close in Sprint 2026-12 after evidence refresh |
+| S12-018 | #71 | In Review | bnorth12 | 2026-05-29 | Close with evidence refresh |
+| S12-019 | TBD | Proposed | bnorth12 | 2026-06-07 | Defer to Sprint 2026-13 Wave 1 |
+| S12-020 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-10 | Defer to Sprint 2026-13 Wave 3 |
+| S12-021 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-10 | Defer to Sprint 2026-13 Wave 2 |
+| S12-022 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Sprint 2026-13 Wave 2 |
+| S12-023 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-07 | Defer to Sprint 2026-13 Wave 1 |
+| S12-024 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-07 | Defer to Sprint 2026-13 Wave 1 |
+| S12-025 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-07 | Defer to Sprint 2026-13 Wave 1 |
+| S12-026 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Sprint 2026-13 Wave 2 |
+| S12-027 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Sprint 2026-13 Wave 2 |
+| S12-028 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-14 | Defer to Sprint 2026-13 Wave 3 |
+| S12-029 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Sprint 2026-13 Wave 2 |
+| S12-030 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Sprint 2026-13 Wave 2 |
+| S12-031 | TBD | In Progress | bnorth12 | 2026-06-02 | Complete implementation and close |
+| S12-032 | TBD | Proposed (Post-Run) | bnorth12 | 2026-06-14 | Defer to Sprint 2026-13 Wave 3 |
+| D-S12-011 | #65 | Proposed | bnorth12 | 2026-06-05 | Defer decision to Sprint 2026-13 governance review |
+
+### Defer Documentation Rule
+
+- Any deferred minor finding must be recorded in `planning/Sprint_2026_13_Skills_Layer_and_Avionics_Specialization.md` and linked from this tracker row before Sprint 2026-12 closure.
+- Deferred items must include: rationale, risk level, verification impact, and explicit next-sprint owner.
+
 ## 1. Sprint 2026-12 Late-Scope HMI/HITL Issues
 
 | ID | GitHub Issue | Type | Priority | Status | Summary | Related Requirements | Primary Files |
@@ -15,7 +51,7 @@ Sprint Goal: Keep Sprint 2026-12 React HMI/API delivery fully traceable through 
 | S12-015 | #68 | Artifact UX / Mermaid Review | P1 | In Review | Add parsed Mermaid diagram selector, split/diagram/text modes, editable source plus rendered preview, and visible `x of n - diagram name` indicator. | GUI-034, RHMI-010 | frontend/src/components/ArtifactsViewer.tsx, Requirements/10_GUI_Requirements.md, Requirements/11_React_HMI_Refactor_Requirements.md |
 | S12-016 | #69 | Run Selection UX / Wizard Continuity | P1 | In Review | Ensure setup-wizard run creation pins and auto-selects the exact new run ID, add temporary `Created by wizard` row badge, and keep nav/status surfaces visible during first polling cycles. | GUI-037, RHMI-015 | frontend/src/App.tsx, frontend/src/App.test.tsx, scripts/live_browser_e2e_smoke_react.py, Requirements/10_GUI_Requirements.md, Requirements/11_React_HMI_Refactor_Requirements.md |
 | S12-017 | #70 | Runtime Persistence / Artifact Retrieval | P1 | In Review | Preserve artifact endpoint availability for completed or paused runs after backend restart by persisting and restoring restorable runtime state (no run-list ghost entries). | RHMI-016 | src/threat_modeler/backend/run_manager.py, src/threat_modeler/server/api.py, Requirements/11_React_HMI_Refactor_Requirements.md, Requirements/12_React_HMI_Traceability_To_Tests.md |
-| S12-018 | TBD | Input Ingestion / File Injection Guard | P1 | In Review | Restore React input-ingestion parity with Streamlit by parsing CSV/XLSX uploads into structured table rows and preventing raw spreadsheet binary payload injection into `initial_state.raw_text`, which degraded Agent 01 parsing and downstream trust-boundary/STRIDE/threat completeness for full UAS suite runs. | RHMI-017 | frontend/src/App.tsx, frontend/src/api/client.ts, frontend/package.json, Requirements/11_React_HMI_Refactor_Requirements.md, Requirements/12_React_HMI_Traceability_To_Tests.md |
+| S12-018 | #71 | Input Ingestion / File Injection Guard | P1 | In Review | Restore React input-ingestion parity with Streamlit by parsing CSV/XLSX uploads into structured table rows and preventing raw spreadsheet binary payload injection into `initial_state.raw_text`, which degraded Agent 01 parsing and downstream trust-boundary/STRIDE/threat completeness for full UAS suite runs. | RHMI-017 | frontend/src/App.tsx, frontend/src/api/client.ts, frontend/package.json, Requirements/11_React_HMI_Refactor_Requirements.md, Requirements/12_React_HMI_Traceability_To_Tests.md |
 | S12-019 | TBD | Artifact UX / Gate-State Coupling | P1 | Proposed | Ensure artifact-view navigation and viewer status colors update deterministically when artifact data becomes available and when related HITL gates transition to accepted, rather than remaining in stale pre-availability state. | GUI-003C, GUI-031, Pending latest color-state requirement ID mapping | frontend/src/App.tsx, frontend/src/components/ArtifactsViewer.tsx, frontend/src/components/HITLGateManager.tsx, Requirements/10_GUI_Requirements.md, Requirements/11_React_HMI_Refactor_Requirements.md |
 | S12-020 | TBD | Runtime Telemetry / Stage Latency Persistence | P1 | Proposed (Post-Run) | Track per-stage LLM latency from prompt dispatch to model response and persist those timing data points with per-stage token usage in run records for trend analysis, triage, and governance evidence. | GUI-015, INT-005, GUI-027, Pending requirement ID for persisted stage latency metrics | src/threat_modeler/services/openai_compatible_adapter.py, src/threat_modeler/backend/run_manager.py, src/threat_modeler/server/api.py, frontend/src/components/TokenUsageView.tsx, Requirements/10_GUI_Requirements.md, Requirements/02_Interface_Requirements.md |
 | S12-021 | TBD | Artifact UX / Per-Item Threat & Mitigation Review | P1 | Proposed (Post-Run) | Add threat detail dialog (click to open), inline mitigation population once the mitigation stage completes, and per-item accept/reject decision controls for threats and mitigations. Pending items default to accepted so the pipeline never blocks; only explicitly rejected items are excluded from diagram and report generation. | GUI-005, HITL-004, HITL-005, HITL-007, HITL-008, Pending new GUI-005 extension IDs | frontend/src/components/ArtifactsViewer.tsx, src/threat_modeler/backend/run_manager.py, src/threat_modeler/server/api.py, src/threat_modeler/orchestrator.py, Requirements/10_GUI_Requirements.md, Requirements/03_HITL_Requirements.md |
@@ -62,7 +98,7 @@ Each Sprint 2026-12 issue is only closed when all are true:
 - Actual requirement updates completed for RHMI-017 (React CSV/XLSX parsing parity and binary spreadsheet injection guard).
 - Sprint 2026-12 traceability updated to reference the implemented HMI/HITL refinement scope.
 - GitHub synchronization completed for issues #63, #64, #65, #68, and #69.
-- GitHub synchronization for S12-018 is pending issue creation and number assignment.
+- GitHub synchronization completed for S12-018 as issue #71.
 - GitHub synchronization for S12-019 is pending issue creation and number assignment.
 - GitHub synchronization for S12-020 is pending issue creation and number assignment.
 - GitHub synchronization for S12-021 is pending issue creation and number assignment.

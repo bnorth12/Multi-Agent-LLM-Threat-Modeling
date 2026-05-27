@@ -112,3 +112,12 @@ stage actually completed successfully or was abandoned mid-execution.
 ## Deferment Note
 
 - Implementation is intentionally deferred until the current active pipeline run is complete.
+
+## Sprint Deferment Language (2026-05-26)
+
+- Defer Decision: Deferred from Sprint 2026-12 closure scope into Sprint 2026-13 intake unless elevated by governance review.
+- Rationale: Minor-to-moderate scope expansion relative to current Sprint 2026-12 critical-path closure work.
+- Risk Level: Controlled and acceptable for defer with explicit tracking.
+- Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
+- Next Sprint Owner: bnorth12
+- Intake Linkage: planning/Sprint_2026_13_Skills_Layer_and_Avionics_Specialization.md
