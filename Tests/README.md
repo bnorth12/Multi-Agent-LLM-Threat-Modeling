@@ -158,6 +158,20 @@ Recommended commands:
 set RUN_VISIBLE_BROWSER_TESTS=1
 .venv\Scripts\python.exe -m pytest Tests/e2e/test_browser_cav_markdown_upload.py -v -m llm_live_browser -s
 
+# Lane B2b: React + MUI frontend shell browser validation (Sprint 12)
+set RUN_VISIBLE_BROWSER_TESTS=1
+.venv\Scripts\python.exe -m pytest Tests/e2e/test_frontend_react_mui_shell.py -v -m "llm_live_browser and frontend_shell" -s
+
+# Optional auth-UI assertion within shell lane (S12 auth readiness)
+set RUN_VISIBLE_BROWSER_TESTS=1
+set FRONTEND_AUTH_UI_TESTS=1
+.venv\Scripts\python.exe -m pytest Tests/e2e/test_frontend_react_mui_shell.py -v -k unauthorized -m "llm_live_browser and frontend_shell" -s
+
+# Lane B2c: React + MUI full workflow browser validation (Sprint 12 full conversion scope)
+set RUN_VISIBLE_BROWSER_TESTS=1
+set FRONTEND_FULL_BROWSER_TESTS=1
+.venv\Scripts\python.exe -m pytest Tests/e2e/test_frontend_react_mui_full_workflow.py -v -m "llm_live_browser and frontend_full" -s
+
 # Lane B3: standalone full E2E smoke (script-first, pytest-independent runtime)
 set RUN_VISIBLE_BROWSER_TESTS=1
 .venv\Scripts\python.exe scripts/live_browser_e2e_smoke.py
@@ -176,6 +190,13 @@ set RUN_VISIBLE_BROWSER_TESTS=1
 Release governance rule:
 
 - Release candidate sign-off requires Lane A pass plus documented Lane B evidence (or approved waiver with rationale) in the sprint test execution summary.
+
+Dependency boundary hardening:
+
+```sh
+# Verify release/runtime manifests do not include test-only dependencies
+.venv\Scripts\python.exe scripts/verify_dependency_boundary.py
+```
 
 ### Smoke Validation Guidance
 

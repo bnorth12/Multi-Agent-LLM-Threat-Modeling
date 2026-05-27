@@ -1,4 +1,5 @@
 # Repository Structure Audit & Recommendations
+
 ## Final Phase Adjustments (Phase 3+)
 
 **Date:** 2026-05-17
@@ -25,6 +26,7 @@
 ## Additional Findings: Root-Level Clutter
 
 ### Current Root Files (Non-Standard)
+
 | File | Size | Purpose | Recommendation |
 |------|------|---------|-----------------|
 | `generate_exports_for_manual.py` | Utility | Exports threat data | **Move to** `scripts/generators/export_manual.py` |
@@ -72,7 +74,7 @@ data/
 │   └── .gitignore         # Ignore indexes, keep config
 ├── inputs/
 │   ├── README.md
-│   ├── architecture_docs/ # System documentation for ingestion
+│   ├── Aerospace_Architecture/ # Aerospace system documentation for ingestion
 │   ├── threat_libraries/  # Reference threat catalogs
 │   ├── fixtures/          # Test data
 │   └── fetched/           # Downloaded/ingested content (.gitignore)
@@ -102,6 +104,7 @@ Tests/
 ```
 
 **Action Items:**
+
 - Extract `[tool.pytest]` config from root `pyproject.toml` → `Tests/pyproject.toml`
 - Move `.coveragerc` to `Tests/.coveragerc` (currently in root)
 - Create `Tests/README.md` with test running guide (reference `run_and_log.py`)
@@ -174,6 +177,7 @@ planning/
 ```
 
 **Action Items:**
+
 - Create `planning/Master_Plan.md` (roadmap view of all sprints)
 - Create `planning/Templates/` with reusable templates
 - Create `planning/Archive/` and move completed sprint docs there
@@ -209,9 +213,9 @@ planning/
 ## Next Action: Push Changes & Create Session Summary
 
 1. **Commit Phase 2 changes** → `git push` ✅
-2. **Create Phase 3 scaffold** (data/) for next sprint
-3. **Document this audit** in memory for future reference
-4. **Provide user with summary** of completed work and roadmap
+1. **Create Phase 3 scaffold** (data/) for next sprint
+1. **Document this audit** in memory for future reference
+1. **Provide user with summary** of completed work and roadmap
 
 ---
 

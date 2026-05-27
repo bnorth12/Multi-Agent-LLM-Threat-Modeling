@@ -1,0 +1,171 @@
+{
+  "attempt": 1,
+  "error": "Run entered terminal failure status: failed. Error: RuntimeError: Required data for gate_4_threat_plausibility is not ready; refusing to open gate after waiting 8.0s.",
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 862, in main\n    result = _run_browser_flow(cfg, run_dir, baseline_runs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 757, in _run_browser_flow\n    progression = _wait_for_full_pipeline_completion(\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 330, in _wait_for_full_pipeline_completion\n    raise SmokeFailure(f\"Run entered terminal failure status: {status}. Error: {error_text}\")\nSmokeFailure: Run entered terminal failure status: failed. Error: RuntimeError: Required data for gate_4_threat_plausibility is not ready; refusing to open gate after waiting 8.0s.\n",
+  "timestamp": "2026-05-23 00:39:04",
+  "backend_url": "http://127.0.0.1:8600",
+  "frontend_url": "http://localhost:5174",
+  "input_files": [
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_uas_weapon_system_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_uas_weapon_system.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_alpha_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_alpha_comprehensive.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_alpha_mission_computer_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_alpha_mission_computer.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_bravo_v2.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_bravo_comprehensive.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_charlie_v1.xlsx",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_charlie_comprehensive.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_charlie_mission_planning_computer_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_charlie_mission_planning_computer.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_ground_maintenance_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_ground_maintenance_comprehensive.md"
+  ],
+  "backend_health": {
+    "status": "ok"
+  },
+  "runs": {
+    "runs": [
+      {
+        "run_id": "7abc9eb1-98c4-4498-8729-bcdfc15b611e",
+        "run_name": "React FQT System",
+        "archived": false,
+        "status": "failed",
+        "start_time": 1779514010.4911363,
+        "end_time": 1779514736.492233,
+        "pause_gate": null,
+        "error": "RuntimeError: Required data for gate_4_threat_plausibility is not ready; refusing to open gate after waiting 8.0s.",
+        "last_heartbeat_time": 1779514735.752783,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": 8.692912578582764,
+        "settings": {
+          "model": {
+            "provider": "xai",
+            "model_name": "grok-4",
+            "api_key": "",
+            "offline_only": false,
+            "connection_url": "https://api.x.ai/v1",
+            "endpoint_mode": "chat_completions",
+            "request_timeout_seconds": 900,
+            "request_max_attempts": 2
+          },
+          "pipeline": {
+            "execution_mode": "langgraph-compatible",
+            "enabled_stage_ids": [
+              "agent_01",
+              "agent_02",
+              "agent_03",
+              "agent_04",
+              "agent_05",
+              "agent_06",
+              "agent_07",
+              "agent_08",
+              "agent_09"
+            ],
+            "stop_on_validation_error": false,
+            "require_hitl_gates": true
+          }
+        },
+        "result_state": {
+          "next_stage_id": "agent_05",
+          "messages": [
+            {
+              "stage_id": "agent_01",
+              "text": "Input Normalizer completed."
+            },
+            {
+              "stage_id": "agent_02",
+              "text": "Context Builder completed."
+            },
+            {
+              "stage_id": "agent_03",
+              "text": "Trust Boundary Validator completed."
+            },
+            {
+              "stage_id": "agent_04",
+              "text": "STRIDE Scorer completed."
+            },
+            {
+              "stage_id": "agent_05",
+              "text": "Threat Generator completed."
+            }
+          ],
+          "hitl_paused_at_gate": null,
+          "hitl_rejected_at_gate": null,
+          "llm_usage_totals": {
+            "prompt_tokens": 75795,
+            "completion_tokens": 89764,
+            "reasoning_tokens": 2398,
+            "cached_tokens": 18880,
+            "total_tokens": 167957,
+            "request_count": 5
+          },
+          "llm_attempt_totals": {
+            "submitted": 5,
+            "completed": 5,
+            "failed": 0,
+            "total": 10
+          },
+          "has_canonical_graph": true,
+          "has_stix_bundle": false,
+          "has_mermaid_diagrams": false,
+          "has_final_report": false
+        },
+        "live_state": {
+          "next_stage_id": "agent_05",
+          "messages": [
+            {
+              "stage_id": "agent_01",
+              "text": "Input Normalizer completed."
+            },
+            {
+              "stage_id": "agent_02",
+              "text": "Context Builder completed."
+            },
+            {
+              "stage_id": "agent_03",
+              "text": "Trust Boundary Validator completed."
+            },
+            {
+              "stage_id": "agent_04",
+              "text": "STRIDE Scorer completed."
+            },
+            {
+              "stage_id": "agent_05",
+              "text": "Threat Generator completed."
+            }
+          ],
+          "hitl_paused_at_gate": null,
+          "hitl_rejected_at_gate": null,
+          "llm_usage_totals": {
+            "prompt_tokens": 75795,
+            "completion_tokens": 89764,
+            "reasoning_tokens": 2398,
+            "cached_tokens": 18880,
+            "total_tokens": 167957,
+            "request_count": 5
+          },
+          "llm_attempt_totals": {
+            "submitted": 5,
+            "completed": 5,
+            "failed": 0,
+            "total": 10
+          },
+          "has_canonical_graph": true,
+          "has_stix_bundle": false,
+          "has_mermaid_diagrams": false,
+          "has_final_report": false
+        }
+      }
+    ]
+  },
+  "new_run_ids_since_attempt_start": [
+    "7abc9eb1-98c4-4498-8729-bcdfc15b611e"
+  ],
+  "backend_port_pids": [
+    258112
+  ],
+  "frontend_port_pids": [
+    324692
+  ]
+}

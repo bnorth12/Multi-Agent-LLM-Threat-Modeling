@@ -36,9 +36,9 @@ def test_visible_browser_uploads_cav_and_markdown_files():
 
     repo_root = Path(__file__).resolve().parents[2]
     app_path = repo_root / "src" / "threat_modeler" / "ui" / "app.py"
-    icd_path = repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_charlie_v1.xlsx"
-    cav_md_path = repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_cav.md"
-    avionics_md_path = repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_avionics.md"
+    icd_path = repo_root / "Tests" / "fixtures" / "inputs" / "systems" / "charlie" / "icd_charlie_v1.xlsx"
+    cav_md_path = repo_root / "Tests" / "fixtures" / "inputs" / "systems" / "cav" / "description_cav.md"
+    avionics_md_path = repo_root / "Tests" / "fixtures" / "inputs" / "systems" / "avionics" / "description_avionics.md"
 
     assert icd_path.exists()
     assert cav_md_path.exists()

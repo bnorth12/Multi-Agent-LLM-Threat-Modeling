@@ -130,9 +130,9 @@ pytest Tests/e2e/test_browser_cav_markdown_upload.py -v -m llm_live_browser -s
 This test opens a visible Chromium window (`headless=False`), loads the Input Entry
 screen, uploads:
 
-- `Tests/fixtures/inputs/icd/icd_charlie_v1.xlsx`
-- `Tests/fixtures/inputs/descriptions/description_cav.md`
-- `Tests/fixtures/inputs/descriptions/description_avionics.md`
+- `Tests/fixtures/inputs/systems/charlie/icd_charlie_v1.xlsx`
+- `Tests/fixtures/inputs/systems/cav/description_cav.md`
+- `Tests/fixtures/inputs/systems/avionics/description_avionics.md`
 
 and verifies file names are rendered by the UI upload list.
 

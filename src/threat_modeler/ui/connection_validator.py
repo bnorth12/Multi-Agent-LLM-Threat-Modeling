@@ -140,12 +140,12 @@ def _provider_base_url(provider: str) -> str:
 
 
 def _env_var_hint(provider: str) -> str:
-    """Return the expected environment variable name for the provider's API key."""
+    """Return guidance for where to supply provider API keys."""
     _ENV_VARS: dict[str, str] = {
-        "openai": "OPENAI_API_KEY",
-        "anthropic": "ANTHROPIC_API_KEY",
-        "xai": "GROK_API or XAI_API_KEY",
-        "azure": "AZURE_OPENAI_API_KEY",
-        "custom": "CUSTOM_API_KEY (or provider-specific)",
+        "openai": "Set OPENAI_API_KEY or provide the key in Pipeline Configuration (SCR-013).",
+        "anthropic": "Set ANTHROPIC_API_KEY or provide the key in Pipeline Configuration (SCR-013).",
+        "xai": "Set XAI_API_KEY or GROK_API, or provide the key in Pipeline Configuration (SCR-013).",
+        "azure": "Set AZURE_OPENAI_API_KEY or provide the key in Pipeline Configuration (SCR-013).",
+        "custom": "Provide API key in Pipeline Configuration (SCR-013).",
     }
-    return _ENV_VARS.get(provider, f"{provider.upper()}_API_KEY")
+    return _ENV_VARS.get(provider, "Provide API key in Pipeline Configuration (SCR-013).")

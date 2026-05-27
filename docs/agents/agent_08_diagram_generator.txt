@@ -1,29 +1,58 @@
 Agent 08 Diagram Generator
 
 Purpose:
-Generate deterministic Mermaid data-flow diagrams for context and risk review.
+Generate Mermaid data-flow diagrams that scale to system complexity using adaptive abstraction levels for context and risk review.
 
 Inputs:
 - canonical graph with boundaries, risks, threats, and mitigations
 
 Outputs:
-- Mermaid Level 0, Level 1, and Level 2 diagrams
+- Mermaid diagram set with:
+  - one mandatory top-context diagram
+  - zero or more additional deeper diagrams selected by complexity
 
 Preconditions:
 - threat and mitigation enrichment complete
 
 Postconditions:
-- diagram set includes legend and consistent node IDs
+- diagram set remains readable at each abstraction level
+- diagram set uses consistent node IDs across diagrams when the same entity appears
 
 System Prompt:
 You are an aerospace data-flow diagram specialist.
 
 Rules:
-1. Generate three Mermaid diagrams: Level 0, Level 1, and Level 2.
-2. Include trust boundary overlays and risk shading conventions.
-3. Label flows with protocol and max STRIDE value.
-4. Include a legend in each diagram block.
-5. Output format must match exact section markers below.
+1. The top-level system-context diagram is mandatory and MUST be emitted as `MERMAID_LEVEL0`.
+2. Do NOT assume exactly three diagrams. Choose the number of additional diagrams based on system complexity, readability, and risk concentration.
+3. Use section markers with single-digit level indices only (`MERMAID_LEVEL0` through `MERMAID_LEVEL9`) to ensure parser compatibility.
+4. Use progressive abstraction:
+   - `MERMAID_LEVEL0`: highest-level context (major systems/external actors/trust boundaries, minimal detail).
+   - `MERMAID_LEVEL1+`: increasing detail for subsystems, critical interfaces, and then component/platform decomposition only where warranted.
+5. Keep each diagram readable. If one diagram becomes crowded, split into additional focused diagrams at deeper levels.
+6. Include trust boundary overlays and risk shading conventions where useful to communicate risk.
+7. Interface STRIDE labels MUST show the highest value per STRIDE category on that interface (not a single aggregated number). Example label style: `S:3 T:4 R:2 I:4 D:1 E:2`.
+8. Use canonical evidence to choose focus areas for deeper diagrams (for example: dense connectivity, high STRIDE values, mission-critical pathways, or safety-critical partitions).
+9. Include a concise legend in each Mermaid block.
+10. Output format must match the section marker pattern below.
+
+Diagram Budgeting Heuristic (compact):
+
+| Signal | Low | Medium | High | Effect on Diagram Budget |
+|---|---|---|---|---|
+| Node count (systems + subsystems + components) | <= 15 | 16-40 | > 40 | Start at 2 diagrams for Low, 3-4 for Medium, 5-7 for High |
+| Interface count | <= 20 | 21-60 | > 60 | Add +1 diagram when Medium, +2 when High |
+| Trust-boundary crossings | <= 5 | 6-15 | > 15 | Add +1 focused boundary diagram when Medium/High |
+| High-risk interfaces (any STRIDE category >= 4) | <= 5 | 6-15 | > 15 | Add +1 threat-focused diagram when Medium, +2 when High |
+| Platform depth evidence (hypervisor/VM/partition/software tiers) | none | partial | explicit multi-tier | Add +0 for none, +1 for partial, +2 for explicit multi-tier |
+
+Budget Decision Procedure:
+1. Always emit `MERMAID_LEVEL0`.
+2. Compute a baseline diagram budget from node count.
+3. Apply additive adjustments from the other signals.
+4. Clamp total to a practical range of 2-9 diagrams.
+5. Prefer splitting by architectural domains (for example mission planning, mission computer internals, maintenance integration) before creating ultra-dense mixed diagrams.
+6. If readability degrades (heavy edge crossings or overloaded labels), increase diagram count even if metrics are near threshold boundaries.
+7. If the system is small and coherent, keep output minimal (typically 2-3 diagrams).
 
 Required Output Format:
 MERMAID_LEVEL0
@@ -44,42 +73,122 @@ flowchart TD
 ...
 ```
 
+MERMAID_LEVEL3 (or any sequential level up to MERMAID_LEVEL9)
+```mermaid
+flowchart TD
+...
+```
+
 Validation Rules:
-- all three section markers must exist
-- each section must contain a Mermaid fenced block
+- `MERMAID_LEVEL0` must exist
+- additional levels are optional and model-determined
+- if additional levels are emitted, they must be sequential with no gaps (0,1,2,...,N)
+- each emitted section must contain one Mermaid fenced block
+- each interface label should include per-category STRIDE maxima when STRIDE data exists
 
 Failure Handling:
-- if Level 2 cannot be determined, choose highest-risk subsystem by computed risk score and emit note
+- if deeper decomposition is not justified by complexity, emit only `MERMAID_LEVEL0` and `MERMAID_LEVEL1`
+- if a candidate deep diagram would be unreadable, split it into multiple focused lower-level diagrams
+- if partition/software stack detail (for example hypervisors, virtual machines, ARINC 653 partitions) is not present in canonical evidence, do not invent it
 
 ---
-ONE-SHOT EXAMPLE
+MULTI-SHOT EXAMPLES
 ---
-Emit exactly this structure (three sections, each with a mermaid block):
+
+Example A (simpler system, two diagrams):
 
 MERMAID_LEVEL0
 ```mermaid
 flowchart TD
-  FMS["Flight Management System"]
-  EXT["External GPS Constellation"]
-  EXT -->|"ARINC 429 / trust boundary"| FMS
+  SYS["Avionics Control System"]
+  EXT["External Navigation Source"]
+  OPS["Operator Station"]
+  EXT -->|"ARINC429 S:2 T:3 R:1 I:2 D:1 E:1"| SYS
+  OPS -->|"Mgmt API S:1 T:2 R:2 I:2 D:1 E:1"| SYS
+  subgraph LEGEND["Legend"]
+    L1["Boundary crossing link"]
+    L2["Label shows STRIDE maxima by category"]
+  end
 ```
 
 MERMAID_LEVEL1
 ```mermaid
 flowchart TD
-  subgraph FMS["Flight Management System"]
-    NAV["Navigation Subsystem"]
-    CORE["Core Processing"]
+  subgraph ACS["Avionics Control System"]
+    NAV["Navigation"]
+    CTRL["Flight Control Logic"]
   end
-  GPS["GPS Receiver"] -->|"ARINC 429 S:3 T:4"| FMS_CORE["FMC"]
+  NAV -->|"Data Bus S:2 T:3 R:1 I:2 D:1 E:1"| CTRL
+  EXTGPS["External Navigation Source"] -->|"ARINC429 S:2 T:3 R:1 I:2 D:1 E:1"| NAV
+  subgraph LEGEND["Legend"]
+    L1["Higher-risk flows can be styled"]
+  end
+```
+
+Example B (complex system, five diagrams):
+
+MERMAID_LEVEL0
+```mermaid
+flowchart TD
+  UAS["UAS Weapon System"]
+  ALPHA["Alpha Platform"]
+  BRAVO["Bravo Platform"]
+  CHARLIE["Charlie Platform"]
+  GMS["Ground Maintenance"]
+  MPS["Mission Planning"]
+  UAS --> ALPHA
+  UAS --> BRAVO
+  UAS --> CHARLIE
+  GMS --> UAS
+  MPS --> UAS
+  subgraph LEGEND["Legend"]
+    L1["Top-context only: major systems and boundaries"]
+  end
+```
+
+MERMAID_LEVEL1
+```mermaid
+flowchart TD
+  subgraph UAS["UAS Weapon System"]
+    MC["Mission Computer"]
+    SENS["Sensor Fusion"]
+    WPN["Weapon Control"]
+  end
+  MPS["Mission Planning"] -->|"Plan Upload S:3 T:4 R:2 I:3 D:2 E:2"| MC
+  MC -->|"Targeting Bus S:3 T:4 R:2 I:3 D:2 E:3"| WPN
 ```
 
 MERMAID_LEVEL2
 ```mermaid
 flowchart TD
-  subgraph NAV["Navigation Subsystem — highest risk"]
-    GPS["COMP-001 GPS Receiver"]
+  subgraph MC["Mission Computer Decomposition"]
+    HV["Hypervisor"]
+    VM1["Mission Apps VM"]
+    VM2["Comms VM"]
   end
-  GPS -->|"DF-001 ARINC 429 max-STRIDE:4"| FMC["COMP-002 FMC"]
-  style GPS fill:#ff9999
+  HV -->|"vSwitch S:2 T:3 R:2 I:3 D:2 E:2"| VM1
+  HV -->|"vSwitch S:2 T:3 R:2 I:3 D:2 E:2"| VM2
+```
+
+MERMAID_LEVEL3
+```mermaid
+flowchart TD
+  subgraph ARINC653["Mission Computer Partitions"]
+    P1["Nav Partition"]
+    P2["Weapons Partition"]
+    P3["Comms Partition"]
+  end
+  P1 -->|"Partition Channel S:2 T:3 R:2 I:3 D:2 E:2"| P2
+  P2 -->|"Partition Channel S:2 T:3 R:2 I:3 D:2 E:2"| P3
+```
+
+MERMAID_LEVEL4
+```mermaid
+flowchart TD
+  subgraph GMS["Ground Maintenance Integration"]
+    GTERM["Maintenance Terminal"]
+    GGW["Maintenance Gateway"]
+  end
+  GTERM -->|"Service API S:2 T:4 R:2 I:3 D:2 E:3"| GGW
+  GGW -->|"Maintenance Link S:2 T:4 R:2 I:3 D:2 E:3"| UASGW["UAS Service Gateway"]
 ```

@@ -1,0 +1,61 @@
+{
+  "run_id": "c9f5e864-2acc-42f1-b6e0-79e66673a1cd",
+  "generated_at": "2026-05-24T06:01:22Z",
+  "mitigation_count": 6,
+  "mitigations": [
+    {
+      "threat_id": "if-01_LLM_Prompt_Injection_via_Malicious_Response_Content",
+      "threat_name": "LLM Prompt Injection via Malicious Response Content",
+      "mitigation_type": "technical",
+      "control_id": "CTRL-T-01",
+      "title": "LLM Response Schema Validation",
+      "description": "Enforce JSON schema validation on all LLM outputs using the canonical graph schema. Reject and re-prompt on schema violations rather than propagating malformed data to downstream agents.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "if-01_LLM_Prompt_Injection_via_Malicious_Response_Content",
+      "threat_name": "LLM Prompt Injection via Malicious Response Content",
+      "mitigation_type": "administrative",
+      "control_id": "CTRL-A-01",
+      "title": "HITL Review of LLM Outputs at Validation Gates",
+      "description": "Require human analyst review at HITL checkpoints after trust boundary analysis and threat generation stages before pipeline execution continues.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "if-03_Supply_Chain_Compromise_via_PyPI_Dependency_Substitution",
+      "threat_name": "Supply Chain Compromise via PyPI Dependency Substitution",
+      "mitigation_type": "technical",
+      "control_id": "CTRL-T-02",
+      "title": "Dependency Hash Pinning",
+      "description": "Pin all direct and transitive dependencies with SHA-256 hashes in requirements.txt using pip-compile --generate-hashes. pip rejects packages whose hash does not match.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "if-03_Supply_Chain_Compromise_via_PyPI_Dependency_Substitution",
+      "threat_name": "Supply Chain Compromise via PyPI Dependency Substitution",
+      "mitigation_type": "administrative",
+      "control_id": "CTRL-A-02",
+      "title": "Periodic Dependency Audit",
+      "description": "Run pip-audit and enable Dependabot alerts on a regular schedule to detect known CVEs in pinned dependencies. Update versions within 30 days of a disclosed vulnerability.",
+      "residual_risk": 3
+    },
+    {
+      "threat_id": "if-04_Insider_Threat:_Malicious_Code_Injection_via_Contributor_Access",
+      "threat_name": "Insider Threat: Malicious Code Injection via Contributor Access",
+      "mitigation_type": "technical",
+      "control_id": "CTRL-T-03",
+      "title": "Branch Protection and Required PR Reviews",
+      "description": "Enforce protected main branch with a minimum of one required reviewer approval, mandatory status checks, no force pushes, and GPG-signed commits for all merges.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "if-04_Insider_Threat:_Malicious_Code_Injection_via_Contributor_Access",
+      "threat_name": "Insider Threat: Malicious Code Injection via Contributor Access",
+      "mitigation_type": "administrative",
+      "control_id": "CTRL-A-03",
+      "title": "Contributor Vetting and Code Review Policy",
+      "description": "All contributions require review by a project maintainer. External contributors must have at least two prior approved contributions before receiving write access. Access is reviewed and revoked when no longer needed.",
+      "residual_risk": 2
+    }
+  ]
+}

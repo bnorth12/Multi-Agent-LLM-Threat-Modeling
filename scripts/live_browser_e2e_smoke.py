@@ -74,11 +74,14 @@ class _TeeLogger(io.TextIOBase):
 
 
 _EXPECTED_MANDATORY_GATE_IDS = [
+    "gate_1_normalization_review",
     "gate_1_scope_confirmation",
     "gate_2_boundary_approval",
     "gate_3_stride_calibration",
     "gate_4_threat_plausibility",
     "gate_5_mitigation_adequacy",
+    "gate_8_diagram_review",
+    "gate_9_stix_packaging_review",
 ]
 
 # ---------------------------------------------------------------------------
@@ -313,11 +316,11 @@ def _build_config() -> SmokeConfig:
         app_path=repo_root / "src" / "threat_modeler" / "ui" / "app.py",
         icd_path=_env_path(
             "THREAT_MODELER_SMOKE_ICD_PATH",
-            repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_uas_weapon_system_v1.csv",
+            repo_root / "Tests" / "fixtures" / "inputs" / "systems" / "uas_weapon_system" / "icd_uas_weapon_system_v1.csv",
         ),
         description_path=_env_path(
             "THREAT_MODELER_SMOKE_DESCRIPTION_PATH",
-            repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_uas_weapon_system.md",
+            repo_root / "Tests" / "fixtures" / "inputs" / "systems" / "uas_weapon_system" / "description_uas_weapon_system.md",
         ),
         system_name=os.environ.get("THREAT_MODELER_SMOKE_SYSTEM_NAME", "UAS Weapon System FQT").strip() or "UAS Weapon System FQT",
         port=_env_int("THREAT_MODELER_BROWSER_TEST_PORT", 8511),
@@ -1194,11 +1197,14 @@ def _approve_and_resume_current_gate(page, gate_counter: dict[str, int], rng: ra
         gate_id = paused_gate_match.group(1)
         gate_label_map = {
             "gate_0_input_integrity": "Gate 0 · Input Integrity",
+            "gate_1_normalization_review": "Gate 1 · Normalization Review",
             "gate_1_scope_confirmation": "Gate 1 · Scope Confirmation",
             "gate_2_boundary_approval": "Gate 2 · Trust Boundary Approval",
             "gate_3_stride_calibration": "Gate 3 · STRIDE Calibration",
             "gate_4_threat_plausibility": "Gate 4 · Threat Plausibility",
             "gate_5_mitigation_adequacy": "Gate 5 · Mitigation Adequacy",
+            "gate_8_diagram_review": "Gate 8 · Diagram Review",
+            "gate_9_stix_packaging_review": "Gate 9 · STIX Packaging Review",
             "gate_6_merge_conflict_resolution": "Gate 6 · Merge Conflict Resolution",
             "gate_7_export_consistency": "Gate 7 · Export Consistency",
         }
@@ -1445,11 +1451,16 @@ def _wait_until_complete_with_gate_progression(page, cfg: SmokeConfig, screensho
             })
             raise SmokeFailure(f"Pipeline transitioned to FAILED state.\n{error_snip}")
 
+        # Detect explicit HITL pause text in the UI before watchdog checks.
+        pause_match = re.search(r"Pipeline\s+is\s+paused\s+at\s*:?\s*(gate_[a-z0-9_]+)", body, flags=re.IGNORECASE)
+        paused_gate_name = pause_match.group(1) if pause_match else ""
+        is_hitl_paused = bool(paused_gate_name) or last_run_state == "PAUSED"
+
         # Primary stall detector: if the UI heartbeat age exceeds the configured limit,
         # fail fast with actionable diagnostics instead of waiting for long idle timeouts.
         heartbeat_watchdog_triggered = False
         heartbeat_reason = ""
-        if last_run_state in {"RUNNING", "QUEUED"} and pause_started_at is None:
+        if last_run_state in {"RUNNING", "QUEUED"} and pause_started_at is None and not is_hitl_paused:
             idle_for = now - last_activity_time
             if last_heartbeat_age is None and idle_for > heartbeat_stale_limit:
                 heartbeat_watchdog_triggered = True
@@ -1483,20 +1494,25 @@ def _wait_until_complete_with_gate_progression(page, cfg: SmokeConfig, screensho
                 f"{last_run_state or 'unknown'} at stage {last_stage or 'unknown'}."
             )
 
-        pause_match = re.search(r"Pipeline is paused at (gate_[a-z0-9_]+)", body)
         if pause_match:
-            gate_name = pause_match.group(1)
+            gate_name = paused_gate_name
             if gate_name not in observed_mandatory_gate_ids:
                 observed_mandatory_gate_ids.append(gate_name)
             if gate_name not in observed_gate_list:
                 observed_gate_list.append(gate_name)
+
+            # Pause active-time accounting while a HITL gate is waiting for operator action.
+            if pause_started_at is None:
+                pause_started_at = time.time()
+
             if cfg.keep_open_until_input:
-                if pause_started_at is None:
-                    pause_started_at = time.time()
-                    print(f"[SMOKE] Pipeline paused at {gate_name} — manual mode enabled; timer paused until resume.", flush=True)
+                if summary.get("paused_gates") is None:
+                    summary["paused_gates"] = []
+                if gate_name not in summary.get("paused_gates", []):
                     approved = summary.setdefault("paused_gates", [])
                     if isinstance(approved, list):
                         approved.append(gate_name)
+                    print(f"[SMOKE] Pipeline paused at {gate_name} — manual mode enabled; timer paused until resume.", flush=True)
                 else:
                     print(f"[SMOKE] Pipeline still paused at {gate_name} — timer remains paused.", flush=True)
                 last_activity_time = time.time()
@@ -1582,17 +1598,22 @@ def run_live_browser_smoke() -> int:
         "stale_findings": stale_findings,
     }
 
+    bundle_dir = cfg.repo_root / "Tests" / "fixtures" / "inputs" / "systems" / "uas_weapon_system" / "full_system_bundle"
     upload_bundle = [
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_uas_weapon_system_v1.csv",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_uas_weapon_system.md",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_alpha_v1.csv",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_alpha_comprehensive.md",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_bravo_v2.csv",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_bravo_comprehensive.md",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_charlie_v1.xlsx",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_charlie_comprehensive.md",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "icd" / "icd_ground_maintenance_v1.csv",
-        cfg.repo_root / "Tests" / "fixtures" / "inputs" / "descriptions" / "description_ground_maintenance_comprehensive.md",
+        bundle_dir / "icd_uas_weapon_system_v1.csv",
+        bundle_dir / "description_uas_weapon_system.md",
+        bundle_dir / "icd_alpha_v1.csv",
+        bundle_dir / "description_alpha_comprehensive.md",
+        bundle_dir / "icd_alpha_mission_computer_v1.csv",
+        bundle_dir / "description_alpha_mission_computer.md",
+        bundle_dir / "icd_bravo_v2.csv",
+        bundle_dir / "description_bravo_comprehensive.md",
+        bundle_dir / "icd_charlie_v1.xlsx",
+        bundle_dir / "description_charlie_comprehensive.md",
+        bundle_dir / "icd_charlie_mission_planning_computer_v1.csv",
+        bundle_dir / "description_charlie_mission_planning_computer.md",
+        bundle_dir / "icd_ground_maintenance_v1.csv",
+        bundle_dir / "description_ground_maintenance_comprehensive.md",
     ]
 
     try:
@@ -1896,6 +1917,22 @@ def run_live_browser_smoke() -> int:
 
 
 def main() -> int:
+    ui_target = str(os.environ.get("THREAT_MODELER_SMOKE_UI_TARGET", "react")).strip().lower()
+    if ui_target in {"react", "hmi", "mui"}:
+        repo_root = Path(__file__).resolve().parents[1]
+        react_runner = repo_root / "scripts" / "live_browser_e2e_smoke_react.py"
+        if not react_runner.exists():
+            print(f"LIVE_BROWSER_SMOKE_FAILED: React smoke runner not found at {react_runner}")
+            return 2
+
+        env = os.environ.copy()
+        existing_pythonpath = env.get("PYTHONPATH", "")
+        src_path = str(repo_root / "src")
+        env["PYTHONPATH"] = src_path if not existing_pythonpath else f"{src_path}{os.pathsep}{existing_pythonpath}"
+
+        result = subprocess.run([sys.executable, str(react_runner)], env=env, cwd=str(repo_root), check=False)
+        return int(result.returncode)
+
     try:
         return run_live_browser_smoke()
     except SmokeFailure as exc:

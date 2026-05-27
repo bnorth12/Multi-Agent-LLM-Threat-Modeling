@@ -1,0 +1,16 @@
+entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
+subsystem,SS-NAV-01,Navigation Subsystem,Provides position attitude and timing data for mission execution,Alpha UAV System,,,,,,,,
+subsystem,SS-CMD-01,Command and Control Subsystem,Receives and validates operator and mission directives,Alpha UAV System,,,,,,,,
+subsystem,SS-MSN-01,Mission Management Subsystem,Plans and executes strike SEAD DEAD and ISR mission tasks onboard Alpha,Alpha UAV System,,,,,,,,
+component,C-GPS-01,GPS Receiver,Acquires GNSS signals and outputs position fixes and timing,SS-NAV-01,embedded,nav.gps_driver,,,,,,
+component,C-IMU-01,Inertial Measurement Unit,Measures angular rate and acceleration for inertial navigation,SS-NAV-01,embedded,nav.imu_driver,,,,,,
+component,C-EGI-01,Embedded GPS INS Unit,Performs EGI fusion for robust navigation under GNSS degradation,SS-NAV-01,embedded,nav.egi_fusion|nav.egi_monitor,,,,,,
+component,C-CMD-01,Command Processor,Parses and validates operator uplink and relayed mission updates,SS-CMD-01,hosted,cmd.processor|cmd.validator,,,,,,
+component,C-MSN-01,Mission Computer,Manages mission sensors communication radios data links and EGI-informed mission execution,SS-MSN-01,embedded,mission.manager|mission.sensor_planner|mission.route_exec,,,,,,
+data_flow,DF-001,,GPS Position Flow,,,,C-GPS-01,C-EGI-01,UDP,position_fix|timestamp,false,
+data_flow,DF-002,,IMU Telemetry Flow,,,,C-IMU-01,C-EGI-01,SPI,angular_rate|acceleration,false,
+data_flow,DF-003,,EGI Navigation Solution,,,,C-EGI-01,C-MSN-01,Internal Bus,position_solution|attitude_solution|nav_quality,false,
+data_flow,DF-004,,Operator Command Uplink,,,,GCS,C-CMD-01,TLS,command_message|auth_token,true,External Radio Link
+data_flow,DF-005,,Mission Package Receipt,,,,BRAVO_RELAY,C-CMD-01,HTTPS TLS 1.3,mission_id|waypoints|flight_plan|targeting_data|comm_plan,true,Ops Network Boundary
+data_flow,DF-006,,Validated Mission Dispatch,,,,C-CMD-01,C-MSN-01,Internal Bus,validated_mission_package|execution_constraints,false,
+data_flow,DF-007,,Mission Status and Sensor Plan,,,,C-MSN-01,BRAVO_RELAY,Encrypted RF (AES-256-GCM),mission_status|sensor_coverage_plan|isr_collection_summary,true,Satellite Link Boundary

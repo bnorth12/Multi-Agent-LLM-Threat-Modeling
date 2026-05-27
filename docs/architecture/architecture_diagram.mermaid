@@ -1,30 +1,102 @@
-
 ```mermaid
-flowchart TD
-    A["User Input
-    • Text descriptions
-    • Information Flow Tables
-    • Trust boundary annotations"] --> B
+flowchart TB
+    U["Analyst, Reviewer, and Operator Roles"] --> UI
+    EXT["External Sources\nNarratives + ICD Tables"] --> ING
 
-    B["1. Input Normalizer & Graph Builder"] --> C
-    C["2. Hierarchical Context Builder"] --> D
-    D["3. Trust Boundary Validator"] --> E
-    E["4. STRIDE-per-Element Scorer"] --> F
-    F["5. Concrete Threat Generator"] --> G
-    F --> H
-    G["6. STIX 2.1 Packager"] --> K[STIX 2.1 Bundle]
-    H["7. Mitigation Generator"] --> J
-    E --> I
-    F --> I
-    H --> I
-    I["8. Diagram Generator\nMermaid Level-0/1/2"] --> L[Diagrams]
-    J["9. Human Report Writer"] --> M[Final Report]
+    subgraph UI["Interaction Segment"]
+        UI1["Input Entry and Source Upload"]
+        UI2["HITL Gate Review and Decisions"]
+        UI3["Artifact Review and Export Surfaces"]
+        UI4["Prompt Editor and Prompt History"]
+        UI5["Runtime Diagnostics, Timeline, and Liveness Views"]
+    end
 
-    RAG[(Offline Vector DBs\nATT&CK • CAPEC • D3FEND • NIST 800-53 • DO-326A)] --> D & E & F & H
+    subgraph ORCH["Runtime Orchestration and Governance Segment"]
+        RM["Run Manager\nState Authority"]
+        VAL["Schema Validation\nStage Gate Enforcement"]
+        HITL["Gate Decision Controller\nApprove / Reject / Override"]
+    end
 
-    Supervisor["LangGraph Supervisor\nHuman-in-the-loop gates"] -.-> B & C & D & E & F & H & I & J
+    subgraph PIPE["Agent Processing Segment"]
+        A1["Agent 01\nNormalize Inputs"]
+        A2["Agent 02\nBuild Hierarchical Context"]
+        A3["Agent 03\nValidate Trust Boundaries"]
+        A4["Agent 04\nScore STRIDE"]
+        A5["Agent 05\nGenerate Threats"]
+        A6["Agent 06\nPackage STIX"]
+        A7["Agent 07\nGenerate Mitigations"]
+        A8["Agent 08\nGenerate Mermaid Diagrams"]
+        A9["Agent 09\nWrite Human Report"]
+    end
 
-    classDef agent fill:#1f78b4,color:white
-    classDef output fill:#33a02c,color:white
-    class B,C,D,E,F,G,H,I,J agent
-    class K,L,M output
+    subgraph DATA["Canonical Graph Authority Lifecycle"]
+        CG["Canonical Graph Authority\nSchema-Validated System and Threat State"]
+    end
+
+    subgraph PERS["Persistence Segment"]
+        P1["Run Control State\nand Checkpoints"]
+        P2["Prompt Store\nand Version History"]
+        P3["Snapshot Packages\nand Evidence Records"]
+    end
+
+    subgraph OUT["Artifact and Evidence Segment"]
+        O1["Canonical JSON Export"]
+        O2["STIX 2.1 Bundle"]
+        O3["Mermaid Diagrams"]
+        O4["Final Markdown Report"]
+        O5["Token, Version, and Release Evidence"]
+    end
+
+    UI1 --> RM
+    UI2 --> HITL
+    UI4 --> P2
+    UI5 --> RM
+    ING --> A1
+
+    RM --> A1 --> A2 --> A3 --> A4 --> A5 --> A6
+    A5 --> A7
+    A3 --> A8
+    A4 --> A8
+    HITL --> P1
+    A7 --> A8
+    RM --> P1
+    RM --> P3
+    A7 --> A9
+
+    A1 --> CG
+    A2 --> CG
+    A3 --> CG
+    P3 --> O5
+    A6 --> CG
+    A7 --> CG
+    A8 --> CG
+    A9 --> CG
+
+    CG --> VAL
+    VAL --> HITL
+    HITL --> RM
+    RM -.resume/checkpoint.-> A1
+
+    classDef pers fill:#7c3aed,color:#ffffff,stroke:#4c1d95,stroke-width:1px
+    CG --> O1
+    class UI,ORCH,PIPE seg
+    class RM,VAL,HITL,A1,A2,A3,A4,A5,A6,A7,A8,A9,UI1,UI2,UI3,UI4,UI5 proc
+    A9 --> O4
+    class P1,P2,P3 pers
+    SNAP --> O5
+    RM --> SNAP
+
+    UI3 --> O1
+    UI3 --> O2
+    UI3 --> O3
+    UI3 --> O4
+    UI3 --> O5
+
+    classDef seg fill:#0f766e,color:#ffffff,stroke:#134e4a,stroke-width:1px
+    classDef proc fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:1px
+    classDef data fill:#b45309,color:#ffffff,stroke:#78350f,stroke-width:1px
+    classDef out fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:1px
+    class UI,ORCH,PIPE seg
+    class RM,VAL,HITL,SNAP,A1,A2,A3,A4,A5,A6,A7,A8,A9,UI1,UI2,UI3,UI4,UI5 proc
+    class CG data
+    class O1,O2,O3,O4,O5 out

@@ -1,0 +1,8 @@
+classification_id,interface_id,boundary_scope,external_entity,control_loop_id,contained_in_architecture,trust_boundary_required,status,closure_action,notes
+BND-001,IF-041,internal,,CL-001,yes,no,closed,none,Propulsion and stability exchange is internal.
+BND-002,IF-043,internal,,CL-002,yes,no,closed,none,Guidance to flight-guidance vector interface is internal.
+BND-003,IF-045,cross_boundary,External RF/CNS infrastructure,CL-003,partial,yes,closed,none,Communication loop crosses external radio infrastructure.
+BND-004,IF-051,external,Offboard Maintenance Management System,CL-005,yes,yes,closed,none,Health-management uplink explicitly modeled as external interface.
+BND-005,IF-052,external,Offboard Maintenance Management System,CL-005,yes,yes,closed,none,Directive downlink modeled and linked to onboard maintenance manager.
+BND-006,IF-053,external,Offboard Maintenance Management System,CL-005,yes,yes,closed,none,Dispatch readiness exchange closes mission-maintenance boundary loop.
+BND-007,IF-047,internal,,CL-004,yes,no,in_progress,Expand hazard-linked checkpoints for turnaround abnormal conditions,Commercial readiness loop still needs additional hazard-evidence closure.

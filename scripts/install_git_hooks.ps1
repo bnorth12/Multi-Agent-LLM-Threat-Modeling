@@ -28,4 +28,11 @@ Get-ChildItem (Join-Path $repoRoot ".githooks") -File | ForEach-Object {
 
 Write-Host ""
 Write-Host "Hook install complete."
-Write-Host "Pre-push will now run unit tests + sprint traceability checks before push."
+Write-Host "Pre-commit and pre-merge-commit will now run archive hygiene checks."
+Write-Host "Pre-push will now run unit tests, sprint traceability checks, archive hygiene,"
+Write-Host "and cross-domain exception policy validation before push."
+Write-Host ""
+Write-Host "Env toggles:"
+Write-Host " - TRACEABILITY_ENFORCE=1 makes traceability check blocking"
+Write-Host " - ARCHIVE_HYGIENE_ENFORCE=0 makes archive hygiene check warning-only on pre-push"
+Write-Host " - EXCEPTION_POLICY_ENFORCE=0 makes exception policy check warning-only"

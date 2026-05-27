@@ -73,6 +73,20 @@ class TestMandatoryGateSet2:
         assert exc_info.value.gate_record.gate_id == "gate_5_mitigation_adequacy"
         assert exc_info.value.gate_record.status == GateStatus.OPEN
 
+    def test_gate_8_always_pauses(self):
+        svc = _make_service()
+        with pytest.raises(GatePausedError) as exc_info:
+            svc.open_diagram_review_gate(artifact_snapshot={"diagram_count": 3})
+        assert exc_info.value.gate_record.gate_id == "gate_8_diagram_review"
+        assert exc_info.value.gate_record.status == GateStatus.OPEN
+
+    def test_gate_9_always_pauses(self):
+        svc = _make_service()
+        with pytest.raises(GatePausedError) as exc_info:
+            svc.open_stix_packaging_review_gate(artifact_snapshot={"bundle_objects": 14})
+        assert exc_info.value.gate_record.gate_id == "gate_9_stix_packaging_review"
+        assert exc_info.value.gate_record.status == GateStatus.OPEN
+
 
 class TestConditionalGateSet2:
     def test_gate_6_bypassed_on_clean_merge(self):
@@ -224,7 +238,9 @@ class TestGateActionsAndAudit:
         gate_ids = [
             "gate_3_stride_calibration",
             "gate_4_threat_plausibility",
+            "gate_9_stix_packaging_review",
             "gate_5_mitigation_adequacy",
+            "gate_8_diagram_review",
             "gate_6_merge_conflict_resolution",
             "gate_7_export_consistency",
         ]
@@ -238,7 +254,7 @@ class TestGateActionsAndAudit:
                 rationale=f"Approved {gate_id}",
             )
 
-        assert len(engine.audit_log.entries) == 5
+        assert len(engine.audit_log.entries) == len(gate_ids)
         for entry in engine.audit_log.entries:
             assert entry.actor == ANALYST["actor"]
             assert entry.rationale

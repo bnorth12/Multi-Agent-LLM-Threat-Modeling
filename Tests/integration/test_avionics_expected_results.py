@@ -97,16 +97,18 @@ class TestAvionicsHitlGateOutcomes:
         with pytest.raises(GatePausedError) as first_pause:
             orchestrator.run_planned_stages(state)
 
-        # Gate 0 should have been evaluated and bypassed for non-empty/provenance-complete input.
-        assert orchestrator.hitl_service.gate_record("gate_0_input_integrity").status == GateStatus.BYPASSED
-        assert first_pause.value.gate_record.gate_id == "gate_1_scope_confirmation"
+        assert first_pause.value.gate_record.gate_id == "gate_0_input_integrity"
 
         gate_sequence = [
+            "gate_0_input_integrity",
+            "gate_1_normalization_review",
             "gate_1_scope_confirmation",
             "gate_2_boundary_approval",
             "gate_3_stride_calibration",
             "gate_4_threat_plausibility",
             "gate_5_mitigation_adequacy",
+            "gate_8_diagram_review",
+            "gate_9_stix_packaging_review",
         ]
 
         paused_gate = first_pause.value.gate_record.gate_id

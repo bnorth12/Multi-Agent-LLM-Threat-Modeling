@@ -1,0 +1,33 @@
+{
+  "type": "bundle",
+  "id": "bundle--a1b2c3d4-5678-4abc-9def-0123456789ab",
+  "spec_version": "2.1",
+  "objects": [
+    {
+      "type": "attack-pattern",
+      "spec_version": "2.1",
+      "id": "attack-pattern--e5f6a7b8-9012-4cde-8fgh-3456789abcde",
+      "name": "Spoof Reporting Message",
+      "external_references": [
+        {
+          "source_name": "mitre-attack",
+          "external_id": "T0856"
+        }
+      ]
+    },
+    {
+      "type": "relationship",
+      "spec_version": "2.1",
+      "id": "relationship--f7g8h9i0-1234-4jkl-5mno-678901234567",
+      "relationship_type": "uses",
+      "source_ref": "threat-actor--11223344-5566-4777-8888-99aabbccddee",
+      "target_ref": "attack-pattern--e5f6a7b8-9012-4cde-8fgh-3456789abcde"
+    },
+    {
+      "type": "threat-actor",
+      "spec_version": "2.1",
+      "id": "threat-actor--11223344-5566-4777-8888-99aabbccddee",
+      "name": "RF-capable adversary"
+    }
+  ]
+}

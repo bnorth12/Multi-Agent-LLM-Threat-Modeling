@@ -1,0 +1,9 @@
+entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
+subsystem,SS-ALPHA-MSN-01,Alpha Mission Management Subsystem,Hosts mission computer logic for mission planning execution and monitoring on Alpha,Alpha UAV System,,,,,,,,
+component,C-ALPHA-MSN-01,Alpha Mission Computer,Manages mission sensors communication radios data links and EGI-aided mission execution,SS-ALPHA-MSN-01,embedded,mission.manager|mission.sensor_planner|mission.route_exec|mission.weapon_solver,,,,,,
+component,C-ALPHA-NAV-01,EGI Navigation Manager,Provides EGI-fused navigation state quality and contingency guidance,SS-ALPHA-MSN-01,embedded,nav.egi_fusion|nav.quality_manager,,,,,,
+component,C-ALPHA-DL-01,Data Link Scheduler,Schedules mission communications frequencies windows and relay timing,SS-ALPHA-MSN-01,embedded,comms.schedule|datalink.policy,,,,,,
+data_flow,DF-AMC-001,,EGI Navigation Feed,,,,C-ALPHA-NAV-01,C-ALPHA-MSN-01,Internal Bus,position_solution|attitude_solution|nav_quality,false,
+data_flow,DF-AMC-002,,Mission Package Ingest,,,,BRAVO_RELAY,C-ALPHA-MSN-01,Encrypted RF (AES-256-GCM),mission_id|waypoints|flight_plan|route_plan|targeting_data|weapon_profile|comm_plan|sensor_plan,true,Satellite Link Boundary
+data_flow,DF-AMC-003,,Comms and Data Link Plan,,,,C-ALPHA-MSN-01,C-ALPHA-DL-01,Internal Bus,frequency_plan|time_slots|priority_rules,false,
+data_flow,DF-AMC-004,,Mission Execution Status,,,,C-ALPHA-MSN-01,BRAVO_RELAY,Encrypted RF (AES-256-GCM),mission_status|route_progress|weapon_release_status|isr_collection_status|peace_time_isr_flags,true,Satellite Link Boundary

@@ -32,15 +32,6 @@ def _build_live_adapter(settings: RuntimeSettings):
         if model_name.strip().lower() in xai_aliases:
             model_name = "grok-4"
 
-    env_map = {
-        "openai": ("OPENAI_API_KEY",),
-        "anthropic": ("ANTHROPIC_API_KEY",),
-        "xai": ("GROK_API", "XAI_API_KEY"),
-        "azure": ("AZURE_OPENAI_API_KEY",),
-        "custom": ("CUSTOM_API_KEY", f"{provider.upper()}_API_KEY"),
-        "ollama": ("OLLAMA_API_KEY",),
-    }
-
     # Base URLs for providers that use hosted default endpoints
     base_url_map = {
         "openai": "https://api.openai.com/v1",
@@ -49,13 +40,12 @@ def _build_live_adapter(settings: RuntimeSettings):
     }
 
     base_url = model.connection_url.strip() or base_url_map.get(provider, "")
-    api_key_candidates = env_map.get(provider, (f"{provider.upper()}_API_KEY",))
 
     return OpenAiCompatibleAdapter(
         model=model_name,
+        api_key=model.api_key,
         endpoint_mode=model.endpoint_mode,
         base_url=base_url,
-        api_key_env_candidates=api_key_candidates,
         timeout_seconds=model.request_timeout_seconds,
         max_attempts=model.request_max_attempts,
     )

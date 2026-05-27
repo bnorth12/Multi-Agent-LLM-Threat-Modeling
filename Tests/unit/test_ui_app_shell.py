@@ -194,7 +194,7 @@ class TestConfigPageDefaults:
         assert "_api_key_env_var" in text
         assert "OPENAI_API_KEY" in text
         assert "ANTHROPIC_API_KEY" in text
-        assert "XAI_API_KEY" in text
+        assert "GROK_API" in text
 
     def test_config_screen_contains_model_catalog_controls(self):
         from pathlib import Path
@@ -571,23 +571,23 @@ class TestPromptStoreGetSet:
 
     def test_get_prompt_returns_default_initially(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = self._make_st()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             default = ps.get_default_prompt("agent_01")
             current = ps.get_prompt("agent_01")
         assert current == default
 
     def test_set_prompt_updates_current(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = self._make_st()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             ps.set_prompt("agent_01", "New prompt text", actor="Author")
             assert ps.get_prompt("agent_01") == "New prompt text"
 
     def test_set_prompt_appends_history(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = self._make_st()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             ps.set_prompt("agent_01", "Version 2 text", actor="Author")
             history = ps.get_history("agent_01")
         # Seed v1 (default) + v2 (just saved)
@@ -598,8 +598,8 @@ class TestPromptStoreGetSet:
 
     def test_history_version_numbers_increment(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = self._make_st()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             ps.set_prompt("agent_02", "A", actor="Author")
             ps.set_prompt("agent_02", "B", actor="Author")
             history = ps.get_history("agent_02")
@@ -609,8 +609,8 @@ class TestPromptStoreGetSet:
     def test_unknown_agent_raises_key_error(self):
         import pytest
         import threat_modeler.ui.prompt_store as ps
-        st_stub = self._make_st()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             with pytest.raises(KeyError):
                 ps.get_prompt("agent_99")
 
@@ -620,8 +620,8 @@ class TestPromptStoreRevert:
 
     def test_revert_restores_text(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = _make_st_stub()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             original = ps.get_prompt("agent_03")
             ps.set_prompt("agent_03", "Changed text", actor="Author")
             ps.revert_to("agent_03", 0, actor="Author")  # index 0 = initial default
@@ -629,8 +629,8 @@ class TestPromptStoreRevert:
 
     def test_revert_creates_new_history_entry(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = _make_st_stub()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             ps.set_prompt("agent_03", "Changed", actor="Author")
             before_len = len(ps.get_history("agent_03"))
             ps.revert_to("agent_03", 0, actor="Author")
@@ -640,8 +640,8 @@ class TestPromptStoreRevert:
     def test_revert_out_of_range_raises(self):
         import pytest
         import threat_modeler.ui.prompt_store as ps
-        st_stub = _make_st_stub()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             with pytest.raises(IndexError):
                 ps.revert_to("agent_03", 999, actor="Author")
 
@@ -651,29 +651,29 @@ class TestPromptStoreTemperature:
 
     def test_default_temperature_is_0_2(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = _make_st_stub()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             assert ps.get_temperature("agent_01") == 0.2
 
     def test_set_temperature_persists(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = _make_st_stub()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             ps.set_temperature("agent_01", 0.8)
             assert abs(ps.get_temperature("agent_01") - 0.8) < 0.001
 
     def test_temperature_out_of_range_raises(self):
         import pytest
         import threat_modeler.ui.prompt_store as ps
-        st_stub = _make_st_stub()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             with pytest.raises(ValueError):
                 ps.set_temperature("agent_01", 2.5)
 
     def test_temperature_boundary_values_accepted(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = _make_st_stub()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             ps.set_temperature("agent_01", 0.0)
             assert ps.get_temperature("agent_01") == 0.0
             ps.set_temperature("agent_01", 2.0)
@@ -685,21 +685,21 @@ class TestPromptStoreIsModified:
 
     def test_not_modified_initially(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = _make_st_stub()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             assert ps.is_modified("agent_04") is False
 
     def test_modified_after_set(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = _make_st_stub()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             ps.set_prompt("agent_04", "Something different", actor="Author")
             assert ps.is_modified("agent_04") is True
 
     def test_not_modified_after_reset(self):
         import threat_modeler.ui.prompt_store as ps
-        st_stub = _make_st_stub()
-        with patch.object(ps, "st", st_stub):
+        from threat_modeler.backend import prompt_store as backend_prompt_store
+        with patch.object(backend_prompt_store, "_default_store", backend_prompt_store.PromptStore(store_path=None)):
             ps.set_prompt("agent_04", "Something different", actor="Author")
             ps.reset_to_default("agent_04", actor="Author")
             assert ps.is_modified("agent_04") is False

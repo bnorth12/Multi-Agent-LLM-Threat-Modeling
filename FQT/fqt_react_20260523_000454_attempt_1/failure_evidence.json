@@ -1,0 +1,131 @@
+{
+  "attempt": 1,
+  "error": "Run did not complete all 9 stages before timeout. Observed: ['agent_01', 'agent_02', 'agent_03', 'agent_04', 'agent_05', 'agent_06']",
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 862, in main\n    result = _run_browser_flow(cfg, run_dir, baseline_runs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 757, in _run_browser_flow\n    progression = _wait_for_full_pipeline_completion(\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\live_browser_e2e_smoke_react.py\", line 385, in _wait_for_full_pipeline_completion\n    raise SmokeFailure(\nSmokeFailure: Run did not complete all 9 stages before timeout. Observed: ['agent_01', 'agent_02', 'agent_03', 'agent_04', 'agent_05', 'agent_06']\n",
+  "timestamp": "2026-05-23 00:20:36",
+  "backend_url": "http://127.0.0.1:8600",
+  "frontend_url": "http://localhost:5174",
+  "input_files": [
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_uas_weapon_system_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_uas_weapon_system.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_alpha_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_alpha_comprehensive.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_alpha_mission_computer_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_alpha_mission_computer.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_bravo_v2.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_bravo_comprehensive.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_charlie_v1.xlsx",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_charlie_comprehensive.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_charlie_mission_planning_computer_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_charlie_mission_planning_computer.md",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\icd_ground_maintenance_v1.csv",
+    "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\Tests\\fixtures\\inputs\\systems\\uas_weapon_system\\full_system_bundle\\description_ground_maintenance_comprehensive.md"
+  ],
+  "backend_health": {
+    "status": "ok"
+  },
+  "runs": {
+    "runs": [
+      {
+        "run_id": "10a92519-06bd-4467-bfe4-310af28d7acd",
+        "run_name": "React FQT System",
+        "archived": false,
+        "status": "running",
+        "start_time": 1779512731.139747,
+        "end_time": null,
+        "pause_gate": null,
+        "error": null,
+        "last_heartbeat_time": 1779513635.7169757,
+        "heartbeat_timeout_seconds": 10.0,
+        "heartbeat_age_seconds": 0.7206375598907471,
+        "settings": {
+          "model": {
+            "provider": "xai",
+            "model_name": "grok-4",
+            "api_key": "",
+            "offline_only": false,
+            "connection_url": "https://api.x.ai/v1",
+            "endpoint_mode": "chat_completions",
+            "request_timeout_seconds": 900,
+            "request_max_attempts": 2
+          },
+          "pipeline": {
+            "execution_mode": "langgraph-compatible",
+            "enabled_stage_ids": [
+              "agent_01",
+              "agent_02",
+              "agent_03",
+              "agent_04",
+              "agent_05",
+              "agent_06",
+              "agent_07",
+              "agent_08",
+              "agent_09"
+            ],
+            "stop_on_validation_error": false,
+            "require_hitl_gates": true
+          }
+        },
+        "result_state": null,
+        "live_state": {
+          "next_stage_id": "agent_07",
+          "messages": [
+            {
+              "stage_id": "agent_01",
+              "text": "Input Normalizer completed."
+            },
+            {
+              "stage_id": "agent_02",
+              "text": "Context Builder completed."
+            },
+            {
+              "stage_id": "agent_03",
+              "text": "Trust Boundary Validator completed."
+            },
+            {
+              "stage_id": "agent_04",
+              "text": "STRIDE Scorer completed."
+            },
+            {
+              "stage_id": "agent_05",
+              "text": "Threat Generator completed."
+            },
+            {
+              "stage_id": "agent_06",
+              "text": "STIX Packager completed."
+            }
+          ],
+          "hitl_paused_at_gate": null,
+          "hitl_rejected_at_gate": null,
+          "llm_usage_totals": {
+            "prompt_tokens": 94030,
+            "completion_tokens": 92500,
+            "reasoning_tokens": 3262,
+            "cached_tokens": 768,
+            "total_tokens": 189792,
+            "request_count": 6
+          },
+          "llm_attempt_totals": {
+            "submitted": 7,
+            "completed": 6,
+            "failed": 0,
+            "total": 13
+          },
+          "has_canonical_graph": true,
+          "has_stix_bundle": true,
+          "has_mermaid_diagrams": false,
+          "has_final_report": false
+        }
+      }
+    ]
+  },
+  "new_run_ids_since_attempt_start": [
+    "10a92519-06bd-4467-bfe4-310af28d7acd"
+  ],
+  "backend_port_pids": [
+    335900
+  ],
+  "frontend_port_pids": [
+    322844
+  ]
+}

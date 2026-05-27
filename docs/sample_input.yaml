@@ -1,8 +1,8 @@
 system_name: UAS Weapon System
 scenario: full_segment_and_lower_level_coverage
 source_fixtures:
-  icd: Tests/fixtures/inputs/icd/icd_uas_weapon_system_v1.csv
-  narrative: Tests/fixtures/inputs/descriptions/description_uas_weapon_system.md
+  icd: Tests/fixtures/inputs/systems/uas_weapon_system/icd_uas_weapon_system_v1.csv
+  narrative: Tests/fixtures/inputs/systems/uas_weapon_system/description_uas_weapon_system.md
 segments:
   - id: ALPHA
     name: UAS Air Vehicle

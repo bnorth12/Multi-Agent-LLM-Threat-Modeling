@@ -168,13 +168,15 @@ def _live_settings(
     timeout_seconds: int = LIVE_TEST_DEFAULT_TIMEOUT_SECONDS,
     max_attempts: int = LIVE_TEST_DEFAULT_MAX_ATTEMPTS,
 ) -> RuntimeSettings:
-    if not os.environ.get("GROK_API"):
+    api_key = os.environ.get("GROK_API")
+    if not api_key:
         pytest.skip("GROK_API not set; skipping live LLM validation.")
 
     return RuntimeSettings(
         model=ModelSelection(
             provider="xai",
             model_name=model_name,
+            api_key=api_key,
             offline_only=False,
             endpoint_mode=endpoint_mode,
             request_timeout_seconds=timeout_seconds,

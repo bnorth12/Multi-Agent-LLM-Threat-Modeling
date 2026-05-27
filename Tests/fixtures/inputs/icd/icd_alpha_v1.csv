@@ -1,9 +1,0 @@
-entity_type,id,name,description,parent,hardware,software_modules,from_node,to_node,protocol,data_items,trust_boundary_crossing,trust_boundary_name
-subsystem,SS-NAV-01,Navigation Subsystem,Provides position and attitude data to the mission computer,Alpha UAV System,,,,,,,,
-subsystem,SS-CMD-01,Command and Control Subsystem,Receives and validates operator commands,Alpha UAV System,,,,,,,,
-component,C-GPS-01,GPS Receiver,Acquires satellite signals and outputs position fixes,SS-NAV-01,embedded,nav.gps_driver,,,,,,
-component,C-IMU-01,Inertial Measurement Unit,Measures angular rate and acceleration,SS-NAV-01,embedded,nav.imu_driver,,,,,,
-component,C-CMD-01,Command Processor,Parses and validates operator uplink messages,SS-CMD-01,hosted,cmd.processor|cmd.validator,,,,,,
-data_flow,DF-001,,GPS Position Flow,,,,C-GPS-01,C-CMD-01,UDP,position_fix|timestamp,false,
-data_flow,DF-002,,IMU Telemetry Flow,,,,C-IMU-01,C-CMD-01,SPI,angular_rate|acceleration,false,
-data_flow,DF-003,,Operator Command Uplink,,,,GCS,C-CMD-01,TLS,command_message|auth_token,true,External Radio Link

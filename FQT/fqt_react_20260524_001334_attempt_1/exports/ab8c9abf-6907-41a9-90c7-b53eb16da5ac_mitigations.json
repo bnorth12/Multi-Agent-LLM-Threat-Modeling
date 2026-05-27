@@ -1,0 +1,565 @@
+{
+  "run_id": "ab8c9abf-6907-41a9-90c7-b53eb16da5ac",
+  "generated_at": "2026-05-24T05:23:52Z",
+  "mitigation_count": 62,
+  "mitigations": [
+    {
+      "threat_id": "IF-001_Telemetry_spoofing_and_jamming_on_downlink",
+      "threat_name": "Telemetry spoofing and jamming on downlink",
+      "mitigation_type": "technical",
+      "control_id": "M-001",
+      "title": "RF frame authentication and sequencing",
+      "description": "Enforce per-frame MAC and monotonic sequence numbers on all downlink telemetry frames.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-001_Telemetry_spoofing_and_jamming_on_downlink",
+      "threat_name": "Telemetry spoofing and jamming on downlink",
+      "mitigation_type": "technical",
+      "control_id": "M-002",
+      "title": "Adaptive anti-jam waveform selection",
+      "description": "Implement frequency hopping and spread-spectrum techniques with automatic fallback under detected jamming.",
+      "residual_risk": 3
+    },
+    {
+      "threat_id": "IF-001_Telemetry_spoofing_and_jamming_on_downlink",
+      "threat_name": "Telemetry spoofing and jamming on downlink",
+      "mitigation_type": "administrative",
+      "control_id": "M-010",
+      "title": "Downlink monitoring and anomaly response policy",
+      "description": "Define operator procedures for telemetry loss or anomaly detection including alternate comms activation.",
+      "residual_risk": 3
+    },
+    {
+      "threat_id": "IF-002_Command_spoofing_and_replay_on_uplink",
+      "threat_name": "Command spoofing and replay on uplink",
+      "mitigation_type": "technical",
+      "control_id": "M-003",
+      "title": "Challenge-response command authentication",
+      "description": "Require fresh nonces and signed challenges for every uplink command set.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-002_Command_spoofing_and_replay_on_uplink",
+      "threat_name": "Command spoofing and replay on uplink",
+      "mitigation_type": "technical",
+      "control_id": "M-004",
+      "title": "Replay protection via timestamp windows",
+      "description": "Enforce strict time-bounded validity for all command tokens and nonces.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-002_Command_spoofing_and_replay_on_uplink",
+      "threat_name": "Command spoofing and replay on uplink",
+      "mitigation_type": "administrative",
+      "control_id": "M-011",
+      "title": "Uplink command authorization policy",
+      "description": "Require dual-operator confirmation for safety-critical commands and maintain signed audit logs.",
+      "residual_risk": 3
+    },
+    {
+      "threat_id": "IF-003_Spoofed_sensor_data_injection",
+      "threat_name": "Spoofed sensor data injection",
+      "mitigation_type": "technical",
+      "control_id": "M-005",
+      "title": "TLS mutual authentication and certificate pinning",
+      "description": "Enforce client certificate validation and pin trusted certificates for all HTTPS endpoints.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-003_Spoofed_sensor_data_injection",
+      "threat_name": "Spoofed sensor data injection",
+      "mitigation_type": "administrative",
+      "control_id": "M-012",
+      "title": "Sensor data source validation policy",
+      "description": "Require cryptographic signing of all sensor frames and periodic source attestation audits.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-004_Tasking_spoof_and_waypoint_tampering",
+      "threat_name": "Tasking spoof and waypoint tampering",
+      "mitigation_type": "technical",
+      "control_id": "M-006",
+      "title": "Signed tasking packages with hash chaining",
+      "description": "Require digital signatures and hash-linked task updates for all retasking operations.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-004_Tasking_spoof_and_waypoint_tampering",
+      "threat_name": "Tasking spoof and waypoint tampering",
+      "mitigation_type": "administrative",
+      "control_id": "M-013",
+      "title": "Tasking approval and dual-control policy",
+      "description": "Enforce two-person approval workflow for any waypoint or payload changes.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-005_Spoofed_BIT_command_injection",
+      "threat_name": "Spoofed BIT command injection",
+      "mitigation_type": "technical",
+      "control_id": "M-007",
+      "title": "1553 bus message authentication extension",
+      "description": "Add cryptographic MAC to 1553 messages using pre-shared maintenance keys.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-005_Spoofed_BIT_command_injection",
+      "threat_name": "Spoofed BIT command injection",
+      "mitigation_type": "administrative",
+      "control_id": "M-014",
+      "title": "Maintenance port access control policy",
+      "description": "Require physical and logical authentication tokens for all maintenance bus access.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-006_HUMS_log_tampering",
+      "threat_name": "HUMS log tampering",
+      "mitigation_type": "technical",
+      "control_id": "M-008",
+      "title": "Signed and timestamped HUMS records",
+      "description": "Require cryptographic signatures on all HUMS downloads before storage.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-006_HUMS_log_tampering",
+      "threat_name": "HUMS log tampering",
+      "mitigation_type": "administrative",
+      "control_id": "M-015",
+      "title": "HUMS integrity audit policy",
+      "description": "Mandate post-download integrity verification and retention of signed logs for 90 days.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-007_Malicious_software_load_injection",
+      "threat_name": "Malicious software load injection",
+      "mitigation_type": "technical",
+      "control_id": "M-009",
+      "title": "Hardware-enforced load signing verification",
+      "description": "Require hardware root-of-trust verification of package signatures before any write to flash.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-007_Malicious_software_load_injection",
+      "threat_name": "Malicious software load injection",
+      "mitigation_type": "administrative",
+      "control_id": "M-016",
+      "title": "Software load authorization and chain-of-custody policy",
+      "description": "Enforce signed release notes and two-person verification for every software load.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-008_Signed_package_tampering_on_LAN",
+      "threat_name": "Signed package tampering on LAN",
+      "mitigation_type": "technical",
+      "control_id": "M-017",
+      "title": "LAN segment isolation and integrity gateway",
+      "description": "Route all software packages through an authenticated integrity gateway with mandatory signature validation.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-008_Signed_package_tampering_on_LAN",
+      "threat_name": "Signed package tampering on LAN",
+      "mitigation_type": "administrative",
+      "control_id": "M-018",
+      "title": "Package distribution change control policy",
+      "description": "Require change board approval and cryptographic signing of every baseline manifest update.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-010_Key_material_spoofing_and_disclosure",
+      "threat_name": "Key material spoofing and disclosure",
+      "mitigation_type": "technical",
+      "control_id": "M-019",
+      "title": "Hardware security module key wrapping",
+      "description": "Wrap and unwrap all keys inside FIPS-validated HSM before transmission or storage.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-010_Key_material_spoofing_and_disclosure",
+      "threat_name": "Key material spoofing and disclosure",
+      "mitigation_type": "administrative",
+      "control_id": "M-020",
+      "title": "Key rotation and escrow policy",
+      "description": "Enforce automated quarterly key rotation with offline escrow and immediate revocation capability.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-011_Spoofed_intelligence_feed_injection",
+      "threat_name": "Spoofed intelligence feed injection",
+      "mitigation_type": "technical",
+      "control_id": "M-021",
+      "title": "Intel source attestation and signing",
+      "description": "Require signed and attested intelligence summaries from all external feeds.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-011_Spoofed_intelligence_feed_injection",
+      "threat_name": "Spoofed intelligence feed injection",
+      "mitigation_type": "administrative",
+      "control_id": "M-022",
+      "title": "Intelligence source vetting policy",
+      "description": "Maintain approved source list and require periodic re-validation of all intel providers.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-012_Mission_plan_tampering",
+      "threat_name": "Mission plan tampering",
+      "mitigation_type": "technical",
+      "control_id": "M-023",
+      "title": "End-to-end plan signing and verification",
+      "description": "Sign every mission plan at creation and verify signature at every relay hop.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-012_Mission_plan_tampering",
+      "threat_name": "Mission plan tampering",
+      "mitigation_type": "administrative",
+      "control_id": "M-024",
+      "title": "Plan change control board policy",
+      "description": "Require formal change board approval and cryptographic attestation for any plan modification.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-013_Weapon_package_spoof_and_tampering",
+      "threat_name": "Weapon package spoof and tampering",
+      "mitigation_type": "technical",
+      "control_id": "M-025",
+      "title": "Multi-party package approval with threshold signatures",
+      "description": "Require threshold signatures from at least two independent approvers before package execution.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-013_Weapon_package_spoof_and_tampering",
+      "threat_name": "Weapon package spoof and tampering",
+      "mitigation_type": "administrative",
+      "control_id": "M-026",
+      "title": "Weapon release authorization policy",
+      "description": "Mandate positive visual confirmation and two-person control for any weapon release package.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-014_Spoofed_mission_status_feedback",
+      "threat_name": "Spoofed mission status feedback",
+      "mitigation_type": "technical",
+      "control_id": "M-027",
+      "title": "Status message signing and sequence validation",
+      "description": "Sign all status messages and validate monotonic sequence numbers at the broker.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-014_Spoofed_mission_status_feedback",
+      "threat_name": "Spoofed mission status feedback",
+      "mitigation_type": "administrative",
+      "control_id": "M-028",
+      "title": "Status anomaly escalation policy",
+      "description": "Define escalation procedures for status sequence failures or signature mismatches.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-019_GCS_command_spoofing",
+      "threat_name": "GCS command spoofing",
+      "mitigation_type": "technical",
+      "control_id": "M-029",
+      "title": "Mutual TLS with operator certificate pinning",
+      "description": "Enforce mutual TLS and pin operator certificates for all GCS sessions.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-019_GCS_command_spoofing",
+      "threat_name": "GCS command spoofing",
+      "mitigation_type": "administrative",
+      "control_id": "M-030",
+      "title": "GCS operator credential policy",
+      "description": "Require hardware tokens and session timeouts for all GCS operators.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-020_Spoofed_mission_package_relay",
+      "threat_name": "Spoofed mission package relay",
+      "mitigation_type": "technical",
+      "control_id": "M-031",
+      "title": "Package relay signature verification",
+      "description": "Validate end-to-end signatures at receipt before accepting any mission package.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-020_Spoofed_mission_package_relay",
+      "threat_name": "Spoofed mission package relay",
+      "mitigation_type": "administrative",
+      "control_id": "M-032",
+      "title": "Relay integrity monitoring policy",
+      "description": "Log and alert on any signature verification failure at the relay boundary.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-024_Weaponized_mission_package_spoof",
+      "threat_name": "Weaponized mission package spoof",
+      "mitigation_type": "technical",
+      "control_id": "M-033",
+      "title": "Threshold-signed weapon packages",
+      "description": "Require threshold signatures from planning authority and broker before execution.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-024_Weaponized_mission_package_spoof",
+      "threat_name": "Weaponized mission package spoof",
+      "mitigation_type": "administrative",
+      "control_id": "M-034",
+      "title": "Weapon package release board policy",
+      "description": "Require formal release board approval for any package containing weapon profiles.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-026_Spoofed_execution_status_feedback",
+      "threat_name": "Spoofed execution status feedback",
+      "mitigation_type": "technical",
+      "control_id": "M-035",
+      "title": "Signed status telemetry with monotonic counters",
+      "description": "Sign every status frame and validate counters at the relay.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-026_Spoofed_execution_status_feedback",
+      "threat_name": "Spoofed execution status feedback",
+      "mitigation_type": "administrative",
+      "control_id": "M-036",
+      "title": "Status integrity alert policy",
+      "description": "Define real-time alerts and operator response for status signature failures.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-030_Spoofed_intel_feed_injection",
+      "threat_name": "Spoofed intel feed injection",
+      "mitigation_type": "technical",
+      "control_id": "M-037",
+      "title": "Feed source certificate pinning",
+      "description": "Pin trusted certificates for all intelligence ingest endpoints.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-030_Spoofed_intel_feed_injection",
+      "threat_name": "Spoofed intel feed injection",
+      "mitigation_type": "administrative",
+      "control_id": "M-038",
+      "title": "Intel source accreditation policy",
+      "description": "Maintain formal accreditation list and periodic re-validation of intel sources.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-031_Mission_plan_tampering",
+      "threat_name": "Mission plan tampering",
+      "mitigation_type": "technical",
+      "control_id": "M-039",
+      "title": "Plan integrity gateway at broker",
+      "description": "Validate plan signatures at the route broker before forwarding.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-031_Mission_plan_tampering",
+      "threat_name": "Mission plan tampering",
+      "mitigation_type": "administrative",
+      "control_id": "M-040",
+      "title": "Plan change approval policy",
+      "description": "Require documented approval for any plan modification before broker acceptance.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-037_Key_material_spoofing",
+      "threat_name": "Key material spoofing",
+      "mitigation_type": "technical",
+      "control_id": "M-041",
+      "title": "HSM-protected key transport",
+      "description": "Transport all keys inside HSM-protected envelopes with mutual authentication.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-037_Key_material_spoofing",
+      "threat_name": "Key material spoofing",
+      "mitigation_type": "administrative",
+      "control_id": "M-042",
+      "title": "Key authority access control policy",
+      "description": "Restrict key authority access to cleared personnel with two-person rule.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-042_Spoofed_intelligence_injection",
+      "threat_name": "Spoofed intelligence injection",
+      "mitigation_type": "technical",
+      "control_id": "M-043",
+      "title": "Signed intel summaries with source attestation",
+      "description": "Require signed and attested intel packages from accredited sources only.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-042_Spoofed_intelligence_injection",
+      "threat_name": "Spoofed intelligence injection",
+      "mitigation_type": "administrative",
+      "control_id": "M-044",
+      "title": "Intel source accreditation and monitoring policy",
+      "description": "Maintain and audit accredited source list with periodic re-validation.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-045_Plan_tampering_at_broker",
+      "threat_name": "Plan tampering at broker",
+      "mitigation_type": "technical",
+      "control_id": "M-045",
+      "title": "Broker-side plan signature validation",
+      "description": "Validate plan signatures at broker ingress before any processing.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-045_Plan_tampering_at_broker",
+      "threat_name": "Plan tampering at broker",
+      "mitigation_type": "administrative",
+      "control_id": "M-046",
+      "title": "Broker change control policy",
+      "description": "Require formal approval and logging of any plan modification at the broker.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-046_Spoofed_intel_feed_injection",
+      "threat_name": "Spoofed intel feed injection",
+      "mitigation_type": "technical",
+      "control_id": "M-047",
+      "title": "TLS client certificate pinning for intel feeds",
+      "description": "Pin certificates for all intelligence ingest connections.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-046_Spoofed_intel_feed_injection",
+      "threat_name": "Spoofed intel feed injection",
+      "mitigation_type": "administrative",
+      "control_id": "M-048",
+      "title": "Intel feed accreditation policy",
+      "description": "Maintain and periodically audit list of accredited intelligence sources.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-049_Plan_tampering_during_broker_relay",
+      "threat_name": "Plan tampering during broker relay",
+      "mitigation_type": "technical",
+      "control_id": "M-049",
+      "title": "End-to-end plan integrity checks",
+      "description": "Validate cryptographic signatures at every hop including the broker.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-049_Plan_tampering_during_broker_relay",
+      "threat_name": "Plan tampering during broker relay",
+      "mitigation_type": "administrative",
+      "control_id": "M-050",
+      "title": "Broker relay audit policy",
+      "description": "Log all plan relay events with signature verification results.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-052_Spoofed_BIT_command_injection",
+      "threat_name": "Spoofed BIT command injection",
+      "mitigation_type": "technical",
+      "control_id": "M-051",
+      "title": "1553 message authentication codes",
+      "description": "Add MAC to all 1553 BIT commands using maintenance session keys.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-052_Spoofed_BIT_command_injection",
+      "threat_name": "Spoofed BIT command injection",
+      "mitigation_type": "administrative",
+      "control_id": "M-052",
+      "title": "Maintenance bus access logging policy",
+      "description": "Require physical presence logging and session token issuance for all BIT sessions.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-053_Spoofed_LRU_status_response",
+      "threat_name": "Spoofed LRU status response",
+      "mitigation_type": "technical",
+      "control_id": "M-053",
+      "title": "Signed LRU status frames",
+      "description": "Require LRU-level signatures on all status responses.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-053_Spoofed_LRU_status_response",
+      "threat_name": "Spoofed LRU status response",
+      "mitigation_type": "administrative",
+      "control_id": "M-054",
+      "title": "Status response verification policy",
+      "description": "Mandate verification of signatures before accepting LRU health data.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-054_HUMS_tampering",
+      "threat_name": "HUMS tampering",
+      "mitigation_type": "technical",
+      "control_id": "M-055",
+      "title": "Cryptographic signing of HUMS downloads",
+      "description": "Sign all HUMS frames before transmission over the maintenance bus.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-054_HUMS_tampering",
+      "threat_name": "HUMS tampering",
+      "mitigation_type": "administrative",
+      "control_id": "M-056",
+      "title": "HUMS download verification policy",
+      "description": "Require signature verification and archival of signed HUMS records.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-056_Signed_package_tampering",
+      "threat_name": "Signed package tampering",
+      "mitigation_type": "technical",
+      "control_id": "M-057",
+      "title": "LAN gateway package validation",
+      "description": "Validate signatures at a dedicated integrity gateway before SLS acceptance.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-056_Signed_package_tampering",
+      "threat_name": "Signed package tampering",
+      "mitigation_type": "administrative",
+      "control_id": "M-058",
+      "title": "Package receipt audit policy",
+      "description": "Log all package receipts with signature verification outcomes.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-058_Malicious_software_load_via_1553",
+      "threat_name": "Malicious software load via 1553",
+      "mitigation_type": "technical",
+      "control_id": "M-059",
+      "title": "Hardware root-of-trust load verification",
+      "description": "Verify package signatures in hardware before any write operation.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-058_Malicious_software_load_via_1553",
+      "threat_name": "Malicious software load via 1553",
+      "mitigation_type": "administrative",
+      "control_id": "M-060",
+      "title": "1553 load session authorization policy",
+      "description": "Require two-person authorization and session token for all 1553 loads.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-059_Malicious_software_load_via_RS-422",
+      "threat_name": "Malicious software load via RS-422",
+      "mitigation_type": "technical",
+      "control_id": "M-061",
+      "title": "Serial load integrity with hardware verification",
+      "description": "Verify checksums and signatures in hardware before accepting RS-422 loads.",
+      "residual_risk": 2
+    },
+    {
+      "threat_id": "IF-059_Malicious_software_load_via_RS-422",
+      "threat_name": "Malicious software load via RS-422",
+      "mitigation_type": "administrative",
+      "control_id": "M-062",
+      "title": "Serial load authorization policy",
+      "description": "Require two-person rule and session logging for all RS-422 software loads.",
+      "residual_risk": 2
+    }
+  ]
+}

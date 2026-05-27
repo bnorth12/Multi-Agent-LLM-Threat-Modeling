@@ -2,7 +2,7 @@
 
 This directory holds annotated screenshot evidence for HMI screens delivered in Sprint 2026-06 (S06-07) and ongoing work in Sprint 2026-07 (S07-02 through S07-06).
 
-Each entry maps a screenshot file to its **business logic screen ID** (Blueprint SCR-xxx per docs/HMI_Architecture_Blueprint.md), GUI requirement ID, and the sprint issue that delivered or is developing the screen.
+Each entry maps a screenshot file to its **business logic screen ID** (Blueprint SCR-xxx per docs/architecture/HMI_Architecture_Blueprint.md), GUI requirement ID, and the sprint issue that delivered or is developing the screen.
 
 Captured: 2026-05-04 by BN from Streamlit app running at <http://localhost:8502>.
 
@@ -68,10 +68,16 @@ Screenshots for S07 screens will be captured and added to this directory as deve
 
 - 4 screenshots (scr_001–scr_004) mapping to 4 delivered screens
 - Test summary: 240 tests passing (unit + integration + E2E)
-- Full test logs in planning/Test_Execution_Summary_Sprint_2026_06.md
+- Full test logs in `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_06.md`
 
 **Sprint 2026-07 evidence will be collected incrementally:**
 
 - S07-02 screenshots added when Model Provider/Connection screens complete
 - S07-05/06 screenshots added when Results/Export screens complete
-- Final test and screenshot evidence compiled in planning/Test_Execution_Summary_Sprint_2026_07.md
+- Final test and screenshot evidence compiled in `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_07.md`
+
+## Archive Reference Policy
+
+Historical screenshot evidence references must point to archived planning records under `planning/archives/`.
+
+Do not add new links to retired root-level planning summary paths when equivalent records exist in `planning/archives/2026-05/`.

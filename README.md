@@ -78,6 +78,8 @@ Planned next-sprint architecture direction (deferred from 2026-11 scope):
 - **`backend/run_manager.py`** — Pure-Python pipeline execution engine; no Streamlit dependency.
   Owns `_RUN_REGISTRY`, background threads, orchestrator lifecycle, and HITL gate handling.
   Persists run metadata to `~/.multi_agent_threat_modeler_runs.json` for reload recovery.
+  Persists a restorable run-state snapshot for completed/paused runs so artifact endpoints remain
+  available after backend restart.
   Public API: `submit_run()`, `resume_run()`, `cancel_run()`, `wait_for_run()`, `get_run_status()`.
 - **`backend/prompt_store.py`** — Thread-safe, file-backed agent prompt store.
   Persists prompt text, version history, and temperature settings to
@@ -85,6 +87,8 @@ Planned next-sprint architecture direction (deferred from 2026-11 scope):
 - **`ui/execution.py`** (refactored) — Now a thin Streamlit adapter; all execution logic
   delegated to `backend/run_manager.py`.
 - **`server/api.py`** — operational non-Streamlit HTTP server for run control and LangGraph execution-plan APIs.
+  Rehydrates run state from persisted snapshots when in-memory state is unavailable, preventing
+  run-list entries from becoming artifact-inaccessible after restart.
 - **`__main__.py`** — `python -m threat_modeler` CLI entry point for the operational API server.
 - **55 new backend tests** added (total: 259 passing).
 - Requirement PRJ-019 (Asynchronous Backend State Authority) fully implemented.
@@ -146,19 +150,33 @@ Install the repo-managed Git hooks (recommended):
 ```
 
 This configures `core.hooksPath` to `.githooks` for this repository. The included `pre-push` hook runs:
+
 - `python -m pytest Tests/unit/ -q`
 - `python scripts/verify_sprint_traceability.py --sprint $TRACEABILITY_SPRINT` (default: `2026_11`)
+- `python scripts/archive_hygiene.py check --upstream --enforce`
+- `python scripts/validate_cross_domain_exception_policy.py`
+- `python scripts/validate_cross_domain_exception_policy.py --proposal-only --propose-missing --proposal-out test_reports/cross_domain_exception_proposals.csv`
+
+The included `pre-commit` and `pre-merge-commit` hooks run:
+
+- `python scripts/archive_hygiene.py check --staged --enforce`
 
 Behavior:
+
 - Unit tests are blocking.
 - Traceability verification is warning-only by default to avoid unnecessary push blockers.
+- Archive hygiene verification is blocking by default on commit, merge, CI, and pre-push.
+- Exception policy verification is blocking by default.
 - Set `TRACEABILITY_ENFORCE=1` to make traceability failures blocking.
+- Set `ARCHIVE_HYGIENE_ENFORCE=0` to make archive hygiene failures warning-only on pre-push.
+- Set `EXCEPTION_POLICY_ENFORCE=0` to make exception policy failures warning-only.
 
 Use this setup to catch local quality and traceability regressions before opening or updating PRs.
 
-### Dependency Strategy
+### Dependency Strategy Summary
 
 **Runtime Dependencies** (`requirements.txt`):
+
 - `openai` — LLM integration
 - `langgraph` — Agent orchestration
 - `chromadb` — Vector store for retrieval
@@ -166,6 +184,7 @@ Use this setup to catch local quality and traceability regressions before openin
 - `python-dotenv` — Environment variable loading
 
 **Test Dependencies** (`Tests/requirements_e2e.txt`):
+
 - Includes all runtime dependencies (via `-r ../requirements.txt`)
 - `pytest`, `pytest-cov` — Unit and integration testing
 - `playwright`, `pytest-playwright` — Browser automation for E2E
@@ -190,8 +209,40 @@ python -m pytest Tests/unit/ -q
 # Sprint traceability verification (logs to test_reports/)
 python scripts/run_and_log.py scripts/verify_sprint_traceability.py --sprint 2026_11
 
+# Archive hygiene check for staged, upstream, or explicit paths
+python scripts/archive_hygiene.py check --paths planning/archives/2026-05/README.md
+
+# Archive batch note scaffold
+python scripts/archive_hygiene.py scaffold --archive-root planning/archives --batch 2026-05 --note-name archive_sweep_note.md --title "Planning Archive Sweep"
+
+# Cross-domain exception policy strict gate
+python scripts/validate_cross_domain_exception_policy.py
+
+# Proposal-only remediation output for missing exception rows
+python scripts/validate_cross_domain_exception_policy.py --proposal-only --propose-missing --proposal-out test_reports/cross_domain_exception_proposals.csv
+
+# Dependency boundary hardening (release/runtime must exclude test-only deps)
+python scripts/verify_dependency_boundary.py
+
 # E2E browser tests (requires GROK_API environment variable)
 python scripts/run_and_log.py scripts/live_browser_e2e_smoke.py
+```
+
+### Sprint 2026-12 Live Test Policy
+
+- Live test execution is standardized to Grok-only in this repository for Sprint 2026-12.
+- Required credential for live lanes: `GROK_API` (or `GROK_API_KEY` where supported by script wrappers).
+- OpenAI-live execution is excluded by default and is not required for sprint validation in this environment.
+- Default CI-safe lane remains:
+
+```bash
+python -m pytest Tests/ -q -m "not llm_live and not llm_live_browser"
+```
+
+- Approved live validation lane (Grok only):
+
+```bash
+python -m pytest Tests/e2e/test_live_llm_validation.py -v -m llm_live -s
 ```
 
 ### Test Organization

@@ -51,14 +51,14 @@ For **each accepted requirement**, create corresponding issue:
 
 ### Traceability Matrix Setup
 
-- [ ] **Matrix File Created**: Copy template to `planning/Sprint_2026_09_Traceability_Matrix.md`
-  - **Command**: `cp planning/Sprint_YYYY_MM_Traceability_Matrix_TEMPLATE.md planning/Sprint_2026_09_Traceability_Matrix.md`
+- [ ] **Matrix File Created**: Copy template to `planning/archives/2026-05/Sprint_2026_09_Traceability_Matrix.md`
+  - **Command**: `cp planning/Sprint_YYYY_MM_Traceability_Matrix_TEMPLATE.md planning/archives/2026-05/Sprint_2026_09_Traceability_Matrix.md`
 - [ ] **Header Updated**: Change sprint year/month in matrix header
 - [ ] **Entries Added**: Every accepted requirement + issue added to matrix
   - **Format**:
     | HITL-012 | Conditional Gate State Tracking | D-S08-020 | Open | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation |
 - [ ] **Matrix Committed**: Add to git and commit: `Add Sprint 2026-09 Traceability Matrix`
-- [ ] **Matrix Linked**: Add link to sprint planning document
+- [ ] **Matrix Linked**: Add link to sprint planning document or archive path as appropriate
 
 ### Governance Documentation
 

@@ -73,11 +73,9 @@ class TestFixtureAdapter:
 
 
 class TestXaiAdapter:
-    def test_raises_without_api_key(self, monkeypatch):
-        monkeypatch.delenv("GROK_API", raising=False)
-        monkeypatch.delenv("XAI_API_KEY", raising=False)
+    def test_raises_without_api_key(self):
         adapter = XaiAdapter()
-        with pytest.raises(EnvironmentError, match="GROK_API"):
+        with pytest.raises(EnvironmentError, match="run settings"):
             adapter.complete("sys", "user")
 
 
@@ -272,8 +270,27 @@ class TestAgentFixtureRuns:
         state = self._state_with_graph()
         agent = DiagramGeneratorAgent(adapter=_NoDiagramAdapter())
         result = agent.run(state)
+        assert "level_0" in result.mermaid_diagrams
+        assert result.mermaid_diagrams["level_0"].startswith("flowchart LR")
         assert "level_1" in result.mermaid_diagrams
-        assert result.mermaid_diagrams["level_1"].startswith("flowchart LR")
+
+    def test_agent_08_parses_multi_digit_level_markers(self):
+        from src.threat_modeler.agents.agent_08_diagram_generator import DiagramGeneratorAgent
+
+        class _MultiDigitLevelAdapter:
+            def complete(self, _system_prompt: str, _user_message: str) -> str:
+                return (
+                    "MERMAID_LEVEL0\n"
+                    "```mermaid\nflowchart TD\nA-->B\n```\n\n"
+                    "MERMAID_LEVEL10\n"
+                    "```mermaid\nflowchart TD\nB-->C\n```\n"
+                )
+
+        state = self._state_with_graph()
+        agent = DiagramGeneratorAgent(adapter=_MultiDigitLevelAdapter())
+        result = agent.run(state)
+        assert "level_0" in result.mermaid_diagrams
+        assert "level_10" in result.mermaid_diagrams
 
     def test_agent_09_sets_final_report(self):
         from src.threat_modeler.agents.agent_09_report_writer import ReportWriterAgent
@@ -419,7 +436,7 @@ class TestRunManagerDelegationPath:
         observed_modes: list[str] = []
 
         class _FakeOrchestrator:
-            def __init__(self, settings):
+            def __init__(self, settings, **_kwargs):
                 observed_modes.append(settings.pipeline.execution_mode)
 
             def run_planned_stages(self, state):
@@ -447,7 +464,7 @@ class TestRunManagerDelegationPath:
         observed_modes: list[str] = []
 
         class _FakeOrchestrator:
-            def __init__(self, settings):
+            def __init__(self, settings, **_kwargs):
                 observed_modes.append(settings.pipeline.execution_mode)
 
             def run_planned_stages(self, state):

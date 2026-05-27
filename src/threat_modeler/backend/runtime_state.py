@@ -44,7 +44,11 @@ _STATE_FILE = Path.home() / ".multi_agent_threat_modeler_runtime_state.json"
 def _serialize_settings(settings: RuntimeSettings | None) -> dict | None:
     if settings is None:
         return None
-    return asdict(settings)
+    payload = asdict(settings)
+    model_payload = payload.get("model") if isinstance(payload, dict) else None
+    if isinstance(model_payload, dict) and "api_key" in model_payload:
+        model_payload["api_key"] = ""
+    return payload
 
 
 def _deserialize_settings(payload: dict | None) -> RuntimeSettings | None:
@@ -62,6 +66,7 @@ def _deserialize_settings(payload: dict | None) -> RuntimeSettings | None:
         model = ModelSelection(
             provider=str(model_data.get("provider", "fixture")),
             model_name=str(model_data.get("model_name", "fixture-placeholder")),
+            api_key=str(model_data.get("api_key", "")),
             offline_only=bool(model_data.get("offline_only", True)),
             connection_url=str(model_data.get("connection_url", "")),
             endpoint_mode=str(model_data.get("endpoint_mode", "chat_completions")),

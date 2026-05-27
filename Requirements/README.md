@@ -30,6 +30,8 @@ Primary files:
 - 08_Feature_Branch_Checklist_Template.md
 - 09_HITL_Framework_Options.md
 - 10_GUI_Requirements.md
+- 13_Runtime_State_And_Input_Contract_Requirements.md
+- 14_Prompt_Requirements_Baseline.md
 
 Component files:
 

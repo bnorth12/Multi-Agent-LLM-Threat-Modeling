@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import os
 import json
+import os
 import time
 import logging
 from urllib import request
 from urllib.error import HTTPError, URLError
-from typing import Iterable
 
 from .base import LlmAdapter
 from .llm_provider_error import LlmProviderError
@@ -29,18 +28,37 @@ class OpenAiCompatibleAdapter(LlmAdapter):
         self,
         *,
         model: str,
+        api_key: str = "",
+        api_key_env_candidates: tuple[str, ...] = (),
         endpoint_mode: str = "chat_completions",
         base_url: str = "",
-        api_key_env_candidates: Iterable[str] = (),
         timeout_seconds: int | None = None,
         max_attempts: int | None = None,
     ) -> None:
         self._model = model
+        self._api_key = api_key.strip()
+        if not self._api_key:
+            for env_name in api_key_env_candidates:
+                env_value = os.getenv(env_name, "").strip()
+                if env_value:
+                    self._api_key = env_value
+                    break
         self._endpoint_mode = endpoint_mode
         self._base_url = base_url.strip()
-        self._api_key_env_candidates = tuple(api_key_env_candidates)
-        self._timeout_seconds = max(1, int(timeout_seconds)) if timeout_seconds is not None else None
-        self._max_attempts = max(1, int(max_attempts)) if max_attempts is not None else None
+        timeout_env = os.getenv("THREAT_MODELER_LLM_TIMEOUT_SECONDS", "").strip()
+        attempts_env = os.getenv("THREAT_MODELER_LLM_MAX_ATTEMPTS", "").strip()
+        if timeout_seconds is not None:
+            self._timeout_seconds = max(1, int(timeout_seconds))
+        elif timeout_env:
+            self._timeout_seconds = self._coerce_positive_int(timeout_env, DEFAULT_TIMEOUT_SECONDS)
+        else:
+            self._timeout_seconds = None
+        if max_attempts is not None:
+            self._max_attempts = max(1, int(max_attempts))
+        elif attempts_env:
+            self._max_attempts = self._coerce_positive_int(attempts_env, DEFAULT_MAX_ATTEMPTS)
+        else:
+            self._max_attempts = None
         self._last_usage: dict[str, int | str] = {}
 
     @staticmethod
@@ -51,11 +69,7 @@ class OpenAiCompatibleAdapter(LlmAdapter):
             return default_value
 
     def _resolve_api_key(self) -> str:
-        for name in self._api_key_env_candidates:
-            value = os.environ.get(name, "").strip()
-            if value:
-                return value
-        return ""
+        return self._api_key
 
     def _post_json(self, path: str, payload: dict, api_key: str) -> dict:
         if not self._base_url:
@@ -80,17 +94,11 @@ class OpenAiCompatibleAdapter(LlmAdapter):
 
         max_attempts = self._max_attempts
         if max_attempts is None:
-            max_attempts = self._coerce_positive_int(
-                os.environ.get("THREAT_MODELER_LLM_MAX_ATTEMPTS", str(DEFAULT_MAX_ATTEMPTS)),
-                DEFAULT_MAX_ATTEMPTS,
-            )
+            max_attempts = DEFAULT_MAX_ATTEMPTS
 
         timeout = self._timeout_seconds
         if timeout is None:
-            timeout = self._coerce_positive_int(
-                os.environ.get("THREAT_MODELER_LLM_TIMEOUT_SECONDS", str(DEFAULT_TIMEOUT_SECONDS)),
-                DEFAULT_TIMEOUT_SECONDS,
-            )
+            timeout = DEFAULT_TIMEOUT_SECONDS
 
 
         logger = logging.getLogger("threat_modeler.llm.openai_compatible_adapter")
@@ -170,8 +178,7 @@ class OpenAiCompatibleAdapter(LlmAdapter):
     def complete(self, system_prompt: str, user_message: str) -> str:
         api_key = self._resolve_api_key()
         if not api_key:
-            joined = ", ".join(self._api_key_env_candidates) or "<no env vars configured>"
-            raise EnvironmentError(f"API key not found. Set one of: {joined}")
+            raise EnvironmentError("API key not found in run settings. Provide model.api_key in RuntimeSettings.")
 
         mode = self._endpoint_mode.lower().strip()
         self._last_usage = {}

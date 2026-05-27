@@ -31,6 +31,7 @@ class FrameworkState:
     hitl_gate_checkpoint: dict[str, Any] | None = None  # serialised gate engine state
     hitl_paused_at_gate: str | None = None               # gate_id when pipeline is paused
     hitl_rejected_at_gate: str | None = None             # gate_id if analyst rejected
+    threat_review_decisions: dict[str, dict[str, str]] = field(default_factory=dict)
 
     def record_message(self, stage_id: str, text: str) -> None:
         self.messages.append({"stage_id": stage_id, "text": text})

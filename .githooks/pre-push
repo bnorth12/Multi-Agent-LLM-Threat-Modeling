@@ -49,4 +49,30 @@ if ! "$PYTHON_BIN" scripts/verify_sprint_traceability.py --sprint "$TRACEABILITY
   echo "[pre-push] Continuing push (set TRACEABILITY_ENFORCE=1 to make this blocking)."
 fi
 
+echo "[pre-push] Running archive hygiene checks against upstream diff..."
+if ! "$PYTHON_BIN" scripts/archive_hygiene.py check --upstream --enforce; then
+  if [ "${ARCHIVE_HYGIENE_ENFORCE:-1}" = "1" ]; then
+    echo "[pre-push] ERROR: Archive hygiene check failed and ARCHIVE_HYGIENE_ENFORCE=1."
+    exit 1
+  fi
+  echo "[pre-push] WARNING: Archive hygiene check failed."
+  echo "[pre-push] Continuing push (set ARCHIVE_HYGIENE_ENFORCE=1 to make this blocking)."
+fi
+
+echo "[pre-push] Running cross-domain exception policy validation..."
+if ! "$PYTHON_BIN" scripts/validate_cross_domain_exception_policy.py; then
+  if [ "${EXCEPTION_POLICY_ENFORCE:-1}" = "1" ]; then
+    echo "[pre-push] ERROR: Exception policy validation failed and EXCEPTION_POLICY_ENFORCE=1."
+    exit 1
+  fi
+  echo "[pre-push] WARNING: Exception policy validation failed."
+  echo "[pre-push] Continuing push (set EXCEPTION_POLICY_ENFORCE=1 to make this blocking)."
+fi
+
+echo "[pre-push] Generating exception-policy remediation proposals..."
+"$PYTHON_BIN" scripts/validate_cross_domain_exception_policy.py \
+  --proposal-only \
+  --propose-missing \
+  --proposal-out test_reports/cross_domain_exception_proposals.csv >/dev/null || true
+
 echo "[pre-push] All checks passed. Proceeding with push."

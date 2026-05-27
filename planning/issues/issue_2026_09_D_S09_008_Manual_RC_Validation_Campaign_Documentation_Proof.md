@@ -37,7 +37,7 @@ Medium - RC publication control and release evidence requirement.
 
 ### Planned Evidence Artifacts
 
-- `planning/Test_Execution_Summary_Sprint_2026_09.md`
+- `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_09.md`
 - `Releases/Deployment_Guide_v1.0.0-rc1.md`
 - RC decision record with manual validation references
 
@@ -57,6 +57,6 @@ In Progress
 
 ## Progress Notes (2026-05-10)
 
-- Automated prerequisite completed and recorded in `planning/Test_Execution_Summary_Sprint_2026_09.md`.
+- Automated prerequisite completed and recorded in `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_09.md`.
 - Sweep evidence: `406 passed, 11 deselected` for `pytest Tests/unit Tests/integration Tests/e2e -m "not llm_live"`.
 - Manual RC campaign execution remains pending user-driven test run and evidence capture.

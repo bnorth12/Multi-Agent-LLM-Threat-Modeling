@@ -119,13 +119,16 @@ class GateEngine:
     """
     Manages the lifecycle of Gate Set 1 gates.
 
-        Gate Set 1 + 2:
-      gate_0_input_integrity    — before context merge (HITL-009)
-      gate_1_scope_confirmation — after context merge (HITL-001)
+                Gate Set 1 + 2:
+            gate_0_input_integrity     — before stage 1 execution (HITL-009)
+            gate_1_normalization_review — after input normalizer (new)
+            gate_1_scope_confirmation  — after context merge (HITL-001)
       gate_2_boundary_approval  — after trust boundary validation (HITL-002)
             gate_3_stride_calibration — after STRIDE scoring (HITL-003)
             gate_4_threat_plausibility — after threat generation (HITL-004)
             gate_5_mitigation_adequacy — after mitigation generation (HITL-005)
+            gate_8_diagram_review — after diagram generation
+            gate_9_stix_packaging_review — after STIX packaging
             gate_6_merge_conflict_resolution — conditional, conflict-triggered
             gate_7_export_consistency — conditional, pre-publication consistency-triggered
     """
@@ -140,6 +143,11 @@ class GateEngine:
             "gate_0_input_integrity": HitlGateRecord(
                 gate_id="gate_0_input_integrity",
                 gate_name="Input Integrity Gate",
+                stage_id="agent_01",
+            ),
+            "gate_1_normalization_review": HitlGateRecord(
+                gate_id="gate_1_normalization_review",
+                gate_name="Normalization Review Gate",
                 stage_id="agent_01",
             ),
             "gate_1_scope_confirmation": HitlGateRecord(
@@ -166,6 +174,16 @@ class GateEngine:
                 gate_id="gate_5_mitigation_adequacy",
                 gate_name="Mitigation Adequacy Gate",
                 stage_id="agent_07",
+            ),
+            "gate_8_diagram_review": HitlGateRecord(
+                gate_id="gate_8_diagram_review",
+                gate_name="Diagram Review Gate",
+                stage_id="agent_08",
+            ),
+            "gate_9_stix_packaging_review": HitlGateRecord(
+                gate_id="gate_9_stix_packaging_review",
+                gate_name="STIX Packaging Review Gate",
+                stage_id="agent_09",
             ),
             "gate_6_merge_conflict_resolution": HitlGateRecord(
                 gate_id="gate_6_merge_conflict_resolution",

@@ -26,3 +26,5 @@ VS-007: Sprint demonstration SHALL cover, at minimum, the user-facing deliverabl
 VS-008: For release-candidate sprints that intentionally exclude automation from release gating, Sprint Team SHALL execute and document a full manual release-candidate validation campaign that includes functional workflow checks and documentation walkthrough checks (user manual, product documentation set, and deployment guide).
 
 VS-009: Sprint Team SHALL maintain at least one automated visible-browser validation scenario that exercises UI file upload behavior with approved sprint fixtures (including markdown narratives) and records command + fixture evidence in sprint test documentation.
+
+VS-010: For runtime state transitions and HITL gate publication paths, Sprint Team SHALL execute a race-condition verification control that checks causal ordering invariants (for example, Gate 0 payload-ready-before-paused projection) using automated API tests and at least one timestamped polling probe, and SHALL record evidence in sprint governance artifacts.

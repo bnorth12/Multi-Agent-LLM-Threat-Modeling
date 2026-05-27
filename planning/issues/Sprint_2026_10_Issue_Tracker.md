@@ -31,7 +31,7 @@ This tracker is the in-repo canonical status view for the LangGraph refactor spr
 - Sprint work completed on branch: `copilot/langgraph-implementation-refresh-docs`.
 - Issue files include implementation and verification notes.
 - GitHub issue IDs remain `TBD` in this environment; add IDs and auto-close keywords in PR once IDs are created.
-- Automated evidence captured in `planning/Test_Execution_Summary_Sprint_2026_10.md`:
+- Automated evidence captured in `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_10.md`:
   - 4 targeted unit tests passed
   - 259 unit tests passed (environment exclusions applied)
   - 165 integration/e2e tests passed with 15 live/browser tests deselected

@@ -28,8 +28,9 @@ class _StreamlitStub:
 class _FailingOrchestrator:
     """Orchestrator stub that simulates live-mode degradation failure."""
 
-    def __init__(self, _settings: RuntimeSettings) -> None:
+    def __init__(self, _settings: RuntimeSettings, run_id: str | None = None) -> None:
         self._settings = _settings
+        self._run_id = run_id
 
     def run_planned_stages(self, _state: FrameworkState) -> FrameworkState:
         raise RuntimeError(

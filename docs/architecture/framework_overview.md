@@ -6,17 +6,19 @@ This project defines a Python-first, multi-agent threat modeling framework that 
 
 Core outputs per run:
 
-- canonical JSON threat-model graph
-- STRIDE scoring with rationale
-- concrete threats with taxonomy mapping
-- mitigation recommendations with residual risk
-- STIX 2.1 bundle
-- Mermaid diagrams
-- final markdown report
+- canonical JSON threat-model graph as the authoritative machine-readable state
+- STRIDE scoring with rationale for analytical traceability
+- concrete threats with taxonomy mapping for downstream review
+- mitigation recommendations with residual risk context
+- STIX 2.1 bundle for standards-oriented exchange
+- Mermaid diagrams for visual architecture and flow review
+- final markdown report for analyst-facing narrative output
 
 ## 2. Architecture Summary
 
 The system uses staged orchestration with shared state and schema-validated handoffs between agents.
+
+The numbered stage list below is intentionally written as plain-language role names so that readers can follow the pipeline narrative without having to map agent numbers back to a separate legend.
 
 High-level flow:
 

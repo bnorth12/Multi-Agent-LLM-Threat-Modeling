@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import os
 import threading
 from pathlib import Path
 from typing import NamedTuple, Optional
@@ -63,78 +64,422 @@ AGENT_LABELS: dict[str, str] = {
     "agent_09": "09 — Human Report Writer",
 }
 
+_CANONICAL_GRAPH_EXPECTED_OUTPUT = (
+    '{\n'
+    '  "metadata": {"generation_timestamp": "", "model_level": "system"},\n'
+    '  "system": {\n'
+    '    "name": "UAS system",\n'
+    '    "description": "",\n'
+    '    "mission_criticality": "undetermined",\n'
+    '    "safety_criticality": "undetermined"\n'
+    '  },\n'
+    '  "subsystems": [\n'
+    '    {"id": "ss_nav", "name": "Navigation", "description": "", "parent_system": "UAS system"}\n'
+    '  ],\n'
+    '  "components": [\n'
+    '    {"id": "c_mc", "name": "Mission Computer", "parent_subsystem": "ss_nav", "hardware": "hosted", "software_modules": ["mc.core"], "description": ""}\n'
+    '  ],\n'
+    '  "functions": [],\n'
+    '  "interfaces": [\n'
+    '    {\n'
+    '      "id": "if_001",\n'
+    '      "name": "Nav Feed",\n'
+    '      "description": "",\n'
+    '      "from_node": "c_sensor",\n'
+    '      "to_node": "c_mc",\n'
+    '      "interface_type": "component-component",\n'
+    '      "protocol": "ARINC-429",\n'
+    '      "data_items": ["position_fix"],\n'
+    '      "trust_boundary_crossing": false,\n'
+    '      "trust_boundary_name": "",\n'
+    '      "stride": {\n'
+    '        "S": 0, "S_justification": "Not scored yet.",\n'
+    '        "T": 0, "T_justification": "Not scored yet.",\n'
+    '        "R": 0, "R_justification": "Not scored yet.",\n'
+    '        "I": 0, "I_justification": "Not scored yet.",\n'
+    '        "D": 0, "D_justification": "Not scored yet.",\n'
+    '        "E": 0, "E_justification": "Not scored yet."\n'
+    '      },\n'
+    '      "threats": []\n'
+    '    }\n'
+    '  ]\n'
+    '}'
+)
+
+_CANONICAL_GRAPH_WITH_THREAT_EXPECTED_OUTPUT = (
+    '{\n'
+    '  "metadata": {"generation_timestamp": "", "model_level": "system"},\n'
+    '  "system": {\n'
+    '    "name": "UAS system",\n'
+    '    "description": "",\n'
+    '    "mission_criticality": "undetermined",\n'
+    '    "safety_criticality": "undetermined"\n'
+    '  },\n'
+    '  "subsystems": [\n'
+    '    {"id": "ss_nav", "name": "Navigation", "description": "", "parent_system": "UAS system"}\n'
+    '  ],\n'
+    '  "components": [\n'
+    '    {"id": "c_mc", "name": "Mission Computer", "parent_subsystem": "ss_nav", "hardware": "hosted", "software_modules": ["mc.core"], "description": ""}\n'
+    '  ],\n'
+    '  "functions": [],\n'
+    '  "interfaces": [\n'
+    '    {\n'
+    '      "id": "if_001",\n'
+    '      "name": "Nav Feed",\n'
+    '      "description": "",\n'
+    '      "from_node": "c_sensor",\n'
+    '      "to_node": "c_mc",\n'
+    '      "interface_type": "component-component",\n'
+    '      "protocol": "ARINC-429",\n'
+    '      "data_items": ["position_fix"],\n'
+    '      "trust_boundary_crossing": true,\n'
+    '      "trust_boundary_name": "Navigation Boundary",\n'
+    '      "stride": {\n'
+    '        "S": 3, "S_justification": "Source authentication is weak.",\n'
+    '        "T": 2, "T_justification": "Integrity checks are limited.",\n'
+    '        "R": 1, "R_justification": "Audit exists but is partial.",\n'
+    '        "I": 2, "I_justification": "Unencrypted metadata may leak.",\n'
+    '        "D": 2, "D_justification": "Single bus path can be saturated.",\n'
+    '        "E": 1, "E_justification": "Privilege boundaries exist."\n'
+    '      },\n'
+    '      "threats": [\n'
+    '        {\n'
+    '          "name": "Navigation data spoofing",\n'
+    '          "description": "Adversary injects crafted ARINC-429 frames.",\n'
+    '          "mitre_attack_technique": ["ATT&CK:T0856 - Spoof Reporting Message"],\n'
+    '          "capec_id": "CAPEC-148 - Content Spoofing",\n'
+    '          "cwe_id": "CWE-290 - Authentication Bypass by Spoofing",\n'
+    '          "likelihood": 3,\n'
+    '          "impact": 5,\n'
+    '          "mitigations_technical": [\n'
+    '            {"control_id": "M-001", "title": "Bus integrity validation", "description": "Validate source integrity and sequence consistency.", "residual_risk_after_control": 2}\n'
+    '          ],\n'
+    '          "mitigations_administrative": [\n'
+    '            {"control_id": "M-010", "title": "Secure maintenance policy", "description": "Restrict and log maintenance bus access.", "residual_risk_after_control": 3}\n'
+    '          ]\n'
+    '        }\n'
+    '      ]\n'
+    '    }\n'
+    '  ]\n'
+    '}'
+)
+
+_CANONICAL_GRAPH_BOUNDARY_EXPECTED_OUTPUT = (
+    _CANONICAL_GRAPH_EXPECTED_OUTPUT
+    .replace('"trust_boundary_crossing": false', '"trust_boundary_crossing": true')
+    .replace('"trust_boundary_name": ""', '"trust_boundary_name": "Cross-Domain Boundary"')
+)
+
 _DEFAULT_PROMPTS: dict[str, str] = {
     "agent_01": {
         "prompt": (
-            "You are an aerospace systems engineering parser that converts unstructured and "
-            "semi-structured descriptions into strict canonical JSON. "
-            "Use fully qualified node paths where possible. "
-            "Infer missing IDs deterministically. "
-            "Never invent data flows not present in source material. "
-            "Output JSON only."
+            "Agent 01 Input Normalizer and Graph Builder\n\n"
+            "Purpose:\n"
+            "Convert raw narrative and tabular architecture input into canonical graph JSON.\n\n"
+            "Inputs:\n"
+            "- raw_text narrative\n"
+            "- tables parsed from ICD rows\n"
+            "- optional prior state context\n\n"
+            "Outputs:\n"
+            "- complete canonical graph JSON with metadata, system, subsystems, components, functions, interfaces\n\n"
+            "Preconditions:\n"
+            "- at least one architecture evidence source is provided\n"
+            "- parser output may be noisy, incomplete, or duplicative\n\n"
+            "Postconditions:\n"
+            "- output is a single canonical graph JSON document\n"
+            "- IDs and topology are stable and deterministic for identical evidence\n\n"
+            "System Prompt:\n"
+            "You are an aerospace systems engineering parser. "
+            "Output ONLY the complete canonical graph JSON with no prose and no markdown fences.\n\n"
+            "Rules:\n"
+            "1. Include every valid subsystem/component/interface present in input evidence.\n"
+            "2. Never invent interfaces that are unsupported by source data.\n"
+            "3. Normalize identifiers deterministically and preserve stable IDs when present.\n"
+            "4. Map tabular flow rows into interfaces with from_node, to_node, protocol, data_items.\n"
+            "5. trust_boundary_crossing must be a JSON boolean (true or false), never a string.\n"
+            "6. Keep STRIDE fields initialized but unscored (0 with justification placeholders).\n"
+            "7. Return schema-valid JSON only.\n\n"
+            "Validation Rules:\n"
+            "- include required top-level keys: metadata, system, subsystems, components, functions, interfaces\n"
+            "- emit arrays for subsystems/components/functions/interfaces even when empty\n"
+            "- preserve known IDs from evidence unless impossible to parse\n\n"
+            "Failure Handling:\n"
+            "- if evidence conflicts, preserve both candidates with conservative descriptions instead of dropping data\n"
+            "- if a field is unknown, emit an empty string or empty array (never prose placeholders)"
         ),
-        "expected_output": '{\n  "system": {\n    "name": "UAS system",\n    "components": [\n      {"id": "mission_computer", "name": "Mission Computer"}\n    ]\n  }\n}'
+        "expected_output": _CANONICAL_GRAPH_EXPECTED_OUTPUT
     },
     "agent_02": {
         "prompt": (
-            "You are a hierarchical systems analyst. Given a canonical graph, construct a "
-            "multi-level context model that captures subsystem relationships, trust zones, "
-            "and operational boundaries. Output canonical JSON only."
+            "Agent 02 Hierarchical Context Builder\n\n"
+            "Purpose:\n"
+            "Enrich and reconcile canonical graph structure while preserving architecture continuity.\n\n"
+            "Inputs:\n"
+            "- canonical graph from prior stage\n"
+            "- optional existing approved baseline graph\n\n"
+            "Outputs:\n"
+            "- complete canonical graph JSON with merged hierarchy context\n\n"
+            "Preconditions:\n"
+            "- prior-stage canonical graph exists\n"
+            "- baseline references may contain partial overlap and naming drift\n\n"
+            "Postconditions:\n"
+            "- hierarchy is internally consistent with stable parent-child links\n"
+            "- no top-level entity class is dropped during reconciliation\n\n"
+            "System Prompt:\n"
+            "You are a hierarchical systems analyst for aerospace threat modeling. "
+            "Output ONLY the complete canonical graph JSON with no prose and no markdown fences.\n\n"
+            "Rules:\n"
+            "1. Merge non-destructively and preserve approved baseline entities and IDs.\n"
+            "2. Preserve and refine subsystem/component relationships and parent links.\n"
+            "3. Keep all existing interfaces unless explicitly contradicted by stronger evidence.\n"
+            "4. Prefer more specific values when conflicts occur; avoid deleting known-good fields.\n"
+            "5. Return all top-level arrays (subsystems, components, functions, interfaces).\n"
+            "6. Return schema-valid JSON only.\n\n"
+            "Validation Rules:\n"
+            "- every component parent_subsystem must resolve to an existing subsystem\n"
+            "- interface endpoints must resolve to existing nodes where evidence permits\n"
+            "- if metadata exists, preserve it unless superseded by stronger validated context\n\n"
+            "Failure Handling:\n"
+            "- if hierarchy is ambiguous, preserve both structures with conservative descriptions\n"
+            "- never collapse architecture to a smaller graph due to uncertainty"
         ),
-        "expected_output": '{\n  "subsystems": [\n    {"id": "uas", "name": "UAS", "parent_system": "uas_system"}\n  ]\n}'
+        "expected_output": _CANONICAL_GRAPH_EXPECTED_OUTPUT
     },
     "agent_03": {
         "prompt": (
-            "You are a trust boundary auditor. Validate every edge in the canonical graph "
-            "for correct trust_boundary_crossing flags and boundary names. "
-            "Report violations and corrected values."
+            "Agent 03 Trust Boundary Validator and Enricher\n\n"
+            "Purpose:\n"
+            "Determine and label trust boundaries for every interface in the canonical graph.\n\n"
+            "Inputs:\n"
+            "- canonical graph JSON with interfaces\n"
+            "- optional policy and architecture context\n\n"
+            "Outputs:\n"
+            "- complete canonical graph JSON with trust_boundary_crossing and trust_boundary_name validated\n\n"
+            "Preconditions:\n"
+            "- interface list is present and parseable\n"
+            "- policy context may be missing or incomplete\n\n"
+            "Postconditions:\n"
+            "- every interface has a boundary decision with consistent naming semantics\n"
+            "- boundary annotations remain compatible with downstream STRIDE scoring\n\n"
+            "System Prompt:\n"
+            "You are a trust boundary auditor for aerospace and cyber-physical systems. "
+            "A trust boundary exists wherever data crosses security domains, privilege levels, "
+            "safety partitions, network enclaves, external links, or ownership/control boundaries. "
+            "Output ONLY the complete canonical graph JSON with no prose and no markdown fences.\n\n"
+            "Rules:\n"
+            "1. Evaluate every interface for boundary crossing using concrete architecture evidence.\n"
+            "2. Treat ambiguous cases conservatively: prefer trust_boundary_crossing=true.\n"
+            "3. If crossing=true, trust_boundary_name must be non-empty and specific.\n"
+            "4. If trust_boundary_name is non-empty, crossing must be true.\n"
+            "5. Preserve all entities and IDs; do not remove interfaces.\n"
+            "6. Return schema-valid JSON only.\n\n"
+            "Validation Rules:\n"
+            "- every interface includes both trust_boundary_crossing and trust_boundary_name\n"
+            "- boundary names are concise and domain-specific, not generic placeholders\n"
+            "- unchanged fields outside trust-boundary scope remain intact\n\n"
+            "Failure Handling:\n"
+            "- if evidence is incomplete, mark crossing=true and provide the best conservative boundary label\n"
+            "- never emit contradictory boundary fields"
         ),
-        "expected_output": '{\n  "violations": [],\n  "corrections": []\n}'
+        "expected_output": _CANONICAL_GRAPH_BOUNDARY_EXPECTED_OUTPUT
     },
     "agent_04": {
         "prompt": (
-            "You are a STRIDE threat analyst. Score each data flow against all six STRIDE "
-            "categories. Assign a severity (Critical/High/Medium/Low/Informational) and "
-            "confidence score. Output JSON only."
+            "Agent 04 STRIDE Scorer\n\n"
+            "Purpose:\n"
+            "Assign STRIDE scores and justifications to each interface in the canonical graph.\n\n"
+            "Inputs:\n"
+            "- canonical graph with trust-boundary enrichment\n\n"
+            "Outputs:\n"
+            "- complete canonical graph JSON with stride object populated for each interface\n\n"
+            "Preconditions:\n"
+            "- trust-boundary annotations exist for each interface\n"
+            "- architecture evidence is sufficient for risk-informed scoring\n\n"
+            "Postconditions:\n"
+            "- all STRIDE categories are scored and justified on every interface\n"
+            "- output supports downstream threat generation thresholds\n\n"
+            "System Prompt:\n"
+            "You are an aerospace STRIDE analyst. "
+            "Output ONLY the complete canonical graph JSON with no prose and no markdown fences.\n\n"
+            "Rules:\n"
+            "1. Score S, T, R, I, D, E for every interface using integers 0-5.\n"
+            "2. Provide concise, non-empty justification fields for each STRIDE category.\n"
+            "3. Maintain consistency with trust boundary context and safety criticality.\n"
+            "4. Preserve all entities and IDs; update only stride content and related rationale fields.\n"
+            "5. Return schema-valid JSON only.\n\n"
+            "Validation Rules:\n"
+            "- each interface has all six STRIDE numeric scores and six justification fields\n"
+            "- score range is 0-5 only, with integers (no floats or strings)\n"
+            "- high scores align with stated boundary and exposure context\n\n"
+            "Failure Handling:\n"
+            "- if evidence is sparse, assign conservative low-to-moderate scores with explicit rationale\n"
+            "- do not leave any STRIDE category unscored"
         ),
-        "expected_output": '{\n  "stride_scores": [\n    {"flow_id": "f1", "S": 2, "T": 1, "R": 0, "I": 0, "D": 0, "E": 0}\n  ]\n}'
+        "expected_output": _CANONICAL_GRAPH_EXPECTED_OUTPUT
     },
     "agent_05": {
         "prompt": (
-            "You are a concrete threat generator. Using the STRIDE scores and canonical "
-            "context, produce specific, actionable threat statements that reference real "
-            "component IDs and flow IDs. Output JSON only."
+            "Agent 05 Concrete Threat Generator\n\n"
+            "Purpose:\n"
+            "Generate concrete threats for high-risk interfaces using STRIDE context and grounded cyber-physical evidence.\n\n"
+            "Inputs:\n"
+            "- canonical graph with STRIDE scores and boundary annotations\n"
+            "- optional CTI retrieval evidence and prior analyst notes\n\n"
+            "Outputs:\n"
+            "- complete canonical graph JSON with threat objects populated on qualifying interfaces\n\n"
+            "Preconditions:\n"
+            "- STRIDE scoring complete\n\n"
+            "Postconditions:\n"
+            "- threats are concrete, plausible, and evidence-aligned\n"
+            "- non-qualifying interfaces retain empty threat arrays\n\n"
+            "System Prompt:\n"
+            "You are an aerospace red-team threat analyst.\n"
+            "Output ONLY the complete canonical graph JSON with no prose and no markdown fences.\n\n"
+            "Rules:\n"
+            "1. Generate threats only for interfaces where any STRIDE category score is 3 or higher.\n"
+            "2. Preserve all existing entities, IDs, and non-threat fields; only add threat objects.\n"
+            "3. Each threat must include taxonomy fields and likelihood/impact values (1-5).\n"
+            "4. Format taxonomy values with both ID and human-readable name (for example ATT&CK:T0856 - Spoof Reporting Message).\n"
+            "5. Keep mitigations_technical and mitigations_administrative as empty arrays at this stage.\n"
+            "6. If evidence is weak, emit conservative threats with explicit low-confidence rationale in description.\n"
+            "7. Return schema-valid JSON only.\n\n"
+            "Reference Examples:\n"
+            "- docs/agents/agent_05_concrete_threat_generator_examples.md\n"
         ),
-        "expected_output": '{\n  "threats": [\n    {"id": "t1", "description": "Spoofing attack on datalink."}\n  ]\n}'
+        "expected_output": _CANONICAL_GRAPH_WITH_THREAT_EXPECTED_OUTPUT
     },
     "agent_06": {
         "prompt": (
-            "You are a STIX 2.1 packager. Convert the threat list into a valid STIX 2.1 "
-            "bundle with attack-pattern, threat-actor, and relationship objects. "
-            "Output JSON only."
+            "Agent 06 STIX Packager\n\n"
+            "Purpose:\n"
+            "Convert canonical threat content into a valid STIX 2.1 bundle for downstream exchange.\n\n"
+            "Inputs:\n"
+            "- canonical graph with threats and taxonomy mappings\n"
+            "- optional prior STIX context for stable actor naming\n\n"
+            "Outputs:\n"
+            "- STIX 2.1 bundle JSON containing attack-pattern, threat-actor, and relationship objects\n\n"
+            "System Prompt:\n"
+            "You are a STIX 2.1 packaging specialist for aerospace threat intelligence. "
+            "Output ONLY STIX JSON with no prose and no markdown fences.\n\n"
+            "Rules:\n"
+            "1. Emit top-level type=bundle and spec_version=2.1.\n"
+            "2. Include only schema-valid STIX object types and IDs for this stage scope.\n"
+            "3. Preserve threat semantics from canonical content; do not invent unrelated campaigns.\n"
+            "4. Create relationship objects that tie threat actors to attack patterns when evidence exists.\n"
+            "5. Keep output deterministic for repeated identical inputs where feasible.\n"
+            "6. Return parseable JSON only."
         ),
-        "expected_output": '{\n  "type": "bundle",\n  "objects": [\n    {"type": "attack-pattern", "id": "attack-pattern--1234"}\n  ]\n}'
+        "expected_output": (
+            '{\n'
+            '  "type": "bundle",\n'
+            '  "id": "bundle--11111111-1111-4111-8111-111111111111",\n'
+            '  "spec_version": "2.1",\n'
+            '  "objects": [\n'
+            '    {"type": "attack-pattern", "spec_version": "2.1", "id": "attack-pattern--22222222-2222-4222-8222-222222222222", "name": "Navigation data spoofing"},\n'
+            '    {"type": "relationship", "spec_version": "2.1", "id": "relationship--33333333-3333-4333-8333-333333333333", "relationship_type": "uses", "source_ref": "threat-actor--44444444-4444-4444-8444-444444444444", "target_ref": "attack-pattern--22222222-2222-4222-8222-222222222222"},\n'
+            '    {"type": "threat-actor", "spec_version": "2.1", "id": "threat-actor--44444444-4444-4444-8444-444444444444", "name": "RF-capable adversary"}\n'
+            '  ]\n'
+            '}'
+        )
     },
     "agent_07": {
         "prompt": (
-            "You are a mitigation engineer. For each threat, propose one or more MITRE "
-            "ATT&CK-aligned mitigations with implementation guidance and effort estimates. "
-            "Output JSON only."
+            "Agent 07 Mitigation Generator\n\n"
+            "Purpose:\n"
+            "Generate actionable technical and administrative mitigations for each threat in the canonical graph.\n\n"
+            "Inputs:\n"
+            "- canonical graph with populated threat objects\n"
+            "- optional controls context and organizational constraints\n\n"
+            "Outputs:\n"
+            "- complete canonical graph JSON with mitigation entries attached per threat\n\n"
+            "System Prompt:\n"
+            "You are a mitigation engineer for aerospace and cyber-physical systems. "
+            "Output ONLY the complete canonical graph JSON with no prose and no markdown fences.\n\n"
+            "Rules:\n"
+            "1. Preserve all existing threat records and IDs; do not remove threats.\n"
+            "2. Populate mitigations_technical and mitigations_administrative with concrete controls when warranted.\n"
+            "3. Each mitigation entry must include control_id, title, description, and residual_risk_after_control (1-5).\n"
+            "4. Keep mitigations traceable to threat context and protocol/boundary characteristics.\n"
+            "5. If mitigation evidence is weak, provide conservative controls with explicit assumptions.\n"
+            "6. Return schema-valid JSON only."
         ),
-        "expected_output": '{\n  "mitigations": [\n    {"id": "m1", "description": "Encrypt datalink communications."}\n  ]\n}'
+        "expected_output": _CANONICAL_GRAPH_WITH_THREAT_EXPECTED_OUTPUT
     },
     "agent_08": {
         "prompt": (
-            "You are a diagram generator. Produce a Mermaid flowchart that shows the system "
-            "architecture, trust boundaries, and top threats. Output Mermaid markdown only."
+            "Agent 08 Diagram Generator\n\n"
+            "Purpose:\n"
+            "Generate Mermaid data-flow diagrams with adaptive abstraction levels for architecture and risk review.\n\n"
+            "Inputs:\n"
+            "- canonical graph with boundaries, risks, threats, and mitigations\n\n"
+            "Outputs:\n"
+            "- Mermaid diagram set with one mandatory top-context diagram and optional deeper levels\n\n"
+            "Preconditions:\n"
+            "- threat and mitigation enrichment complete\n\n"
+            "Postconditions:\n"
+            "- diagram set remains readable at each abstraction level\n"
+            "- diagram set uses consistent node IDs across diagrams when the same entity appears\n\n"
+            "System Prompt:\n"
+            "You are an aerospace data-flow diagram specialist.\n\n"
+            "Rules:\n"
+            "1. Emit MERMAID_LEVEL0 in a mermaid fenced block for every run.\n"
+            "2. Emit additional levels only when complexity or risk density justifies deeper decomposition.\n"
+            "3. If emitting additional levels, use sequential markers with no gaps (MERMAID_LEVEL0..MERMAID_LEVELN).\n"
+            "4. Keep diagram labels concise and include per-category STRIDE maxima where available.\n"
+            "5. Preserve trust-boundary visibility and include a short legend in each emitted diagram.\n"
+            "6. Prefer split-focused diagrams over dense unreadable single diagrams.\n"
+            "7. Return Mermaid markdown only, matching required section marker format.\n\n"
+            "Validation Rules:\n"
+            "- `MERMAID_LEVEL0` must exist\n"
+            "- additional levels are optional and model-determined\n"
+            "- if additional levels are emitted, they must be sequential with no gaps (0,1,2,...,N)\n"
+            "- each emitted section must contain one Mermaid fenced block\n"
+            "- each interface label should include per-category STRIDE maxima when STRIDE data exists\n\n"
+            "Failure Handling:\n"
+            "- if deeper decomposition is not justified by complexity, emit only `MERMAID_LEVEL0` and `MERMAID_LEVEL1`\n"
+            "- if a candidate deep diagram would be unreadable, split it into multiple focused lower-level diagrams\n"
+            "- if partition/software stack detail (for example hypervisors, virtual machines, ARINC 653 partitions) is not present in canonical evidence, do not invent it\n\n"
+            "Reference Examples:\n"
+            "- docs/agents/agent_08_diagram_generator_examples.md"
         ),
-        "expected_output": '```mermaid\ngraph TD\n  A[UAS] -->|Datalink| B[Ground Station]\n```'
+        "expected_output": (
+            "MERMAID_LEVEL0\n"
+            "```mermaid\n"
+            "flowchart TD\n"
+            "  UAS[\"UAS system\"] -->|\"ARINC-429 S:3 T:2 R:1 I:2 D:2 E:1\"| MC[\"Mission Computer\"]\n"
+            "  subgraph LEGEND[\"Legend\"]\n"
+            "    L1[\"Labels show per-category STRIDE maxima\"]\n"
+            "  end\n"
+            "```\n\n"
+            "MERMAID_LEVEL1\n"
+            "```mermaid\n"
+            "flowchart TD\n"
+            "  NAV[\"Navigation Sensor\"] -->|\"position_fix S:3 T:2 R:1 I:2 D:2 E:1\"| MC[\"Mission Computer\"]\n"
+            "  MC --> FC[\"Flight Control\"]\n"
+            "```"
+        )
     },
     "agent_09": {
         "prompt": (
-            "You are a technical report writer. Produce a comprehensive threat model report "
-            "in Markdown format suitable for security review boards. Include executive summary, "
-            "methodology, findings, mitigation, recommendations, and diagrams."
+            "Agent 09 Report Writer\n\n"
+            "Purpose:\n"
+            "Produce a governance-ready markdown threat model report from approved run artifacts.\n\n"
+            "Inputs:\n"
+            "- canonical graph with threat and mitigation content\n"
+            "- generated Mermaid/STIX artifacts and gate decisions\n"
+            "- optional analyst notes and rationale text\n\n"
+            "Outputs:\n"
+            "- markdown report suitable for security and safety review boards\n\n"
+            "System Prompt:\n"
+            "You are a technical report writer for aerospace threat governance. "
+            "Output markdown only with no surrounding prose.\n\n"
+            "Rules:\n"
+            "1. Include required sections: Executive Summary, Methodology, System Scope, Trust Boundaries, STRIDE Findings, Top Threats, and Mitigation Mapping.\n"
+            "2. Use concise, auditable language and preserve evidence traceability to canonical artifacts.\n"
+            "3. Do not invent systems, interfaces, threats, or mitigations absent from canonical evidence.\n"
+            "4. Keep table and heading structure stable for downstream parsing and export.\n"
+            "5. Reference Mermaid artifacts when available; otherwise state that no diagrams were produced.\n"
+            "6. Return markdown only."
         ),
         "expected_output": (
             "# Threat Model Report\n"
@@ -157,37 +502,31 @@ _DEFAULT_PROMPTS: dict[str, str] = {
             "- Approach: STRIDE, STIX 2.1, MITRE ATT&CK\n"
             "- Data sources: Canonical system model, context graph\n"
             "\n"
-            "## System Overview\n"
+            "## System Scope and Description\n"
             "- System Name: UAS\n"
             "- Major Components: Mission Computer, Datalink, Ground Station\n"
             "- Diagram: See Mermaid diagram section\n"
             "\n"
-            "## Threat Analysis\n"
+            "## Trust Boundaries\n"
+            "- Boundary 1: External RF ingress to mission network.\n"
+            "- Boundary 2: Maintenance ingress to onboard compute.\n"
+            "\n"
+            "## Data Flow Diagrams\n"
+            "```mermaid\nflowchart TD\n  A[UAS] -->|Datalink| B[Ground Station]\n```\n"
+            "\n"
+            "## STRIDE Findings\n"
             "| Threat ID | Description | Severity |\n"
             "|-----------|-------------|----------|\n"
             "| T-001     | Spoofing attack on datalink | High |\n"
             "| T-002     | Data tampering in ground station | Medium |\n"
             "\n"
-            "## Findings\n"
+            "## Top Threats\n"
             "- The datalink is vulnerable to spoofing due to lack of encryption.\n"
             "- Ground station authentication is insufficient.\n"
             "\n"
-            "## Mitigation\n"
+            "## Mitigation Mapping and Residual Risk\n"
             "- Encrypt datalink communications to prevent spoofing.\n"
             "- Implement multi-factor authentication for ground station access.\n"
-            "\n"
-            "## Recommendations\n"
-            "- Implement end-to-end encryption on datalink.\n"
-            "- Strengthen ground station authentication.\n"
-            "\n"
-            "## Mermaid Diagrams\n"
-            "```mermaid\ngraph TD\n  A[UAS] -->|Datalink| B[Ground Station]\n```\n"
-            "- Architecture, trust boundaries, and threat flows are visualized above.\n"
-            "\n"
-            "## Appendix\n"
-            "- Full STRIDE scoring table\n"
-            "- STIX 2.1 bundle\n"
-            "- Additional diagrams and references\n"
         )
     },
 }
@@ -195,7 +534,12 @@ _DEFAULT_PROMPTS: dict[str, str] = {
 _DEFAULT_TEMPERATURES: dict[str, float] = {agent: 0.2 for agent in AGENT_IDS}
 
 # Default file location for the global store instance.
-_DEFAULT_STORE_PATH = Path.home() / ".multi_agent_threat_modeler_prompts.json"
+_DEFAULT_STORE_PATH = Path(
+    os.environ.get(
+        "THREAT_MODELER_PROMPT_STORE_PATH",
+        str(Path.home() / ".multi_agent_threat_modeler_prompts.json"),
+    )
+)
 
 
 # ---------------------------------------------------------------------------
@@ -401,6 +745,7 @@ class PromptStore:
         self._validate_agent(agent_id)
         self.set_prompt(agent_id, _DEFAULT_PROMPTS[agent_id]["prompt"], actor=f"{actor} (reset to default)")
         with self._lock:
+            self._expected_outputs[agent_id] = _DEFAULT_PROMPTS[agent_id]["expected_output"]
             self._temperatures[agent_id] = _DEFAULT_TEMPERATURES[agent_id]
             self._save_to_disk()
 
@@ -485,3 +830,8 @@ def is_modified(agent_id: str) -> bool:
 def get_default_prompt(agent_id: str) -> str:
     """Return default prompt text for *agent_id*."""
     return _default_store.get_default_prompt(agent_id)
+
+
+def get_store_path() -> str:
+    """Return the absolute path of the active prompt store file."""
+    return str(_DEFAULT_STORE_PATH)
