@@ -1,29 +1,19 @@
-# v1.0.0 Release Snapshot Container
+# v1.0.0 Release Candidate (Deployment Package)
 
-Purpose: version-lock all production release artifacts as a point-in-time snapshot for governance, auditability, and repeatability.
+Purpose: provide a deployment-ready release payload containing runtime code and end-user/operator instructions only.
 
-## Folder Contracts
+## Included Folders
 
 - `code_snapshot/`
-  - Production code snapshot only.
-  - Exclude test framework internals and test suite implementation details.
+  - Runtime application code and runtime dependency manifests.
+  - Frontend deployable build output in `frontend/dist/`.
 
 - `documentation/`
-  - Updated user manual (markdown)
-  - Updated user manual (HTML)
-  - Updated deployment guide
-  - Release notes with deferred/missing functionality disclosures
+  - `User_Manual_v1.0.0.md`
+  - `User_Manual_v1.0.0.html`
+  - `Deployment_Guide_v1.0.0.md`
+  - `Release_Notes_v1.0.0.md`
 
-- `governance/`
-  - Final sign-off checklist and approval record
-  - Software version descriptions and component version inventory
-  - Accepted risk register and deferred-scope register (S13/S14 references)
+## Exclusion Rule
 
-- `evidence/`
-  - Test evidence summaries (results only)
-  - Validation decision records
-  - Environment and command-class audit trail
-
-## Required Release Principle
-
-Publish evidence outcomes, not test framework internals.
+This package excludes developer workflow assets and governance/test-evidence payloads that are not required to deploy and operate the application.
