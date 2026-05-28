@@ -18,14 +18,14 @@ Define the software design authority for how the canonical graph is created, enr
 
 ## Related Requirements
 
-- PRJ-006 orchestrated agent execution
-- PRJ-013 contextual input enrichment
-- PRJ-015 canonical-state integrity
-- PRJ-021 evidence generation and delivery
-- PRJ-023 runtime execution control
-- PRJ-026 stage-to-stage contract integrity
-- INT-005 runtime execution control
-- INT-006 canonical export delivery
+- PRJ-006 HITL Governance: canonical-state progression must support governed pause, review, and continuation points.
+- PRJ-013 Incremental Enrichment: the canonical graph must support safe enrichment without destructive overwrite.
+- PRJ-015 Fail-Safe Halting: validation logic must stop unsafe downstream propagation.
+- PRJ-021 Component Semantic Version Authority: canonical-state evidence must remain version-aware for release governance.
+- PRJ-023 LangGraph Native Orchestration: canonical-state handoff rules must remain valid across the orchestrated runtime path.
+- PRJ-026 Inter-Agent Handoff Integrity: each stage must pass forward only controlled and traceable canonical-state updates.
+- INT-005 Stage Event Contract: state transitions must remain observable and auditable.
+- INT-006 HITL Decision Contract: reviewed canonical-state changes must reflect structured human decisions when governance gates apply.
 
 ## 1. Scope
 
@@ -42,6 +42,8 @@ This design does not define deployment topology or detailed agent prompt behavio
 ## 2. Canonical Graph Design Role
 
 The canonical graph is the single authoritative representation of the analyzed system and its threat-model state.
+
+In practice, this means readers should think of the canonical graph as the one version of the truth that every major subsystem must either update under controlled rules or consume as read-only authority. Reports, diagrams, STIX bundles, UI views, and evidence packages may each present the data differently, but none of them are allowed to become a competing source of truth.
 
 It shall serve as:
 
@@ -124,3 +126,4 @@ Verification for this design should include:
 - stage contract tests for required canonical fields
 - fallback-path tests that preserve prior authoritative state
 - evidence confirming exported artifacts derive from validated canonical content
+

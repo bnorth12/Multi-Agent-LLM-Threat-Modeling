@@ -17,13 +17,13 @@ Define the software design authority for turning authoritative runtime and canon
 
 ## Related Requirements
 
-- PRJ-011 export generation
-- PRJ-021 evidence generation and delivery
-- PRJ-022 auditability and provenance support
-- INT-006 canonical export delivery
-- INT-007 diagram output delivery
-- INT-010 STIX output delivery
-- INT-011 report output delivery
+- PRJ-011 Export Completeness: packaging must generate the expected artifact set from authoritative sources.
+- PRJ-021 Component Semantic Version Authority: release-ready artifact bundles must identify the versioned components that produced them.
+- PRJ-022 Component File Version Traceability: evidence packages must retain file-level provenance where required.
+- INT-006 HITL Decision Contract: governed decisions that affect release artifacts must remain traceable in the evidence set.
+- INT-007 Re-Run Contract: export packaging must stay consistent when artifacts are regenerated from an approved restart point.
+- INT-010 STIX Bundle Contract: STIX-oriented consumers require a structured threat-intelligence export path.
+- INT-011 Human Report Contract: analyst-readable reports must remain part of the controlled output package.
 
 ## 1. Scope
 
@@ -88,6 +88,8 @@ The design recognizes five artifact classes:
 
 Each evidence package should preserve enough context to reconstruct what was produced, under which controls, and from which authoritative state.
 
+The intent is that an auditor, reviewer, or future maintainer can inspect one evidence package and understand not just what files were emitted, but why those files are trustworthy, which execution path produced them, and whether the package represents a complete or degraded delivery set.
+
 Recommended evidence fields include:
 
 - run identifier
@@ -139,3 +141,4 @@ Verification for this design should include:
 - manifest verification for complete and degraded bundles
 - traceability checks from exported artifacts back to authoritative runtime state
 - release-candidate dry runs confirming the delivery package stands alone
+
