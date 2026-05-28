@@ -1,0 +1,240 @@
+"""OpenAI-compatible adapter supporting completions and non-completions endpoints."""
+
+from __future__ import annotations
+
+import json
+import os
+import time
+import logging
+from urllib import request
+from urllib.error import HTTPError, URLError
+
+from .base import LlmAdapter
+from .llm_provider_error import LlmProviderError
+
+
+DEFAULT_TIMEOUT_SECONDS = 180
+DEFAULT_MAX_ATTEMPTS = 3
+
+
+class OpenAiCompatibleAdapter(LlmAdapter):
+    """Call an OpenAI-compatible API.
+
+    Supports multiple endpoint styles so reasoning and multi-agent APIs that do
+    not expose chat.completions can still be used.
+    """
+
+    def __init__(
+        self,
+        *,
+        model: str,
+        api_key: str = "",
+        api_key_env_candidates: tuple[str, ...] = (),
+        endpoint_mode: str = "chat_completions",
+        base_url: str = "",
+        timeout_seconds: int | None = None,
+        max_attempts: int | None = None,
+    ) -> None:
+        self._model = model
+        self._api_key = api_key.strip()
+        if not self._api_key:
+            for env_name in api_key_env_candidates:
+                env_value = os.getenv(env_name, "").strip()
+                if env_value:
+                    self._api_key = env_value
+                    break
+        self._endpoint_mode = endpoint_mode
+        self._base_url = base_url.strip()
+        timeout_env = os.getenv("THREAT_MODELER_LLM_TIMEOUT_SECONDS", "").strip()
+        attempts_env = os.getenv("THREAT_MODELER_LLM_MAX_ATTEMPTS", "").strip()
+        if timeout_seconds is not None:
+            self._timeout_seconds = max(1, int(timeout_seconds))
+        elif timeout_env:
+            self._timeout_seconds = self._coerce_positive_int(timeout_env, DEFAULT_TIMEOUT_SECONDS)
+        else:
+            self._timeout_seconds = None
+        if max_attempts is not None:
+            self._max_attempts = max(1, int(max_attempts))
+        elif attempts_env:
+            self._max_attempts = self._coerce_positive_int(attempts_env, DEFAULT_MAX_ATTEMPTS)
+        else:
+            self._max_attempts = None
+        self._last_usage: dict[str, int | str] = {}
+
+    @staticmethod
+    def _coerce_positive_int(raw: str, default_value: int) -> int:
+        try:
+            return max(1, int(raw))
+        except (TypeError, ValueError):
+            return default_value
+
+    def _resolve_api_key(self) -> str:
+        return self._api_key
+
+    def _post_json(self, path: str, payload: dict, api_key: str) -> dict:
+        if not self._base_url:
+            raise EnvironmentError(
+                "No base URL configured for live provider. Set connection_url in Pipeline Configuration."
+            )
+
+        base = self._base_url.rstrip("/")
+        url = f"{base}{path}"
+        body = json.dumps(payload).encode("utf-8")
+        req = request.Request(
+            url,
+            data=body,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+
+        last_error: Exception | None = None
+
+        max_attempts = self._max_attempts
+        if max_attempts is None:
+            max_attempts = DEFAULT_MAX_ATTEMPTS
+
+        timeout = self._timeout_seconds
+        if timeout is None:
+            timeout = DEFAULT_TIMEOUT_SECONDS
+
+
+        logger = logging.getLogger("threat_modeler.llm.openai_compatible_adapter")
+        for attempt in range(1, max_attempts + 1):
+            try:
+                with request.urlopen(req, timeout=timeout) as response:
+                    return json.loads(response.read().decode("utf-8"))
+            except HTTPError as exc:
+                detail = exc.read().decode("utf-8", errors="replace") if exc.fp else str(exc)
+                retriable = exc.code in {429, 500, 502, 503, 504}
+                if exc.code == 429:
+                    # Rate limit: wait 2 minutes before retrying
+                    wait_seconds = 120
+                    last_error = LlmProviderError(
+                        f"Provider HTTP 429 Rate Limit: {detail}",
+                        code=429,
+                        retryable=True,
+                        wait_seconds=wait_seconds,
+                    )
+                    if attempt < max_attempts:
+                        logger.warning(f"Rate limit (429) encountered, waiting {wait_seconds}s before retry (attempt {attempt}/{max_attempts})")
+                        time.sleep(wait_seconds)
+                        continue
+                    else:
+                        raise last_error from exc
+                else:
+                    last_error = RuntimeError(f"Provider HTTP error {exc.code}: {detail}")
+                    if not retriable or attempt == max_attempts:
+                        raise last_error from exc
+            except (URLError, TimeoutError) as exc:
+                retriable = True
+                last_error = exc
+                if attempt == max_attempts:
+                    if isinstance(exc, URLError):
+                        raise RuntimeError(f"Unable to reach provider endpoint: {exc.reason}") from exc
+                    raise RuntimeError(
+                        f"Provider request timed out after {max_attempts} attempts "
+                        f"(timeout={timeout}s, path={path}, model={self._model}, mode={self._endpoint_mode})"
+                    ) from exc
+
+            # Exponential backoff for other retriable errors: 1s, 2s, ...
+            if attempt < max_attempts:
+                backoff = 2 ** (attempt - 1)
+                logger.info(f"Retryable error, waiting {backoff}s before retry (attempt {attempt}/{max_attempts})")
+                time.sleep(backoff)
+
+        if last_error is not None:
+            raise RuntimeError(f"Provider request failed: {last_error}") from last_error
+        raise RuntimeError("Provider request failed with unknown error")
+
+    @staticmethod
+    def _normalise_usage(usage: dict) -> dict[str, int]:
+        prompt_tokens = int(usage.get("prompt_tokens", 0) or 0)
+        completion_tokens = int(usage.get("completion_tokens", 0) or 0)
+        total_tokens = int(usage.get("total_tokens", 0) or 0)
+
+        details = usage.get("completion_tokens_details", {}) or {}
+        reasoning_tokens = int(details.get("reasoning_tokens", 0) or 0)
+
+        prompt_details = usage.get("prompt_tokens_details", {}) or {}
+        cached_tokens = int(prompt_details.get("cached_tokens", 0) or 0)
+
+        if total_tokens <= 0:
+            total_tokens = prompt_tokens + completion_tokens
+
+        return {
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "reasoning_tokens": reasoning_tokens,
+            "cached_tokens": cached_tokens,
+            "total_tokens": total_tokens,
+        }
+
+    def usage_snapshot(self) -> dict[str, int | str]:
+        return dict(self._last_usage)
+
+    def complete(self, system_prompt: str, user_message: str) -> str:
+        api_key = self._resolve_api_key()
+        if not api_key:
+            raise EnvironmentError("API key not found in run settings. Provide model.api_key in RuntimeSettings.")
+
+        mode = self._endpoint_mode.lower().strip()
+        self._last_usage = {}
+        if mode in ("responses", "multi_agent"):
+            response = self._post_json(
+                "/responses",
+                {
+                    "model": self._model,
+                    "input": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_message},
+                    ],
+                },
+                api_key,
+            )
+            usage = response.get("usage", {}) or {}
+            self._last_usage = {
+                "provider": "openai-compatible",
+                "endpoint_mode": mode,
+                "model": self._model,
+                **self._normalise_usage(usage),
+            }
+            output_text = response.get("output_text", "")
+            if output_text:
+                return output_text
+
+            # Fallback for response variants with nested content blocks.
+            output = response.get("output", []) or []
+            for item in output:
+                content = item.get("content", []) or []
+                for block in content:
+                    text = block.get("text", "")
+                    if text:
+                        return text
+            return ""
+
+        response = self._post_json(
+            "/chat/completions",
+            {
+                "model": self._model,
+                "messages": [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_message},
+                ],
+            },
+            api_key,
+        )
+        usage = response.get("usage", {}) or {}
+        self._last_usage = {
+            "provider": "openai-compatible",
+            "endpoint_mode": mode,
+            "model": self._model,
+            **self._normalise_usage(usage),
+        }
+        choices = response.get("choices", []) or []
+        if not choices:
+            return ""
+        message = choices[0].get("message", {}) or {}
+        return message.get("content", "") or ""
