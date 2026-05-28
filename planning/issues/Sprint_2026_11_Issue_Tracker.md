@@ -129,12 +129,14 @@ The following known items are intentionally not part of Sprint 2026-11 closeout 
 
 | Deferred ID | Title | Current Status | Next Target Sprint | Reason Deferred |
 |---|---|---|---|---|
-| D-S11-001 | Custom HTML Frontend for Non-Streamlit Release | Proposed | Sprint 2026-12 (planning target) | Large architecture/program increment; not required to close current S11 alignment, testing, and governance scope safely. |
+| D-S11-001 | Custom HTML Frontend for Non-Streamlit Release | Closed (completed via #62) | Sprint 2026-12 (completed) | Large architecture/program increment; completed as part of Sprint 2026-12 release-engineering separation work. |
+| D-S11-002 | Connection Verify Must Perform Live Prompt Ping | Proposed (#87) | Sprint 2026-13 (planning target) | Verify currently requires explicit live prompt round-trip hardening to prevent false-positive connectivity checks and post-verify run failures. |
 
 Planning linkage:
 
-- Source issue file: `planning/issues/issue_2026_11_D_S11_001_Custom_HTML_Frontend_For_Non_Streamlit_Release.md`
-- S11 closeout must still update README/docs to state operational intent (Streamlit not required for deployed release path) without introducing this full implementation in Sprint 2026-11.
+- Source issue file (closed scope): `planning/issues/Sprint_2026_11_Issue_Tracker.md` row D-S11-001, GitHub issue #62 (closed)
+- Source issue file (active deferred scope): `planning/issues/issue_2026_05_D_S11_001_Live_Prompt_Verification_Ping.md`, GitHub issue #87 (open)
+- S11 closeout governance is preserved by keeping deferred follow-on scope explicitly tracked in GitHub and sprint planning artifacts.
 
 ### Validation Evidence (S11-013 through S11-016)
 
@@ -149,4 +151,4 @@ Planning linkage:
 - ✅ S11-015 (Run Diagnostics Panel): "Run Diagnostics" subheader and all four metric rows visible within 20s of run start; assertion passed in both autonomous test runs.
 - ✅ S11-016 (Enhanced Error Display): Execution errors rendered with decoded HTML entities; HTTP status code extraction working (verified on backend FAILED transitions).
 
-**Next Actions**: Keep the remaining open Sprint 11 backlog items moving through implementation and closure, while Sprint 12 deferral work remains isolated in D-S11-001 / issue #62.
+**Next Actions**: Keep the remaining open Sprint 11 backlog items moving through implementation and closure; treat D-S11-001 / issue #62 as completed and track live verify hardening as D-S11-002 / issue #87.

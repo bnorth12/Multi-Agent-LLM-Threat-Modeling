@@ -13,3 +13,14 @@ Use this folder for:
 Recommended naming:
 
 - `Deployment_Guide_v<version>.md`
+- `RC1_Baseline_And_Go_No_Go_<date>.md`
+- `RC1_Final_Publish_Recommendation_<date>.md`
+
+Current release-planning records:
+
+- `RC1_Baseline_And_Go_No_Go_2026-05-26.md`
+- `RC1_Final_Publish_Recommendation_2026-05-26.md`
+
+Version-locked release snapshot containers:
+
+- `v1.0.0/`
