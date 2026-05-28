@@ -1,4 +1,3 @@
-```mermaid
 flowchart TB
     U["Analyst, Reviewer, and Operator Roles"] --> UI
     EXT["External Sources\nNarratives + ICD Tables"] --> ING
@@ -77,26 +76,14 @@ flowchart TB
     HITL --> RM
     RM -.resume/checkpoint.-> A1
 
-    classDef pers fill:#7c3aed,color:#ffffff,stroke:#4c1d95,stroke-width:1px
-    CG --> O1
-    class UI,ORCH,PIPE seg
-    class RM,VAL,HITL,A1,A2,A3,A4,A5,A6,A7,A8,A9,UI1,UI2,UI3,UI4,UI5 proc
-    A9 --> O4
-    class P1,P2,P3 pers
-    SNAP --> O5
-    RM --> SNAP
+    classDef pers fill:#7c3aed,color:#ffffff,stroke:#4c1d95,stroke-width:1px;
+    classDef seg fill:#0f766e,color:#ffffff,stroke:#134e4a,stroke-width:1px;
+    classDef proc fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:1px;
+    classDef data fill:#b45309,color:#ffffff,stroke:#78350f,stroke-width:1px;
+    classDef out fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:1px;
+    classDef ext fill:#4683c8,color:#ffffff,stroke:#385f8b,stroke-width:1px;
 
-    UI3 --> O1
-    UI3 --> O2
-    UI3 --> O3
-    UI3 --> O4
-    UI3 --> O5
-
-    classDef seg fill:#0f766e,color:#ffffff,stroke:#134e4a,stroke-width:1px
-    classDef proc fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:1px
-    classDef data fill:#b45309,color:#ffffff,stroke:#78350f,stroke-width:1px
-    classDef out fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:1px
-    class UI,ORCH,PIPE seg
-    class RM,VAL,HITL,SNAP,A1,A2,A3,A4,A5,A6,A7,A8,A9,UI1,UI2,UI3,UI4,UI5 proc
-    class CG data
-    class O1,O2,O3,O4,O5 out
+    class UI,ORCH,PIPE seg;
+    class RM,VAL,HITL,A1,A2,A3,A4,A5,A6,A7,A8,A9,UI1,UI2,UI3,UI4,UI5 proc;
+    class CG data;
+    class O1,O2,O3,O4,O5 out;
