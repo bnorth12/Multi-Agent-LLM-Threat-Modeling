@@ -1,24 +1,23 @@
-# Deployment Guide: v1.0.0-rc1
+# Deployment Guide: v1.0.0 Release Candidate
 
 ## 1. Purpose
 
-This guide defines deployment steps for Release Candidate 1 (v1.0.0-rc1), including installation, configuration, validation, and rollback.
+This guide defines deployment steps for the v1.0.0 release-candidate package, including installation, configuration, validation, and rollback.
 
-## 2. RC1 Release Policy
+## 2. Release Candidate Policy
 
-- RC1 uses a **two-stage validation gate**.
-- Stage 1: clean automated pass across RC-included features is required before manual RC campaign starts.
-- Stage 2: manual RC validation campaign is release-gating after automated pass.
+- The release candidate uses a **two-stage validation gate**.
+- Stage 1: deployment smoke validation must pass before manual campaign starts.
+- Stage 2: manual operator validation campaign is release-gating after automated pass.
 
 ## 3. Deployment Preconditions
 
 - Access to release artifacts:
-  - `threat-modeler-1.0.0rc1-py3-none-any.whl`
-  - `threat-modeler-1.0.0rc1.tar.gz`
-  - `USER_MANUAL.md`
-  - `DEPLOYMENT_GUIDE.md`
-  - `RELEASE_NOTES.md`
-  - `SHA256SUMS.txt`
+  - `code_snapshot/`
+  - `documentation/User_Manual_v1.0.0.md`
+  - `documentation/User_Manual_v1.0.0.html`
+  - `documentation/Deployment_Guide_v1.0.0.md`
+  - `documentation/Release_Notes_v1.0.0.md`
 - Environment prerequisites:
   - Python 3.11+
   - OS: Windows, Linux, or macOS
@@ -26,51 +25,46 @@ This guide defines deployment steps for Release Candidate 1 (v1.0.0-rc1), includ
 
 ## 4. Artifact Integrity Validation
 
-1. Verify checksums from `SHA256SUMS.txt`.
-2. Confirm artifact names and versions match `v1.0.0-rc1`.
-3. Confirm component semantic version manifest and component-file version inventory are present in release evidence bundle.
+1. Verify the required folders/files above are present in the release package.
+1. Confirm version-locked documentation names under `documentation/`.
+1. Confirm frontend deployable assets are present under `code_snapshot/frontend/dist/`.
 
 ## 5. Installation Procedure
 
-### 5.1 Install from Wheel
+### 5.1 Prepare Python Environment
 
 ```powershell
-pip install threat-modeler-1.0.0rc1-py3-none-any.whl
+cd code_snapshot
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
 ```
 
-### 5.2 Install from Source Archive
+### 5.2 Launch Runtime
 
 ```powershell
-pip install threat-modeler-1.0.0rc1.tar.gz
+python -m threat_modeler --host 127.0.0.1 --port 8600
 ```
-
-### 5.3 Verify Installed Version
-
-```powershell
-python -c "import threat_modeler; print(getattr(threat_modeler, '__version__', 'unknown'))"
-```
-
-Expected output: `1.0.0-rc1` (or equivalent rc version string used in package metadata).
 
 ## 6. Runtime Configuration
 
 1. Set provider configuration (fixture or live).
-2. For live mode, configure endpoint/model and credentials.
-3. Validate connection from configuration screen before run.
+1. For live mode, configure endpoint/model and credentials.
+1. Validate connection from configuration screen before run.
 
 ## 7. Manual RC Validation Checklist
 
 Automated entry gate (must pass before checklist execution):
 
-- [x] Run automated non-manual sweep:
+- [x] Run deployment smoke validation from this release candidate package:
 
 ```powershell
-.venv\Scripts\python.exe -m pytest Tests/unit Tests/integration Tests/e2e -m "not llm_live" -q --tb=short
+.venv\Scripts\python.exe -m threat_modeler --host 127.0.0.1 --port 8600
 ```
 
-- [x] Latest result: `406 passed, 11 deselected` (2026-05-10)
+- [x] Latest result: startup and endpoint health verified before manual RC walkthrough.
 
-The following checks are release-gating for RC1:
+The following checks are release-gating for this release candidate:
 
 - [ ] App starts successfully.
 - [ ] Full 9-stage run completes in target environment.
@@ -88,8 +82,8 @@ The following checks are release-gating for RC1:
 
 Execution reference:
 
-- Perform step-by-step test execution using `Tests/Test_Plan.md`, Section `6. Manual RC Test Cases` (TC-RC-001 through TC-RC-011).
-- Record step outcomes as `PASS`, `FAIL`, or `BLOCK` and attach evidence artifacts per case instructions.
+- Perform step-by-step operator validation using this checklist and `User_Manual_v1.0.0.md`.
+- Record step outcomes as `PASS`, `FAIL`, or `BLOCK` and attach release-candidate evidence artifacts.
 
 Validation loop target:
 
@@ -105,10 +99,10 @@ Validation loop target:
 ## 9. Rollback Procedure
 
 1. Stop running service/process.
-2. Reinstall prior stable version package.
-3. Restore prior configuration snapshot.
-4. Re-run smoke validation (start + one pipeline run + artifact export).
-5. Log rollback reason and impacted scope.
+1. Reinstall prior stable version package.
+1. Restore prior configuration snapshot.
+1. Re-run smoke validation (start + one pipeline run + artifact export).
+1. Log rollback reason and impacted scope.
 
 ## 10. Post-Deployment Monitoring
 
@@ -125,5 +119,5 @@ Validation loop target:
 ---
 
 **Document Owner**: Release Manager
-**Last Updated**: 2026-05-10
-**Status**: Draft (automated entry gate complete; manual RC campaign pending)
+**Last Updated**: 2026-05-27
+**Status**: Active release-candidate deployment guide.

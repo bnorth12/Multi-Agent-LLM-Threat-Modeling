@@ -23,6 +23,7 @@ This document is prepared for controlled release governance sign-off and publica
 - Frontend lint/build clean-room lane: PASS (lint warnings only, build successful)
 
 Important publication rule:
+
 - Evidence results are publishable.
 - Test framework implementation internals are not publishable.
 
@@ -39,9 +40,11 @@ Important publication rule:
 ### 5.2 Sprint 2026-13 Planned Scope References
 
 Reference planning source:
-- `planning/Sprint_2026_13_Skills_Layer_and_Avionics_Specialization.md`
+
+- Sprint 2026-13 skills-layer and avionics-specialization planning record (governance archive)
 
 Key S13 planning themes:
+
 - Skills layer architecture and registry
 - Risk-analysis modular skills
 - Avionics and domain-boundary specialization skills
@@ -50,29 +53,32 @@ Key S13 planning themes:
 ### 5.3 Sprint 2026-14 Concept Candidates
 
 Reference planning source:
-- `planning/Sprint_2026_14_Concept_Review_Threat_Model_Abstractions_and_Compositional_Flows.md`
+
+- Sprint 2026-14 concept review planning record for threat-model abstractions and compositional flows (governance archive)
 
 Documented concept candidates:
+
 - S14-001 through S14-009 (SoS hierarchy, compositional flows, abstraction tagging, OSI/link semantics, threat propagation, hierarchical visualization, cross-layer trust boundaries, protocol-wrapper anchoring, RAG bootstrap)
 
 ## 6. Packaging and Documentation Governance
 
 v1.0.0 package structure (version-locked):
+
 - `Releases/v1.0.0/code_snapshot`
 - `Releases/v1.0.0/documentation`
-- `Releases/v1.0.0/governance`
-- `Releases/v1.0.0/evidence`
 
 Required for publication:
+
 - Updated user manual (markdown)
 - Updated user manual (HTML)
 - Updated deployment guide
-- Software version description
-- Final sign-off checklist and approval record
+- Updated release notes
+- Release decision record
 
 ## 7. Publish Gate Status
 
 Current recommendation: GO
 
 Remaining actions before publication:
+
 - Complete final human approvals and signatures in the governance checklist.
