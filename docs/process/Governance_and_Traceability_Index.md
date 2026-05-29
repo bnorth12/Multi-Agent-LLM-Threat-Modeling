@@ -393,14 +393,14 @@ Track these metrics to measure traceability health:
 
 | Metric | Target | Check How | Sprint 2026-08 | Sprint 2026-09 |
 |--------|--------|-----------|---|---|
-| Requirement → Issue Coverage | 100% | `verify_sprint_traceability.py` output | 100% (4/4) | TBD |
-| Issue → Requirement Coverage | 100% | Same | 100% (4/4) | TBD |
-| Issue → Test File Coverage | 100% | Same | TBD | TBD |
-| Orphan Requirements | 0 | Same | 0 | TBD |
-| Orphan Issues | 0 | Same | 0 | TBD |
-| Test Pass Rate | ≥95% | `pytest Tests/ -v` | 310/310 (100%) | TBD |
-| CI/CD Green Gate Rate | 100% | PR merge success | 100% | TBD |
-| DoD Compliance | 100% | Closure checklist | 100% | TBD |
+| Requirement → Issue Coverage | 100% | `verify_sprint_traceability.py` output | 100% (4/4) | See current sprint traceability matrix |
+| Issue → Requirement Coverage | 100% | Same | 100% (4/4) | See current sprint traceability matrix |
+| Issue → Test File Coverage | 100% | Same | Sprint-era example | See current sprint traceability matrix |
+| Orphan Requirements | 0 | Same | 0 | See current sprint traceability matrix |
+| Orphan Issues | 0 | Same | 0 | See current sprint traceability matrix |
+| Test Pass Rate | ≥95% | `pytest Tests/ -v` | 310/310 (100%) | See latest sprint test summary |
+| CI/CD Green Gate Rate | 100% | PR merge success | 100% | See latest sprint governance evidence |
+| DoD Compliance | 100% | Closure checklist | 100% | See latest sprint closure checklist |
 
 ---
 

@@ -10,6 +10,9 @@ This batch archives low-risk historical planning evidence files and records the 
 - `Test_Execution_Summary_Sprint_2026_07.md`
 - `Test_Execution_Summary_Sprint_2026_08.md`
 - `Test_Execution_Summary_Sprint_2026_05.md`
+- `Test_Execution_Summary_Sprint_2026_11.md`
+- `Sprint_2026_11_Refactor_Alignment_and_Test_Assurance.md`
+- `Sprint_S11_Closeout_Verification.md`
 - `feature_sprint_2026_05.md`
 - `Sprint_2026_05_PR_Template.md`
 - `SESSION_COMPLETION_SUMMARY_2026_05_17.md`
@@ -22,4 +25,4 @@ This batch archives low-risk historical planning evidence files and records the 
 
 ## Rationale
 
-These files are historical closeout evidence, execution summaries, or session summaries that are no longer part of the active planning working set. They remain valuable for auditability and provenance.
+These files are historical closeout evidence, execution summaries, or session summaries that are no longer part of the active planning working set. They remain valuable for auditability and provenance. Compatibility pointer files are retained at selected original locations to prevent broken legacy references.

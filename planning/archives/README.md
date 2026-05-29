@@ -90,6 +90,24 @@ This folder stores completed planning, sprint closeout, and historical governanc
   Reason: Historical Sprint 2026-10 test execution summary retained for provenance after sprint closeout.
   Replacement artifact: none
   Regenerable: no
+- Original path: `planning/Test_Execution_Summary_Sprint_2026_11.md`
+  Archived path: `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_11.md`
+  Archive date: 2026-05-28
+  Reason: Historical Sprint 2026-11 test execution summary retained for provenance after closeout.
+  Replacement artifact: compatibility pointer file retained at original path
+  Regenerable: no
+- Original path: `planning/Sprint_2026_11_Refactor_Alignment_and_Test_Assurance.md`
+  Archived path: `planning/archives/2026-05/Sprint_2026_11_Refactor_Alignment_and_Test_Assurance.md`
+  Archive date: 2026-05-28
+  Reason: Historical Sprint 2026-11 planning artifact retained for provenance after governance normalization.
+  Replacement artifact: compatibility pointer file retained at original path
+  Regenerable: no
+- Original path: `planning/Sprint_S11_Closeout_Verification.md`
+  Archived path: `planning/archives/2026-05/Sprint_S11_Closeout_Verification.md`
+  Archive date: 2026-05-28
+  Reason: Historical Sprint 2026-11 closeout verification evidence retained for provenance.
+  Replacement artifact: compatibility pointer file retained at original path
+  Regenerable: no
 
 ## Sweep Notes
 

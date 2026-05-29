@@ -1,5 +1,9 @@
 # Sprint 2026-11: Work Plan and Artifacts
 
+> Historical freeze notice: this sprint README is preserved as a time-of-execution record.
+> Do not treat status placeholders here as current runtime/project status.
+> Active governance and implementation status lives in current sprint planning and issue trackers.
+
 **Sprint Duration:** 2026-05-08 to 2026-05-31
 **Status:** Active / Closing out
 **Scrum Master:** [TBD]
