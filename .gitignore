@@ -44,6 +44,8 @@ Thumbs.db
 *.txt
 test_reports/*
 !test_reports/README.md
+local_reviews/*
+!local_reviews/README.md
 
 # Local secrets and environment overrides
 .env

@@ -16,6 +16,24 @@ This repository uses a feature-branch workflow with issue-linked planning and ch
 1. Open a pull request that references related issues.
 1. Merge only after review and checklist completion.
 
+## Governance Autoflow Requirement
+
+Before opening or updating a pull request, run governance autoflow for your current phase:
+
+- `python scripts/governance_autoflow.py --context pre-commit --sprint <SPRINT>`
+- `python scripts/governance_autoflow.py --context pre-merge-commit --sprint <SPRINT>`
+- `python scripts/governance_autoflow.py --context pre-push --sprint <SPRINT>`
+
+For planning and closeout governance activities, use:
+
+- `python scripts/governance_autoflow.py --context planning --sprint <SPRINT>`
+- `python scripts/governance_autoflow.py --context closeout --sprint <SPRINT>`
+- `python scripts/governance_autoflow.py --context portfolio --sprint <SPRINT>`
+
+Autoflow design and routing matrix are documented in:
+
+- `docs/process/Governance_Autoflow_Orchestration.md`
+
 ## Branch Naming
 
 Recommended format:

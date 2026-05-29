@@ -381,6 +381,44 @@ Behavior:
 
 Use this setup to catch local quality and traceability regressions before opening or updating PRs.
 
+### Governance Autoflow (New)
+
+The repository now includes governance autoflow scaffolding that routes local governance checks by execution context:
+
+```bash
+python scripts/governance_autoflow.py --context pre-push --sprint 2026_12
+```
+
+Supported contexts:
+
+- planning
+- pre-commit
+- pre-merge-commit
+- pre-push
+- closeout
+- portfolio
+
+Current implementation runs `scripts/independent_repo_review.py` with context-aware profile and enforcement behavior, and establishes the route skeleton for extended governance skills.
+
+See [docs/process/Governance_Autoflow_Orchestration.md](docs/process/Governance_Autoflow_Orchestration.md) for routing matrix, agent list, and rollout status.
+
+### Governance Agent and Skill Catalog
+
+In addition to independent review and traceability specialists, the repository now scaffolds governance agents and skills for:
+
+- requirements baseline quality
+- architecture contract enforcement
+- verification coverage planning
+- artifact lineage auditing
+- sprint intake gating
+- sprint execution compliance
+- sprint closeout certification
+- multi-sprint portfolio planning
+- policy compilation
+- KPI drift analysis
+
+These assets are located under `.github/agents/` and `.github/skills/` and are intended to be used through orchestration rather than ad hoc invocation.
+
 ### Dependency Strategy Summary
 
 **Runtime Dependencies** (`requirements.txt`):
