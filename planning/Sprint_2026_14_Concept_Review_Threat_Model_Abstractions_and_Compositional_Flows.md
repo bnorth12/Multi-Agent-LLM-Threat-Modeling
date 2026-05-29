@@ -377,3 +377,82 @@ Adopt this document as Sprint 2026-014 concept baseline and treat S14-001
 through S14-009 as concept candidates for prioritization during post-S13 sprint
 planning. Do not lock scope or commitments until S13 closeout, resourcing, and
 entry criteria are approved.
+
+---
+
+## 9. S14 Vector DB Data-Retrieval Gap List and Organization Starter Plan
+
+Purpose:
+
+- Convert the vector-store reference baseline in `docs/references/Vector DB Design.txt`
+	into an S14 retrieval backlog that identifies missing data for a complete,
+	abstraction-aware concept knowledge base.
+
+### 9.1 Additional Data to Retrieve for a More Complete Set
+
+| Priority | Data Domain | Additional Data Needed | Why Needed for S14 Retrieval Completeness | Target Output |
+|---|---|---|---|---|
+| P0 | Canonical model lineage | Versioned canonical graph snapshots per sprint/release with stable ids | Enables diff-aware retrieval and provenance-safe trace links | `canonical_graph_YYYY_MM_DD.json` + lineage manifest |
+| P0 | Flow decomposition corpus | Explicit parent-child flow decomposition examples from real system models | Required to train/validate abstraction-path retrieval | `flow_decomposition_seed.jsonl` |
+| P0 | Protocol wrapper inventory | Structured wrapper definitions (encapsulation, decapsulation, layer, control anchors) | Needed for wrapper-aware threat/mitigation retrieval | `protocol_wrapper_catalog.json` |
+| P0 | Threat-to-wrapper mappings | Curated mappings from threat patterns to wrapper enforcement points | Supports wrapper control-gap queries from S14 objectives | `threat_wrapper_mapping.jsonl` |
+| P0 | Mitigation enforcement evidence | Control implementation evidence tied to wrapper ids and trust boundaries | Enables retrieval of "what control is enforced where" | `mitigation_enforcement_evidence.jsonl` |
+| P1 | STIX normalization bundle | ATT&CK, CAPEC, CWE, D3FEND normalized to shared schema with dedupe keys | Needed for cross-source retrieval consistency | `stix_normalized_bundle.jsonl` |
+| P1 | Trust-boundary policy rules | Machine-readable trust-boundary rules and boundary-crossing requirements | Enables policy-constrained retrieval and boundary checks | `trust_boundary_rules.json` |
+| P1 | OSI/link semantics coverage | Flow-segment annotations for osi layer, link type, protocol stack signatures | Required for layer-aware threat placement queries | `flow_segment_layer_annotations.jsonl` |
+| P1 | Historical threat model slices | Redacted historical reports chunked with concept tags and abstraction paths | Improves retrieval recall for real-world patterns | `historical_reports_chunks.jsonl` |
+| P1 | Secure design doctrine corpus | FSAD (Fundamentals of Secure Aerospace Design) concept mappings to abstractions, wrappers, and controls | Adds aerospace-secure-design guidance coverage for retrieval and mitigation rationale | `fsad_concept_control_mapping.jsonl` |
+| P1 | Threat-driven design corpus | Lockheed Martin Threat-Driven Approach white paper mappings to threat prioritization and mitigation sequencing patterns | Adds threat-driven decision logic for higher-value retrieval and ranking | `lm_threat_driven_mapping.jsonl` |
+| P1 | STRIDE augmentation corpus | STRIDE limitation crosswalk and modern threat category mappings for campaign, identity, supply-chain, control-plane, and mission-impact reasoning | Improves retrieval quality beyond STRIDE-only classification | `stride_modern_category_crosswalk.jsonl` |
+| P2 | Validation query set | Analyst-authored gold queries with expected retrieval results | Enables objective retrieval quality testing | `retrieval_acceptance_queries.yaml` |
+| P2 | Negative/ambiguity set | Confusable queries and known near-miss examples | Reduces false positives and improves ranking behavior | `retrieval_negative_set.yaml` |
+
+### 9.2 Data Completeness Checklist (S14 Intake Gate)
+
+- [ ] Canonical graph snapshots include stable object ids and source timestamps.
+- [ ] Every flow decomposition record has `abstraction_path` and `realized_by_assets`.
+- [ ] Every protocol wrapper record includes `implemented_controls` and layer placement.
+- [ ] Threat mappings include source taxonomy refs (ATT&CK/CAPEC/CWE/D3FEND as available).
+- [ ] Mitigation records include enforceable anchor (`wrapper_id` or equivalent).
+- [ ] Trust-boundary ids are consistent across canonical graph, wrappers, and flow segments.
+- [ ] Retrieval acceptance and negative test sets exist before index quality sign-off.
+
+### 9.3 Organization Plan (Starter, Governance-Oriented)
+
+Proposed S14 workspace structure:
+
+- `data/vector_db/s14/intake/`
+  Includes raw source drops by domain (`attack/`, `capec/`, `cwe/`, `d3fend/`, `canonical/`, `historical/`).
+- `data/vector_db/s14/normalized/`
+  Includes schema-aligned jsonl artifacts and dedupe outputs.
+- `data/vector_db/s14/index/`
+  Includes index build manifests, embedding metadata, and collection stats.
+- `data/vector_db/s14/validation/`
+  Includes retrieval acceptance queries, negative sets, and result reports.
+- `data/vector_db/s14/governance/`
+  Includes data inventory matrix, provenance ledger, and refresh cadence logs.
+
+### 9.4 Execution Phasing (Initial)
+
+1. Phase A: Intake inventory and provenance capture.
+1. Phase B: Normalize and link abstraction/wrapper/threat/mitigation entities.
+1. Phase C: Build collections and record index manifests.
+1. Phase D: Run retrieval acceptance/negative tests and publish quality report.
+1. Phase E: Review HITL/governance gates and approve promotion to active retrieval baseline.
+
+### 9.5 S14 Deliverables to Start Immediately
+
+1. Create a data inventory matrix for the P0/P1 datasets above.
+1. Define json/jsonl schemas for wrapper mappings and mitigation enforcement evidence.
+1. Produce first `retrieval_acceptance_queries.yaml` from the S14 acceptance checks in this document.
+1. Establish weekly refresh and ownership table for each collection domain.
+1. Use `docs/references/S14_Reference_Register.md` as the mandatory coverage baseline for IoT, aerospace, and CTI sources.
+
+### 9.6 External Reference Governance Note (FSAD)
+
+- FSAD (Fundamentals of Secure Aerospace Design, Lockheed Martin publication)
+	is approved as an S14 design-reference input and should be represented in the
+	S14 reference register and retrieval data inventory.
+- For implementation, store structured derived mappings (concept/control/abstraction
+	links and provenance metadata) rather than redistributing full-source content,
+	unless repository distribution rights are explicitly confirmed for full text.
