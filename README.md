@@ -400,6 +400,23 @@ Supported contexts:
 
 Current implementation runs `scripts/independent_repo_review.py` with context-aware profile and enforcement behavior, and establishes the route skeleton for extended governance skills.
 
+Routing is data-configured via:
+
+- `config/governance_autoflow_routing.json`
+
+Every governance autoflow run emits an execution ledger:
+
+- `local_reviews/latest/governance_execution_ledger_latest.json`
+- `local_reviews/latest/governance_execution_ledger_latest.md`
+- `local_reviews/history/governance_execution_ledger.jsonl`
+
+Operator commands:
+
+- `./scripts/run_governance_planning.ps1 -Sprint 2026_12`
+- `./scripts/run_governance_closeout.ps1 -Sprint 2026_12`
+- `./scripts/run_governance_planning.sh 2026_12`
+- `./scripts/run_governance_closeout.sh 2026_12`
+
 See [docs/process/Governance_Autoflow_Orchestration.md](docs/process/Governance_Autoflow_Orchestration.md) for routing matrix, agent list, and rollout status.
 
 ### Governance Agent and Skill Catalog

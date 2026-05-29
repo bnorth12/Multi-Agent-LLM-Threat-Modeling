@@ -69,25 +69,18 @@ if ! "$PYTHON_BIN" scripts/validate_cross_domain_exception_policy.py; then
   echo "[pre-push] Continuing push (set EXCEPTION_POLICY_ENFORCE=1 to make this blocking)."
 fi
 
-echo "[pre-push] Running independent local repository review..."
+echo "[pre-push] Running governance autoflow..."
 INDEPENDENT_REVIEW_SPRINT="${INDEPENDENT_REVIEW_SPRINT:-2026_12}"
-# Profile routing is defined in scripts/resolve_independent_review_profile.sh.
-# Update that helper if branch/env precedence changes.
-IFS=$'\t' read -r EFFECTIVE_INDEPENDENT_REVIEW_PROFILE PROFILE_SOURCE CURRENT_BRANCH < <(bash scripts/resolve_independent_review_profile.sh)
 INDEPENDENT_REVIEW_HOOK_FAIL_MODE="${INDEPENDENT_REVIEW_HOOK_FAIL_MODE:-profile}"
-echo "[pre-push] Independent review profile: $EFFECTIVE_INDEPENDENT_REVIEW_PROFILE (source: $PROFILE_SOURCE, branch: ${CURRENT_BRANCH:-detached})"
-if ! "$PYTHON_BIN" scripts/independent_repo_review.py \
+if ! "$PYTHON_BIN" scripts/governance_autoflow.py \
+  --context pre-push \
   --sprint "$INDEPENDENT_REVIEW_SPRINT" \
-  --run-context pre-push \
-  --report-mode update \
-  --policy-profile "$EFFECTIVE_INDEPENDENT_REVIEW_PROFILE" \
-  --enforcement-mode auto \
-  --out-dir local_reviews/latest; then
+  --hook-fail-mode "$INDEPENDENT_REVIEW_HOOK_FAIL_MODE"; then
   if [ "$INDEPENDENT_REVIEW_HOOK_FAIL_MODE" != "warn" ]; then
-    echo "[pre-push] ERROR: Independent review blocking conditions met for profile '$EFFECTIVE_INDEPENDENT_REVIEW_PROFILE'."
+    echo "[pre-push] ERROR: Governance autoflow blocking conditions were met."
     exit 1
   fi
-  echo "[pre-push] WARNING: Independent review reported execution failure."
+  echo "[pre-push] WARNING: Governance autoflow reported execution failure."
   echo "[pre-push] Continuing push because INDEPENDENT_REVIEW_HOOK_FAIL_MODE=warn."
 fi
 

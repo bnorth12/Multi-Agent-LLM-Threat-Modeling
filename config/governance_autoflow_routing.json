@@ -1,0 +1,110 @@
+{
+  "version": "1.0",
+  "profile_selection": {
+    "rules": [
+      {
+        "match": "^main$",
+        "profile": "strict"
+      },
+      {
+        "match": "^release/",
+        "profile": "strict"
+      }
+    ],
+    "default_profile": "default"
+  },
+  "contexts": {
+    "planning": {
+      "run_context": "manual",
+      "enforcement_mode": "off",
+      "trend_window": 5,
+      "agent_chain": [
+        "repo-governance-autoflow-orchestrator",
+        "requirements-baseline-steward",
+        "sprint-intake-gatekeeper",
+        "governance-policy-compiler"
+      ],
+      "skill_chain": [
+        "requirements-baseline-steward",
+        "sprint-intake-gatekeeper",
+        "governance-policy-compiler"
+      ]
+    },
+    "pre-commit": {
+      "run_context": "pre-commit",
+      "enforcement_mode": "off",
+      "trend_window": 5,
+      "agent_chain": [
+        "repo-governance-autoflow-orchestrator",
+        "requirements-baseline-steward",
+        "architecture-contract-enforcer"
+      ],
+      "skill_chain": [
+        "requirements-baseline-steward",
+        "architecture-contract-enforcer"
+      ]
+    },
+    "pre-merge-commit": {
+      "run_context": "pre-merge-commit",
+      "enforcement_mode": "auto",
+      "trend_window": 5,
+      "agent_chain": [
+        "repo-governance-autoflow-orchestrator",
+        "architecture-contract-enforcer",
+        "verification-coverage-planner",
+        "sprint-execution-compliance-monitor"
+      ],
+      "skill_chain": [
+        "architecture-contract-enforcer",
+        "verification-coverage-planner",
+        "sprint-execution-compliance-monitor"
+      ]
+    },
+    "pre-push": {
+      "run_context": "pre-push",
+      "enforcement_mode": "auto",
+      "trend_window": 5,
+      "agent_chain": [
+        "repo-governance-autoflow-orchestrator",
+        "independent-review-orchestrator",
+        "source-to-evidence-traceability-auditor",
+        "kpi-drift-analyst",
+        "artifact-lineage-auditor"
+      ],
+      "skill_chain": [
+        "independent-repo-review",
+        "source-to-evidence-traceability",
+        "kpi-drift-analyst",
+        "artifact-lineage-auditor"
+      ]
+    },
+    "closeout": {
+      "run_context": "manual",
+      "enforcement_mode": "off",
+      "trend_window": 5,
+      "agent_chain": [
+        "repo-governance-autoflow-orchestrator",
+        "sprint-closeout-certifier",
+        "remediation-readiness-strategist"
+      ],
+      "skill_chain": [
+        "sprint-closeout-certifier",
+        "remediation-readiness"
+      ]
+    },
+    "portfolio": {
+      "run_context": "manual",
+      "enforcement_mode": "off",
+      "trend_window": 5,
+      "agent_chain": [
+        "repo-governance-autoflow-orchestrator",
+        "multi-sprint-portfolio-planner",
+        "kpi-drift-analyst"
+      ],
+      "skill_chain": [
+        "multi-sprint-portfolio-planner",
+        "kpi-drift-analyst"
+      ]
+    }
+  }
+}

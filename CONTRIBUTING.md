@@ -33,6 +33,14 @@ For planning and closeout governance activities, use:
 Autoflow design and routing matrix are documented in:
 
 - `docs/process/Governance_Autoflow_Orchestration.md`
+- `config/governance_autoflow_routing.json`
+
+Planning and closeout operator commands:
+
+- `./scripts/run_governance_planning.ps1 -Sprint <SPRINT>`
+- `./scripts/run_governance_closeout.ps1 -Sprint <SPRINT>`
+- `./scripts/run_governance_planning.sh <SPRINT>`
+- `./scripts/run_governance_closeout.sh <SPRINT>`
 
 ## Branch Naming
 

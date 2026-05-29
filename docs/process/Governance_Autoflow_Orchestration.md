@@ -73,6 +73,37 @@ Scaffolded for extended governance:
   - multi-sprint-portfolio-planner
   - kpi-drift-analyst
 
+## Routing Map
+- Data-configured routing map: `config/governance_autoflow_routing.json`
+- `scripts/governance_autoflow.py` reads this file for:
+  - branch/profile selection behavior
+  - run-context mapping
+  - enforcement mode
+  - declared agent and skill chains by context
+
+## Execution Ledger
+Governance autoflow writes auditable ledger artifacts on every run:
+
+- `local_reviews/latest/governance_execution_ledger_latest.json`
+- `local_reviews/latest/governance_execution_ledger_latest.md`
+- `local_reviews/history/governance_execution_ledger.jsonl`
+
+Each entry includes context, branch, profile, enforcement mode, declared agent chain, declared skill chain, command(s), and outcome.
+
+## Hook and Operator Wiring
+Git hooks call governance autoflow directly:
+
+- `.githooks/pre-commit` -> `--context pre-commit`
+- `.githooks/pre-merge-commit` -> `--context pre-merge-commit`
+- `.githooks/pre-push` -> `--context pre-push`
+
+Planning and closeout operator commands are provided:
+
+- `scripts/run_governance_planning.ps1`
+- `scripts/run_governance_closeout.ps1`
+- `scripts/run_governance_planning.sh`
+- `scripts/run_governance_closeout.sh`
+
 ## Start of Implementation
 Implemented in this repository iteration:
 - One-time KPI backfill utility and over-time trend report generation.
