@@ -16,7 +16,7 @@ This project defines and implements a multi-agent workflow that converts archite
 
 The architecture is designed for human-in-the-loop governance and auditable, stage-based execution.
 
-## Planned Technology Direction
+## Technology Baseline
 
 - Primary implementation language: Python
 - Orchestration: LangGraph
@@ -26,10 +26,11 @@ The architecture is designed for human-in-the-loop governance and auditable, sta
 
 ## Dependency Strategy
 
-Python dependencies are intentionally not finalized yet.
+Runtime and test dependencies are version-pinned and actively maintained.
 
-The project will add dependencies in phases after interface and component boundaries are confirmed.
-Selection and lock criteria are documented in Python_Dependency_Strategy.md.
+- Runtime manifests: requirements.txt, pyproject.toml
+- Test/developer manifest: Tests/requirements_e2e.txt
+- Governance strategy and boundary rules: Python_Dependency_Strategy.md
 
 ## Repository Layout
 
@@ -42,18 +43,13 @@ Selection and lock criteria are documented in Python_Dependency_Strategy.md.
 
 ## Current Status
 
-**Sprint 2026-11 closeout execution active**.
+Post-Sprint-2026-12 runtime baseline is implemented and release-candidate packaged under Releases/v1.0.0.
 
-Current sprint priority is to finalize alignment, governance, and evidence closure:
+Current repository priorities:
 
-- Coverage gate for closeout scope is restored and validated (80% with sprint scope config).
-- Final issue-evidence closure and traceability reconciliation are being completed.
-- Top-level and sprint documentation are being normalized to a single closeout narrative.
-
-Planned next-sprint architecture direction (deferred from 2026-11 scope):
-
-- Remove Streamlit dependency from the deployed release UX path by introducing a separate production frontend integrated with the operational backend API.
-- Keep Streamlit as a development/test harness until the replacement frontend reaches required parity and test coverage.
+- Keep release-candidate documentation and top-level inventories synchronized with implementation.
+- Continue hardening and governance follow-up tracked in planning/issues and later sprint packages.
+- Preserve historical sprint artifacts as time-bound records rather than rewriting their historical state.
 
 ### Completed Deliverables
 

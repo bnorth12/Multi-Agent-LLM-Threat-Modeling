@@ -1,6 +1,9 @@
-# Screenshot Evidence Index — Sprint 2026-06/07
+# Screenshot Evidence Index
 
-This directory holds annotated screenshot evidence for HMI screens delivered in Sprint 2026-06 (S06-07) and ongoing work in Sprint 2026-07 (S07-02 through S07-06).
+This directory contains historical screenshot evidence captured during Sprint 2026-06/07.
+It is retained for provenance and audit traceability.
+
+Current user-manual screenshot assets are maintained in `docs/user_manual/screenshots/`.
 
 Each entry maps a screenshot file to its **business logic screen ID** (Blueprint SCR-xxx per docs/architecture/HMI_Architecture_Blueprint.md), GUI requirement ID, and the sprint issue that delivered or is developing the screen.
 
@@ -21,7 +24,7 @@ Captured: 2026-05-04 by BN from Streamlit app running at <http://localhost:8502>
 
 ---
 
-## In-Development / Deferred to Sprint 2026-07
+## Historical In-Development Snapshot (Sprint 2026-07)
 
 | Blueprint SCR | Screen Name | GUI Req | Sprint Issue | Status | Development Notes |
 |---------------|-------------|---------|--------------|--------|-------------------|
@@ -56,9 +59,13 @@ Captured: 2026-05-04 by BN from Streamlit app running at <http://localhost:8502>
 1. Take a full-window screenshot and save it with the filename listed in the table above.
 1. Annotate each screenshot (arrows/labels) to highlight the key UI elements that satisfy the GUI requirement acceptance criteria.
 
-### For S07 Development
+### Current Capture Location
 
-Screenshots for S07 screens will be captured and added to this directory as development completes each workstream.
+For current and release-facing documentation updates, capture screenshots under:
+
+- `docs/user_manual/screenshots/`
+
+Do not append new current-state screenshots to this historical folder unless capturing evidence for a historical rerun.
 
 ---
 
@@ -70,7 +77,7 @@ Screenshots for S07 screens will be captured and added to this directory as deve
 - Test summary: 240 tests passing (unit + integration + E2E)
 - Full test logs in `planning/archives/2026-05/Test_Execution_Summary_Sprint_2026_06.md`
 
-**Sprint 2026-07 evidence will be collected incrementally:**
+**Sprint 2026-07 evidence was collected incrementally at the time of execution:**
 
 - S07-02 screenshots added when Model Provider/Connection screens complete
 - S07-05/06 screenshots added when Results/Export screens complete

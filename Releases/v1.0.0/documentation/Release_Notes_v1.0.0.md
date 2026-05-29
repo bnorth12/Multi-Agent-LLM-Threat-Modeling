@@ -33,6 +33,9 @@ Important publication rule:
 
 ## 5. Deferred and Missing Functionality Disclosure
 
+All entries in this section are release-time statements as of 2026-05-27.
+They are historical release-governance context, not a live status board.
+
 ### 5.1 Open Deferred/Carryover Issues (Current)
 
 - #65, #67, #72, #73, #74, #75, #76, #77, #78, #81, #82, #83, #84, #85, #87, #88

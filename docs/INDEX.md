@@ -2,10 +2,10 @@
 
 ## User Documentation
 
-- [user_manual/index.html](user_manual/index.html) (**End-user manual — primary** — fully styled HTML with sidebar navigation, per-screen GUI descriptions, screenshot placeholders, HITL gate guide, and glossary; open in any browser)
+- [user_manual/index.html](user_manual/index.html) (**End-user manual — primary** — fully styled HTML with sidebar navigation, per-screen GUI descriptions, HITL gate guide, and glossary; open in any browser)
 - [User_Manual.md](User_Manual.md) (Markdown source for the user manual — superseded by the HTML version above; retained for diff history and plain-text access)
-- [screenshots/README.md](screenshots/README.md) (Screenshot evidence index — SCR-xxx to GUI requirement ID mapping for sprint AC evidence)
-- [user_manual/screenshots/](user_manual/screenshots/) (Working directory for user manual GUI screenshots — place captured PNGs here matching filenames referenced in index.html figures)
+- [screenshots/README.md](screenshots/README.md) (Historical screenshot evidence index — preserved sprint-era captures and mapping)
+- [user_manual/screenshots/](user_manual/screenshots/) (Current user-manual screenshot source set; place release-facing PNGs here matching filenames referenced in index.html figures)
 
 ## Architecture
 

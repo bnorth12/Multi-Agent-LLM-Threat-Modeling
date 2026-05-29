@@ -1,6 +1,6 @@
 # Planning & Governance
 
-**Purpose:** Centralized directory for sprint work, governance policies, requirements, and releases.
+Purpose: centralized directory for sprint work, governance policies, issue tracking, and archival evidence.
 
 ---
 
@@ -8,41 +8,15 @@
 
 ```
 planning/
-├── README.md                                # This file
-├── 00_Repository_Structure_Reorganization_Plan.md  # Master org plan
-├── 01_Repository_Audit_And_Phase_3-7_Roadmap.md   # Audit & future phases
-├── Master_Plan.md                          # [Future] Roadmap across all sprints
+├── README.md
+├── Governance/
+├── issues/
 ├── Sprints/
-│   ├── Sprint_2026_11/
-│   │   ├── README.md                      # Sprint scope & deliverables
-│   │   ├── issues/                        # Sprint issues
-│   │   └── work_items/                    # Closeout & execution plans
-│   └── Sprint_2026_12/                    # [Future] Next sprint
-│
-├── Governance/                             # [In Progress] Repo-level policies
-│   ├── README.md
-│   ├── Execution_Mode_Policy.md            # [Future]
-│   ├── HITL_Gate_Definitions.md            # [Future]
-│   └── Code_Review_Policy.md               # [Future]
-│
-├── Requirements/                           # [Existing] System requirements
-│   ├── 00_Requirements_Index.md
-│   ├── 01_Functional_Requirements.md
-│   ├── 02_Non-Functional_Requirements.md
-│   ├── 03_Requirements_Baseline_v0.1.md
-│   └── 04_Traceability_Matrix.md
-│
-├── Releases/                               # [Existing] Release artifacts
-│   └── Release_v0.1.md
-│
-├── Templates/                              # [Future] Reusable templates
-│   ├── Sprint_Planning_Checklist.md
-│   ├── Sprint_Traceability_Matrix.md
-│   └── Issue_Template.md
-│
-└── Archive/                                # [Future] Completed sprints
-    ├── Sprint_2026_05/
-    └── Sprint_2026_09/
+├── archives/
+├── work_items/
+├── Sprint_2026_12_*.md
+├── Sprint_2026_13_*.md
+└── Sprint_2026_14_*.md
 ```
 
 ---
@@ -50,58 +24,48 @@ planning/
 ## Navigation Guide
 
 ### For Sprint Teams
-- **Active Sprint**: `Sprints/Sprint_2026_11/` → see issues, work items, status
-- **Issues**: Each sprint's `issues/` subdirectory with full details
-- **Work Items**: Closeout checklists and execution plans in `work_items/`
-- **Requirements**: `Requirements/` for traceability and validation
-- **Test Evidence**: `Tests/test_reports/` for test run logs and artifacts
+
+- Current and prior sprint planning narratives: `planning/Sprint_2026_12_*.md`, `planning/Sprint_2026_13_*.md`, `planning/Sprint_2026_14_*.md`
+- Issue records: `planning/issues/`
+- Sprint-scoped folders and work items: `planning/Sprints/`, `planning/work_items/`
+- Archived closure evidence: `planning/archives/`
 
 ### For Leadership
-- **Roadmap**: `Master_Plan.md` (across all sprints)
-- **Governance**: `Governance/` for policies and gate definitions
-- **Releases**: `Releases/` for versioned deliverables
-- **Audit**: `01_Repository_Audit_And_Phase_3-7_Roadmap.md` for org improvements
+
+- Governance policies and process controls: `planning/Governance/`
+- Sprint traceability matrices and closure records: `planning/Sprint_*_Traceability_Matrix.md`, `planning/archives/`
+- Release artifacts: `Releases/`
 
 ### For New Contributors
-- **Getting Started**: Root `README.md` and `CONTRIBUTING.md`
-- **Requirements**: `Requirements/` for understanding what we're building
-- **Governance**: `Governance/` for SDLC policies and gate criteria
-- **Sprint Structure**: `Sprints/Sprint_2026_11/README.md` to understand sprint organization
+
+- Getting started: root README.md and CONTRIBUTING.md
+- Governance policies: planning/Governance/
+- Active issue and sprint records: planning/issues/ and planning/Sprints/
 
 ---
 
 ## Sprint Organization
 
-Each sprint has dedicated folder under `Sprints/`:
+Sprints may be represented as either dedicated subfolders under `Sprints/` or top-level sprint documents in `planning/`.
 
 ```
 Sprints/Sprint_YYYY_MM/
-├── README.md                  # Sprint scope, deliverables, ceremonies
+├── README.md
 ├── issues/
-│   └── issue_YYYY_MM_*.md    # Individual issue details & acceptance criteria
 └── work_items/
-    ├── Sprint_YYYY_MM_Closeout_Todo.md
-    └── Sprint_YYYY_MM_Master_Closeout_Execution_Plan.md
 ```
 
-**Rationale:**
-- Clear separation of sprint-scoped vs repo-level artifacts
-- Easy navigation when working on specific sprints
-- Historical archive of completed sprints for reference
-- Scalable structure for long-running project
+## Historical Record Policy
+
+- Files under `planning/archives/` and completed sprint folders are historical records.
+- Historical records should preserve time-of-execution context rather than being rewritten to present tense.
+- Current-state corrections should be made in active indexes and operational docs (root README, docs/, Releases/).
 
 ---
 
 ## Governance Framework
 
-Repository-level policies and execution gates managed in `Governance/`:
-
-- **Execution Mode Policy**: Linear vs Branching development modes
-- **HITL Gate Definitions**: Human-in-the-loop gate criteria and enforcement
-- **Code Review Policy**: Standards for PR review and approval
-- **Release Policy**: Version management and release criteria
-
-*Note: Governance subdirectory created as scaffold; policies planned for future definition.*
+Repository-level policies and execution gates are managed in `planning/Governance/` and supporting `docs/process/` references.
 
 ---
 
@@ -116,15 +80,15 @@ See `Requirements/` for:
 
 ---
 
-## Future Sprint Planning
+## New Sprint Setup
 
 To start a new sprint:
 
 1. **Create directory**: `Sprints/Sprint_YYYY_MM/`
-2. **Create subdirectories**: `issues/` and `work_items/`
-3. **Create README.md**: Use sprint template from `Templates/`
-4. **Move issues**: Populate `issues/` with sprint-scoped items
-5. **Create work items**: Closeout checklist and execution plan
+1. **Create subdirectories**: `issues/` and `work_items/`
+1. **Create README.md**: Use Sprint_Planning_Checklist_Template.md and Sprint_Traceability_Matrix_Template.md
+1. **Move issues**: Populate `issues/` with sprint-scoped items
+1. **Create work items**: Closeout checklist and execution plan
 
 ---
 
@@ -143,7 +107,7 @@ To start a new sprint:
 | Document | Purpose | Location |
 |----------|---------|----------|
 | Repository Reorganization Plan | Master org plan (Phases 1-7) | `00_Repository_Structure_Reorganization_Plan.md` |
-| Audit & Roadmap | Audit findings + future improvements | `01_Repository_Audit_And_Phase_3-7_Roadmap.md` |
-| Traceability Matrix | Requirement → Issue → Test mapping | `Requirements/04_Traceability_Matrix.md` |
-| Sprint 2026-11 Details | Active sprint scope and deliverables | `Sprints/Sprint_2026_11/README.md` |
-| Requirements Index | System requirements overview | `Requirements/00_Requirements_Index.md` |
+| Audit and Roadmap | Repository audit baseline and recommended follow-on actions | `01_Repository_Audit_And_Phase_3-7_Roadmap.md` |
+| Sprint 2026-12 Traceability | Requirement → issue → test mapping for S12 | `Sprint_2026_12_Traceability_Matrix.md` |
+| Sprint 2026-12 Closure | S12 closeout and validation records | `Sprint_2026_12_Closure_Checklist.md`, `Sprint_2026_12_Final_Validation_Summary.md` |
+| Current issue registry | Cross-sprint issue and implementation tracking | `issues/` |
