@@ -1,8 +1,8 @@
 # Multi-Agent LLM Threat Modeler — User Manual
 
-**Version:** Sprint 2026-11
+**Version:** v1.0.0 baseline
 **Audience:** Security analysts, threat modeling practitioners, and project administrators
-**Status:** Sprint 2026-11 closeout in progress. Implementation and regression gates are complete; formal live-browser/live-LLM rerun is pending only on runtime credential provisioning (`GROK_API`).
+**Status:** Maintained markdown manual source aligned to the current release baseline. The primary rendered manual is `docs/user_manual/index.html`; release-package manual copies are in `Releases/v1.0.0/documentation/`.
 
 ---
 

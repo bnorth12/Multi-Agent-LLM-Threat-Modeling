@@ -11,15 +11,14 @@ This directory is the Python implementation root for runtime code.
 | `orchestrator.py` | Implemented | LangGraph-native `StateGraph` stage execution, HITL/validation halt behavior |
 | `validation.py` | Implemented | `CanonicalGraphValidator`, `ValidationResult`, `ValidationHaltError` |
 | `config.py` | Implemented | `RuntimeSettings`, `ModelSelection`, `PipelineSettings` |
-| `models/canonical.py` | Implemented | Typed dataclasses: System, Subsystem, Component, Function, Interface, threat graph |
-| `models/__init__.py` | Implemented | Export module for canonical model types |
-| `parsing/icd_parser.py` | Implemented | CSV and XLSX ICD parsing with entity_type dispatch; narrative document parser |
-| `agents/__init__.py` | Scaffolded | `MockAgent` dataclass and `build_default_agents()` for orchestrator wiring |
+| `agents/` | Implemented | Agent 01-09 stage implementations plus shared base/deserialization support |
+| `exports/` | Implemented | STIX, Mermaid, JSON, and markdown report exporters |
+| `ui/` | Implemented | Streamlit-based analyst GUI and screen orchestration |
+| `backend/` | Implemented | Run manager, prompt store, and execution backend services |
+| `parsing/` | Implemented | Structured input parsing and normalization helpers |
+| `models/` | Implemented | Canonical datamodel definitions and related types |
 
-## Planned Modules
+## Scope Note
 
-- `agents/agent_01_input_normalizer.py` through `agent_09_human_report_writer.py` — full agent implementations
-- `export/stix_exporter.py` — STIX 2.1 bundle output
-- `export/diagram_generator.py` — Mermaid diagram generation
-- `export/report_writer.py` — Markdown report generation
-- `hmi/` — Streamlit-based analyst GUI (post-sprint; see docs/architecture/HMI_Architecture_Blueprint.md)
+This README tracks the current runtime implementation state for `src/`.
+Status labels must remain consistent with release-candidate code-snapshot inventories.

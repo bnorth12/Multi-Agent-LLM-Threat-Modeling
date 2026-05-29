@@ -14,8 +14,9 @@ pip install -r Tests/requirements_e2e.txt
 ```
 
 This command:
+
 1. Installs runtime dependencies from `requirements.txt` (openai, langgraph, chromadb, stix2, python-dotenv)
-2. Installs test-specific dependencies (pytest, playwright, streamlit for test harness)
+1. Installs test-specific dependencies (pytest, playwright, streamlit for test harness)
 
 ### Environment Setup
 
@@ -27,6 +28,7 @@ Before running tests, configure the test environment:
 ```
 
 This sets:
+
 - `PYTHONIOENCODING=utf-8` (for proper Unicode logging)
 - `RUN_VISIBLE_BROWSER_TESTS=1` (for headful E2E tests)
 - Validates `GROK_API` availability for browser tests
@@ -98,11 +100,17 @@ From project root with the virtual environment active:
 
 ## Current Test Counts
 
-| Suite | File | Tests | Status |
-|---|---|---|---|
-| Unit | Tests/unit/test_input_ingestion.py | 43 | Passing |
-| Integration | Tests/integration/test_validation_gates.py | 12 | Passing |
-| **Total** | | **55** | **All passing** |
+Test totals evolve continuously. Treat command output as authoritative rather than this README.
+
+Recommended commands:
+
+```sh
+# Total discovered tests
+.venv\Scripts\python.exe -m pytest Tests/ --collect-only -q
+
+# Current execution summary
+.venv\Scripts\python.exe -m pytest Tests/ -q
+```
 
 ## Requirement Linkage
 
@@ -125,7 +133,7 @@ From project root with the virtual environment active:
 
 ## Automated Execution
 
-Planned automation model:
+Current automation model:
 
 - Pull request gate: unit plus integration tests
 - Main branch gate: full suite including e2e and coverage threshold

@@ -130,6 +130,15 @@ jobs:
             python scripts/archive_hygiene.py check --changed-against HEAD~1 --enforce
           fi
 
+      - name: Enforce FQT archive pointer integrity
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            python scripts/check_fqt_archive_pointer_integrity.py --changed-against "origin/${{ github.base_ref }}"
+          else
+            python scripts/check_fqt_archive_pointer_integrity.py --changed-against HEAD~1
+          fi
+
       - name: Generate exception remediation proposals
         run: |
           python scripts/validate_cross_domain_exception_policy.py \

@@ -1,8 +1,8 @@
 # Multi-Agent LLM Threat Modeler — User Manual
 
-**Version:** Sprint 2026-11
+**Version:** v1.0.0 Release Candidate
 **Audience:** Security analysts, threat modeling practitioners, and project administrators
-**Status:** Sprint 2026-11 closeout in progress. Implementation and regression gates are complete; formal live-browser/live-LLM rerun is pending only on runtime credential provisioning (`GROK_API`).
+**Status:** Release-candidate deployment manual for the v1.0.0 package.
 
 ---
 
@@ -150,10 +150,9 @@ python -m threat_modeler --port 9000
 python -m threat_modeler --host 0.0.0.0 --port 9000
 ```
 
-**Streamlit test harness (browser automation/e2e only):**
+**Alternative direct UI launch:**
 
 ```bash
-pip install -r Tests/requirements_e2e.txt
 streamlit run src/threat_modeler/ui/app.py
 ```
 
@@ -378,8 +377,7 @@ be deserialised.
 **Resolution:**
 
 1. Check `state.messages` for the stage that failed.
-1. In fixture mode, verify the fixture file at `Tests/fixtures/agents/agentXX_output.json`
-   is valid JSON conforming to the canonical graph schema.
+1. Re-run in offline fixture mode (`provider=fixture`) to isolate provider-side variance.
 1. Set `stop_on_validation_error=False` in Configuration to continue past the error
    (useful for debugging).
 
@@ -448,14 +446,6 @@ run identifier needed for recovery.
 # Ensure the virtual environment is active and the package is installed
 pip install -e .
 python -m threat_modeler
-```
-
-If you need browser automation/e2e validation, install test dependencies and run
-the Streamlit harness directly:
-
-```bash
-pip install -r Tests/requirements_e2e.txt
-streamlit run src/threat_modeler/ui/app.py
 ```
 
 ---
@@ -531,16 +521,6 @@ The **Last Prompt** screen (SCR-015) now displays both request and response for 
 1. If response is truncated (20,000 char limit), the LLM likely generated excessive output.
 1. Increase `request_timeout_seconds` in **Pipeline Configuration** if the agent needs more processing time.
 
-### User Manual Drift Prevention Workflow (S11-010)
-
-Use this workflow whenever user-facing behavior changes to keep markdown and HTML manuals synchronized.
-
-1. Update source content in `docs/User_Manual.md`.
-1. Regenerate or manually apply equivalent content updates in `docs/user_manual/index.html`.
-1. Verify both manuals contain updated canonical tokens and policy text. Command: `rg "execution_mode|Run Diagnostics|Last Prompt|Heartbeat" docs/User_Manual.md docs/user_manual/index.html`
-1. Run markdown quality checks and document evidence in sprint closeout artifacts. Command: `npx --yes markdownlint-cli docs/User_Manual.md planning/Test_Execution_Summary_Sprint_2026_11.md`
-1. During review, treat `docs/user_manual/index.html` as release-facing presentation and `docs/User_Manual.md` as change-tracking source; no intentional drift is allowed without a documented waiver.
-
 ---
 
 ## 9. Glossary
@@ -571,22 +551,3 @@ Use this workflow whenever user-facing behavior changes to keep markdown and HTM
 | **Trust Boundary** | A boundary across which data flows between zones of different trust levels. |
 | **ValidationHaltError** | Exception raised when a pipeline stage produces a state that fails canonical graph schema validation. |
 | **xAI Grok** | The LLM provider used in hybrid mode; accessed via `XAI_API_KEY` environment variable. |
-
----
-
-## Appendix A. Sprint 2026-11 Formal Validation Evidence
-
-Formal test report:
-
-- `planning/FQT_Test_Report_Sprint_2026_11.md`
-
-Primary evidence run used for formal qualification:
-
-- `FQT/fqt_uas_20260515_232859/test_report.json` (`LIVE_BROWSER_SMOKE_OK`)
-- `FQT/fqt_uas_20260515_232859/smoke_run.log`
-- `FQT/fqt_uas_20260515_232859/screenshots/`
-- `FQT/fqt_uas_20260515_232859/downloads/`
-
-Current rerun status (2026-05-17):
-
-- A fresh same-day live rerun was attempted and blocked before launch because `RUN_VISIBLE_BROWSER_TESTS` and `GROK_API` were not set in the execution shell.

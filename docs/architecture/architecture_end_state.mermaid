@@ -1,0 +1,100 @@
+flowchart TB
+    U["Analyst / Reviewer / Operator"] --> HMI
+    SRC["External Engineering Sources\nICDs, Narratives, Models"] --> IN
+
+    subgraph HMI["Unified Analyst HMI"]
+        H1["Run Setup + Input Upload"]
+        H2["HITL Gate Workspace\nStage Review"]
+        H3["Artifacts Workspace\nCanonical, STIX, Mermaid, Report"]
+        H4["Canonical Graph Visual Workspace\nHierarchy + Flows + Boundaries"]
+        H5["Structured Graph Editor\nSchema-Aware Forms"]
+        H6["Prompt / Revision Workspace\nLLM Iteration Controls"]
+    end
+
+    subgraph RUNTIME["Runtime Orchestration"]
+        RM["Run Manager\nState Authority"]
+        ORCH["Framework Orchestrator\nLangGraph-Compatible Plan"]
+        HITL["HITL Gate Engine\nDecision and Audit"]
+        VAL["Schema + Contract Validation"]
+    end
+
+    subgraph AGENTS["Agent Pipeline"]
+        A1["A1 Input Normalizer"] --> A2["A2 Context Builder"] --> A3["A3 Trust Boundary Validator"] --> A4["A4 STRIDE Scorer"] --> A5["A5 Threat Generator"] --> A6["A6 STIX Packager"] --> A7["A7 Mitigation Generator"] --> A8["A8 Diagram Generator"] --> A9["A9 Report Writer"]
+    end
+
+    subgraph CGSYS["Canonical Graph System"]
+        CG["Canonical Graph Authority\nSource of Truth"]
+        PROJ["Visual Projection Layer\nCanonical -> Graph Render Model"]
+        NAV["Graph-to-Editor Mapping\nNode/Edge/Boundary Deep Links"]
+        IMPACT["Edit Impact Assessor\nLocal Validate vs Re-Cycle"]
+    end
+
+    subgraph STORE["Persistence and Evidence"]
+        S1["Run Checkpoints + Snapshots"]
+        S2["Prompt Store + Revision History"]
+        S3["Decision and Edit Audit Trail"]
+    end
+
+    subgraph OUT["Outputs"]
+        O1["Canonical JSON"]
+        O2["STIX 2.1"]
+        O3["Mermaid Diagrams"]
+        O4["Final Report"]
+    end
+
+    H1 --> RM
+    H2 --> HITL
+    H3 --> RM
+    H4 --> PROJ
+    H4 --> NAV
+    H5 --> NAV
+    H5 --> IMPACT
+    H6 --> HITL
+
+    IN --> RM
+    RM --> ORCH
+    ORCH --> A1
+    HITL --> RM
+
+    A1 --> CG
+    A2 --> CG
+    A3 --> CG
+    A4 --> CG
+    A5 --> CG
+    A6 --> CG
+    A7 --> CG
+    A8 --> CG
+    A9 --> CG
+
+    CG --> VAL
+    VAL --> HITL
+
+    CG --> PROJ
+    PROJ --> H4
+    NAV --> H5
+
+    H5 --> CG
+    IMPACT --> VAL
+    IMPACT -.structural change.-> ORCH
+
+    RM --> S1
+    HITL --> S3
+    H5 --> S3
+    H6 --> S2
+
+    CG --> O1
+    A6 --> O2
+    A8 --> O3
+    A9 --> O4
+
+    classDef seg fill:#0f766e,color:#ffffff,stroke:#134e4a,stroke-width:1px;
+    classDef proc fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:1px;
+    classDef data fill:#b45309,color:#ffffff,stroke:#78350f,stroke-width:1px;
+    classDef store fill:#7c3aed,color:#ffffff,stroke:#4c1d95,stroke-width:1px;
+    classDef out fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:1px;
+
+    class HMI,RUNTIME,AGENTS,CGSYS,STORE,OUT seg;
+    class RM,ORCH,HITL,VAL,A1,A2,A3,A4,A5,A6,A7,A8,A9,H1,H2,H3,H4,H5,H6,PROJ,NAV,IMPACT proc;
+    class CG data;
+    class S1,S2,S3 store;
+    class O1,O2,O3,O4 out;

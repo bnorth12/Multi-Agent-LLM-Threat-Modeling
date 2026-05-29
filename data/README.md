@@ -2,7 +2,10 @@
 
 **Purpose:** Centralized data layer for threat modeling engine, vector embeddings, and RAG (Retrieval-Augmented Generation) system.
 
-**Status:** Infrastructure scaffold created for Sprint 2026-12 RAG implementation.
+**Status:** Active data workspace with seeded corpora, manifests, and retrieval-support assets.
+
+Sprint-2026-12 planning references in this file are historical context. Current implementation includes
+retrieval MVP components under `src/threat_modeler/retrieval.py` and `src/threat_modeler/retrieval_adapters/`.
 
 ---
 
@@ -110,46 +113,40 @@ Generated data and artifacts (not tracked in git).
 
 ---
 
-## Integration with RAG Pipeline
+## Integration with Retrieval and RAG Pipeline
 
-### Expected Flow (Sprint 2026-12+)
+### Current Baseline Flow
 
-1. **Ingest** → Load documents from `inputs/` → Generate embeddings
-1. **Store** → Write vectors to `vector_db/indexes/`
-1. **Retrieve** → Query embeddings, retrieve context
-1. **Generate** → Output threat models to `outputs/`
+1. **Ingest** → Load/normalize source material from `inputs/`
+1. **Store** → Maintain retrieval-ready corpora and optional vector index artifacts in `vector_db/`
+1. **Retrieve** → Query corpus/indexes and attach citation metadata
+1. **Generate** → Feed retrieved context into pipeline outputs under governed runtime paths
 
-### Code Integration Points
+### Code Integration Notes
 
 ```python
-# Expected import pattern
-from src.threat_modeler.rag import RAGEngine
-from data.models import embeddings  # Model configs
+from threat_modeler.retrieval import CorpusIngestor, Retriever
 
-engine = RAGEngine(
-    vector_db_path="data/vector_db/indexes",
-    model_config="data/models/embeddings.yaml",
-    input_path="data/inputs",
-    output_path="data/outputs"
-)
+ingestor = CorpusIngestor()
+retriever = Retriever()
 
-# Run ingestion pipeline
-engine.ingest(source="data/inputs/Aerospace_Architecture")
-
-# Generate with retrieval
-threat_model = engine.generate(prompt=query)
+ingestor.ingest([
+  {"id": "doc-1", "text": "Sample architecture context"},
+])
+retriever.corpus = ingestor.corpus
+results = retriever.retrieve("architecture", top_k=3)
 ```
 
 ---
 
-## Future Expansion
+## Forward Roadmap
 
-### Planned (2026-12)
+### Prioritized Follow-On Items
 
-- [ ] Vector database initialization and persistence layer
+- [ ] Vector database initialization and persistence hardening
 - [ ] Embedding pipeline with batch processing
 - [ ] Retrieval context ranking and scoring
-- [ ] RAG integration with LangGraph orchestrator
+- [ ] Deeper retrieval integration with LangGraph stage prompts
 
 ### Roadmap (2026-13+)
 
@@ -168,10 +165,9 @@ threat_model = engine.generate(prompt=query)
 export PYTHONPATH="${PYTHONPATH}:/path/to/repo/data"
 ```
 
-### Initialization (Placeholder for 2026-12)
+### Initialization Example
 
 ```bash
-# Future command to set up vector DB
 python scripts/generators/init_vector_db.py --config data/models/embeddings.yaml
 ```
 
@@ -179,6 +175,6 @@ python scripts/generators/init_vector_db.py --config data/models/embeddings.yaml
 
 ## References
 
-- **RAG Planning**: `planning/Sprints/Sprint_2026_12/` (future)
+- **RAG Planning (historical baseline)**: `planning/Sprint_2026_12_Planning.md`
 - **Test Infrastructure**: `Tests/` (uses data/inputs/fixtures for validation)
 - **Architecture**: `docs/architecture/` (design decisions documented there)

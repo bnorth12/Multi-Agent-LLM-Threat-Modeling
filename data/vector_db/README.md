@@ -12,7 +12,7 @@
 
 See `config.yaml` in this directory for embedding model selection, dimensions, and chunk parameters.
 
-## Example Usage (Future Implementation)
+## Example Usage (Optional Local Index Workflow)
 
 ```python
 from langchain.vectorstores import FAISS

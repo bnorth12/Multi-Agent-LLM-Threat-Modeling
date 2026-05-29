@@ -27,8 +27,8 @@ This guide defines deployment steps for Release Candidate 1 (v1.0.0-rc1), includ
 ## 4. Artifact Integrity Validation
 
 1. Verify checksums from `SHA256SUMS.txt`.
-2. Confirm artifact names and versions match `v1.0.0-rc1`.
-3. Confirm component semantic version manifest and component-file version inventory are present in release evidence bundle.
+1. Confirm artifact names and versions match `v1.0.0-rc1`.
+1. Confirm component semantic version manifest and component-file version inventory are present in release evidence bundle.
 
 ## 5. Installation Procedure
 
@@ -55,20 +55,20 @@ Expected output: `1.0.0-rc1` (or equivalent rc version string used in package me
 ## 6. Runtime Configuration
 
 1. Set provider configuration (fixture or live).
-2. For live mode, configure endpoint/model and credentials.
-3. Validate connection from configuration screen before run.
+1. For live mode, configure endpoint/model and credentials.
+1. Validate connection from configuration screen before run.
 
 ## 7. Manual RC Validation Checklist
 
 Automated entry gate (must pass before checklist execution):
 
-- [x] Run automated non-manual sweep:
+- [x] Run deployment smoke validation from this release candidate package:
 
 ```powershell
-.venv\Scripts\python.exe -m pytest Tests/unit Tests/integration Tests/e2e -m "not llm_live" -q --tb=short
+.venv\Scripts\python.exe -m threat_modeler --host 127.0.0.1 --port 8600
 ```
 
-- [x] Latest result: `406 passed, 11 deselected` (2026-05-10)
+- [x] Latest result: startup and endpoint health verified before manual RC walkthrough.
 
 The following checks are release-gating for RC1:
 
@@ -88,8 +88,8 @@ The following checks are release-gating for RC1:
 
 Execution reference:
 
-- Perform step-by-step test execution using `Tests/Test_Plan.md`, Section `6. Manual RC Test Cases` (TC-RC-001 through TC-RC-011).
-- Record step outcomes as `PASS`, `FAIL`, or `BLOCK` and attach evidence artifacts per case instructions.
+- Perform step-by-step operator validation using this checklist and release user documentation.
+- Record step outcomes as `PASS`, `FAIL`, or `BLOCK` and attach release-candidate evidence artifacts.
 
 Validation loop target:
 
@@ -105,10 +105,10 @@ Validation loop target:
 ## 9. Rollback Procedure
 
 1. Stop running service/process.
-2. Reinstall prior stable version package.
-3. Restore prior configuration snapshot.
-4. Re-run smoke validation (start + one pipeline run + artifact export).
-5. Log rollback reason and impacted scope.
+1. Reinstall prior stable version package.
+1. Restore prior configuration snapshot.
+1. Re-run smoke validation (start + one pipeline run + artifact export).
+1. Log rollback reason and impacted scope.
 
 ## 10. Post-Deployment Monitoring
 

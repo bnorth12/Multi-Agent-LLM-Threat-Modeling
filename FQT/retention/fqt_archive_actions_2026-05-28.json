@@ -1,0 +1,411 @@
+{
+  "applied_at": "2026-05-28T23:37:41",
+  "archive_root": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28",
+  "actions": [
+    {
+      "run_name": "fqt_react_20260519_213403",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_213403",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_EMPTY",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_213632",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_213632",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_EMPTY",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_213705",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_213705",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_EMPTY",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_214100",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_214100",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_EMPTY",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_214134",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_214134",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_EMPTY",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_215205",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_215205",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_SCREENSHOTS_ONLY",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_215523",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_215523",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_SCREENSHOTS_ONLY",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_220711",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_220711",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_SCREENSHOTS_ONLY",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_220959",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_220959",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_SCREENSHOTS_ONLY",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_224430_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_224430_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_224506_attempt_2",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_224506_attempt_2",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_224539_attempt_3",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_224539_attempt_3",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_234318_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_234318_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_234427_attempt_2",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_234427_attempt_2",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260519_235941_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260519_235941_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260520_000457_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260520_000457_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260520_001038_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260520_001038_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260520_001936_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260520_001936_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260520_010331_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260520_010331_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260520_011201_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260520_011201_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260520_011240_attempt_2",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260520_011240_attempt_2",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260520_011314_attempt_2",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260520_011314_attempt_2",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260520_051440_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260520_051440_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260520_052147_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260520_052147_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260521_001639_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260521_001639_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260521_002232_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260521_002232_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260521_010216_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260521_010216_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260521_152334_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260521_152334_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260522_234041_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260522_234041_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260522_234128_attempt_2",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260522_234128_attempt_2",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260522_234617_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260522_234617_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260523_000454_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260523_000454_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260523_002040_attempt_2",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260523_002040_attempt_2",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260523_002623_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260523_002623_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260523_091726_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260523_091726_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260523_092142_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260523_092142_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260523_092810_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260523_092810_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260523_233245_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260523_233245_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_UI_TIMEOUT_VERIFIED",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260523_233511_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260523_233511_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260523_234216_attempt_1",
+      "archived_at": "2026-05-28T23:37:40",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260523_234216_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "NO_REPORT_UNKNOWN",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260523_235841_attempt_1",
+      "archived_at": "2026-05-28T23:37:41",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260523_235841_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260524_000028_attempt_1",
+      "archived_at": "2026-05-28T23:37:41",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260524_000028_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260524_000455_attempt_1",
+      "archived_at": "2026-05-28T23:37:41",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260524_000455_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260524_000822_attempt_1",
+      "archived_at": "2026-05-28T23:37:41",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260524_000822_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    },
+    {
+      "run_name": "fqt_react_20260524_001047_attempt_1",
+      "archived_at": "2026-05-28T23:37:41",
+      "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260524_001047_attempt_1",
+      "classification": "SUMMARIZE_ONLY",
+      "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+      "canonical_reason": "duplicate_signature",
+      "original_action": "ARCHIVE_WITH_POINTER"
+    }
+  ]
+}

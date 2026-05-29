@@ -1,0 +1,9 @@
+{
+  "run_name": "fqt_react_20260520_011201_attempt_1",
+  "archived_at": "2026-05-28T23:37:40",
+  "archive_target": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/FQT/archive_dedup/2026-05-28/fqt_react_20260520_011201_attempt_1",
+  "classification": "SUMMARIZE_ONLY",
+  "signature": "FAIL_OTHER_FROM_FAILURE_EVIDENCE",
+  "canonical_reason": "duplicate_signature",
+  "original_action": "ARCHIVE_WITH_POINTER"
+}

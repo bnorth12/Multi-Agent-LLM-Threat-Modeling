@@ -1,7 +1,11 @@
 # Traceability Matrix
 
+> Historical freeze notice: this matrix is retained as a sprint-era traceability snapshot.
+> For active requirement/issue/test reconciliation, use `planning/Sprint_2026_12_Traceability_Matrix.md`
+> and current sprint issue trackers under `planning/issues/`.
+
 **Last Updated:** Sprint 2026-12 HMI/HITL workflow refinement and header navigation consolidation
-**Status:** Active reconciliation — Delivered vs Deferred columns now separate GUI requirements by sprint delivery
+**Status:** Historical snapshot (not the active reconciliation source)
 
 ## React Refactor Addendum
 
