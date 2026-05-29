@@ -16,6 +16,218 @@ This project defines and implements a multi-agent workflow that converts archite
 
 The architecture is designed for human-in-the-loop governance and auditable, stage-based execution.
 
+## Architecture Baseline and Target State
+
+The current architecture diagram has been validated against implemented runtime and frontend
+components, including backend run manager orchestration, sequential agent execution planning,
+HITL gate control, canonical graph validation authority, and export/viewer pathways.
+
+Primary target-state additions are a deterministic visual projection layer, graph-to-structured-editor
+deep links, and governed edit impact assessment with controlled re-cycle decisions.
+
+Concept reference:
+
+- docs/architecture/Canonical_Graph_Hierarchical_Visualization_Concept.md
+
+Current-state architecture:
+
+```mermaid
+flowchart TB
+  U["Analyst, Reviewer, and Operator Roles"] --> UI
+  EXT["External Sources\nNarratives + ICD Tables"] --> ING
+
+  subgraph UI["Interaction Segment"]
+    UI1["Input Entry and Source Upload"]
+    UI2["HITL Gate Review and Decisions"]
+    UI3["Artifact Review and Export Surfaces"]
+    UI4["Prompt Editor and Prompt History"]
+    UI5["Runtime Diagnostics, Timeline, and Liveness Views"]
+  end
+
+  subgraph ORCH["Runtime Orchestration and Governance Segment"]
+    RM["Run Manager\nState Authority"]
+    VAL["Schema Validation\nStage Gate Enforcement"]
+    HITL["Gate Decision Controller\nApprove / Reject / Override"]
+  end
+
+  subgraph PIPE["Agent Processing Segment"]
+    A1["Agent 01\nNormalize Inputs"]
+    A2["Agent 02\nBuild Hierarchical Context"]
+    A3["Agent 03\nValidate Trust Boundaries"]
+    A4["Agent 04\nScore STRIDE"]
+    A5["Agent 05\nGenerate Threats"]
+    A6["Agent 06\nPackage STIX"]
+    A7["Agent 07\nGenerate Mitigations"]
+    A8["Agent 08\nGenerate Mermaid Diagrams"]
+    A9["Agent 09\nWrite Human Report"]
+  end
+
+  subgraph DATA["Canonical Graph Authority Lifecycle"]
+    CG["Canonical Graph Authority\nSchema-Validated System and Threat State"]
+  end
+
+  subgraph PERS["Persistence Segment"]
+    P1["Run Control State\nand Checkpoints"]
+    P2["Prompt Store\nand Version History"]
+    P3["Snapshot Packages\nand Evidence Records"]
+  end
+
+  subgraph OUT["Artifact and Evidence Segment"]
+    O1["Canonical JSON Export"]
+    O2["STIX 2.1 Bundle"]
+    O3["Mermaid Diagrams"]
+    O4["Final Markdown Report"]
+    O5["Token, Version, and Release Evidence"]
+  end
+
+  UI1 --> RM
+  UI2 --> HITL
+  UI4 --> P2
+  UI5 --> RM
+  ING --> A1
+
+  RM --> A1 --> A2 --> A3 --> A4 --> A5 --> A6
+  A5 --> A7
+  A3 --> A8
+  A4 --> A8
+  HITL --> P1
+  A7 --> A8
+  RM --> P1
+  RM --> P3
+  A7 --> A9
+
+  A1 --> CG
+  A2 --> CG
+  A3 --> CG
+  P3 --> O5
+  A6 --> CG
+  A7 --> CG
+  A8 --> CG
+  A9 --> CG
+
+  CG --> VAL
+  VAL --> HITL
+  HITL --> RM
+  RM -.resume/checkpoint.-> A1
+
+  classDef pers fill:#7c3aed,color:#ffffff,stroke:#4c1d95,stroke-width:1px;
+  classDef seg fill:#0f766e,color:#ffffff,stroke:#134e4a,stroke-width:1px;
+  classDef proc fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:1px;
+  classDef data fill:#b45309,color:#ffffff,stroke:#78350f,stroke-width:1px;
+  classDef out fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:1px;
+  classDef ext fill:#4683c8,color:#ffffff,stroke:#385f8b,stroke-width:1px;
+
+  class UI,ORCH,PIPE seg;
+  class RM,VAL,HITL,A1,A2,A3,A4,A5,A6,A7,A8,A9,UI1,UI2,UI3,UI4,UI5 proc;
+  class CG data;
+  class O1,O2,O3,O4,O5 out;
+```
+
+Target end-state architecture:
+
+```mermaid
+flowchart TB
+  U["Analyst / Reviewer / Operator"] --> HMI
+  SRC["External Engineering Sources\nICDs, Narratives, Models"] --> IN
+
+  subgraph HMI["Unified Analyst HMI"]
+    H1["Run Setup + Input Upload"]
+    H2["HITL Gate Workspace\nStage Review"]
+    H3["Artifacts Workspace\nCanonical, STIX, Mermaid, Report"]
+    H4["Canonical Graph Visual Workspace\nHierarchy + Flows + Boundaries"]
+    H5["Structured Graph Editor\nSchema-Aware Forms"]
+    H6["Prompt / Revision Workspace\nLLM Iteration Controls"]
+  end
+
+  subgraph RUNTIME["Runtime Orchestration"]
+    RM["Run Manager\nState Authority"]
+    ORCH["Framework Orchestrator\nLangGraph-Compatible Plan"]
+    HITL["HITL Gate Engine\nDecision and Audit"]
+    VAL["Schema + Contract Validation"]
+  end
+
+  subgraph AGENTS["Agent Pipeline"]
+    A1["A1 Input Normalizer"] --> A2["A2 Context Builder"] --> A3["A3 Trust Boundary Validator"] --> A4["A4 STRIDE Scorer"] --> A5["A5 Threat Generator"] --> A6["A6 STIX Packager"] --> A7["A7 Mitigation Generator"] --> A8["A8 Diagram Generator"] --> A9["A9 Report Writer"]
+  end
+
+  subgraph CGSYS["Canonical Graph System"]
+    CG["Canonical Graph Authority\nSource of Truth"]
+    PROJ["Visual Projection Layer\nCanonical -> Graph Render Model"]
+    NAV["Graph-to-Editor Mapping\nNode/Edge/Boundary Deep Links"]
+    IMPACT["Edit Impact Assessor\nLocal Validate vs Re-Cycle"]
+  end
+
+  subgraph STORE["Persistence and Evidence"]
+    S1["Run Checkpoints + Snapshots"]
+    S2["Prompt Store + Revision History"]
+    S3["Decision and Edit Audit Trail"]
+  end
+
+  subgraph OUT["Outputs"]
+    O1["Canonical JSON"]
+    O2["STIX 2.1"]
+    O3["Mermaid Diagrams"]
+    O4["Final Report"]
+  end
+
+  H1 --> RM
+  H2 --> HITL
+  H3 --> RM
+  H4 --> PROJ
+  H4 --> NAV
+  H5 --> NAV
+  H5 --> IMPACT
+  H6 --> HITL
+
+  IN --> RM
+  RM --> ORCH
+  ORCH --> A1
+  HITL --> RM
+
+  A1 --> CG
+  A2 --> CG
+  A3 --> CG
+  A4 --> CG
+  A5 --> CG
+  A6 --> CG
+  A7 --> CG
+  A8 --> CG
+  A9 --> CG
+
+  CG --> VAL
+  VAL --> HITL
+
+  CG --> PROJ
+  PROJ --> H4
+  NAV --> H5
+
+  H5 --> CG
+  IMPACT --> VAL
+  IMPACT -.structural change.-> ORCH
+
+  RM --> S1
+  HITL --> S3
+  H5 --> S3
+  H6 --> S2
+
+  CG --> O1
+  A6 --> O2
+  A8 --> O3
+  A9 --> O4
+
+  classDef seg fill:#0f766e,color:#ffffff,stroke:#134e4a,stroke-width:1px;
+  classDef proc fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:1px;
+  classDef data fill:#b45309,color:#ffffff,stroke:#78350f,stroke-width:1px;
+  classDef store fill:#7c3aed,color:#ffffff,stroke:#4c1d95,stroke-width:1px;
+  classDef out fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:1px;
+
+  class HMI,RUNTIME,AGENTS,CGSYS,STORE,OUT seg;
+  class RM,ORCH,HITL,VAL,A1,A2,A3,A4,A5,A6,A7,A8,A9,H1,H2,H3,H4,H5,H6,PROJ,NAV,IMPACT proc;
+  class CG data;
+  class S1,S2,S3 store;
+  class O1,O2,O3,O4 out;
+```
+
 ## Technology Baseline
 
 - Primary implementation language: Python
