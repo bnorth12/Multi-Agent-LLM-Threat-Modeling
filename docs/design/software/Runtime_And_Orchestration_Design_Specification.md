@@ -128,3 +128,27 @@ Verification for this design should include:
 - integration coverage for gate pause/resume sequences
 - export verification against canonical-graph authority
 - operational evidence showing artifact and snapshot packaging behavior
+
+## 7. Round 5 and 6 Design Baseline Extensions
+
+The following design extensions are now part of the runtime and orchestration baseline and are not trace-only placeholders:
+
+1. C01-ORCH-002 / F-C01_ORCH_002-L2
+- LangGraph-compatible mode SHALL preserve deterministic transition semantics equivalent to controlled linear mode for approved stage sets.
+- Stage transition event emission SHALL continue to satisfy INT-005 in both execution modes.
+
+2. C01-ORCH-003 / F-C01_ORCH_003-L2
+- Checkpoints SHALL be persisted immediately after each approved stage transition and SHALL be recoverable for resume paths governed by INT-007.
+- Checkpoint continuity SHALL be treated as a runtime control-plane invariant.
+
+3. GUI-003A / F-GUI_003A-TRACE-L2
+- Paused-by-gate runtime state SHALL be projected as paused with gate context and completed-stage context; it SHALL not be projected as failed absent a terminal failure condition.
+
+4. GUI-012A / F-GUI_012A-TRACE-L2
+- Stage-selection configuration SHALL persist across sessions and enforce at-least-one-stage enabled before run initiation.
+
+5. GUI-029 / F-GUI_029-TRACE-L2
+- Prompt-response rendering SHALL be key-correlated by prompt record identifier; stale responses from prior attempts SHALL be suppressed from the active view.
+
+6. PRJ-024 / F-PRJ_024-TRACE-L2
+- Visible-browser validation scenarios SHALL be treated as governed verification flows for UI upload behavior and fixture compatibility.

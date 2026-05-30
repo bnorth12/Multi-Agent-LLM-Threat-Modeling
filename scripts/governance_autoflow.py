@@ -258,7 +258,6 @@ def build_stage_command(
         "source-to-evidence-traceability-auditor",
         "source-to-evidence-traceability",
         "requirements-implementation-auditor",
-        "architecture-design-traceability-auditor",
     }:
         command_args = [
             sys.executable,
@@ -270,12 +269,22 @@ def build_stage_command(
             command_args.append("--audit")
         if stage_name == "requirements-implementation-auditor":
             command_args.append("--audit")
-        if stage_name == "architecture-design-traceability-auditor":
-            command_args.append("--audit")
         return {
             "command_key": "traceability",
             "command": command_args,
             "notes": "Executed via sprint traceability verification.",
+        }
+
+    if stage_name == "architecture-design-traceability-auditor":
+        return {
+            "command_key": "architecture-design-baseline",
+            "command": [
+                sys.executable,
+                str(repo_root / "scripts" / "verify_architecture_design_baseline.py"),
+                "--sprint",
+                sprint,
+            ],
+            "notes": "Executed via architecture/design baseline coverage verification.",
         }
 
     if stage_name in {"verification-coverage-planner", "sprint-execution-compliance-monitor"}:
