@@ -17,6 +17,8 @@ from sprint_naming import parse_sprint_token
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT_DIR = REPO_ROOT / "independent_reviews" / "latest"
 DEFAULT_SNAPSHOT_INDEX = REPO_ROOT / "independent_reviews" / "history" / "snapshot_index.json"
+DEFAULT_GOVERNANCE_TRACKER = REPO_ROOT / "planning" / "Governance" / "Automation_And_Skills_Update_Tracker_2026_01.md"
+NON_IMPLEMENTATION_HEALTH_TARGET = 90.0
 
 
 def load_json(path: Path) -> Any:
@@ -96,6 +98,36 @@ def read_plan_excerpt(path: Path, max_lines: int = 4) -> str:
     return " | ".join(lines[:max_lines]) if lines else "empty"
 
 
+def parse_governance_tracker(path: Path) -> Dict[str, Any]:
+    if not path.exists():
+        return {
+            "path": str(path.relative_to(REPO_ROOT)),
+            "status": "missing",
+            "total_items": 0,
+            "status_counts": {},
+        }
+
+    status_counts: Dict[str, int] = {}
+    total = 0
+    for line in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        if not line.strip().startswith("| GOV-"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 8:
+            continue
+        total += 1
+        status = cells[7].lower()
+        status_counts[status] = status_counts.get(status, 0) + 1
+
+    return {
+        "path": str(path.relative_to(REPO_ROOT)),
+        "status": "ready",
+        "total_items": total,
+        "status_counts": status_counts,
+        "open_items": sum(count for key, count in status_counts.items() if key not in {"closed", "complete", "completed"}),
+    }
+
+
 def build_plan(sprint: str, snapshot_index: List[Dict[str, Any]]) -> Dict[str, Any]:
     sprint_token = parse_sprint_token(sprint)
     sprint_us = sprint_token.underscore
@@ -109,6 +141,18 @@ def build_plan(sprint: str, snapshot_index: List[Dict[str, Any]]) -> Dict[str, A
     next_skills_doc = REPO_ROOT / "planning" / f"Sprint_{parking_lot_sprint}_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md"
     concept_doc = REPO_ROOT / "planning" / f"Sprint_{parking_lot_sprint}_Parking_Lot_Threat_Model_Abstractions_and_Compositional_Flows.md"
     restart_manifest = summarize_restart_manifest(REPO_ROOT / "planning" / f"Sprint_{sprint_us}_Remediation_Restart_Manifest.md")
+    governance_tracker = parse_governance_tracker(DEFAULT_GOVERNANCE_TRACKER)
+
+    non_impl_health_proxy = round(
+        ((float(current.get("full_chain_ratio", 0.0)) + float(current.get("issue_quality_ratio", 0.0))) / 2.0) * 100.0,
+        1,
+    )
+    implementation_readiness = {
+        "target": NON_IMPLEMENTATION_HEALTH_TARGET,
+        "current": non_impl_health_proxy,
+        "status": "ready" if non_impl_health_proxy >= NON_IMPLEMENTATION_HEALTH_TARGET and governance_tracker.get("open_items", 0) == 0 else "deferred",
+        "rule": "Implementation-focused remediation starts only after governance/traceability baseline is stable.",
+    }
 
     risk_level = "low"
     if current["latest_score"] < 45:
@@ -117,6 +161,13 @@ def build_plan(sprint: str, snapshot_index: List[Dict[str, Any]]) -> Dict[str, A
         risk_level = "moderate"
 
     gates = [
+        {
+            "sprint": sprint_us,
+            "gate": "governance-automation-baseline",
+            "document": governance_tracker["path"],
+            "status": "ready" if governance_tracker.get("open_items", 0) == 0 else "blocked",
+            "excerpt": f"open GOV items={governance_tracker.get('open_items', 0)} / total={governance_tracker.get('total_items', 0)}",
+        },
         {
             "sprint": sprint_us,
             "gate": "execution-plan",
@@ -158,12 +209,21 @@ def build_plan(sprint: str, snapshot_index: List[Dict[str, Any]]) -> Dict[str, A
             "excerpt": read_plan_excerpt(planning_doc),
         },
         "restart_manifest": restart_manifest,
-        "portfolio_sequence": [sprint_us, next_sprint, parking_lot_sprint],
+        "governance_tracker": governance_tracker,
+        "implementation_readiness": implementation_readiness,
+        "portfolio_sequence": [
+            f"{sprint_us}: governance/traceability baseline",
+            f"{next_sprint}: architecture/design and registry completion",
+            f"{increment_sprint_token(sprint_us, 2)}: implementation-focused remediation (only if baseline gate is ready)",
+            f"{parking_lot_sprint}: non-remediation parking lot",
+        ],
         "gates": gates,
         "governance_checkpoints": [
             "Use the remediation restart manifest as the portfolio intake source before generating issue trackers.",
             "Allocate every manifest item into an execution sprint before remediation implementation begins.",
             "Hold current sprint closeout until the current sprint evidence bundle is certified or conditionally certified.",
+            "Keep governance automation and skill debt as a separate GOV workstream from requirement remediation execution.",
+            "Defer implementation-centric remediation until non-implementation baseline health reaches target and GOV backlog is closed.",
             "Treat 2026_99 as a parking-lot lane for non-remediation work so speculative scope does not collide with remediation execution.",
         ],
     }
@@ -189,6 +249,13 @@ def write_report(out_dir: Path, result: Dict[str, Any]) -> None:
         f"- Latest Health: {float(result['current_health'].get('latest_score', 0.0)):.1f}%",
         f"- Current Full-Chain Ratio: {float(result['current_health'].get('full_chain_ratio', 0.0)):.3f}",
         f"- Current Issue Quality Ratio: {float(result['current_health'].get('issue_quality_ratio', 0.0)):.3f}",
+        f"- Non-Implementation Baseline Proxy: {float(result['implementation_readiness'].get('current', 0.0)):.1f}%",
+        f"- Implementation Readiness: {result['implementation_readiness'].get('status')}",
+        "",
+        "## Governance Workstream",
+        f"- Tracker: {result['governance_tracker'].get('path')}",
+        f"- Open GOV items: {result['governance_tracker'].get('open_items', 'n/a')}",
+        f"- Total GOV items: {result['governance_tracker'].get('total_items', 'n/a')}",
         "",
         "## Intake Source",
     ]

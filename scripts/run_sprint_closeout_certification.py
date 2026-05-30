@@ -29,25 +29,48 @@ def load_text(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="ignore")
 
 
+def parse_markdown_table_cells(line: str) -> List[str]:
+    stripped = line.strip()
+    if not stripped.startswith("|"):
+        return []
+    return [cell.strip() for cell in stripped.strip("|").split("|")]
+
+
+def is_markdown_separator_row(line: str) -> bool:
+    stripped = line.strip().replace("|", "").replace(":", "").replace("-", "")
+    return stripped == ""
+
+
+def classify_status(raw_status: str) -> str:
+    status = raw_status.lower()
+    if any(token in status for token in ("closed", "complete", "resolved")):
+        return "closed"
+    if any(token in status for token in ("in progress", "in-progress", "in_review", "in review")):
+        return "in_progress"
+    if "proposed" in status or "defer" in status or "carryover" in status:
+        return "proposed"
+    if "open" in status:
+        return "open"
+    return "other"
+
+
 def parse_issue_statuses(issue_tracker_text: str) -> Dict[str, int]:
     counts = {"closed": 0, "in_progress": 0, "open": 0, "proposed": 0, "other": 0}
+    status_index: int | None = None
     for line in issue_tracker_text.splitlines():
-        if not line.startswith("|") or "---" in line:
+        if not line.startswith("|"):
             continue
-        cells = [cell.strip() for cell in line.split("|")]
-        if len(cells) <= 5:
+        if is_markdown_separator_row(line):
             continue
-        status = cells[5].lower()
-        if any(token in status for token in ("closed", "complete")):
-            counts["closed"] += 1
-        elif any(token in status for token in ("in progress", "in_review", "in review")):
-            counts["in_progress"] += 1
-        elif "proposed" in status or "defer" in status:
-            counts["proposed"] += 1
-        elif "open" in status:
-            counts["open"] += 1
-        else:
-            counts["other"] += 1
+        cells = parse_markdown_table_cells(line)
+        if not cells:
+            continue
+        if status_index is None and any(cell.lower() == "status" for cell in cells):
+            status_index = next((idx for idx, cell in enumerate(cells) if cell.lower() == "status"), None)
+            continue
+
+        status = cells[status_index] if status_index is not None and status_index < len(cells) else ""
+        counts[classify_status(status)] += 1
     return counts
 
 

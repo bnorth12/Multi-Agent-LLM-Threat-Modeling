@@ -9,15 +9,25 @@ from typing import Dict, List
 
 
 MISSING_REQ_RE = re.compile(r"Requirement\s+([A-Z]+-\d+[A-Z]?)\s+referenced by sprint artifacts but not documented", re.IGNORECASE)
-MISSING_TEST_RE = re.compile(r"Issue\s+(S\d{2}-\d+)\s+is missing explicit test evidence", re.IGNORECASE)
+MISSING_TEST_RE = re.compile(r"Issue\s+((?:S\d{2}-\d+)|(?:R\d{2}-\d{3}))\s+is missing explicit test evidence", re.IGNORECASE)
+MISSING_FUNCTION_ROOT_RE = re.compile(r"Issue\s+((?:S\d{2}-\d+)|(?:R\d{2}-\d{3}))\s+references child function\s+([A-Z0-9_-]+)\s+not defined", re.IGNORECASE)
+MISSING_REGISTRY_LINK_RE = re.compile(r"Issue\s+((?:S\d{2}-\d+)|(?:R\d{2}-\d{3}))\s+requirement\s+([A-Z]+-\d+[A-Z]?)\s+has no aligned row in\s+Requirements/15_End_To_End_Traceability_Attributes_Registry\.md", re.IGNORECASE)
 
 
 def summarize(lines: List[str]) -> Dict[str, List[str]]:
     missing_reqs = sorted({m.group(1) for line in lines for m in [MISSING_REQ_RE.search(line)] if m})
     missing_tests = sorted({m.group(1) for line in lines for m in [MISSING_TEST_RE.search(line)] if m})
+    missing_function_roots = sorted(
+        {f"{m.group(1)}:{m.group(2)}" for line in lines for m in [MISSING_FUNCTION_ROOT_RE.search(line)] if m}
+    )
+    missing_registry_links = sorted(
+        {f"{m.group(1)}:{m.group(2)}" for line in lines for m in [MISSING_REGISTRY_LINK_RE.search(line)] if m}
+    )
     return {
         "missing_requirement_docs": missing_reqs,
         "missing_test_evidence": missing_tests,
+        "missing_function_root_links": missing_function_roots,
+        "missing_registry_links": missing_registry_links,
     }
 
 
@@ -31,6 +41,8 @@ def write_outputs(repo_root: Path, out_dir: str, sprint: str, verify_exit: int, 
         "verify_exit_code": verify_exit,
         "missing_requirement_docs": summary["missing_requirement_docs"],
         "missing_test_evidence": summary["missing_test_evidence"],
+        "missing_function_root_links": summary["missing_function_root_links"],
+        "missing_registry_links": summary["missing_registry_links"],
     }
 
     (out_root / "traceability_blocker_backlog_latest.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -64,10 +76,34 @@ def write_outputs(repo_root: Path, out_dir: str, sprint: str, verify_exit: int, 
 
     lines.extend([
         "",
+        "## Missing Function Root Links (Issue:Function)",
+    ])
+
+    function_roots = summary["missing_function_root_links"]
+    if function_roots:
+        lines.extend([f"- {item}" for item in function_roots])
+    else:
+        lines.append("- none")
+
+    lines.extend([
+        "",
+        "## Missing Requirements/15 Registry Links (Issue:Requirement)",
+    ])
+
+    registry_links = summary["missing_registry_links"]
+    if registry_links:
+        lines.extend([f"- {item}" for item in registry_links])
+    else:
+        lines.append("- none")
+
+    lines.extend([
+        "",
         "## Suggested Remediation Order",
         "1. Resolve missing requirement-documentation IDs in a dedicated requirements commit.",
-        "2. Add explicit test evidence references for remaining issue files in a separate evidence commit.",
-        "3. Re-run sprint traceability validation and capture post-remediation output.",
+        "2. Create missing function hierarchy entries in docs/architecture/Function_Hierarchy_Registry.md grouped by parent capability.",
+        "3. Add or update Requirements/15 registry rows for missing issue/requirement links with architecture/design/implementation/verification references.",
+        "4. Add explicit test evidence references for remaining issue files in a separate evidence commit.",
+        "5. Re-run sprint traceability validation and capture post-remediation output.",
         "",
         "## Raw Verification Output (Tail)",
     ])
@@ -111,6 +147,8 @@ def main() -> int:
     print(f"- Sprint: {args.sprint}")
     print(f"- Missing requirement docs: {len(summary['missing_requirement_docs'])}")
     print(f"- Missing explicit test evidence: {len(summary['missing_test_evidence'])}")
+    print(f"- Missing function root links: {len(summary['missing_function_root_links'])}")
+    print(f"- Missing registry links: {len(summary['missing_registry_links'])}")
     print(f"- Source verifier exit code: {proc.returncode}")
 
     return 0
