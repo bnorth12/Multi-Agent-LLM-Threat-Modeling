@@ -1,9 +1,9 @@
 ﻿# S12-033 / C01-ORCH-001 LangGraph Orchestrator Architecture Disposition
 Sprint: 2026-12
-Requirement ID: UNKNOWN-REQ
-Parent Capability ID: C16-PRJ-001
-Parent Function ID: F-UNKNOWN-TRACEABILITY-L1
-Child Function ID: F-S12-033-C01_ORCH_001-L2
+Requirement ID: ORCH-001
+Parent Capability ID: C01-ORCH-001
+Parent Function ID: F-ORCH-TRACEABILITY-L1
+Child Function ID: F-S12-033-ORCH_001-L2
 Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_033_LangGraph_Orchestrator_Architecture_Disposition.md
 Verification Method: Sprint traceability verification
