@@ -64,6 +64,56 @@ def resolve_profile(branch: str, explicit: str, routing: Dict[str, Any]) -> str:
     return str(selection.get("default_profile", "default"))
 
 
+def normalize_sprint_for_report_name(raw_sprint: str) -> str:
+    return raw_sprint.replace("_", "-")
+
+
+def load_latest_obligation_summary(
+    repo_root: Path,
+    out_dir: str,
+    sprint: str,
+    run_context: str,
+) -> Dict[str, Any]:
+    if run_context != "pre-push":
+        return {
+            "open_obligation_count": None,
+            "report_markdown": "",
+            "report_json": "",
+            "notes": "Obligation report is only generated for pre-push independent review runs.",
+        }
+
+    sprint_dash = normalize_sprint_for_report_name(sprint)
+    base_dir = repo_root / out_dir
+    md_path = base_dir / f"remediation_obligations_{sprint_dash}_{run_context}.md"
+    json_path = base_dir / f"remediation_obligations_{sprint_dash}_{run_context}.json"
+
+    if not json_path.exists():
+        return {
+            "open_obligation_count": None,
+            "report_markdown": md_path.as_posix(),
+            "report_json": json_path.as_posix(),
+            "notes": "Expected obligation report was not found for this run context.",
+        }
+
+    try:
+        payload = json.loads(json_path.read_text(encoding="utf-8"))
+        obligations = payload.get("open_exception_obligations", [])
+        count = len(obligations) if isinstance(obligations, list) else 0
+        return {
+            "open_obligation_count": count,
+            "report_markdown": md_path.as_posix(),
+            "report_json": json_path.as_posix(),
+            "notes": "Count loaded from latest remediation obligation report.",
+        }
+    except Exception:
+        return {
+            "open_obligation_count": None,
+            "report_markdown": md_path.as_posix(),
+            "report_json": json_path.as_posix(),
+            "notes": "Obligation report exists but could not be parsed.",
+        }
+
+
 def append_execution_ledger(repo_root: Path, entry: Dict[str, Any]) -> None:
     latest_dir = repo_root / "independent_reviews" / "latest"
     history_dir = repo_root / "independent_reviews" / "history"
@@ -86,6 +136,13 @@ def append_execution_ledger(repo_root: Path, entry: Dict[str, Any]) -> None:
         f"- Enforcement Mode: {entry['enforcement_mode']}",
         f"- Outcome: {entry['outcome']}",
         f"- Exit Code: {entry['exit_code']}",
+        f"- Open Remediation Obligations: {entry.get('open_obligation_count', 'n/a')}",
+        "",
+        "## Remediation Obligations",
+        f"- Open obligation count: {entry.get('open_obligation_count', 'n/a')}",
+        f"- Obligation report (Markdown): {entry.get('obligation_report_markdown', 'n/a') or 'n/a'}",
+        f"- Obligation report (JSON): {entry.get('obligation_report_json', 'n/a') or 'n/a'}",
+        f"- Notes: {entry.get('obligation_summary_notes', 'n/a')}",
         "",
         "## Agent Chain",
     ]
@@ -582,6 +639,13 @@ def main() -> int:
         else:
             outcome = "failed"
 
+    obligation_summary = load_latest_obligation_summary(
+        repo_root=repo_root,
+        out_dir=args.out_dir,
+        sprint=args.sprint,
+        run_context=run_context,
+    )
+
     ledger_entry: Dict[str, Any] = {
         "timestamp": dt.datetime.now().isoformat(timespec="seconds"),
         "context": args.context,
@@ -597,6 +661,10 @@ def main() -> int:
         "commands": command_results,
         "outcome": outcome,
         "exit_code": exit_code,
+        "open_obligation_count": obligation_summary.get("open_obligation_count"),
+        "obligation_report_markdown": obligation_summary.get("report_markdown", ""),
+        "obligation_report_json": obligation_summary.get("report_json", ""),
+        "obligation_summary_notes": obligation_summary.get("notes", ""),
     }
     append_execution_ledger(repo_root, ledger_entry)
 

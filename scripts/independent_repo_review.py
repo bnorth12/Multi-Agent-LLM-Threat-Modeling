@@ -23,7 +23,7 @@ import sys
 from collections import Counter
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional, Set, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 from sprint_naming import parse_sprint_token
 
@@ -71,6 +71,7 @@ REQUIRED_TRACEABILITY_ARTIFACTS = [
 TREND_HISTORY_FILE = Path("independent_reviews/history/snapshot_index.json")
 POLICY_PROFILES_FILE = Path("config/independent_review_policy_profiles.json")
 REPORT_ARCHIVE_DIR = Path("independent_reviews/history/reports")
+EXCEPTION_REGISTRY_FILE = Path("config/independent_review_exception_registry.json")
 
 
 @dataclass
@@ -275,6 +276,16 @@ class ReviewResult:
     remediation_strategy: RemediationStrategy = field(default_factory=RemediationStrategy)
 
 
+@dataclass
+class RemediationObligationItem:
+    rule_id: str
+    level: str
+    finding: str
+    owning_plan: str
+    due_sprint: str
+    rationale: str
+
+
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="ignore")
 
@@ -377,6 +388,260 @@ def count_enforcement_violations(severity: SeveritySummary, levels: List[str]) -
     if "informational" in levels:
         count += len(severity.informational)
     return count
+
+
+def load_exception_registry(root: Path, path: str) -> Dict[str, Any]:
+    registry_path = root / path
+    if not registry_path.exists():
+        return {"default_enabled": False, "rules": []}
+    try:
+        raw = json.loads(registry_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"default_enabled": False, "rules": []}
+    if not isinstance(raw, dict):
+        return {"default_enabled": False, "rules": []}
+    return {
+        "default_enabled": bool(raw.get("default_enabled", True)),
+        "rules": list(raw.get("rules", [])),
+    }
+
+
+def _level_items(severity: SeveritySummary, level: str) -> List[str]:
+    if level == "critical":
+        return severity.critical
+    if level == "major":
+        return severity.major
+    if level == "minor":
+        return severity.minor
+    if level == "informational":
+        return severity.informational
+    return []
+
+
+def _rule_applies(rule: Dict[str, Any], level: str, sprint: str, run_context: str) -> bool:
+    if not bool(rule.get("enabled", True)):
+        return False
+
+    levels = [str(item).lower() for item in rule.get("levels", []) if str(item).strip()]
+    if levels and level not in levels:
+        return False
+
+    contexts = {str(item) for item in rule.get("contexts", []) if str(item).strip()}
+    if contexts and run_context not in contexts:
+        return False
+
+    sprints = {str(item).replace("_", "-") for item in rule.get("sprints", []) if str(item).strip()}
+    if sprints and sprint.replace("_", "-") not in sprints:
+        return False
+
+    return True
+
+
+def _rule_matches_finding(rule: Dict[str, Any], finding: str) -> bool:
+    needles = [str(item) for item in rule.get("contains_any", []) if str(item).strip()]
+    if not needles:
+        return False
+    return any(needle in finding for needle in needles)
+
+
+def count_enforcement_violations_with_exceptions(
+    severity: SeveritySummary,
+    levels: List[str],
+    registry: Dict[str, Any],
+    sprint: str,
+    run_context: str,
+) -> Tuple[int, int]:
+    if not bool(registry.get("default_enabled", True)):
+        return count_enforcement_violations(severity, levels), 0
+
+    rules = registry.get("rules", [])
+    violations = 0
+    excepted = 0
+    for level in levels:
+        for finding in _level_items(severity, level):
+            matched = False
+            for rule in rules:
+                if not isinstance(rule, dict):
+                    continue
+                if not _rule_applies(rule, level, sprint, run_context):
+                    continue
+                if _rule_matches_finding(rule, finding):
+                    matched = True
+                    excepted += 1
+                    break
+            if not matched:
+                violations += 1
+    return violations, excepted
+
+
+def evaluate_enforcement_with_exceptions(
+    severity: SeveritySummary,
+    levels: List[str],
+    registry: Dict[str, Any],
+    sprint: str,
+    run_context: str,
+) -> Tuple[int, List[RemediationObligationItem]]:
+    if not bool(registry.get("default_enabled", True)):
+        return count_enforcement_violations(severity, levels), []
+
+    rules = registry.get("rules", [])
+    violations = 0
+    obligations: List[RemediationObligationItem] = []
+
+    for level in levels:
+        for finding in _level_items(severity, level):
+            matched_rule: Optional[Dict[str, Any]] = None
+            for rule in rules:
+                if not isinstance(rule, dict):
+                    continue
+                if not _rule_applies(rule, level, sprint, run_context):
+                    continue
+                if _rule_matches_finding(rule, finding):
+                    matched_rule = rule
+                    break
+
+            if matched_rule is None:
+                violations += 1
+                continue
+
+            obligations.append(
+                RemediationObligationItem(
+                    rule_id=str(matched_rule.get("id", "unlabeled-exception")),
+                    level=level,
+                    finding=finding,
+                    owning_plan=str(
+                        matched_rule.get("owning_plan")
+                        or matched_rule.get("remediation_plan")
+                        or "unspecified"
+                    ),
+                    due_sprint=str(matched_rule.get("due_sprint", "unspecified")),
+                    rationale=str(matched_rule.get("rationale", "No rationale provided.")),
+                )
+            )
+
+    return violations, obligations
+
+
+def collect_open_exception_obligations(
+    severity: SeveritySummary,
+    registry: Dict[str, Any],
+    sprint: str,
+    run_context: str,
+) -> List[RemediationObligationItem]:
+    if not bool(registry.get("default_enabled", True)):
+        return []
+
+    rules = registry.get("rules", [])
+    obligations: List[RemediationObligationItem] = []
+    all_levels = ["critical", "major", "minor", "informational"]
+
+    for level in all_levels:
+        for finding in _level_items(severity, level):
+            for rule in rules:
+                if not isinstance(rule, dict):
+                    continue
+                if not _rule_applies(rule, level, sprint, run_context):
+                    continue
+                if not _rule_matches_finding(rule, finding):
+                    continue
+                obligations.append(
+                    RemediationObligationItem(
+                        rule_id=str(rule.get("id", "unlabeled-exception")),
+                        level=level,
+                        finding=finding,
+                        owning_plan=str(
+                            rule.get("owning_plan")
+                            or rule.get("remediation_plan")
+                            or "unspecified"
+                        ),
+                        due_sprint=str(rule.get("due_sprint", "unspecified")),
+                        rationale=str(rule.get("rationale", "No rationale provided.")),
+                    )
+                )
+                break
+
+    return obligations
+
+
+def remediation_obligation_report_paths(
+    out_dir: Path,
+    sprint: str,
+    run_context: str,
+    report_mode: str,
+) -> Tuple[Path, Path]:
+    if report_mode == "archive":
+        stamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+        return (
+            out_dir / f"remediation_obligations_{sprint}_{run_context}_{stamp}.md",
+            out_dir / f"remediation_obligations_{sprint}_{run_context}_{stamp}.json",
+        )
+    return (
+        out_dir / f"remediation_obligations_{sprint}_{run_context}.md",
+        out_dir / f"remediation_obligations_{sprint}_{run_context}.json",
+    )
+
+
+def write_remediation_obligation_report(
+    out_dir: Path,
+    result: ReviewResult,
+    obligations: List[RemediationObligationItem],
+    review_md_path: Path,
+    review_json_path: Path,
+    report_mode: str,
+) -> Tuple[Path, Path]:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    md_path, json_path = remediation_obligation_report_paths(
+        out_dir=out_dir,
+        sprint=result.sprint,
+        run_context=result.run_context,
+        report_mode=report_mode,
+    )
+
+    lines: List[str] = []
+    lines.append("# Remediation Obligation Report")
+    lines.append("")
+    lines.append(f"- Generated: {result.generated_at}")
+    lines.append(f"- Sprint Scope: {result.sprint}")
+    lines.append(f"- Run Context: {result.run_context}")
+    lines.append("- Source Independent Review (Markdown): " + review_md_path.as_posix())
+    lines.append("- Source Independent Review (JSON): " + review_json_path.as_posix())
+    lines.append(f"- Open Exception Obligations: {len(obligations)}")
+    lines.append("")
+    lines.append("## Open Exceptions Queue")
+    if obligations:
+        lines.append("| Rule ID | Severity | Due Sprint | Owning Plan | Finding |")
+        lines.append("|---|---|---|---|---|")
+        for item in obligations:
+            finding = item.finding.replace("|", "\\|")
+            owning_plan = item.owning_plan.replace("|", "\\|")
+            lines.append(
+                f"| {item.rule_id} | {item.level} | {item.due_sprint} | {owning_plan} | {finding} |"
+            )
+    else:
+        lines.append("- None")
+    lines.append("")
+    lines.append("## Rationale Notes")
+    if obligations:
+        rationale_by_rule: Dict[str, str] = {}
+        for item in obligations:
+            rationale_by_rule.setdefault(item.rule_id, item.rationale)
+        for rule_id, rationale in sorted(rationale_by_rule.items()):
+            lines.append(f"- {rule_id}: {rationale}")
+    else:
+        lines.append("- No exception obligations are currently open for this run.")
+
+    payload = {
+        "generated_at": result.generated_at,
+        "sprint": result.sprint,
+        "run_context": result.run_context,
+        "source_independent_review_markdown": review_md_path.as_posix(),
+        "source_independent_review_json": review_json_path.as_posix(),
+        "open_exception_obligations": [asdict(item) for item in obligations],
+    }
+
+    md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    json_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return md_path, json_path
 
 
 def summarize_requirement_prefixes(items: Iterable[str], limit: int = 3) -> List[str]:
@@ -1412,6 +1677,12 @@ def render_executive_summary(result: "ReviewResult") -> List[str]:
         "The practical interpretation for this run is that remediation work should prioritize closure of missing chain legs that drive critical and major findings, while maintaining explicit KPI baselines for future comparison. "
         "As remediation sprints complete, this summary can be used to verify whether health and chain-completeness KPIs are improving at a sustainable rate, and whether delivery sprints introduce regressions that warrant process corrections."
     )
+    if result.run_context == "pre-push":
+        lines.append("")
+        lines.append(
+            "Open exception obligations for post-merge remediation are tracked in "
+            f"independent_reviews/latest/remediation_obligations_{result.sprint}_{result.run_context}.md."
+        )
     lines.append("")
     return lines
 
@@ -2203,6 +2474,12 @@ def main() -> int:
     parser.add_argument("--trend-window", type=int, default=5, help="Number of recent runs in compact trend dashboard")
     parser.add_argument("--github-reconcile", action="store_true", help="Opt-in: reconcile local issue status against GitHub issue state via gh CLI")
     parser.add_argument("--github-repo", type=str, default="", help="Optional default GitHub repo owner/name for #123 refs")
+    parser.add_argument(
+        "--exception-registry",
+        type=str,
+        default=EXCEPTION_REGISTRY_FILE.as_posix(),
+        help="Path to independent review exception registry JSON",
+    )
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parents[1]
@@ -2253,7 +2530,39 @@ def main() -> int:
     print(f"[independent-review] Markdown report: {md_path.as_posix()}")
     print(f"[independent-review] JSON report: {json_path.as_posix()}")
 
-    violation_count = count_enforcement_violations(result.severity_summary, active_levels)
+    exception_registry = load_exception_registry(repo_root, args.exception_registry)
+    violation_count, obligations = evaluate_enforcement_with_exceptions(
+        result.severity_summary,
+        active_levels,
+        exception_registry,
+        result.sprint,
+        result.run_context,
+    )
+    excepted_count = len(obligations)
+
+    if result.run_context == "pre-push":
+        obligations_for_report = collect_open_exception_obligations(
+            result.severity_summary,
+            exception_registry,
+            result.sprint,
+            result.run_context,
+        )
+        obligation_md, obligation_json = write_remediation_obligation_report(
+            out_dir=repo_root / args.out_dir,
+            result=result,
+            obligations=obligations_for_report,
+            review_md_path=md_path,
+            review_json_path=json_path,
+            report_mode=args.report_mode,
+        )
+        print(f"[independent-review] Remediation obligation report (Markdown): {obligation_md.as_posix()}")
+        print(f"[independent-review] Remediation obligation report (JSON): {obligation_json.as_posix()}")
+
+    if excepted_count > 0:
+        print(
+            "[independent-review] Exception registry matched: "
+            f"{excepted_count} blocking-level finding(s) downgraded for advisory follow-up."
+        )
     if violation_count > 0:
         print(
             "[independent-review] Enforcement triggered: "

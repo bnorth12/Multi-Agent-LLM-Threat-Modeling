@@ -220,7 +220,7 @@ Scripts and workflows that automatically enforce traceability:
    # Full audit (before closure)
    python scripts/verify_sprint_traceability.py --sprint 2026-09 --audit
 
-   # Output: Colored terminal report showing ✅ PASS or ❌ FAIL
+   # Output: Colored terminal report showing PASS or FAIL
    ```
 
    **When to Run**:
@@ -229,9 +229,24 @@ Scripts and workflows that automatically enforce traceability:
    - Any time during sprint: Spot-check compliance
 
    **Output Interpretation**:
-   - Green ✅: Traceability complete for that item
-   - Red ❌: Blocker found (must fix before closure)
-   - Yellow ⚠️: Warning (non-blocking but should address)
+   - Green PASS: Traceability complete for that item
+   - Red FAIL: Blocker found (must fix before closure)
+   - Yellow WARNING: Warning (non-blocking but should address)
+
+### 8. **Independent Review (Advisory at Hook Time)**
+   🐍 [scripts/independent_repo_review.py](../scripts/independent_repo_review.py)
+
+   **What**: Full-scope repository health and traceability review that remains advisory in commit/merge/push hooks.
+
+   **Policy**:
+   - Hook-time execution is advisory; findings are captured and reported for planned remediation after merge.
+   - Blocking enforcement can still be enabled explicitly for manual governance runs.
+   - Historical debt exceptions are declared in `config/independent_review_exception_registry.json` and are counted as advisory follow-up, not ignored.
+
+   **Primary Outputs**:
+   - `independent_reviews/latest/independent_review_*_*.md`
+   - `independent_reviews/latest/independent_review_*_*.json`
+   - Governance ledger entries in `independent_reviews/latest/governance_execution_ledger_latest.*`
 
 ---
 

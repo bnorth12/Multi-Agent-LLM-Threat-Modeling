@@ -106,6 +106,8 @@ Technical standards and architectural patterns:
 - **Reorganization Plan**: `planning/00_Repository_Structure_Reorganization_Plan.md` - Phases 1-7 roadmap
 - **Requirements**: `planning/Requirements/` - What we're building and why
 - **Sprint Details**: `planning/Sprints/` - Active sprint work
+- **Governance Automation Backlog**: `planning/Governance/Governance_Automation_Improvement_Backlog.md` - Governance debt and policy-automation improvements
+- **Application Tech Debt Backlog**: `planning/work_items/Application_Tech_Debt_Backlog.md` - Product/runtime technical debt backlog kept separate from governance automation debt
 
 ---
 
@@ -127,3 +129,21 @@ Governance policies should evolve based on:
 - Scaling requirements
 
 Submit governance change requests as PRs with rationale and impact analysis.
+
+## Governance Backlog Triage Automation
+
+Use the triage script to append new proposed governance-automation backlog items from the latest remediation obligation report using deterministic IDs.
+
+```bash
+# Preview only
+python scripts/triage_governance_obligations_backlog.py --dry-run
+
+# Append new items
+python scripts/triage_governance_obligations_backlog.py
+```
+
+Deterministic ID format:
+
+- `GOV-AUTO-OBL-<8_HEX>` where hash input is `rule_id|level|finding`
+
+The script only appends rows not already present in `planning/Governance/Governance_Automation_Improvement_Backlog.md`.

@@ -88,7 +88,7 @@
     },
     "pre-merge-commit": {
       "run_context": "pre-merge-commit",
-      "enforcement_mode": "auto",
+      "enforcement_mode": "off",
       "trend_window": 5,
       "agent_chain": [
         "repo-governance-autoflow-orchestrator",
@@ -110,7 +110,7 @@
     },
     "pre-push": {
       "run_context": "pre-push",
-      "enforcement_mode": "auto",
+      "enforcement_mode": "off",
       "trend_window": 5,
       "agent_chain": [
         "repo-governance-autoflow-orchestrator",

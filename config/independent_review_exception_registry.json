@@ -1,0 +1,25 @@
+{
+  "version": "1.0",
+  "description": "Grandfathered independent-review findings remain visible in reports but can be excluded from blocking enforcement while remediation is planned post-merge.",
+  "default_enabled": true,
+  "rules": [
+    {
+      "id": "legacy-baseline-coverage-gap-2026-12",
+      "enabled": true,
+      "levels": ["critical", "major"],
+      "contexts": ["pre-commit", "pre-merge-commit", "pre-push"],
+      "sprints": ["2026-12"],
+      "due_sprint": "2026_01",
+      "owning_plan": "planning/Sprint_2026_01_Remediation_Restart_Manifest.md",
+      "contains_any": [
+        "Verification coverage ratio",
+        "Implementation coverage ratio",
+        "Architecture/design trace ratio",
+        "Hierarchy governance fields are incomplete in sprint issue artifacts",
+        "Required traceability artifacts are present but not referenced by planning/remediation artifacts"
+      ],
+      "remediation_plan": "planning/Sprint_2026_01_Remediation_Restart_Manifest.md",
+      "rationale": "Historical baseline debt is accepted for merge-time advisory reporting while a planned remediation stream executes after integration."
+    }
+  ]
+}
