@@ -14,6 +14,11 @@ from typing import Any, Dict, List, Optional, Tuple
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT_DIR = REPO_ROOT / "local_reviews" / "latest"
 REVIEW_GLOB = "independent_review_*.md"
+REQUIRED_TRACEABILITY_ARTIFACTS = [
+    "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+    "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+    "Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+]
 
 
 def load_text(path: Path) -> str:
@@ -194,6 +199,30 @@ def summarize_review(review_md: Path, review_json: Optional[Path], sprint: str) 
     verification_count = parse_int(r"Close verification evidence gaps \(P0\) focuses on ([0-9]+) requirement id", markdown_text)
     architecture_count = parse_int(r"Backfill architecture and design traceability \(P1\) focuses on ([0-9]+) requirement id", markdown_text)
 
+    traceability_artifact_status = json_data.get("traceability_artifact_status", {})
+    required_traceability_artifacts = json_data.get("required_traceability_artifacts") or REQUIRED_TRACEABILITY_ARTIFACTS
+    traceability_artifacts_missing = json_data.get("traceability_artifacts_missing") or []
+    traceability_artifacts_unreferenced = json_data.get("traceability_artifacts_unreferenced") or []
+
+    if not traceability_artifact_status:
+        fallback_status: Dict[str, Dict[str, Any]] = {}
+        for artifact in required_traceability_artifacts:
+            artifact_path = REPO_ROOT / artifact
+            exists = artifact_path.exists()
+            fallback_status[artifact] = {
+                "exists": exists,
+                "planning_reference_count": 0,
+                "referenced_in": [],
+                "verification_status": "missing" if not exists else "present-not-referenced",
+            }
+        traceability_artifact_status = fallback_status
+        traceability_artifacts_missing = [artifact for artifact, status in fallback_status.items() if not status.get("exists", False)]
+        traceability_artifacts_unreferenced = [
+            artifact
+            for artifact, status in fallback_status.items()
+            if status.get("exists", False) and int(status.get("planning_reference_count", 0)) == 0
+        ]
+
     themes = [
         {
             "name": "Implementation evidence closure",
@@ -247,6 +276,7 @@ def summarize_review(review_md: Path, review_json: Optional[Path], sprint: str) 
         and remediation_floor is not None
         and overall_health >= remediation_floor
         and planning_ready
+        and not traceability_artifacts_missing
     )
     verdict = "ready-for-intake" if readiness else "not-ready"
 
@@ -275,10 +305,16 @@ def summarize_review(review_md: Path, review_json: Optional[Path], sprint: str) 
             f"Health score {overall_health:.1f}% is below remediation floor {remediation_floor:.1f}%" if overall_health is not None and remediation_floor is not None else "Health score or remediation floor could not be parsed.",
             f"Planning-readiness verdict is {'ready' if planning_ready else 'not yet ready'}.",
             f"The review currently carries {severity_summary['critical']} critical, {severity_summary['major']} major, {severity_summary['minor']} minor, and {severity_summary['informational']} informational findings.",
+            (
+                "Required traceability artifacts are complete and available for remediation execution."
+                if not traceability_artifacts_missing and not traceability_artifacts_unreferenced
+                else "Traceability artifact baseline requires remediation action before closeout."
+            ),
         ],
         "starter_actions": [
             "Use the three intake themes as the initial sprint decomposition for remediation planning.",
             "Promote only the work items that have a clear evidence target, owner, and dependency order.",
+            "For each required artifact: populate when missing and verify currency when present during remediation execution.",
         ],
         "acceptance_criteria": [
             "The next review report reaches the remediation floor or records an explicit exception.",
@@ -288,6 +324,10 @@ def summarize_review(review_md: Path, review_json: Optional[Path], sprint: str) 
             "This runner reads the latest independent review artifact directly and does not re-run traceability closure.",
             "Concept-only or governance-only items should remain out of remediation intake until they have a concrete delivery path.",
         ],
+        "required_traceability_artifacts": required_traceability_artifacts,
+        "traceability_artifact_status": traceability_artifact_status,
+        "traceability_artifacts_missing": traceability_artifacts_missing,
+        "traceability_artifacts_unreferenced": traceability_artifacts_unreferenced,
         "legacy_backlog": legacy_backlog,
         "issue_drafts": issue_drafts,
     }

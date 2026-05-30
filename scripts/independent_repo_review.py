@@ -60,6 +60,12 @@ EXPECTED_PATHS = [
     Path("Tests"),
 ]
 
+REQUIRED_TRACEABILITY_ARTIFACTS = [
+    Path("docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md"),
+    Path("docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"),
+    Path("Requirements/15_End_To_End_Traceability_Attributes_Registry.md"),
+]
+
 TREND_HISTORY_FILE = Path("local_reviews/history/snapshot_index.json")
 POLICY_PROFILES_FILE = Path("config/independent_review_policy_profiles.json")
 REPORT_ARCHIVE_DIR = Path("local_reviews/history/reports")
@@ -229,6 +235,11 @@ class ReviewResult:
     issue_rows_without_requirements: List[str]
     issue_rows_without_github_ref: List[str]
     planned_rows_missing_requirement: List[str]
+    required_traceability_artifacts: List[str]
+    traceability_artifact_status: Dict[str, Dict[str, object]]
+    traceability_artifacts_missing: List[str]
+    traceability_artifacts_unreferenced: List[str]
+    full_remediation_complete: bool
     branch_awareness: BranchAwareness
     conceptual_as_built_gaps: ConceptualAsBuiltGapSummary
     policy_profile: PolicyProfileConfig
@@ -803,6 +814,76 @@ def classify_conceptual_vs_as_built(rows: List[IssueRow], impl: Set[str], arch_d
     )
 
 
+def evaluate_traceability_artifact_status(root: Path, sprint_dash: str, sprint_us: str) -> Tuple[Dict[str, Dict[str, object]], List[str], List[str]]:
+    status: Dict[str, Dict[str, object]] = {}
+
+    planning_files: List[Path] = []
+    planning_files.extend(sorted((root / "planning").glob("Sprint_Remediation_*.md")))
+    planning_files.extend(sorted((root / "planning").glob(f"Sprint_{sprint_us}_Remediation_*.md")))
+    planning_files.extend(sorted((root / "planning/issues").glob(f"issue_{sprint_us}_*.md")))
+    planning_files.extend(sorted((root / "planning/issues").glob(f"issue_{sprint_dash}_*.md")))
+    planning_files.extend(
+        [
+            root / f"planning/issues/Sprint_{sprint_us}_Issue_Tracker.md",
+            root / f"planning/issues/Sprint_{sprint_dash}_Issue_Tracker.md",
+        ]
+    )
+
+    references_by_file: Dict[str, str] = {
+        path.as_posix(): read_text(path)
+        for path in planning_files
+        if path.exists()
+    }
+
+    missing: List[str] = []
+    unreferenced: List[str] = []
+
+    for artifact in REQUIRED_TRACEABILITY_ARTIFACTS:
+        artifact_path = artifact.as_posix()
+        exists = (root / artifact).exists()
+        referenced_in = [
+            file_path
+            for file_path, text in references_by_file.items()
+            if artifact_path in text
+        ]
+        planning_reference_count = len(referenced_in)
+
+        if not exists:
+            missing.append(artifact_path)
+        elif planning_reference_count == 0:
+            unreferenced.append(artifact_path)
+
+        status[artifact_path] = {
+            "exists": exists,
+            "planning_reference_count": planning_reference_count,
+            "referenced_in": referenced_in,
+            "verification_status": "missing"
+            if not exists
+            else ("present-not-referenced" if planning_reference_count == 0 else "present-and-referenced"),
+        }
+
+    return status, missing, unreferenced
+
+
+def is_full_remediation_complete(root: Path) -> bool:
+    index_path = root / "local_reviews/latest/issue_design_disposition_index.json"
+    if not index_path.exists():
+        return False
+    try:
+        payload = json.loads(index_path.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+
+    plans = payload.get("plans", [])
+    if not plans:
+        return False
+
+    for plan in plans:
+        if plan.get("missing_legs"):
+            return False
+    return True
+
+
 def evaluate_severity(
     policy: SeverityPolicy,
     structure_missing: List[str],
@@ -811,6 +892,9 @@ def evaluate_severity(
     req_arch_ratio: float,
     issue_quality_ratio: float,
     planned_missing_reqs: List[str],
+    traceability_artifacts_missing: List[str],
+    traceability_artifacts_unreferenced: List[str],
+    full_remediation_complete: bool,
     branch: BranchAwareness,
     conceptual_gaps: ConceptualAsBuiltGapSummary,
 ) -> SeveritySummary:
@@ -858,6 +942,26 @@ def evaluate_severity(
             "Planned requirements missing architecture/design trace found: "
             f"{len(conceptual_gaps.planned_missing_arch_design_trace)} item(s)."
         )
+
+    if traceability_artifacts_missing:
+        message = (
+            "Required traceability artifacts are missing: "
+            + ", ".join(traceability_artifacts_missing)
+        )
+        if full_remediation_complete:
+            summary.critical.append(message)
+        else:
+            summary.informational.append("Non-blocking until full remediation complete: " + message)
+
+    if traceability_artifacts_unreferenced:
+        message = (
+            "Required traceability artifacts are present but not referenced by planning/remediation artifacts: "
+            + ", ".join(traceability_artifacts_unreferenced)
+        )
+        if full_remediation_complete:
+            summary.major.append(message)
+        else:
+            summary.informational.append("Non-blocking until full remediation complete: " + message)
 
     if branch.merge_risk in {"HIGH"}:
         summary.critical.append(f"Branch merge risk is {branch.merge_risk}: {branch.merge_risk_reason}")
@@ -969,6 +1073,30 @@ def build_remediation_strategy(result: "ReviewResult") -> RemediationStrategy:
                 ],
                 representative_items=representative_requirement_ids(result.req_without_arch_design_trace),
                 prefix_breakdown=summarize_requirement_prefixes(result.req_without_arch_design_trace),
+            )
+        )
+
+    if result.traceability_artifacts_missing or result.traceability_artifacts_unreferenced:
+        themes.append(
+            RemediationTheme(
+                title="Enforce traceability artifact baseline",
+                priority="P0" if result.traceability_artifacts_missing else "P1",
+                rationale=(
+                    "Required decomposition/data-flow/metadata traceability artifacts must exist, be referenced in remediation planning, "
+                    "and be verified during execution closeout."
+                ),
+                dependency_order="Populate missing artifacts first, then reference and verify them in active remediation slices.",
+                starter_actions=[
+                    "Create missing required traceability artifact files using repository templates.",
+                    "Reference required artifacts in remediation plan evidence targets and issue-scoped disposition files.",
+                    "Record execution-time verification status for each required artifact in remediation outputs.",
+                ],
+                acceptance_criteria=[
+                    "All required traceability artifacts exist in the repository.",
+                    "All required traceability artifacts are referenced in active planning/remediation artifacts.",
+                    "Execution evidence records whether each required artifact was populated or verified.",
+                ],
+                representative_items=(result.traceability_artifacts_missing + result.traceability_artifacts_unreferenced)[:5],
             )
         )
 
@@ -1360,6 +1488,32 @@ def render_markdown(result: ReviewResult) -> str:
         lines.append("- All expected top-level governance/runtime paths present.")
     lines.append("")
 
+    lines.append("## 1.5) Required Traceability Artifacts")
+    lines.append("- Required artifacts:")
+    lines.extend([f"  - {item}" for item in result.required_traceability_artifacts])
+    lines.append(
+        f"- Enforcement mode for artifact findings: {'blocking' if result.full_remediation_complete else 'non-blocking'}"
+    )
+    lines.append("")
+
+    lines.append("### Artifact Verification Status")
+    for artifact in result.required_traceability_artifacts:
+        artifact_status = result.traceability_artifact_status.get(artifact, {})
+        lines.append(
+            f"- {artifact} | exists={artifact_status.get('exists', False)} | planning_refs={artifact_status.get('planning_reference_count', 0)} | status={artifact_status.get('verification_status', 'unknown')}"
+        )
+        for ref in artifact_status.get("referenced_in", [])[:5]:
+            lines.append(f"  - referenced in: {ref}")
+    lines.append("")
+
+    lines.append("### Missing Required Artifacts")
+    lines.extend([f"- {item}" for item in result.traceability_artifacts_missing] or ["- None"])
+    lines.append("")
+
+    lines.append("### Present But Unreferenced Artifacts")
+    lines.extend([f"- {item}" for item in result.traceability_artifacts_unreferenced] or ["- None"])
+    lines.append("")
+
     lines.append("## 2) Requirement Coverage")
     lines.append(f"- Total requirement IDs discovered: {result.requirement_total}")
     lines.append(f"- Requirement IDs with implementation evidence: {result.req_with_impl}")
@@ -1677,6 +1831,12 @@ def run_review(
 
     branch = get_branch_awareness(root)
     conceptual_gaps = classify_conceptual_vs_as_built(rows, impl, arch_design)
+    artifact_status, traceability_artifacts_missing, traceability_artifacts_unreferenced = evaluate_traceability_artifact_status(
+        root,
+        sprint_dash,
+        sprint_us,
+    )
+    full_remediation_complete = is_full_remediation_complete(root)
 
     severity = evaluate_severity(
         policy,
@@ -1686,6 +1846,9 @@ def run_review(
         req_arch_ratio,
         issue_quality_ratio,
         planned_missing_reqs,
+        traceability_artifacts_missing,
+        traceability_artifacts_unreferenced,
+        full_remediation_complete,
         branch,
         conceptual_gaps,
     )
@@ -1703,6 +1866,8 @@ def run_review(
         "Branch-awareness reports ahead/behind and merge-base risk against origin/main.",
         "Trend history is stored locally under local_reviews/history/ and is ignored by git.",
         "Traceability checks use full source-to-evidence chain legs (source, architecture/design, implementation, verification).",
+        "Required traceability artifacts are validated for existence and planning/remediation references.",
+        "Traceability artifact findings remain non-blocking until full remediation is marked complete in the latest disposition index.",
     ]
 
     result = ReviewResult(
@@ -1725,6 +1890,11 @@ def run_review(
         issue_rows_without_requirements=rows_without_reqs,
         issue_rows_without_github_ref=rows_without_gh,
         planned_rows_missing_requirement=planned_missing_reqs,
+        required_traceability_artifacts=[item.as_posix() for item in REQUIRED_TRACEABILITY_ARTIFACTS],
+        traceability_artifact_status=artifact_status,
+        traceability_artifacts_missing=traceability_artifacts_missing,
+        traceability_artifacts_unreferenced=traceability_artifacts_unreferenced,
+        full_remediation_complete=full_remediation_complete,
         branch_awareness=branch,
         conceptual_as_built_gaps=conceptual_gaps,
         policy_profile=profile_meta,

@@ -23,6 +23,7 @@ Use this area for:
 | Document | Design question it answers |
 |---|---|
 | `system/External_Interface_And_Integration_Design_Package.md` | How users, inputs, providers, and artifact consumers connect to the system boundary. |
+| `system/Functional_Data_Flow_Design_Traceability_Package.md` | How system data flows are decomposed functionally and linked to architecture, design, implementation, and verification evidence. |
 | `system/System_Deployment_And_Operating_Modes_Design.md` | How the system is deployed, packaged, and operated across supported modes. |
 | `software/Agent_Subsystem_Design_Specification.md` | How each agent stage consumes, enriches, and emits governed content. |
 | `software/Canonical_Graph_Lifecycle_And_Validation_Design_Specification.md` | How canonical state is created, enriched, validated, and protected from unsafe mutation. |
@@ -40,6 +41,7 @@ Use this area for:
 ### Software Design
 
 - HMI screen behavior detail specifications where the architecture blueprint needs implementation-constraining behavior rules for individual screens.
+- Issue-scoped disposition packages for remediation work where the selected reconciliation path must be preserved as a reviewer-facing artifact before closeout.
 
 ## Traceability Rule
 
@@ -48,3 +50,4 @@ Every design document should reference:
 - governing architecture document
 - applicable requirement IDs from `Requirements/` together with requirement names where practical for readability
 - verification approach and evidence source
+- data-flow IDs when behavior depends on cross-boundary or multi-stage transformations

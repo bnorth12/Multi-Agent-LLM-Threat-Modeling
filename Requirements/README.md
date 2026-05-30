@@ -56,6 +56,7 @@ Primary files:
 - 10_GUI_Requirements.md
 - 13_Runtime_State_And_Input_Contract_Requirements.md
 - 14_Prompt_Requirements_Baseline.md
+- 15_End_To_End_Traceability_Attributes_Registry.md
 
 Component files:
 

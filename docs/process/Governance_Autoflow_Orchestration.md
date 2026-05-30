@@ -10,6 +10,8 @@ Define default, context-driven governance automation so repository process align
 - Policy-profile aware (strict/default/advisory).
 - Source-to-evidence traceability centric.
 - Explicit phase gating for sprint planning, execution, closeout, and portfolio staging.
+- Full-chain traceability enforcement: capability -> function -> requirement -> architecture -> design -> implementation -> verification.
+- Missing-leg handling is mandatory remediation work, not optional documentation tidy-up.
 
 ## Agent Set
 
@@ -125,6 +127,7 @@ The dispatcher currently resolves several stages to concrete local commands and 
 - artifact lineage enforcement -> `scripts/archive_hygiene.py`
 - governance policy compilation -> `scripts/validate_cross_domain_exception_policy.py`
 - architecture/design authoring workpack generation -> `scripts/run_architecture_design_authoring.py`
+- issue-level architecture/design disposition package generation -> `scripts/run_architecture_design_disposition.py`
 - traceability blocker backlog generation -> `scripts/run_traceability_blocker_planning.py`
 - KPI drift analysis -> `scripts/run_kpi_drift_analysis.py`
 - sprint closeout certification -> `scripts/run_sprint_closeout_certification.py`
@@ -133,6 +136,27 @@ The dispatcher currently resolves several stages to concrete local commands and 
 
 Remediation readiness is advisory only: it records the current health score, remediation floor, theme-based intake guidance, and suggested next actions, but it does not itself block merge or closeout.
 It also writes a separate legacy findings backlog artifact so older issues can be carried forward into remediation sprints without reintroducing them as hard gates.
+
+## Traceability Integrity Rule
+
+- Governance automation must report chain status for each active remediation slice using capability, function, requirement, architecture, design, implementation, and verification legs.
+- Any missing leg indicates a broken process condition for that slice and must be recorded as corrective remediation scope.
+- Missing-leg findings must be converted into explicit remediation planning actions that drive execution order, ownership, and verification work.
+- Sprint closeout cannot claim chain-complete status for a slice until all required legs are present or explicitly deferred through approved governance policy.
+- Issue-scoped disposition artifacts and local review outputs are the system-of-record for chain completeness and missing-leg findings.
+
+### Transitional Non-Blocking Policy
+
+- Required traceability artifacts (capability/function decomposition matrix, functional data-flow design package, and end-to-end traceability attributes registry) are enforced as non-blocking findings during in-flight remediation.
+- Commit and merge gates must not fail solely because these artifacts are missing or unreferenced while full remediation is still open.
+- Once full remediation is marked complete in the latest disposition index (no missing legs across active slices), the same findings may be promoted to blocking severity.
+
+## Source Code Traceability Annotation Policy
+
+- Do not add retrospective implementation-trace comments to untouched source sections.
+- Add or update traceability annotations only when a source section is modified during an active development cycle.
+- Source-level annotations should reference governing IDs (capability/function/requirement) and must align with architecture/design and verification artifacts.
+- If a slice requires source-level traceability and a critical source section is still untouched, record that gap as a remediation action instead of bulk-commenting legacy code.
 
 ## Execution Ledger
 
@@ -195,3 +219,4 @@ Remaining implementation steps:
 
 1. Move stage command selection into the JSON routing map once the command surface stabilizes.
 1. Add CI informational checks for governance metadata completeness without replacing local-first gates.
+1. Ensure issue-scoped disposition packages are generated before architecture/design authoring whenever a remediation scope needs explicit path selection.

@@ -270,7 +270,21 @@ def build_stage_command(
             "notes": "Executed via multi-sprint portfolio planning runner.",
         }
 
-    if stage_name in {"architecture-design-disposition-planner", "architecture-design-change-author"}:
+    if stage_name == "architecture-design-disposition-planner":
+        return {
+            "command_key": "architecture-design-disposition",
+            "command": [
+                sys.executable,
+                str(repo_root / "scripts" / "run_architecture_design_disposition.py"),
+                "--sprint",
+                sprint,
+                "--out-dir",
+                out_dir,
+            ],
+            "notes": "Executed via issue-level architecture/design disposition generator.",
+        }
+
+    if stage_name == "architecture-design-change-author":
         return {
             "command_key": "architecture-design-authoring",
             "command": [
