@@ -61,6 +61,10 @@ These entries are transitional governance records. They must be migrated into ca
 - GUI-040: Dual-surface threat artifact and mitigation-review viewer capability.
 - HITL-00X: Legacy placeholder HITL gate requirement identifier retained for tracker compatibility until normalized ID replacement is approved.
 
+### Legacy Identifier Compatibility Aliases
+
+- LLM-004: Legacy alias for `C11-LLM-004` retained for Sprint 2026_01 remediation tracker compatibility.
+
 ## Governance Notes
 
 - This file is authoritative for identifier existence only.

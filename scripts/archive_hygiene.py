@@ -36,9 +36,11 @@ MANAGED_AREAS = (
             "Sprint_*_Final_Validation_Summary.md",
         ),
         active_allowlist=(
+            "planning/Test_Execution_Summary_Sprint_2026_01.md",
             "planning/Test_Execution_Summary_Sprint_2026_09.md",
             "planning/Test_Execution_Summary_Sprint_2026_10.md",
             "planning/Test_Execution_Summary_Sprint_2026_11.md",
+            "planning/Sprint_2026_01_Final_Validation_Summary.md",
             "planning/FQT_Test_Report_Sprint_2026_11.md",
             "planning/Sprint_2026_12_Execution_Log.md",
             "planning/Sprint_2026_12_Final_Validation_Summary.md",
