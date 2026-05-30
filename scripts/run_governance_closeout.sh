@@ -4,7 +4,14 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT_DIR"
 
-SPRINT="${1:-2026_12}"
+SPRINT_DEFAULTS_FILE="$ROOT_DIR/config/sprint_defaults.env"
+if [ -f "$SPRINT_DEFAULTS_FILE" ]; then
+  # shellcheck disable=SC1090
+  . "$SPRINT_DEFAULTS_FILE"
+fi
+DEFAULT_SPRINT="${DEFAULT_SPRINT:-2026_013}"
+
+SPRINT="${1:-${INDEPENDENT_REVIEW_SPRINT:-$DEFAULT_SPRINT}}"
 POLICY_PROFILE="${2:-}"
 
 if [ -x "$ROOT_DIR/.venv/Scripts/python.exe" ]; then

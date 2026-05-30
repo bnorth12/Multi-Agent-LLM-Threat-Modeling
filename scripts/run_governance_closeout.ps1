@@ -1,5 +1,5 @@
 param(
-    [string]$Sprint = "2026_12",
+    [string]$Sprint = "",
     [string]$PolicyProfile = ""
 )
 
@@ -8,6 +8,11 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 Set-Location $repoRoot
+
+$defaultSprint = if ($env:INDEPENDENT_REVIEW_SPRINT) { $env:INDEPENDENT_REVIEW_SPRINT } elseif ($env:DEFAULT_SPRINT) { $env:DEFAULT_SPRINT } else { "2026_013" }
+if ([string]::IsNullOrWhiteSpace($Sprint)) {
+    $Sprint = $defaultSprint
+}
 
 $pythonBin = Join-Path $repoRoot ".venv\Scripts\python.exe"
 if (-not (Test-Path $pythonBin)) {

@@ -4,6 +4,13 @@ set -euo pipefail
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
 
+SPRINT_DEFAULTS_FILE="$ROOT_DIR/config/sprint_defaults.env"
+if [ -f "$SPRINT_DEFAULTS_FILE" ]; then
+  # shellcheck disable=SC1090
+  . "$SPRINT_DEFAULTS_FILE"
+fi
+DEFAULT_SPRINT="${DEFAULT_SPRINT:-2026_013}"
+
 echo "[pre-merge-commit] Checking archive hygiene on merge result..."
 
 if [ -x "$ROOT_DIR/.venv/Scripts/python.exe" ]; then
@@ -22,7 +29,7 @@ fi
 "$PYTHON_BIN" scripts/archive_hygiene.py check --staged --enforce
 
 echo "[pre-merge-commit] Running governance autoflow..."
-INDEPENDENT_REVIEW_SPRINT="${INDEPENDENT_REVIEW_SPRINT:-2026_12}"
+INDEPENDENT_REVIEW_SPRINT="${INDEPENDENT_REVIEW_SPRINT:-$DEFAULT_SPRINT}"
 INDEPENDENT_REVIEW_HOOK_FAIL_MODE="${INDEPENDENT_REVIEW_HOOK_FAIL_MODE:-warn}"
 if ! "$PYTHON_BIN" scripts/governance_autoflow.py \
   --context pre-merge-commit \

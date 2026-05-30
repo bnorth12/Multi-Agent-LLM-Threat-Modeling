@@ -1,11 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SPRINT="${1:-2026_12}"
-POLICY_PROFILE="${2:-}"
-
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
+
+SPRINT_DEFAULTS_FILE="$REPO_ROOT/config/sprint_defaults.env"
+if [ -f "$SPRINT_DEFAULTS_FILE" ]; then
+  # shellcheck disable=SC1090
+  . "$SPRINT_DEFAULTS_FILE"
+fi
+DEFAULT_SPRINT="${DEFAULT_SPRINT:-2026_013}"
+
+SPRINT="${1:-${INDEPENDENT_REVIEW_SPRINT:-$DEFAULT_SPRINT}}"
+POLICY_PROFILE="${2:-}"
 
 PYTHON_BIN="$REPO_ROOT/.venv/Scripts/python.exe"
 if [[ ! -x "$PYTHON_BIN" ]]; then

@@ -4,6 +4,13 @@ set -euo pipefail
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
 
+SPRINT_DEFAULTS_FILE="$ROOT_DIR/config/sprint_defaults.env"
+if [ -f "$SPRINT_DEFAULTS_FILE" ]; then
+  # shellcheck disable=SC1090
+  . "$SPRINT_DEFAULTS_FILE"
+fi
+DEFAULT_SPRINT="${DEFAULT_SPRINT:-2026_013}"
+
 echo "[pre-push] Running local quality gates before push..."
 
 if [ -x "$ROOT_DIR/.venv/Scripts/python.exe" ]; then
@@ -39,7 +46,7 @@ echo "[pre-push] Running unit tests (Tests/unit)..."
 "$PYTHON_BIN" -m pytest Tests/unit/ -q
 
 echo "[pre-push] Running sprint traceability verification..."
-TRACEABILITY_SPRINT="${TRACEABILITY_SPRINT:-2026_11}"
+TRACEABILITY_SPRINT="${TRACEABILITY_SPRINT:-$DEFAULT_SPRINT}"
 if ! "$PYTHON_BIN" scripts/verify_sprint_traceability.py --sprint "$TRACEABILITY_SPRINT"; then
   if [ "${TRACEABILITY_ENFORCE:-0}" = "1" ]; then
     echo "[pre-push] ERROR: Traceability check failed and TRACEABILITY_ENFORCE=1."
@@ -70,7 +77,7 @@ if ! "$PYTHON_BIN" scripts/validate_cross_domain_exception_policy.py; then
 fi
 
 echo "[pre-push] Running governance autoflow..."
-INDEPENDENT_REVIEW_SPRINT="${INDEPENDENT_REVIEW_SPRINT:-2026_12}"
+INDEPENDENT_REVIEW_SPRINT="${INDEPENDENT_REVIEW_SPRINT:-$DEFAULT_SPRINT}"
 INDEPENDENT_REVIEW_HOOK_FAIL_MODE="${INDEPENDENT_REVIEW_HOOK_FAIL_MODE:-warn}"
 if ! "$PYTHON_BIN" scripts/governance_autoflow.py \
   --context pre-push \
