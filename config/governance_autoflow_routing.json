@@ -21,11 +21,13 @@
       "agent_chain": [
         "repo-governance-autoflow-orchestrator",
         "requirements-baseline-steward",
+        "architecture-design-traceability-auditor",
         "sprint-intake-gatekeeper",
         "governance-policy-compiler"
       ],
       "skill_chain": [
         "requirements-baseline-steward",
+        "architecture-design-traceability-auditor",
         "sprint-intake-gatekeeper",
         "governance-policy-compiler"
       ]
@@ -51,11 +53,15 @@
       "agent_chain": [
         "repo-governance-autoflow-orchestrator",
         "architecture-contract-enforcer",
+        "architecture-design-traceability-auditor",
+        "requirements-implementation-auditor",
         "verification-coverage-planner",
         "sprint-execution-compliance-monitor"
       ],
       "skill_chain": [
         "architecture-contract-enforcer",
+        "architecture-design-traceability-auditor",
+        "requirements-implementation-auditor",
         "verification-coverage-planner",
         "sprint-execution-compliance-monitor"
       ]

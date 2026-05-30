@@ -61,7 +61,11 @@ python scripts/independent_repo_review.py \
 - remediation readiness summary using a health-based floor
 - final remediation strategy section with theme-based sprint intake guidance
 
-6. Optional local GitHub reconciliation:
+7. Treat architecture/design, requirements, implementation, and verification as a single governed chain for the Multi-Agent Threat Modeler application, and note when any of those concepts appear in data-flow modeling or interface boundaries.
+
+8. Explicitly capture where agents and skills are acting as implementation or governance participants, especially when they enforce traceability, boundary validation, or review readiness.
+
+9. Optional local GitHub reconciliation:
 ```bash
 python scripts/independent_repo_review.py \
 	--sprint <SPRINT> \
@@ -73,7 +77,7 @@ python scripts/independent_repo_review.py \
 	--github-repo <OWNER/REPO>
 ```
 
-Optional archival snapshot mode:
+10. Optional archival snapshot mode:
 ```bash
 python scripts/independent_repo_review.py --sprint <SPRINT> --run-context manual --report-mode archive
 ```

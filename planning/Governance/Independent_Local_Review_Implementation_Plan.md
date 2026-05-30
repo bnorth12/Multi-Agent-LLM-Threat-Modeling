@@ -93,6 +93,7 @@ Establish an independent, local-first review system that is decoupled from devel
 - Wire governance autoflow script directly into hook and planning/closeout operator runbooks
 - Route newly scaffolded specialist skills through `repo-governance-autoflow-orchestrator`
 - Add profile-compiled route overrides and quality checks for policy routing completeness
+- Add explicit architecture/design and requirements-implementation iteration stages so the review can distinguish design fit, implementation fit, and end-of-chain traceability
 
 ## Runbook
 

@@ -22,6 +22,8 @@ Governance specialists:
 
 - requirements-baseline-steward
 - architecture-contract-enforcer
+- architecture-design-traceability-auditor
+- requirements-implementation-auditor
 - verification-coverage-planner
 - artifact-lineage-auditor
 - sprint-intake-gatekeeper
@@ -48,6 +50,8 @@ Scaffolded for extended governance:
 
 - requirements-baseline-steward
 - architecture-contract-enforcer
+- architecture-design-traceability-auditor
+- requirements-implementation-auditor
 - verification-coverage-planner
 - artifact-lineage-auditor
 - sprint-intake-gatekeeper
@@ -61,6 +65,7 @@ Scaffolded for extended governance:
 
 - planning kickoff:
   - requirements-baseline-steward
+  - architecture-design-traceability-auditor
   - sprint-intake-gatekeeper
   - governance-policy-compiler
 - pre-commit:
@@ -68,10 +73,14 @@ Scaffolded for extended governance:
   - architecture-contract-enforcer (scope-filtered)
 - pre-merge-commit:
   - architecture-contract-enforcer
+  - architecture-design-traceability-auditor
+  - requirements-implementation-auditor
   - verification-coverage-planner
   - sprint-execution-compliance-monitor
 - pre-push:
   - independent-review-orchestrator
+  - architecture-design-traceability-auditor
+  - requirements-implementation-auditor
   - source-to-evidence-traceability-auditor
   - kpi-drift-analyst
   - artifact-lineage-auditor
@@ -94,6 +103,7 @@ Scaffolded for extended governance:
 The dispatcher currently resolves several stages to concrete local commands and runs them once per unique command key:
 
 - independent review -> `scripts/independent_repo_review.py`
+- requirements baseline / architecture-design / implementation-coverage stages -> `scripts/independent_repo_review.py`
 - traceability baseline / audit / closure stages -> `scripts/verify_sprint_traceability.py`
 - architecture contract enforcement -> `scripts/verify_dependency_boundary.py`
 - artifact lineage enforcement -> `scripts/archive_hygiene.py`

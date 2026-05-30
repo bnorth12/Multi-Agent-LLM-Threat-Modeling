@@ -195,7 +195,14 @@ def build_stage_command(
             "notes": "Executed via the shared independent review engine.",
         }
 
-    if stage_name in {"requirements-baseline-steward", "sprint-intake-gatekeeper", "source-to-evidence-traceability-auditor", "source-to-evidence-traceability"}:
+    if stage_name in {
+        "requirements-baseline-steward",
+        "sprint-intake-gatekeeper",
+        "source-to-evidence-traceability-auditor",
+        "source-to-evidence-traceability",
+        "requirements-implementation-auditor",
+        "architecture-design-traceability-auditor",
+    }:
         command_args = [
             sys.executable,
             str(repo_root / "scripts" / "verify_sprint_traceability.py"),
@@ -203,6 +210,10 @@ def build_stage_command(
             sprint,
         ]
         if stage_name in {"source-to-evidence-traceability-auditor", "source-to-evidence-traceability"}:
+            command_args.append("--audit")
+        if stage_name == "requirements-implementation-auditor":
+            command_args.append("--audit")
+        if stage_name == "architecture-design-traceability-auditor":
             command_args.append("--audit")
         return {
             "command_key": "traceability",
