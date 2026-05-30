@@ -164,7 +164,7 @@ The footer timeline and HITL Gate page now cover most live-monitoring needs. The
 
 ## S12-013
 
-Title: Sprint 2026-12: Enforce Gate 0 input integrity preflight review
+Title: Sprint Remediation: Issue #67 - Enforce Gate 0 input integrity preflight review
 
 Body:
 

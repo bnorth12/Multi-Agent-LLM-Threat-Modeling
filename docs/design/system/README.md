@@ -9,6 +9,7 @@ Current contents:
 | Document | System question it answers |
 |---|---|
 | `External_Interface_And_Integration_Design_Package.md` | What crosses the system boundary and how those integrations are controlled. |
+| `Functional_Data_Flow_Design_Traceability_Package.md` | How functional data flows are captured and traced from capabilities/functions through architecture, design, implementation, and verification artifacts. |
 | `System_Deployment_And_Operating_Modes_Design.md` | How the product is deployed, packaged, and operated across supported modes. |
 
 Planned additions include:

@@ -58,6 +58,7 @@ into believing artifacts are still unavailable.
 ## Validation Plan
 
 - frontend: npm run test -- --run src/App.test.tsx src/components/ArtifactsViewer.test.tsx src/components/HITLGateManager.test.tsx
+- Tests/test_hmi_backend_api.py (explicit sprint verification evidence reference)
 - manual: run HITL flow, accept related gate, verify artifact-view color transitions when artifact data appears
 
 ## GitHub Tracking

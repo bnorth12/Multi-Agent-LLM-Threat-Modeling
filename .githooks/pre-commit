@@ -21,4 +21,19 @@ fi
 
 "$PYTHON_BIN" scripts/archive_hygiene.py check --staged --enforce
 
+echo "[pre-commit] Running governance autoflow..."
+INDEPENDENT_REVIEW_SPRINT="${INDEPENDENT_REVIEW_SPRINT:-2026_12}"
+INDEPENDENT_REVIEW_HOOK_FAIL_MODE="${INDEPENDENT_REVIEW_HOOK_FAIL_MODE:-profile}"
+if ! "$PYTHON_BIN" scripts/governance_autoflow.py \
+  --context pre-commit \
+  --sprint "$INDEPENDENT_REVIEW_SPRINT" \
+  --hook-fail-mode "$INDEPENDENT_REVIEW_HOOK_FAIL_MODE"; then
+  if [ "$INDEPENDENT_REVIEW_HOOK_FAIL_MODE" != "warn" ]; then
+    echo "[pre-commit] ERROR: Governance autoflow blocking conditions were met."
+    exit 1
+  fi
+  echo "[pre-commit] WARNING: Governance autoflow reported execution failure."
+  echo "[pre-commit] Continuing commit because INDEPENDENT_REVIEW_HOOK_FAIL_MODE=warn."
+fi
+
 echo "[pre-commit] Archive hygiene check passed."

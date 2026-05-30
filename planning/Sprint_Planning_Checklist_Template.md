@@ -26,6 +26,7 @@ Use this checklist at the start of **each sprint** to ensure traceability govern
 ### Requirement Acceptance
 
 - [ ] **Requirements Reviewed**: Team reviews all requirements for scope, clarity, feasibility
+- [ ] **Requirement Types Assigned**: Each accepted requirement has exactly one primary type from the canonical taxonomy
 - [ ] **Requirements Assigned**: Each requirement assigned to owner(s)
 - [ ] **AC Verified**: Acceptance Criteria clear and testable
 - [ ] **Dependencies Identified**: Any inter-requirement dependencies documented
@@ -56,7 +57,7 @@ For **each accepted requirement**, create corresponding issue:
 - [ ] **Header Updated**: Change sprint year/month in matrix header
 - [ ] **Entries Added**: Every accepted requirement + issue added to matrix
   - **Format**:
-    | HITL-012 | Conditional Gate State Tracking | D-S08-020 | Open | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation |
+    | HITL-012 | Functional | Conditional Gate State Tracking | D-S08-020 | Open | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation |
 - [ ] **Matrix Committed**: Add to git and commit: `Add Sprint 2026-09 Traceability Matrix`
 - [ ] **Matrix Linked**: Add link to sprint planning document or archive path as appropriate
 
@@ -69,6 +70,7 @@ For **each accepted requirement**, create corresponding issue:
   - Commit message format: `Fix D-S08-020: [desc]`
   - Test referencing requirement
   - Issue referencing requirement
+  - Requirement type recorded and consistent with traceability matrix
 - [ ] **Closure Checklist Prepared**: Copy template to `planning/Sprint_2026_09_Closure_Checklist.md`
   - Keep on shared location for sprint end reference
 
@@ -187,12 +189,12 @@ grep -r "HITL-012" Requirements/
 
 See: `planning/Sprint_2026_09_Traceability_Matrix.md`
 
-| Requirement ID | Requirement Name | Issue ID | Issue Status | Test File | Verification Status |
-|---|---|---|---|---|---|
-| HITL-012 | Conditional Gate Trigger State Tracking | D-S08-020 | Open | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation |
-| HITL-013 | Conditional Gate State Enumeration | D-S08-020 | Open | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation |
-| HITL-014 | Dashboard Conditional Gate Status Display | D-S08-020 | Open | Tests/integration/test_hitl_dashboard_conditional_gates.py | ⏳ Pending Implementation |
-| HITL-015 | Conditional Gate Trigger Metadata | D-S08-020 | Open | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation |
+| Requirement ID | Requirement Type | Requirement Name | Issue ID | Issue Status | Test File | Verification Status |
+|---|---|---|---|---|---|---|
+| HITL-012 | Functional | Conditional Gate Trigger State Tracking | D-S08-020 | Open | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation |
+| HITL-013 | Functional | Conditional Gate State Enumeration | D-S08-020 | Open | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation |
+| HITL-014 | Functional | Dashboard Conditional Gate Status Display | D-S08-020 | Open | Tests/integration/test_hitl_dashboard_conditional_gates.py | ⏳ Pending Implementation |
+| HITL-015 | Functional | Conditional Gate Trigger Metadata | D-S08-020 | Open | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation |
 
 ---
 
@@ -200,6 +202,7 @@ See: `planning/Sprint_2026_09_Traceability_Matrix.md`
 
 | Issue | Resolution |
 |-------|---|
+| Requirement has no type | Assign one primary canonical type; split or reword if the row mixes concerns |
 | Commit message lacks issue ID | Update commit message with `git commit --amend -m "Fix D-S08-020: ..."` |
 | Issue has no requirement link | Edit issue, add "Related Requirement: HITL-012" to description |
 | Test file not created | Create test file immediately, add to issue description, commit with issue ref |

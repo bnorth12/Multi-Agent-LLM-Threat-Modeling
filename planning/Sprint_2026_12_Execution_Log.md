@@ -275,7 +275,7 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
 - Backend launcher PID: `321952` (listener PID: `333708`)
 - Frontend launcher PID: `333416` (listener PID: `332792`)
 
-### Governance Note
+### Governance Kickoff Note
 
 - This entry is administrative/operational evidence (repo maintenance and sprint support), not application behavior change.
 - Kept in Sprint 2026-12 execution log to preserve traceability continuity for environment-control actions used during verification and triage.
@@ -484,3 +484,34 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
 ### Governance Note
 
 - Sprint 2026-12 is still in progress; this packaging artifact is an interim checkpoint planning aid, not final sprint closeout.
+
+## 2026-05-29 (Update 13 - Issue #67 Remediation Sprint Rename and Plan Execution Kickoff)
+
+### Remediation Sprint Naming and Reference Alignment
+
+- Renamed the issue-keyed remediation sprint artifact to `planning/Sprint_Remediation_Issue_67.md` to avoid confusion with broader Sprint 2026-12 planning scope.
+- Updated sprint tracker and issue-draft references to point to the renamed remediation artifact.
+- Updated remediation authoring discovery logic in `scripts/run_architecture_design_authoring.py` to resolve both the new issue-keyed naming and the legacy sprint-prefixed naming.
+
+### Plan Execution Kickoff (Phase 1 and Phase 2 Start)
+
+- Began execution of the Issue #67 remediation plan in strict issue-keyed mode.
+- Intake and traceability synchronization completed for planning baseline:
+  - issue key: `#67`
+  - sprint tracker key: `S12-013`
+  - governing requirement: `GUI-032`
+- Architecture/design authoring baseline regenerated for the issue-keyed sprint artifact.
+
+### Evidence
+
+- `local_reviews/latest/governance_execution_ledger_latest.md` (pre-commit governance chain pass with traceability, architecture/design authoring, and dependency boundary checks)
+- `local_reviews/latest/architecture_design_authoring_workpack_latest.md` (issue-keyed plan path and four-layer target set)
+- `planning/Sprint_Remediation_Issue_67.md` (active execution checklist for Phase 1-5 progression)
+
+### Next Execution Tasks
+
+- Execute Phase 3 implementation delta for Gate 0 preflight behavior consistency in:
+  - `src/threat_modeler/orchestrator.py`
+  - `src/threat_modeler/hitl/service.py`
+  - `frontend/src/components/HITLGateManager.tsx`
+- Run Phase 4 verification closure lanes and record evidence before closeout synchronization.

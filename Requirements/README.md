@@ -12,14 +12,38 @@ Purpose:
 Required fields for each requirement record:
 
 - Unique ID
+- Requirement Type
 - Name
 - Requirement Text
 - Requirement Rationale
+- Primary Verification Artifact
 - Verification Method
 - Verification Statement
 
+Canonical requirement types:
+
+- Functional
+- Nonfunctional
+- Policy
+- Design constraint
+- Interface requirement
+- Capability-derived requirement
+
+Classification rule:
+
+- Each requirement record must have exactly one primary type.
+- If a row appears to mix types, split it or rework the wording until one dominant type remains.
+- If an existing requirement cannot be mapped cleanly, document the mismatch and resolve it before sprint commitment.
+
+Verification rule:
+
+- Every requirement must identify one primary verification artifact aligned to its type.
+- Policy requirements often verify through governance policy plus enforcement evidence rather than a traditional test file.
+- Design constraints often verify through design detail plus implementation analysis or conformance evidence.
+
 Primary files:
 
+- 00_Requirement_Taxonomy.md
 - 01_Project_Requirements.md
 - 02_Interface_Requirements.md
 - 03_HITL_Requirements.md
@@ -32,6 +56,7 @@ Primary files:
 - 10_GUI_Requirements.md
 - 13_Runtime_State_And_Input_Contract_Requirements.md
 - 14_Prompt_Requirements_Baseline.md
+- 15_End_To_End_Traceability_Attributes_Registry.md
 
 Component files:
 

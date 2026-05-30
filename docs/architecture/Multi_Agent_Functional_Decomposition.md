@@ -4,6 +4,12 @@
 
 This decomposition defines functions from mission level to implementable activity level.
 
+- Every functional requirement must be represented by one or more functions at some level of the decomposition.
+- Functions are linked by explicit data flows, and those flows become the basis for interface and ICD definition.
+- ICDs describe the logical and physical paths that data flows take across the architecture.
+- Interface functions are a distinct class of functions that live at boundary crossings between components, systems, users, and external dependencies.
+- Interface functions are often the place where a functional requirement becomes a concrete boundary contract, transformation, validation, or handshake.
+
 - `L0`: mission function
 - `L1`: mission subfunctions
 - `L2`: system service functions

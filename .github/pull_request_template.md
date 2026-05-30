@@ -7,8 +7,10 @@ Governance checklist status:
 | Control | Status |
 |---|---|
 | Requirement updated or added in Requirements/ | [ ] |
+| Architecture/design updated or reviewed for implementation fit | [ ] |
 | Issue updated or added in planning/issues/issue_*.md | [ ] |
 | Tests added or updated in Tests/ | [ ] |
+| Implementation follows the documented architecture/design shape | [ ] |
 | Commit messages reference requirement and/or issue IDs | [ ] |
 | Traceability matrix and sprint tracker updated | [ ] |
 

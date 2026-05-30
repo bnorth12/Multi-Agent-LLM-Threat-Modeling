@@ -113,6 +113,7 @@ The requested behavior is:
 - frontend: npm run test -- --run src/components/ArtifactsViewer.test.tsx
 - frontend: npm run test -- --run src/components/ThreatMitigationReviewViewer.test.tsx
 - frontend: npm run test -- --run src/components/ResultsExport.test.tsx
+- Tests/test_hmi_backend_api.py (explicit sprint verification evidence reference)
 - manual: confirm header icon routing, confirm in-panel nav removed, verify active-state
   behavior, confirm added vertical space and no loss of artifact/review/export reachability
 

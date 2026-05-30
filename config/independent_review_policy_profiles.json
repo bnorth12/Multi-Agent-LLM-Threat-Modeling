@@ -1,0 +1,31 @@
+{
+  "profiles": {
+    "default": {
+      "req_impl_threshold": 0.70,
+      "req_verify_threshold": 0.60,
+      "req_arch_threshold": 0.70,
+      "issue_quality_threshold": 0.90,
+      "max_planned_missing_requirement": 0,
+      "enforce_on": [],
+      "remediation_health_floor": 85.0
+    },
+    "strict": {
+      "req_impl_threshold": 0.80,
+      "req_verify_threshold": 0.75,
+      "req_arch_threshold": 0.80,
+      "issue_quality_threshold": 0.95,
+      "max_planned_missing_requirement": 0,
+      "enforce_on": ["critical", "major"],
+      "remediation_health_floor": 85.0
+    },
+    "advisory": {
+      "req_impl_threshold": 0.55,
+      "req_verify_threshold": 0.45,
+      "req_arch_threshold": 0.55,
+      "issue_quality_threshold": 0.75,
+      "max_planned_missing_requirement": 5,
+      "enforce_on": [],
+      "remediation_health_floor": 85.0
+    }
+  }
+}

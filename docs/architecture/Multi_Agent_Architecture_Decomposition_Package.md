@@ -18,6 +18,7 @@ The package keeps the architecture artifacts separated by viewpoint so a reader 
 |---|---|
 | `Multi_Agent_Threat_Modeler_Architecture_Baseline.md` | Top-level architecture authority, mission context, and governing design rules. |
 | `Multi_Agent_Functional_Decomposition.md` | Function hierarchy from mission functions down to pipeline and governance activities. |
+| `Capability_Function_Architecture_Traceability_Matrix.md` | Capability-to-function decomposition with architecture allocation and requirement linkage across abstraction levels. |
 | `Multi_Agent_Structural_Decomposition.md` | Structural segmentation from system level to representative implementation surfaces. |
 | `Multi_Agent_Logical_Decomposition.md` | Logical domains, canonical objects, and control-loop relationships. |
 | `Multi_Agent_Interface_Control_Document.md` | Internal, external, and user-facing interface definitions. |
