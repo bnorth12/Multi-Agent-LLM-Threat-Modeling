@@ -13,6 +13,8 @@
 - [architecture/architecture_diagram.mermaid](architecture/architecture_diagram.mermaid)
 - [architecture/Multi_Agent_Architecture_Decomposition_Package.md](architecture/Multi_Agent_Architecture_Decomposition_Package.md)
 - [architecture/Multi_Agent_Threat_Modeler_Architecture_Baseline.md](architecture/Multi_Agent_Threat_Modeler_Architecture_Baseline.md)
+- [architecture/Capability_Hierarchy_Baseline.md](architecture/Capability_Hierarchy_Baseline.md)
+- [architecture/Function_Hierarchy_Registry.md](architecture/Function_Hierarchy_Registry.md)
 - [architecture/Multi_Agent_Functional_Decomposition.md](architecture/Multi_Agent_Functional_Decomposition.md)
 - [architecture/Multi_Agent_Structural_Decomposition.md](architecture/Multi_Agent_Structural_Decomposition.md)
 - [architecture/Multi_Agent_Logical_Decomposition.md](architecture/Multi_Agent_Logical_Decomposition.md)

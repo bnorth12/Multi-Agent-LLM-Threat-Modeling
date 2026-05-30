@@ -17,6 +17,8 @@ The package keeps the architecture artifacts separated by viewpoint so a reader 
 | Document | Why it matters |
 |---|---|
 | `Multi_Agent_Threat_Modeler_Architecture_Baseline.md` | Top-level architecture authority, mission context, and governing design rules. |
+| `Capability_Hierarchy_Baseline.md` | Authoritative capability hierarchy (L0/L1/L2) used as root for traceability chain initiation. |
+| `Function_Hierarchy_Registry.md` | Authoritative hierarchical function catalog bound to capability parents and verification anchors. |
 | `Multi_Agent_Functional_Decomposition.md` | Function hierarchy from mission functions down to pipeline and governance activities. |
 | `Capability_Function_Architecture_Traceability_Matrix.md` | Capability-to-function decomposition with architecture allocation and requirement linkage across abstraction levels. |
 | `Multi_Agent_Structural_Decomposition.md` | Structural segmentation from system level to representative implementation surfaces. |
@@ -28,6 +30,8 @@ The package keeps the architecture artifacts separated by viewpoint so a reader 
 ## Reading Order
 
 1. Baseline architecture to understand mission scope, governing constraints, and architectural viewpoint boundaries.
+1. Capability hierarchy baseline to establish authoritative parent-child capability chain.
+1. Function hierarchy registry to establish authoritative parent-child function chain under capabilities.
 1. Functional decomposition to understand what the system must do at each level of operation.
 1. Structural decomposition to understand where those responsibilities live in the system partitioning.
 1. Logical decomposition to understand the authoritative objects, flows, and feedback loops.

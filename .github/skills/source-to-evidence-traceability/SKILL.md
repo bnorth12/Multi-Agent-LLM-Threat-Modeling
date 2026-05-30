@@ -13,6 +13,7 @@ source requirement artifact -> architecture/design trace -> implementation evide
 - Requirement corpus in Requirements/
 - Architecture and design docs in docs/architecture and docs/design
 - Implementation and test evidence references from planning and traceability artifacts
+- Root hierarchy artifacts: `docs/architecture/Capability_Hierarchy_Baseline.md` and `docs/architecture/Function_Hierarchy_Registry.md`
 
 ## Required Hierarchy Fields
 - parent capability ID
@@ -33,8 +34,10 @@ source requirement artifact -> architecture/design trace -> implementation evide
 - partial (one or more legs missing)
 - missing-link (critical leg absent for planning readiness)
 4. Validate that sprint issues and decomposition artifacts include all required hierarchy fields.
-5. Emit chain-aware findings with requirement text and evidence snippets.
-6. Summarize chain completeness ratio and top missing-link clusters.
+5. Validate that parent capability IDs and child function IDs are present in root hierarchy artifacts.
+6. Validate that each requirement has a corresponding row in `Requirements/15_End_To_End_Traceability_Attributes_Registry.md` linking architecture/design, implementation, and verification artifacts.
+7. Emit chain-aware findings with requirement text and evidence snippets.
+8. Summarize chain completeness ratio and top missing-link clusters.
 
 ## Expected Outputs
 - Chain completeness summary
@@ -46,3 +49,4 @@ source requirement artifact -> architecture/design trace -> implementation evide
 - Do not infer evidence where no explicit reference exists.
 - Do not stop at first-level ID presence.
 - Keep analysis local and file-referenced.
+- Treat missing root capability/function artifacts as a hard missing-link condition.

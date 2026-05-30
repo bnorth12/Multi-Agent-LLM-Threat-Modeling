@@ -107,6 +107,7 @@ Technical standards and architectural patterns:
 - **Requirements**: `planning/Requirements/` - What we're building and why
 - **Sprint Details**: `planning/Sprints/` - Active sprint work
 - **Governance Automation Backlog**: `planning/Governance/Governance_Automation_Improvement_Backlog.md` - Governance debt and policy-automation improvements
+- **Governance Automation and Skills Tracker (2026_01)**: `planning/Governance/Automation_And_Skills_Update_Tracker_2026_01.md` - Separate governance-only tracking for automation and skill contract gaps discovered during remediation execution
 - **Application Tech Debt Backlog**: `planning/work_items/Application_Tech_Debt_Backlog.md` - Product/runtime technical debt backlog kept separate from governance automation debt
 
 ---
