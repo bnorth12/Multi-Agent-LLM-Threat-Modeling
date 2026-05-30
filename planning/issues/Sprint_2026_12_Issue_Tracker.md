@@ -116,5 +116,5 @@ Each Sprint 2026-12 issue is only closed when all are true:
 - GitHub synchronization completed for S12-031 as issue #84.
 - GitHub synchronization completed for S12-032 as issue #85.
 - S12-ADMIN-001 logged as sprint administration cross-reference for dev stack restart evidence in `planning/Sprint_2026_12_Execution_Log.md` Update 10.
+- Remediation branch planning for issue #67 is captured in `planning/Sprint_2026_12_Remediation_Issue_67_Gate_0_Input_Integrity.md` and is the authoritative issue-keyed remediation slice.
 - Final issue closure remains a Sprint 2026-12 closeout activity after the implementation PR and closure evidence are finalized, including assignment of a GitHub issue number for S12-015.
-
