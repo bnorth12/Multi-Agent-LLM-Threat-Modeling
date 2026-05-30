@@ -51,7 +51,7 @@ When changes touch `.github/agents/`, `.github/skills/`, governance routing, or 
 
 1. Routed execution behavior
 	- Run the relevant governance autoflow context for the change, such as `python scripts/governance_autoflow.py --context pre-commit --sprint <SPRINT>` or `--context closeout` / `--context portfolio` when those routes are affected.
-	- Confirm the expected commands write artifacts into `local_reviews/latest/`.
+	- Confirm the expected commands write artifacts into `independent_reviews/latest/`.
 
 1. Documentation and evidence checks
 	- Update `docs/process/Governance_Autoflow_Orchestration.md` whenever routing or stage behavior changes.

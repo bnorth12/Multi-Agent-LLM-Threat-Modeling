@@ -85,7 +85,7 @@ def replay_commits(
                 worktree_policy.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(policy_source, worktree_policy)
 
-            for relative in ["local_reviews/latest", "local_reviews/history"]:
+            for relative in ["independent_reviews/latest", "independent_reviews/history"]:
                 (worktree_path / relative).mkdir(parents=True, exist_ok=True)
 
             cmd = [
@@ -104,7 +104,7 @@ def replay_commits(
                 "--trend-window",
                 "3",
                 "--out-dir",
-                "local_reviews/latest",
+                "independent_reviews/latest",
             ]
             try:
                 proc = subprocess.run(
@@ -128,7 +128,7 @@ def replay_commits(
                 )
                 continue
 
-            json_path = worktree_path / "local_reviews" / "latest" / f"independent_review_{sprint_dash}_manual.json"
+            json_path = worktree_path / "independent_reviews" / "latest" / f"independent_review_{sprint_dash}_manual.json"
             if not json_path.exists():
                 errors.append(f"{meta['commit'][:7]} ({idx}/{len(commits)}): expected report json missing")
                 continue
@@ -185,7 +185,7 @@ def format_pct(value: float) -> str:
 
 
 def write_scoreboard(repo_root: Path, sprint: str, entries: List[Dict[str, Any]], errors: List[str]) -> Tuple[Path, Path]:
-    latest_dir = repo_root / "local_reviews" / "latest"
+    latest_dir = repo_root / "independent_reviews" / "latest"
     latest_dir.mkdir(parents=True, exist_ok=True)
     json_path = latest_dir / "kpi_trend_scoreboard_backfill.json"
     md_path = latest_dir / "kpi_trend_scoreboard_backfill.md"
@@ -243,7 +243,7 @@ def write_scoreboard(repo_root: Path, sprint: str, entries: List[Dict[str, Any]]
 
 
 def write_overtime_report(repo_root: Path, sprint: str, entries: List[Dict[str, Any]], errors: List[str]) -> Path:
-    latest_dir = repo_root / "local_reviews" / "latest"
+    latest_dir = repo_root / "independent_reviews" / "latest"
     latest_dir.mkdir(parents=True, exist_ok=True)
     report_path = latest_dir / "independent_review_backfill_over_time.md"
 

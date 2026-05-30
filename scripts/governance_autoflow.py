@@ -65,8 +65,8 @@ def resolve_profile(branch: str, explicit: str, routing: Dict[str, Any]) -> str:
 
 
 def append_execution_ledger(repo_root: Path, entry: Dict[str, Any]) -> None:
-    latest_dir = repo_root / "local_reviews" / "latest"
-    history_dir = repo_root / "local_reviews" / "history"
+    latest_dir = repo_root / "independent_reviews" / "latest"
+    history_dir = repo_root / "independent_reviews" / "history"
     latest_dir.mkdir(parents=True, exist_ok=True)
     history_dir.mkdir(parents=True, exist_ok=True)
 
@@ -504,7 +504,7 @@ def main() -> int:
     parser.add_argument("--sprint", type=str, default="2026_12", help="Sprint identifier (YYYY_MM)")
     parser.add_argument("--policy-profile", type=str, default="", help="Explicit policy profile override")
     parser.add_argument("--trend-window", type=int, default=5, help="Trend window for independent review")
-    parser.add_argument("--out-dir", type=str, default="local_reviews/latest", help="Output directory")
+    parser.add_argument("--out-dir", type=str, default="independent_reviews/latest", help="Output directory")
     parser.add_argument(
         "--routing-map",
         type=str,

@@ -32,7 +32,7 @@ Write-Host "Pre-commit and pre-merge-commit will now run archive hygiene checks 
 Write-Host "Pre-push will now run unit tests, sprint traceability checks, archive hygiene,"
 Write-Host "cross-domain exception policy validation, and governance autoflow before push."
 Write-Host "Governance routing is loaded from config/governance_autoflow_routing.json."
-Write-Host "Governance execution ledger is written under local_reviews/latest and local_reviews/history."
+Write-Host "Governance execution ledger is written under independent_reviews/latest and independent_reviews/history."
 Write-Host ""
 Write-Host "Env toggles:"
 Write-Host " - TRACEABILITY_ENFORCE=1 makes traceability check blocking"

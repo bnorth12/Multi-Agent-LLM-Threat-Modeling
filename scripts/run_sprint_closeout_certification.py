@@ -12,7 +12,7 @@ from typing import Any, Dict, List
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUT_DIR = REPO_ROOT / "local_reviews" / "latest"
+DEFAULT_OUT_DIR = REPO_ROOT / "independent_reviews" / "latest"
 
 
 def sprint_token(sprint: str) -> str:
@@ -91,7 +91,7 @@ def certify(sprint: str, checklist: Path, summary: Path, issue_tracker: Path, le
 
 def write_report(out_dir: Path, sprint: str, result: Dict[str, Any]) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    history_dir = REPO_ROOT / "local_reviews" / "history"
+    history_dir = REPO_ROOT / "independent_reviews" / "history"
     history_dir.mkdir(parents=True, exist_ok=True)
 
     payload = {
@@ -138,7 +138,7 @@ def main() -> int:
     parser.add_argument("--issue-tracker")
     parser.add_argument(
         "--ledger",
-        default=str(REPO_ROOT / "local_reviews" / "latest" / "governance_execution_ledger_latest.json"),
+        default=str(REPO_ROOT / "independent_reviews" / "latest" / "governance_execution_ledger_latest.json"),
     )
     parser.add_argument("--out-dir", default=str(DEFAULT_OUT_DIR))
     args = parser.parse_args()

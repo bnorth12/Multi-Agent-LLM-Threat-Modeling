@@ -23,7 +23,7 @@ echo "Pre-commit and pre-merge-commit now run archive hygiene checks and governa
 echo "Pre-push now runs unit tests, sprint traceability, archive hygiene,"
 echo "cross-domain exception policy validation, and governance autoflow."
 echo "Governance routing is loaded from config/governance_autoflow_routing.json."
-echo "Governance execution ledger is written under local_reviews/latest and local_reviews/history."
+echo "Governance execution ledger is written under independent_reviews/latest and independent_reviews/history."
 echo ""
 echo "Env toggles:"
 echo " - TRACEABILITY_ENFORCE=1 makes traceability check blocking"
