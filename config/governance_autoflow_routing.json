@@ -39,10 +39,14 @@
       "agent_chain": [
         "repo-governance-autoflow-orchestrator",
         "requirements-baseline-steward",
+        "architecture-design-traceability-auditor",
+        "requirements-implementation-auditor",
         "architecture-contract-enforcer"
       ],
       "skill_chain": [
         "requirements-baseline-steward",
+        "architecture-design-traceability-auditor",
+        "requirements-implementation-auditor",
         "architecture-contract-enforcer"
       ]
     },
@@ -73,12 +77,16 @@
       "agent_chain": [
         "repo-governance-autoflow-orchestrator",
         "independent-review-orchestrator",
+        "architecture-design-traceability-auditor",
+        "requirements-implementation-auditor",
         "source-to-evidence-traceability-auditor",
         "kpi-drift-analyst",
         "artifact-lineage-auditor"
       ],
       "skill_chain": [
         "independent-repo-review",
+        "architecture-design-traceability-auditor",
+        "requirements-implementation-auditor",
         "source-to-evidence-traceability",
         "kpi-drift-analyst",
         "artifact-lineage-auditor"
