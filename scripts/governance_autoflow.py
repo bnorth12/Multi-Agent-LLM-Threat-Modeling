@@ -270,7 +270,21 @@ def build_stage_command(
             "notes": "Executed via multi-sprint portfolio planning runner.",
         }
 
-    if stage_name == "remediation-readiness":
+    if stage_name in {"architecture-design-disposition-planner", "architecture-design-change-author"}:
+        return {
+            "command_key": "architecture-design-authoring",
+            "command": [
+                sys.executable,
+                str(repo_root / "scripts" / "run_architecture_design_authoring.py"),
+                "--sprint",
+                sprint,
+                "--out-dir",
+                out_dir,
+            ],
+            "notes": "Executed via architecture/design authoring workpack generator.",
+        }
+
+    if stage_name in {"remediation-readiness", "remediation-readiness-strategist"}:
         return {
             "command_key": "remediation-readiness",
             "command": [
@@ -455,7 +469,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run governance autoflow by repository context")
     parser.add_argument(
         "--context",
-        choices=["planning", "pre-commit", "pre-merge-commit", "pre-push", "closeout", "portfolio"],
+        choices=["planning", "design-authoring", "pre-commit", "pre-merge-commit", "pre-push", "closeout", "portfolio"],
         required=True,
         help="Governance execution context",
     )

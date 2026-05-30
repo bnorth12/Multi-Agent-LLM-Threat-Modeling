@@ -23,6 +23,8 @@ Governance specialists:
 - requirements-baseline-steward
 - architecture-contract-enforcer
 - architecture-design-traceability-auditor
+- architecture-design-disposition-planner
+- architecture-design-change-author
 - requirements-implementation-auditor
 - verification-coverage-planner
 - artifact-lineage-auditor
@@ -51,6 +53,8 @@ Scaffolded for extended governance:
 - requirements-baseline-steward
 - architecture-contract-enforcer
 - architecture-design-traceability-auditor
+- architecture-design-disposition-planner
+- architecture-design-change-author
 - requirements-implementation-auditor
 - verification-coverage-planner
 - artifact-lineage-auditor
@@ -65,14 +69,21 @@ Scaffolded for extended governance:
 
 - planning kickoff:
   - requirements-baseline-steward
+  - architecture-design-disposition-planner
   - architecture-design-traceability-auditor
   - sprint-intake-gatekeeper
   - governance-policy-compiler
+- design authoring (manual execution lane):
+  - architecture-design-disposition-planner
+  - architecture-design-change-author
+  - architecture-design-traceability-auditor
 - pre-commit:
   - requirements-baseline-steward
+  - architecture-design-change-author
   - architecture-contract-enforcer (scope-filtered)
 - pre-merge-commit:
   - architecture-contract-enforcer
+  - architecture-design-change-author
   - architecture-design-traceability-auditor
   - requirements-implementation-auditor
   - verification-coverage-planner
@@ -108,6 +119,7 @@ The dispatcher currently resolves several stages to concrete local commands and 
 - architecture contract enforcement -> `scripts/verify_dependency_boundary.py`
 - artifact lineage enforcement -> `scripts/archive_hygiene.py`
 - governance policy compilation -> `scripts/validate_cross_domain_exception_policy.py`
+- architecture/design authoring workpack generation -> `scripts/run_architecture_design_authoring.py`
 - KPI drift analysis -> `scripts/run_kpi_drift_analysis.py`
 - sprint closeout certification -> `scripts/run_sprint_closeout_certification.py`
 - remediation readiness -> `scripts/run_remediation_readiness.py`
@@ -154,8 +166,10 @@ Git hooks call governance autoflow directly:
 Planning and closeout operator commands are provided:
 
 - `scripts/run_governance_planning.ps1`
+- `scripts/run_governance_design_authoring.ps1`
 - `scripts/run_governance_closeout.ps1`
 - `scripts/run_governance_planning.sh`
+- `scripts/run_governance_design_authoring.sh`
 - `scripts/run_governance_closeout.sh`
 
 ## Start of Implementation
