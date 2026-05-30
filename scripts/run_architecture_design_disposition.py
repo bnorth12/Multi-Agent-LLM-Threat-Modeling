@@ -320,7 +320,7 @@ def write_outputs(repo_root: Path, out_dir: str, workpack: Dict[str, Any], stem:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate an issue-level architecture/design disposition package")
     parser.add_argument("--sprint", type=str, default="2026_12", help="Sprint identifier (YYYY_MM)")
-    parser.add_argument("--out-dir", type=str, default="local_reviews/latest", help="Output directory")
+    parser.add_argument("--out-dir", type=str, default="independent_reviews/latest", help="Output directory")
     parser.add_argument(
         "--remediation-plan",
         type=str,

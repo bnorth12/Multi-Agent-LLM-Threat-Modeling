@@ -19,9 +19,11 @@ Primary responsibilities:
  - KPI drift analysis for trend-based governance insights
 3. Require report generation to local ignored output paths under independent_reviews/.
 4. Keep reviews local-first and independent of GitHub Actions checks.
+5. Require hierarchy-field validation for sprint remediation slices: parent capability, child function, decomposition level, allocated component/module, and verification method.
 
 Execution policy:
 - Prioritize local scripts and repository documents as evidence sources.
 - Surface objective gaps with explicit IDs and file references.
 - Classify findings: critical, major, minor, informational.
+- Treat missing required hierarchy fields as governance findings, not informational notes.
 - Produce a summary score and recommended next actions.

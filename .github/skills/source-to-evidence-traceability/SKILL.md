@@ -14,6 +14,13 @@ source requirement artifact -> architecture/design trace -> implementation evide
 - Architecture and design docs in docs/architecture and docs/design
 - Implementation and test evidence references from planning and traceability artifacts
 
+## Required Hierarchy Fields
+- parent capability ID
+- child function ID
+- decomposition level (L0/L1/L2)
+- allocated component/module
+- verification method
+
 ## Procedure
 1. Build requirement inventory from Requirements/ documents.
 2. For each requirement ID, capture evidence refs for all four chain legs:
@@ -25,13 +32,15 @@ source requirement artifact -> architecture/design trace -> implementation evide
 - complete (all four legs present)
 - partial (one or more legs missing)
 - missing-link (critical leg absent for planning readiness)
-4. Emit chain-aware findings with requirement text and evidence snippets.
-5. Summarize chain completeness ratio and top missing-link clusters.
+4. Validate that sprint issues and decomposition artifacts include all required hierarchy fields.
+5. Emit chain-aware findings with requirement text and evidence snippets.
+6. Summarize chain completeness ratio and top missing-link clusters.
 
 ## Expected Outputs
 - Chain completeness summary
 - Missing-link breakdown by requirement prefix and evidence type
 - Requirement-level findings that include readable requirement text and evidence refs
+- Hierarchy field coverage summary and missing-field list by requirement ID
 
 ## Guardrails
 - Do not infer evidence where no explicit reference exists.

@@ -866,7 +866,11 @@ def evaluate_traceability_artifact_status(root: Path, sprint_dash: str, sprint_u
 
 
 def is_full_remediation_complete(root: Path) -> bool:
-    index_path = root / "local_reviews/latest/issue_design_disposition_index.json"
+    index_path = root / "independent_reviews/latest/issue_design_disposition_index.json"
+    if not index_path.exists():
+        legacy_path = root / "local_reviews/latest/issue_design_disposition_index.json"
+        if legacy_path.exists():
+            index_path = legacy_path
     if not index_path.exists():
         return False
     try:

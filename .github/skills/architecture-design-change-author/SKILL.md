@@ -12,13 +12,22 @@ Ensure architecture/design updates are treated as active execution artifacts rat
 - Remediation sprint scope and requirement IDs
 - Implementation and verification evidence targets
 
+## Required Hierarchy Fields
+- parent capability ID
+- child function ID
+- decomposition level (L0/L1/L2)
+- allocated component/module
+- verification method
+
 ## Procedure
 1. Apply the selected disposition path to architecture/design authoring scope.
 2. Keep implementation and verification references synchronized with architecture/design changes.
-3. Surface unresolved gaps before merge or closeout.
-4. Preserve evidence needed for independent review and closeout certification.
+3. Ensure each remediation slice preserves explicit parent-child decomposition and code-level allocation fields.
+4. Surface unresolved gaps before merge or closeout.
+5. Preserve evidence needed for independent review and closeout certification.
 
 ## Outputs
 - Updated architecture/design authoring workpack sections.
 - Gap list for missing synchronized updates.
+- Hierarchy metadata coverage checklist for each remediation slice.
 - Disposition compliance checklist for closeout.

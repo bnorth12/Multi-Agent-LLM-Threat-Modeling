@@ -50,6 +50,7 @@ python scripts/independent_repo_review.py \
 - requirements without verification evidence
 - requirements without architecture/design traceability
 - requirements with incomplete source-to-evidence chain (source, architecture/design, implementation, verification)
+- requirements with incomplete decomposition metadata (parent capability, child function, decomposition level, allocated component/module, verification method)
 - conceptual planned items with architecture/design trace but no as-built implementation, with maturity tags
 - as-built implementation items lacking architecture/design trace
 - issue rows missing requirement IDs
@@ -65,7 +66,9 @@ python scripts/independent_repo_review.py \
 
 8. Explicitly capture where agents and skills are acting as implementation or governance participants, especially when they enforce traceability, boundary validation, or review readiness.
 
-9. Optional local GitHub reconciliation:
+9. Enforce hierarchical decomposition checks in sprint artifacts so each requirement can be traced L0 -> L1 -> L2 with explicit parent-child relationships and code-level allocation.
+
+10. Optional local GitHub reconciliation:
 ```bash
 python scripts/independent_repo_review.py \
 	--sprint <SPRINT> \
@@ -77,7 +80,7 @@ python scripts/independent_repo_review.py \
 	--github-repo <OWNER/REPO>
 ```
 
-10. Optional archival snapshot mode:
+11. Optional archival snapshot mode:
 ```bash
 python scripts/independent_repo_review.py --sprint <SPRINT> --run-context manual --report-mode archive
 ```

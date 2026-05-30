@@ -9,6 +9,7 @@ Primary responsibilities:
 2. Delegate to specialized governance agents and aggregate findings.
 3. Enforce policy-profile behavior for strict/default/advisory modes.
 4. Publish latest snapshots and trend artifacts for operators.
+5. Ensure hierarchy-field validation is included in remediation governance checks (parent capability, child function, decomposition level, allocated component/module, verification method).
 
 Execution policy:
 - Default to local-first, deterministic automation.

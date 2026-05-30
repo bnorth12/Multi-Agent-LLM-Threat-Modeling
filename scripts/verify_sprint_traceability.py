@@ -30,6 +30,13 @@ ISSUE_ID_IN_TEXT_PATTERN = re.compile(r"\b(D-S\d{2}-\d{3}|S\d{2}-\d+|[A-Z]{2,}-\
 DS_FILENAME_PATTERN = re.compile(r"^D_S(\d{2})_(\d{3})(?:_|$)")
 GENERIC_ISSUE_FILENAME_PATTERN = re.compile(r"^([A-Z]{1,}\d{0,2}[-_]\d+[A-Z]?)(?:_|$)")
 TRACKER_ID_PATTERN = re.compile(r"\b(D-S\d{2}-\d{3}|S\d{2}-\d+)\b")
+REQUIRED_HIERARCHY_FIELDS = {
+    "Parent Capability ID": re.compile(r"(?im)^\s*Parent Capability ID\s*:\s*(.+)$"),
+    "Child Function ID": re.compile(r"(?im)^\s*Child Function ID\s*:\s*(.+)$"),
+    "Decomposition Level": re.compile(r"(?im)^\s*Decomposition Level\s*:\s*(.+)$"),
+    "Allocated Component/Module": re.compile(r"(?im)^\s*Allocated Component/Module\s*:\s*(.+)$"),
+    "Verification Method": re.compile(r"(?im)^\s*Verification Method\s*:\s*(.+)$"),
+}
 
 
 def log_pass(msg: str) -> None:
@@ -153,6 +160,15 @@ def has_closure_documentation(text: str) -> bool:
     return has_resolution and has_verification and has_test_evidence
 
 
+def missing_hierarchy_fields(text: str) -> List[str]:
+    missing: List[str] = []
+    for field, pattern in REQUIRED_HIERARCHY_FIELDS.items():
+        match = pattern.search(text)
+        if not match or not match.group(1).strip():
+            missing.append(field)
+    return missing
+
+
 def get_sprint_issue_files(sprint_dash: str, sprint_us: str) -> List[Path]:
     issues_dir = Path("planning/issues")
     if not issues_dir.exists():
@@ -172,6 +188,7 @@ def get_issues_for_sprint(sprint_dash: str, sprint_us: str, allowed_requirement_
         req_ids = filter_requirement_ids(raw_ids, allowed_requirement_prefixes)
         test_refs = extract_test_references(content)
         issue_status = detect_issue_status(content)
+        missing_fields = missing_hierarchy_fields(content)
         issues[issue_id] = {
             "file": str(issue_file),
             "requirement_ids": req_ids,
@@ -180,6 +197,8 @@ def get_issues_for_sprint(sprint_dash: str, sprint_us: str, allowed_requirement_
             "has_test": bool(test_refs) or "pytest" in content.lower(),
             "status": issue_status,
             "has_closure_doc": has_closure_documentation(content),
+            "missing_hierarchy_fields": missing_fields,
+            "has_hierarchy_fields": len(missing_fields) == 0,
         }
     return issues
 
@@ -343,6 +362,16 @@ def verify_traceability(sprint: str, audit: bool = False, closure: bool = False)
             else:
                 warnings.append(msg)
                 log_warn(msg)
+
+    print(f"\n{Color.BOLD}--- Hierarchy Field Coverage ---{Color.ENDC}\n")
+    for issue_id, issue in sorted(issues.items()):
+        if issue["has_hierarchy_fields"]:
+            log_pass(f"{issue_id} includes required hierarchy fields")
+        else:
+            missing = ", ".join(issue["missing_hierarchy_fields"])
+            msg = f"Issue {issue_id} is missing hierarchy fields: {missing}"
+            errors.append(msg)
+            log_fail(msg)
 
     tracker_entries = parse_sprint_tracker_entries(sprint_us, sprint_dash)
     if tracker_entries:
