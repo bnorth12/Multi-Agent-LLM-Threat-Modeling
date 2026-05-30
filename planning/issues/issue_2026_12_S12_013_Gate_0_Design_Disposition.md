@@ -1,4 +1,14 @@
-# S12-013 / Issue #67 Gate 0 Design Disposition
+﻿# S12-013 / Issue #67 Gate 0 Design Disposition
+Sprint: 2026-12
+Requirement ID: GUI-032
+Parent Capability ID: C13-UI-001
+Parent Function ID: F-GUI-TRACEABILITY-L1
+Child Function ID: F-S12-013-GUI_032-L2
+Decomposition Level: L2
+Allocated Component/Module: planning/issues/issue_2026_12_S12_013_Gate_0_Design_Disposition.md
+Verification Method: Sprint traceability verification
+Status: In Review
+
 
 Issue: #67
 Sprint tracker key: S12-013
@@ -70,3 +80,5 @@ Record the selected architecture/design reconciliation path for the Gate 0 input
 ## Governance Note
 
 This artifact is intended to be persisted and cited by the sprint execution log, traceability matrix, and closeout package so the reviewer can see the chain explicitly.
+
+

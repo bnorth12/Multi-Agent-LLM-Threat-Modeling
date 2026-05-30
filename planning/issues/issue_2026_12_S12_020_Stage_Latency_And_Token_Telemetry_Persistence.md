@@ -1,4 +1,14 @@
 ﻿# Issue S12-020: Stage Latency and Token Telemetry Persistence
+Sprint: 2026-12
+Requirement ID: UNKNOWN-REQ
+Parent Capability ID: C16-PRJ-001
+Parent Function ID: F-UNKNOWN-TRACEABILITY-L1
+Child Function ID: F-S12-020-UNKNOWN_REQ-L2
+Decomposition Level: L2
+Allocated Component/Module: planning/issues/issue_2026_12_S12_020_Stage_Latency_And_Token_Telemetry_Persistence.md
+Verification Method: Sprint traceability verification
+Status: In Review
+
 
 Status: Proposed (Post-Run)
 Priority: P1
@@ -84,4 +94,6 @@ triage when live runs stall or degrade.
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
 - Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
+
+
 

@@ -1,4 +1,14 @@
-# S12-012: Runtime Monitoring Status Continuity
+﻿# S12-012: Runtime Monitoring Status Continuity
+Sprint: 2026-12
+Requirement ID: GUI-031
+Parent Capability ID: C13-UI-001
+Parent Function ID: F-GUI-TRACEABILITY-L1
+Child Function ID: F-S12-012-GUI_031-L2
+Decomposition Level: L2
+Allocated Component/Module: planning/issues/issue_2026_12_S12_012_Runtime_Monitoring_Status_Continuity.md
+Verification Method: Sprint traceability verification
+Status: In Review
+
 
 ## Issue Summary
 
@@ -57,3 +67,5 @@ In Review
   the gate ledger or artifact workflow.
 - If future work adds richer liveness diagnostics beyond heartbeat age/timeout and stage-running
   indication, split that scope into a follow-on issue instead of silently expanding S12-012.
+
+
