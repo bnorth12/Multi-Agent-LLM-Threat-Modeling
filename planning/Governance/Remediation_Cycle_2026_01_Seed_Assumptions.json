@@ -1,0 +1,33 @@
+{
+  "cycle": "2026_01",
+  "bundle_type": "tracked_governance_evidence",
+  "wave": "wave_0_validation",
+  "overall_result": "FAIL",
+  "decision": "promote_to_portfolio_scale_remediation",
+  "metrics": {
+    "remediation_floor": 85.0,
+    "overall_health": 55.2,
+    "archive_baseline_overall_score": 57.9,
+    "current_overall_score": 55.2,
+    "archive_traceability_gap_count": 175,
+    "current_traceability_gap_count": 183,
+    "readiness_verdict": "advisory",
+    "closeout_verdict": "failed"
+  },
+  "priority_findings": [
+    "LLM-004 referenced by remediation artifacts but missing requirement documentation coverage in Requirements/",
+    "Sprint closeout checks require a sprint regression summary artifact",
+    "Hierarchy and full traceability chain closure represent the dominant unresolved remediation class"
+  ],
+  "recommended_grouping_order": [
+    "capability_function_hierarchy",
+    "requirements_documentation_and_allocation",
+    "architecture_design_alignment",
+    "implementation_and_verification_closure",
+    "artifact_lineage_and_closeout_evidence"
+  ],
+  "next_cycle_baseline": {
+    "source": "independent_review_on_clean_main_after_grouping",
+    "required": true
+  }
+}
