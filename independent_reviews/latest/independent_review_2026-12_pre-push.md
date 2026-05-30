@@ -1,6 +1,6 @@
 # Independent Local Repository Review
 
-- Generated: 2026-05-30T15:08:48
+- Generated: 2026-05-30T15:14:15
 - Sprint Scope: 2026-12
 - Run Context: pre-push
 - Overall Health Score: 55.4%
@@ -24,9 +24,9 @@ Open exception obligations for post-merge remediation are tracked in independent
 
 ## 0) Branch Awareness
 - Current branch: main
-- HEAD: f518ace
-- Merge-base with origin/main: c2dd8e316dfaf376179060e2aa5fc59684aedffa
-- Ahead/behind vs origin/main: 1/0
+- HEAD: 5b00da4
+- Merge-base with origin/main: f518ace526fa788b2f5a7aa188798f67e300581c
+- Ahead/behind vs origin/main: 3/0
 - Working tree dirty: False
 - Merge risk: MODERATE
 - Merge risk reason: Branch is ahead of origin/main; integration impact must be reviewed.
@@ -804,17 +804,17 @@ Open exception obligations for post-merge remediation are tracked in independent
 - Window: last 5 run(s)
 - Overall trend: regressing
 - Recent runs:
-  - 2026-05-30T14:38:14 | score=55.4 | C/M/m/I=2/1/1/1 | baseline
-  - 2026-05-30T14:40:23 | score=55.6 | C/M/m/I=2/1/1/1 | improving
+  - 2026-05-30T14:40:23 | score=55.6 | C/M/m/I=2/1/1/1 | baseline
   - 2026-05-30T15:02:21 | score=55.4 | C/M/m/I=2/2/2/2 | regressing
   - 2026-05-30T15:06:15 | score=55.4 | C/M/m/I=2/2/2/2 | stable
   - 2026-05-30T15:08:48 | score=55.4 | C/M/m/I=2/2/2/2 | stable
+  - 2026-05-30T15:14:15 | score=55.4 | C/M/m/I=2/2/2/2 | stable
 
 ## 6) Trend Snapshot and Delta
-- Current snapshot timestamp: 2026-05-30T15:08:48
+- Current snapshot timestamp: 2026-05-30T15:14:15
 - Current score: 55.4
 - Current severity counts: critical=2, major=2, minor=2, informational=2
-- Previous snapshot: 2026-05-30T15:06:15
+- Previous snapshot: 2026-05-30T15:08:48
 - Score delta: 0.0
 - Severity deltas: critical=0, major=0, minor=0, informational=0
 

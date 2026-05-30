@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-30T15:08:48",
+  "generated_at": "2026-05-30T15:14:15",
   "sprint": "2026-12",
   "run_context": "pre-push",
   "requirement_descriptions": {
@@ -3852,9 +3852,9 @@
   "full_remediation_complete": false,
   "branch_awareness": {
     "current_branch": "main",
-    "head_commit": "f518ace",
-    "merge_base_with_origin_main": "c2dd8e316dfaf376179060e2aa5fc59684aedffa",
-    "ahead_of_origin_main": 1,
+    "head_commit": "5b00da4",
+    "merge_base_with_origin_main": "f518ace526fa788b2f5a7aa188798f67e300581c",
+    "ahead_of_origin_main": 3,
     "behind_origin_main": 0,
     "working_tree_dirty": false,
     "merge_risk": "MODERATE",
@@ -3977,7 +3977,7 @@
     ]
   },
   "trend_snapshot": {
-    "timestamp": "2026-05-30T15:08:48",
+    "timestamp": "2026-05-30T15:14:15",
     "sprint": "2026-12",
     "score": 55.4,
     "critical_count": 2,
@@ -3991,7 +3991,7 @@
     "issue_quality_ratio": 0.9782608695652174
   },
   "trend_delta": {
-    "previous_timestamp": "2026-05-30T15:06:15",
+    "previous_timestamp": "2026-05-30T15:08:48",
     "score_delta": 0.0,
     "critical_delta": 0,
     "major_delta": 0,
@@ -4003,22 +4003,13 @@
     "overall_trend": "regressing",
     "entries": [
       {
-        "timestamp": "2026-05-30T14:38:14",
-        "score": 55.4,
-        "critical_count": 2,
-        "major_count": 1,
-        "minor_count": 1,
-        "informational_count": 1,
-        "direction": "baseline"
-      },
-      {
         "timestamp": "2026-05-30T14:40:23",
         "score": 55.6,
         "critical_count": 2,
         "major_count": 1,
         "minor_count": 1,
         "informational_count": 1,
-        "direction": "improving"
+        "direction": "baseline"
       },
       {
         "timestamp": "2026-05-30T15:02:21",
@@ -4040,6 +4031,15 @@
       },
       {
         "timestamp": "2026-05-30T15:08:48",
+        "score": 55.4,
+        "critical_count": 2,
+        "major_count": 2,
+        "minor_count": 2,
+        "informational_count": 2,
+        "direction": "stable"
+      },
+      {
+        "timestamp": "2026-05-30T15:14:15",
         "score": 55.4,
         "critical_count": 2,
         "major_count": 2,

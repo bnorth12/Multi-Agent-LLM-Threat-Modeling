@@ -69,6 +69,8 @@ independent_reviews/latest/governance_execution_ledger_latest.md
 independent_reviews/latest/governance_execution_ledger_latest.json
 independent_reviews/latest/architecture_design_authoring_workpack_latest.md
 independent_reviews/latest/architecture_design_authoring_workpack_latest.json
+independent_reviews/latest/kpi_drift_analysis_latest.md
+independent_reviews/latest/kpi_drift_analysis_latest.json
 
 # Local secrets and environment overrides
 .env
