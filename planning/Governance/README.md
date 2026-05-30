@@ -108,6 +108,8 @@ Technical standards and architectural patterns:
 - **Sprint Details**: `planning/Sprints/` - Active sprint work
 - **Governance Automation Backlog**: `planning/Governance/Governance_Automation_Improvement_Backlog.md` - Governance debt and policy-automation improvements
 - **Governance Automation and Skills Tracker (2026_01)**: `planning/Governance/Automation_And_Skills_Update_Tracker_2026_01.md` - Separate governance-only tracking for automation and skill contract gaps discovered during remediation execution
+- **Independent Change-Set Separation (2026_01)**: `planning/Governance/Independent_Change_Set_Separation_2026_01.md` - Lane boundaries and independent reporting contract for governance vs remediation change sets
+- **Remediation Improvement Tracking (2026_01)**: `planning/Governance/Remediation_Improvement_Tracking_2026_01.md` - Pre/post health deltas, pass/fail, and newly surfaced gap counts
 - **Application Tech Debt Backlog**: `planning/work_items/Application_Tech_Debt_Backlog.md` - Product/runtime technical debt backlog kept separate from governance automation debt
 
 ---

@@ -1,0 +1,76 @@
+{
+  "generated_at": "2026-05-30T15:05:30",
+  "sprint": "2026_01",
+  "iteration_label": "post-governance-baseline-merge",
+  "pre_post_comparison": {
+    "pre_reference": {
+      "source": "independent_reviews/latest/kpi_drift_analysis_latest.json:previous_snapshot",
+      "timestamp": "2026-05-30T14:38:14",
+      "score": 55.4,
+      "full_chain_ratio": 0.18834080717488788,
+      "req_arch_ratio": 0.47533632286995514,
+      "issue_quality_ratio": 1.0
+    },
+    "post_reference": {
+      "source": "independent_reviews/latest/kpi_drift_analysis_latest.json:latest_snapshot",
+      "timestamp": "2026-05-30T14:40:23",
+      "score": 55.6,
+      "full_chain_ratio": 0.19730941704035873,
+      "req_arch_ratio": 0.484304932735426,
+      "issue_quality_ratio": 1.0
+    },
+    "deltas": {
+      "score": 0.2,
+      "full_chain_ratio": 0.00896860986547085,
+      "req_arch_ratio": 0.00896860986547085,
+      "issue_quality_ratio": 0.0
+    }
+  },
+  "automation_pass_fail": {
+    "verify_traceability_audit": {
+      "status": "pass",
+      "exit_code": 0,
+      "error_count": 0,
+      "warning_count": 82
+    },
+    "traceability_blocker_planner": {
+      "status": "pass",
+      "verify_exit_code": 0,
+      "missing_requirement_docs": 0,
+      "missing_test_evidence": 0,
+      "missing_function_root_links": 41,
+      "missing_registry_links": 41
+    },
+    "sprint_closeout_certification": {
+      "status": "conditional",
+      "residual_active_issues": 41,
+      "closed_issues": 1,
+      "in_progress_issues": 41
+    },
+    "multi_sprint_portfolio_planning": {
+      "status": "pass",
+      "risk_level": "moderate",
+      "implementation_readiness": "deferred",
+      "non_implementation_baseline_proxy": 59.9,
+      "target": 90.0
+    }
+  },
+  "newly_surfaced_gap_tracking": {
+    "new_gap_categories_enabled_by_mitigation": [
+      "missing_function_root_links",
+      "missing_registry_links"
+    ],
+    "newly_surfaced_gap_instances": 82,
+    "category_counts": {
+      "missing_function_root_links": 41,
+      "missing_registry_links": 41
+    },
+    "interpretation": "These gaps were previously under-detected in planning backlogs before root-link and registry-link parsing was added to automated blocker reporting."
+  },
+  "reporting_contract_status": {
+    "pre_post_comparison_present": true,
+    "delta_tracking_present": true,
+    "new_gap_tracking_present": true,
+    "health_trend_tracking_present": true
+  }
+}
