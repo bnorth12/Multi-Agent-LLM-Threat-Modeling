@@ -65,6 +65,14 @@ Restore Gate 0 input-integrity behavior as a fully traced change set that is pla
 1. Run the backend and frontend checks, then perform a manual pause/resume walkthrough.
 1. Record closure evidence and keep the tracker, execution log, and issue body synchronized.
 
+## Execution Status (Active)
+
+- [x] Phase 1 intake/traceability sync started and validated (issue key `#67`, requirement `GUI-032`, evidence targets confirmed).
+- [x] Phase 2 design/traceability baseline synchronization started via regenerated authoring workpack and governance ledger evidence.
+- [ ] Phase 3 implementation delta execution in `src/threat_modeler/orchestrator.py`, `src/threat_modeler/hitl/service.py`, and `frontend/src/components/HITLGateManager.tsx`.
+- [ ] Phase 4 verification closure (backend + frontend + manual Gate 0 pause/resume walkthrough).
+- [ ] Phase 5 governance closeout updates (execution log, issue tracker, and final evidence linkage).
+
 ## Governance Checkpoints
 
 - Checkpoint A: issue key and requirement IDs confirmed before code changes begin.
