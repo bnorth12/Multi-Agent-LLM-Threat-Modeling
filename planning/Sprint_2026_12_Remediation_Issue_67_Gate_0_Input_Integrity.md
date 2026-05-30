@@ -72,6 +72,31 @@ Restore Gate 0 input-integrity behavior as a fully traced change set that is pla
 - Checkpoint C: tests and walkthrough evidence collected before closeout.
 - Checkpoint D: issue tracker and execution log updated before merge.
 
+## Focused Replan Addendum (Architecture/Design-First Enforcement)
+
+This remediation sprint keeps the same scope and issue key. The replan is limited to workflow enforcement so architecture and design disposition happens before implementation closure.
+
+### Mandatory Disposition Gate
+
+- A disposition decision is required whenever implementation and architecture/design are not aligned.
+- The decision must select exactly one path.
+- Path A: update architecture/design artifacts to reflect the implemented behavior.
+- Path B: update implementation to conform to architecture/design intent.
+- The selected path must include rationale and approval evidence in the execution log.
+
+### In-Flight Governance Invocation
+
+- Planning/intake checkpoint: requirements-baseline-steward, architecture-design-traceability-auditor, sprint-intake-gatekeeper.
+- Development checkpoints: architecture-design-traceability-auditor and requirements-implementation-auditor must run in pre-commit and pre-merge-commit governance flow.
+- Independent review checkpoint: source-to-evidence-traceability-auditor confirms the final disposition path remains complete through verification evidence.
+
+### Closure Rules for Disposition Cases
+
+- If architecture/design is updated to match implementation, closeout must include revised architecture/design references plus conformance verification evidence.
+- If implementation is updated to match architecture/design, closeout must include rerun verification on the new implementation baseline.
+- Existing verification evidence from the superseded path is historical context only and does not satisfy final closeout evidence.
+- Closeout certification requires a complete Requirement -> Architecture/Design -> Implementation -> Verification traceability chain for the final chosen state.
+
 ## Risks and Controls
 
 | Risk | Control |
