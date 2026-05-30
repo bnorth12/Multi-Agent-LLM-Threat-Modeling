@@ -35,3 +35,4 @@ Establish Sprint 2026-013 governance execution scaffold and begin hierarchy alig
 
 - & ".\.venv\Scripts\python.exe" scripts/verify_sprint_traceability.py --sprint 2026_013
 - & ".\.venv\Scripts\python.exe" scripts/run_traceability_blocker_planning.py --sprint 2026_013
+- Tests/unit/test_framework_orchestrator_langgraph.py
