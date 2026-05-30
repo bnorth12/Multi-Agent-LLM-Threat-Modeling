@@ -284,6 +284,20 @@ def build_stage_command(
             "notes": "Executed via architecture/design authoring workpack generator.",
         }
 
+    if stage_name == "traceability-blocker-planner":
+        return {
+            "command_key": "traceability-blocker-planning",
+            "command": [
+                sys.executable,
+                str(repo_root / "scripts" / "run_traceability_blocker_planning.py"),
+                "--sprint",
+                sprint,
+                "--out-dir",
+                out_dir,
+            ],
+            "notes": "Executed via optional planning-time traceability blocker backlog generator.",
+        }
+
     if stage_name in {"remediation-readiness", "remediation-readiness-strategist"}:
         return {
             "command_key": "remediation-readiness",
@@ -469,7 +483,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Run governance autoflow by repository context")
     parser.add_argument(
         "--context",
-        choices=["planning", "design-authoring", "pre-commit", "pre-merge-commit", "pre-push", "closeout", "portfolio"],
+        choices=["planning", "blocker-planning", "design-authoring", "pre-commit", "pre-merge-commit", "pre-push", "closeout", "portfolio"],
         required=True,
         help="Governance execution context",
     )

@@ -34,6 +34,20 @@
         "governance-policy-compiler"
       ]
     },
+    "blocker-planning": {
+      "run_context": "manual",
+      "enforcement_mode": "off",
+      "trend_window": 5,
+      "agent_chain": [
+        "repo-governance-autoflow-orchestrator",
+        "traceability-blocker-planner",
+        "requirements-baseline-steward"
+      ],
+      "skill_chain": [
+        "traceability-blocker-planner",
+        "requirements-baseline-steward"
+      ]
+    },
     "design-authoring": {
       "run_context": "manual",
       "enforcement_mode": "off",
