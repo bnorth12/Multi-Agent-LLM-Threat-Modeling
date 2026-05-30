@@ -3,7 +3,7 @@ Sprint: 2026-12
 Requirement ID: UNKNOWN-REQ
 Parent Capability ID: C16-PRJ-001
 Parent Function ID: F-UNKNOWN-TRACEABILITY-L1
-Child Function ID: F-S12-026-UNKNOWN_REQ-L2
+Child Function ID: F-S12-026-GUI_006-L2
 Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_026_Artifact_Export_Panel_Not_Implemented.md
 Verification Method: Sprint traceability verification
@@ -133,6 +133,7 @@ traceability matrix and have never been delivered in the React HMI sprint.
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
 - Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
+
 
 
 

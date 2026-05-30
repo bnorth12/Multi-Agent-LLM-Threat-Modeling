@@ -3,7 +3,7 @@ Sprint: 2026-12
 Requirement ID: UNKNOWN-REQ
 Parent Capability ID: C16-PRJ-001
 Parent Function ID: F-UNKNOWN-TRACEABILITY-L1
-Child Function ID: F-S12-023-UNKNOWN_REQ-L2
+Child Function ID: F-S12-023-GUI_026-L2
 Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_023_Watchdog_Stale_While_Stage_Still_Active_In_Timeline.md
 Verification Method: Sprint traceability verification
@@ -131,6 +131,7 @@ stage actually completed successfully or was abandoned mid-execution.
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
 - Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
+
 
 
 

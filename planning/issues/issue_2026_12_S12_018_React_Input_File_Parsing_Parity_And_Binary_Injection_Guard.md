@@ -3,7 +3,7 @@ Sprint: 2026-12
 Requirement ID: UNKNOWN-REQ
 Parent Capability ID: C16-PRJ-001
 Parent Function ID: F-UNKNOWN-TRACEABILITY-L1
-Child Function ID: F-S12-018-UNKNOWN_REQ-L2
+Child Function ID: F-S12-018-RHMI_017-L2
 Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_018_React_Input_File_Parsing_Parity_And_Binary_Injection_Guard.md
 Verification Method: Sprint traceability verification
@@ -65,5 +65,7 @@ Context Builder, Trust Boundary, STRIDE, and Threat outputs.
 - `planning/Sprint_2026_12_Traceability_Matrix.md`
 - `planning/Sprint_2026_12_Execution_Log.md`
 - `planning/issues/Sprint_2026_12_Issue_Tracker.md`
+
+
 
 

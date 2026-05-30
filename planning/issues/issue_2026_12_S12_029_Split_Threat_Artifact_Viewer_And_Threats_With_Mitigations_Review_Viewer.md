@@ -3,7 +3,7 @@ Sprint: 2026-12
 Requirement ID: UNKNOWN-REQ
 Parent Capability ID: C16-PRJ-001
 Parent Function ID: F-UNKNOWN-TRACEABILITY-L1
-Child Function ID: F-S12-029-UNKNOWN_REQ-L2
+Child Function ID: F-S12-029-GUI_005-L2
 Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_029_Split_Threat_Artifact_Viewer_And_Threats_With_Mitigations_Review_Viewer.md
 Verification Method: Sprint traceability verification
@@ -116,6 +116,7 @@ reduces UI coupling risk, and allows each surface to evolve independently.
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
 - Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
+
 
 
 
