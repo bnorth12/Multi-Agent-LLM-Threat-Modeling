@@ -19,12 +19,12 @@ This matrix tracks bidirectional traceability between Requirements, Issues, Code
 
 ## Traceability Matrix
 
-| # | Requirement ID | Requirement Name | Issue ID | Issue Status | Assigned To | Test File | Verification Status | Notes |
-|---|---|---|---|---|---|---|---|---|
-| 1 | HITL-012 | Conditional Gate Trigger State Tracking | D-S08-020 | Open | [Dev Name] | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation | Track triggered (bool) and trigger_reason (str) fields |
-| 2 | HITL-013 | Conditional Gate State Enumeration | D-S08-020 | Open | [Dev Name] | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation | Add AUTO_BYPASSED to GateStatus enum |
-| 3 | HITL-014 | Dashboard Conditional Gate Status Display | D-S08-020 | Open | [Dev Name] | Tests/integration/test_hitl_dashboard_conditional_gates.py | ⏳ Pending Implementation | Render 🟢 Auto-Bypassed emoji for non-triggered gates |
-| 4 | HITL-015 | Conditional Gate Trigger Metadata | D-S08-020 | Open | [Dev Name] | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation | Add trigger_condition_met and trigger_reason audit fields |
+| # | Requirement ID | Requirement Type | Requirement Name | Issue ID | Issue Status | Assigned To | Primary Verification Artifact | Test File | Verification Status | Notes |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | HITL-012 | Functional | Conditional Gate Trigger State Tracking | D-S08-020 | Open | [Dev Name] | Unit test + execution log | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation | Track triggered (bool) and trigger_reason (str) fields |
+| 2 | HITL-013 | Functional | Conditional Gate State Enumeration | D-S08-020 | Open | [Dev Name] | Unit test + execution log | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation | Add AUTO_BYPASSED to GateStatus enum |
+| 3 | HITL-014 | Functional | Dashboard Conditional Gate Status Display | D-S08-020 | Open | [Dev Name] | Integration test + screenshot | Tests/integration/test_hitl_dashboard_conditional_gates.py | ⏳ Pending Implementation | Render 🟢 Auto-Bypassed emoji for non-triggered gates |
+| 4 | HITL-015 | Functional | Conditional Gate Trigger Metadata | D-S08-020 | Open | [Dev Name] | Unit test + audit log sample | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation | Add trigger_condition_met and trigger_reason audit fields |
 | | | | | | | | | |
 
 ---
@@ -113,6 +113,7 @@ Requirements moved from this sprint to backlog:
 **Issue**: D-S08-020
 **Owner**: [Dev Name]
 **Status**: Open → [In Progress] → Completed
+**Type**: Functional
 
 **Acceptance Criteria**:
 - [ ] HitlGateRecord has triggered (bool=False) field
@@ -124,6 +125,7 @@ Requirements moved from this sprint to backlog:
 **Test File**: Tests/unit/test_hitl_gate_trigger_state.py
 
 **Verification Evidence**:
+- [ ] Primary verification artifact identified
 - [ ] Screenshot: Test output showing all tests PASS
 - [ ] CI/CD run: Link to GitHub Actions workflow
 - [ ] Manual test: Dashboard update reflected (if UI change)
@@ -135,6 +137,7 @@ Requirements moved from this sprint to backlog:
 **Issue**: D-S08-020
 **Owner**: [Dev Name]
 **Status**: Open → [In Progress] → Completed
+**Type**: Functional
 
 **Acceptance Criteria**:
 - [ ] GateStatus enum has AUTO_BYPASSED value
@@ -145,6 +148,7 @@ Requirements moved from this sprint to backlog:
 **Test File**: Tests/unit/test_hitl_gate_trigger_state.py
 
 **Verification Evidence**:
+- [ ] Primary verification artifact identified
 - [ ] Test output showing GateStatus enum tests PASS
 - [ ] Code review approval
 
@@ -155,6 +159,7 @@ Requirements moved from this sprint to backlog:
 **Issue**: D-S08-020
 **Owner**: [Dev Name]
 **Status**: Open → [In Progress] → Completed
+**Type**: Functional
 
 **Acceptance Criteria**:
 - [ ] Dashboard renders 🟢 Auto-Bypassed for status==AUTO_BYPASSED
@@ -165,6 +170,7 @@ Requirements moved from this sprint to backlog:
 **Test File**: Tests/integration/test_hitl_dashboard_conditional_gates.py
 
 **Verification Evidence**:
+- [ ] Primary verification artifact identified
 - [ ] Screenshot: Dashboard showing auto-bypassed gates with emoji
 - [ ] Integration test log: All tests PASS
 - [ ] E2E test video or screenshot
@@ -176,6 +182,7 @@ Requirements moved from this sprint to backlog:
 **Issue**: D-S08-020
 **Owner**: [Dev Name]
 **Status**: Open → [In Progress] → Completed
+**Type**: Functional
 
 **Acceptance Criteria**:
 - [ ] trigger_condition_met field added to HitlGateRecord
@@ -186,6 +193,7 @@ Requirements moved from this sprint to backlog:
 **Test File**: Tests/unit/test_hitl_gate_trigger_state.py
 
 **Verification Evidence**:
+- [ ] Primary verification artifact identified
 - [ ] Unit test confirms fields populated correctly
 - [ ] Audit log sample showing trigger_reason captured
 
@@ -199,6 +207,8 @@ Requirements moved from this sprint to backlog:
 **Sprint Lead**: ________________
 
 - [ ] All accepted requirements have issues
+- [ ] All accepted requirements have a primary type
+- [ ] All accepted requirements have a primary verification artifact
 - [ ] All issues in matrix
 - [ ] Test files identified
 - [ ] Team ready to execute

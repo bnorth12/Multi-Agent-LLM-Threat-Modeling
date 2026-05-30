@@ -21,6 +21,31 @@ Team agreement for maintaining strict traceability between requirements, issues,
 
 **Exception**: Infrastructure/tech-debt issues may use label `no-requirement` with TL approval (rare)
 
+### Rule 2A: Every Requirement Must Have a Type
+- **Every requirement** must be classified as exactly one primary type before sprint commitment.
+- Allowed canonical types:
+  - Functional
+  - Nonfunctional
+  - Policy
+  - Design constraint
+  - Interface requirement
+  - Capability-derived requirement
+- Requirement type must be recorded in the requirement file and reflected in sprint traceability artifacts.
+- If a requirement mixes multiple unrelated concerns, split it into separate requirements.
+- If a current requirement does not fit the taxonomy cleanly, document the mismatch, rework the wording, or propose a new type before the requirement is accepted into sprint scope.
+
+### Rule 2B: Every Requirement Must Have a Verification Artifact
+- **Every requirement** must identify at least one primary verification artifact.
+- The artifact MUST align with the requirement type:
+  - Functional: test file, execution log, screenshot, or run artifact
+  - Nonfunctional: benchmark, load report, observability report, or analysis report
+  - Policy: governance policy, policy validation report, enforcement implementation evidence, or compliance review record
+  - Design constraint: design detail, architecture review note, conformance evidence, or implementation analysis package
+  - Interface requirement: contract/schema/spec, integration test, or protocol validation evidence
+  - Capability-derived requirement: decomposition matrix, function map, scenario trace, or downstream functional evidence
+- If the artifact is not a direct test, the requirement rationale or notes MUST explain why the artifact is the right proof.
+- A requirement is not considered sprint-ready until its verification artifact is identified and reviewable.
+
 ### Rule 3: No Requirement Without Issue (For Sprint Work)
 - **Sprint requirements** (assigned to active sprint) must have linked issue
 - Future/backlog requirements may exist without issue (queued for future sprint)
@@ -50,6 +75,8 @@ Team agreement for maintaining strict traceability between requirements, issues,
 ### Sprint Planning
 - **Backlog refinement**: Reject story/task that lacks clear requirement
 - **Sprint commitment**: Reject assignment of issue without traceability matrix entry
+- **Requirement taxonomy check**: Reject sprint commitment if a requirement lacks a primary type or needs reclassification/splitting
+- **Verification artifact check**: Reject sprint commitment if a requirement lacks a primary verification artifact aligned to its type
 - **Checklist**: Use "Sprint Planning Checklist" to ensure all accepted items have req+issue
 
 ### Code Review (Pull Request)
@@ -57,6 +84,8 @@ Team agreement for maintaining strict traceability between requirements, issues,
   - Commit message lacks issue ID
   - Linked issue has no requirement
   - Issue has no test file referenced
+  - Requirement type is missing or inconsistent with the traceability record
+  - Requirement verification artifact is missing or does not match the requirement type
 - **Manual review**: Code reviewer verifies:
   - Issue title references requirement ID
   - Implementation matches requirement AC
@@ -171,6 +200,19 @@ Not every task fits perfectly:
 - **Infrastructure work**: May lack direct requirement; use `no-requirement` label + TL approval
 - **Bug fixes**: May reference issue that's NOT a requirement; link to root cause analysis instead
 - **Documentation**: May be requirement-driven OR issue-driven; document which
+- **Taxonomy mismatch**: If a requirement clearly does not fit an existing type, do not force-fit it; split, reword, or propose a taxonomy update before acceptance
+- **Verification mismatch**: If a requirement type cannot be verified with a sensible artifact, do not force-fit the evidence; rework the requirement or select the right alternate artifact before acceptance
+
+### Taxonomy Review Checklist
+
+- Confirm the requirement has one primary type.
+- Confirm the requirement text does not bundle multiple independent behaviors.
+- Confirm interface requirements are used for boundary contracts, not general functionality.
+- Confirm policy requirements describe governance or operating rules, not implementation details.
+- Confirm design constraints capture mandated architecture or platform choices.
+- Confirm the verification artifact matches the requirement type.
+- Confirm policy requirements have governance or enforcement evidence, not only executable tests.
+- Confirm design constraints include the design detail plus implementation or analysis evidence.
 
 **Process for waiver**:
 1. Document reason in issue
