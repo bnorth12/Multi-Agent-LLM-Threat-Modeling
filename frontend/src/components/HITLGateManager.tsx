@@ -164,7 +164,10 @@ function gateReadableSummary(gate: Gate | null): string[] {
     return [
       `Raw text length: ${String(preflight.raw_text_length ?? 0)}`,
       `Table count: ${String(preflight.table_count ?? 0)}`,
+      `Table rows with values: ${String(preflight.table_non_empty_row_count ?? 0)}`,
+      `Table headers: ${String(preflight.table_header_count ?? 0)}`,
       `Source present: ${String(checks.source_present ?? false)}`,
+      `Source provenance complete: ${String(checks.source_provenance_complete ?? false)}`,
       `Has raw text: ${String(checks.has_raw_text ?? false)}`,
       `Has tables: ${String(checks.has_tables ?? false)}`,
     ]
@@ -195,15 +198,36 @@ function gateReadableSummary(gate: Gate | null): string[] {
 function gateInputPreflightDetails(gate: Gate | null): {
   rawTextPreview: string
   tableHeaders: string[]
+  summary: {
+    sourcePresence: string
+    textSummary: string
+    tableSummary: string
+  }
 } {
   if (!gate?.artifact_snapshot || gate.gate_id !== 'gate_0_input_integrity') {
-    return { rawTextPreview: '', tableHeaders: [] }
+    return {
+      rawTextPreview: '',
+      tableHeaders: [],
+      summary: {
+        sourcePresence: '',
+        textSummary: '',
+        tableSummary: '',
+      },
+    }
   }
 
   const snapshot = gate.artifact_snapshot as Record<string, unknown>
   const preflight = snapshot.input_preflight as Record<string, unknown> | undefined
   if (!preflight || typeof preflight !== 'object') {
-    return { rawTextPreview: '', tableHeaders: [] }
+    return {
+      rawTextPreview: '',
+      tableHeaders: [],
+      summary: {
+        sourcePresence: '',
+        textSummary: '',
+        tableSummary: '',
+      },
+    }
   }
 
   const rawTextPreview = typeof preflight.raw_text_preview === 'string' ? preflight.raw_text_preview : ''
@@ -211,8 +235,17 @@ function gateInputPreflightDetails(gate: Gate | null): {
   const tableHeaders = tableHeadersRaw
     .map((value) => String(value || '').trim())
     .filter((value) => value.length > 0)
+  const summaryRaw = (preflight.summary as Record<string, unknown> | undefined) ?? {}
 
-  return { rawTextPreview, tableHeaders }
+  return {
+    rawTextPreview,
+    tableHeaders,
+    summary: {
+      sourcePresence: String(summaryRaw.source_presence ?? ''),
+      textSummary: String(summaryRaw.text_summary ?? ''),
+      tableSummary: String(summaryRaw.table_summary ?? ''),
+    },
+  }
 }
 
 type NormalizationInterfacePreview = {
@@ -672,6 +705,22 @@ export const HITLGateManager: React.FC<HITLGateManagerProps> = ({
             {selectedGate?.gate_id === 'gate_0_input_integrity' && (
               <>
                 <Divider />
+                <Box>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Input Integrity Summary
+                  </Typography>
+                  <Stack spacing={0.5}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      Source presence: {selectedInputPreflight.summary.sourcePresence || 'unknown'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      Text summary: {selectedInputPreflight.summary.textSummary || 'unavailable'}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      Table summary: {selectedInputPreflight.summary.tableSummary || 'unavailable'}
+                    </Typography>
+                  </Stack>
+                </Box>
                 <Box>
                   <Typography variant="subtitle2" sx={{ mb: 1 }}>
                     Raw Text Preview

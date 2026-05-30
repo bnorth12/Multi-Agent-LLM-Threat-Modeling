@@ -268,6 +268,19 @@ describe('HITLGateManager', () => {
             gate_name: 'Input Integrity Gate',
             stage_id: 'agent_01',
             status: 'pending',
+            artifact_snapshot: {
+              input_preflight: {
+                raw_text_length: 48,
+                raw_text_preview: 'System: AV\nOwner: Flight Ops',
+                table_count: 1,
+                table_headers_preview: ['system', 'owner'],
+                checks: {
+                  source_present: true,
+                  has_raw_text: true,
+                  has_tables: true,
+                },
+              },
+            },
           }),
         ]}
         onGateDecision={onGateDecision}
@@ -310,9 +323,18 @@ describe('HITLGateManager', () => {
                 raw_text_length: 48,
                 raw_text_preview: 'System: AV\nOwner: Flight Ops',
                 table_count: 1,
+                table_row_count: 1,
+                table_non_empty_row_count: 1,
+                table_header_count: 2,
                 table_headers_preview: ['system', 'owner'],
+                summary: {
+                  source_presence: 'present',
+                  text_summary: '48 non-whitespace characters',
+                  table_summary: '1 row(s), 2 unique header(s)',
+                },
                 checks: {
                   source_present: true,
+                  source_provenance_complete: true,
                   has_raw_text: true,
                   has_tables: true,
                 },
@@ -333,8 +355,12 @@ describe('HITLGateManager', () => {
     fireEvent.click(reviewButton)
     const dialog = await screen.findByRole('dialog')
 
+    expect(within(dialog).getByText('Input Integrity Summary')).toBeInTheDocument()
+    expect(within(dialog).getByText('Source presence: present')).toBeInTheDocument()
+    expect(within(dialog).getByText('Text summary: 48 non-whitespace characters')).toBeInTheDocument()
+    expect(within(dialog).getByText('Table summary: 1 row(s), 2 unique header(s)')).toBeInTheDocument()
     expect(within(dialog).getByText('Raw Text Preview')).toBeInTheDocument()
-    expect(within(dialog).getByText('System: AV')).toBeInTheDocument()
+    expect(within(dialog).getByText(/System: AV/)).toBeInTheDocument()
     expect(within(dialog).getByText('Detected Table Headers')).toBeInTheDocument()
     expect(within(dialog).getByText('system')).toBeInTheDocument()
     expect(within(dialog).getByText('owner')).toBeInTheDocument()

@@ -12,7 +12,17 @@
 This matrix records requirement-to-implementation-to-test traceability for Sprint 2026-12 web interface and operational API enablement.
 
 **Completion Target**: 100%
-**Current Status**: 18/18 requirements implemented and verified (1 item deferred by approved decision record)
+**Current Status**: 18/18 requirements implemented and verified; late-scope remediation work reopened for two active slices (1 item deferred by approved decision record)
+
+## Late-Scope Active Work
+
+The baseline Sprint 2026-12 implementation is complete, but the sprint has been reopened for two active remediation slices that must remain visible in traceability until they are closed:
+
+| # | Slice ID | Scope Type | Issue ID | Status | Requirement / Gap | Evidence / Disposition Artifact | Notes |
+|---|---|---|---|---|---|---|---|
+| A1 | S12-013 | Gate 0 preflight remediation | #67 | In Review | GUI-032 / parsed input summaries before Stage 1 execution | planning/Sprint_Remediation_Issue_67.md; planning/issues/issue_2026_12_S12_013_Gate_0_Design_Disposition.md | Latest disposition regeneration reports missing legs none |
+| A2 | S12-033 | Architecture/design backfill | #96 (C01-ORCH-001) | In Review | Missing architecture/design traceability with implementation and verification already present | planning/Sprint_Remediation_C01_ORCH_001.md; planning/issues/issue_2026_12_S12_033_LangGraph_Orchestrator_Architecture_Disposition.md | Latest disposition regeneration reports missing legs none and issue linkage is explicit |
+| A3 | S13-001 | Additional remediation sprint extension | Issue #67 + S12-033 carryover | Planned | Full governance context utilization and final chain-complete certification | planning/Sprint_2027_01_Remediation_Issue_67_Extension.md; local_reviews/latest/governance_execution_ledger_latest.md | Added sprint extension ensures all configured agents/skills are exercised and evidenced |
 
 ---
 

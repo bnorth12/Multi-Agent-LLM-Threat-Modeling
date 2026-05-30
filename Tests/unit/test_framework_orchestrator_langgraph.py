@@ -169,6 +169,37 @@ class TestFrameworkOrchestratorLangGraphCoverage:
         with pytest.raises(RuntimeError, match="Gate 0 preflight data is not ready"):
             orchestrator._await_gate_0_snapshot_ready(FrameworkState())
 
+    def test_gate_0_snapshot_includes_input_summary_and_integrity_checks(self) -> None:
+        settings = RuntimeSettings(
+            model=ModelSelection(provider="test", model_name="mock", offline_only=True),
+            pipeline=PipelineSettings(
+                execution_mode="langgraph-compatible",
+                require_hitl_gates=True,
+            ),
+        )
+        orchestrator = FrameworkOrchestrator(settings=settings, run_id="unit-g0-summary")
+
+        state = FrameworkState(
+            raw_text="System: AV\nOwner: Flight Ops",
+            tables=[
+                {"source": "input.csv", "system": "AV", "owner": "Flight Ops"},
+            ],
+        )
+
+        snapshot = orchestrator._build_input_integrity_snapshot(state)
+        preflight = snapshot["input_preflight"]
+        checks = preflight["checks"]
+        summary = preflight["summary"]
+
+        assert preflight["table_count"] == 1
+        assert preflight["table_non_empty_row_count"] == 1
+        assert preflight["table_header_count"] >= 2
+        assert checks["source_present"] is True
+        assert checks["source_provenance_complete"] is True
+        assert summary["source_presence"] == "present"
+        assert "non-whitespace characters" in summary["text_summary"]
+        assert "row(s)" in summary["table_summary"]
+
     def test_gate_4_waits_until_threat_snapshot_is_ready(self, monkeypatch) -> None:
         settings = RuntimeSettings(
             model=ModelSelection(provider="test", model_name="mock", offline_only=True),

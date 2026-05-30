@@ -1,8 +1,8 @@
 # Sprint 2026-12 Issue Tracker
 
 Date: 2026-05-21
-Status: Open for late-scope governance reconciliation
-Sprint Goal: Keep Sprint 2026-12 React HMI/API delivery fully traceable through implementation, GitHub issue sync, and sprint-close closure evidence.
+Status: Open for late-scope governance reconciliation and dual-slice remediation execution
+Sprint Goal: Keep Sprint 2026-12 React HMI/API delivery fully traceable through implementation, GitHub issue sync, sprint-close closure evidence, and the active Gate 0 plus audit-derived remediation slices.
 
 ## 0. S12 Closeout Matrix (Updated 2026-05-26)
 
@@ -33,7 +33,25 @@ Minor findings may be deferred only when logged with explicit next-sprint intake
 | S12-030 | #83 | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Sprint 2026-13 Wave 2 |
 | S12-031 | #84 | In Progress | bnorth12 | 2026-06-02 | Complete implementation and close |
 | S12-032 | #85 | Proposed (Post-Run) | bnorth12 | 2026-06-14 | Defer to Sprint 2026-13 Wave 3 |
+| S12-033 | #96 | In Review | bnorth12 | 2026-05-31 | Backfill architecture/design traceability for LangGraph orchestrator route evidence |
 | D-S12-011 | #65 | Proposed | bnorth12 | 2026-06-05 | Defer decision to Sprint 2026-13 governance review |
+
+## 0.1 Late-Scope Active Work
+
+This sprint currently carries two active remediation slices that must stay visible in planning, execution, and traceability artifacts:
+
+| Slice ID | Issue / Gap | Active Status | Primary Artifact | Secondary Artifact |
+|---|---|---|---|---|
+| S12-013 | #67 Gate 0 preflight review | In Progress | `planning/Sprint_Remediation_Issue_67.md` | `planning/issues/issue_2026_12_S12_013_Gate_0_Design_Disposition.md` |
+| S12-033 | C01-ORCH-001 architecture/design backfill | In Progress | `planning/Sprint_Remediation_C01_ORCH_001.md` | `planning/issues/issue_2026_12_S12_033_LangGraph_Orchestrator_Architecture_Disposition.md` |
+
+## 0.2 Additional Remediation Sprint (Planned)
+
+Issue #67 remediation is explicitly extended by one additional sprint to prove full governance utilization and final chain closure.
+
+| Extension ID | Scope | Status | Artifact | Governance Requirement |
+|---|---|---|---|---|
+| S13-001 | Issue #67 + S12-033 carryover closeout | Planned | `planning/Sprint_2027_01_Remediation_Issue_67_Extension.md` | All contexts in `config/governance_autoflow_routing.json` executed and evidenced in governance execution ledger |
 
 ### Defer Documentation Rule
 
@@ -116,5 +134,9 @@ Each Sprint 2026-12 issue is only closed when all are true:
 - GitHub synchronization completed for S12-031 as issue #84.
 - GitHub synchronization completed for S12-032 as issue #85.
 - S12-ADMIN-001 logged as sprint administration cross-reference for dev stack restart evidence in `planning/Sprint_2026_12_Execution_Log.md` Update 10.
+- The active late-scope sprint story now includes S12-013 Gate 0 preflight remediation and S12-033 audit-derived LangGraph architecture/design backfill as parallel in-progress slices.
 - Remediation branch planning for issue #67 is captured in `planning/Sprint_Remediation_Issue_67.md` and is the authoritative issue-keyed remediation slice.
+- LangGraph orchestrator architecture backfill is captured in `planning/Sprint_Remediation_C01_ORCH_001.md` and is the audit-derived second remediation slice in this sprint.
+- The issue-scoped design disposition package for issue #67 is captured in `planning/issues/issue_2026_12_S12_013_Gate_0_Design_Disposition.md` and is the authoritative reconciliation-path artifact.
+- The audit-derived architecture/design backfill for `C01-ORCH-001` is captured in `planning/issues/issue_2026_12_S12_033_LangGraph_Orchestrator_Architecture_Disposition.md` and records the architecture-first reconciliation path.
 - Final issue closure remains a Sprint 2026-12 closeout activity after the implementation PR and closure evidence are finalized, including assignment of a GitHub issue number for S12-015.

@@ -295,20 +295,43 @@ class FrameworkOrchestrator:
         raw_text = active_state.raw_text or ""
         tables = active_state.tables or []
         table_headers: list[str] = []
+        source_column_present = False
+        non_empty_table_values = 0
         for table in tables[:3]:
             if isinstance(table, dict):
                 table_headers.extend([str(k) for k in list(table.keys())[:5]])
+        for row in tables:
+            if not isinstance(row, dict):
+                continue
+            if "source" in row:
+                source_column_present = True
+            if any(str(value).strip() for value in row.values()):
+                non_empty_table_values += 1
+
+        table_row_count = len(tables)
+        unique_header_count = len({h for h in table_headers if h.strip()})
+        source_present = bool(raw_text.strip() or tables)
+        source_provenance_complete = bool(raw_text.strip()) or (source_column_present and table_row_count > 0)
 
         return {
             "input_preflight": {
                 "raw_text_length": len(raw_text),
                 "raw_text_preview": raw_text[:500],
-                "table_count": len(tables),
+                "table_count": table_row_count,
+                "table_row_count": table_row_count,
+                "table_non_empty_row_count": non_empty_table_values,
+                "table_header_count": unique_header_count,
                 "table_headers_preview": table_headers[:12],
+                "summary": {
+                    "source_presence": "present" if source_present else "missing",
+                    "text_summary": f"{len(raw_text.strip())} non-whitespace characters",
+                    "table_summary": f"{table_row_count} row(s), {unique_header_count} unique header(s)",
+                },
                 "checks": {
                     "has_raw_text": len(raw_text.strip()) > 0,
-                    "has_tables": len(tables) > 0,
-                    "source_present": bool(raw_text.strip() or tables),
+                    "has_tables": table_row_count > 0,
+                    "source_present": source_present,
+                    "source_provenance_complete": source_provenance_complete,
                 },
             }
         }

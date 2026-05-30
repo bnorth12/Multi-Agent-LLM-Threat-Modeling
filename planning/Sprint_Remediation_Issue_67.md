@@ -1,126 +1,155 @@
-# Sprint Remediation: Issue #67 / S12-013 Gate 0 Input Integrity
+# Sprint 2026-12 Remediation: Issue #67 Gate 0 Input Integrity
 
 Branch: `remediation/issue-67-gate-0-input-integrity`
 
-## Purpose
+## Canonical Plan Rule
 
-Run a short remediation sprint around the issue itself, not the issue filename. This slice is intentionally narrow and uses the GitHub issue as the planning key.
+This file is the single canonical sprint remediation plan for Issue #67 in Sprint 2026-12.
+All automation, disposition generation, and governance evidence references shall resolve to this file.
 
 ## Sprint Objective
 
-Restore Gate 0 input-integrity behavior as a fully traced change set that is planned, implemented, and verified against the same issue key.
+Execute one Sprint 2026-12 remediation workflow that includes:
+
+- primary behavior slice: S12-013 / Issue #67 Gate 0 input integrity
+- additional remediation slice: S12-033 / C01-ORCH-001 architecture/design backfill
+
+Both slices are governed as one sprint execution stream while retaining issue-scoped disposition artifacts.
+
+## Additional Remediation Sprint Extension
+
+To complete full governance coverage and prove route utilization across all configured contexts,
+Issue #67 remediation is extended with one additional sprint:
+
+- Sprint 2027-01 remediation extension for S12-013 and S12-033 closeout carryover
+- full-context governance utilization drill to ensure all configured agents and skills are exercised and recorded
+- explicit execution ledger evidence for planning, execution, pre-merge, pre-push, closeout, and portfolio contexts
 
 ## Planning Summary
 
 | Phase | Goal | Primary Output |
 |---|---|---|
-| 1. Intake and traceability sync | Confirm the issue key, requirement IDs, and evidence targets are aligned | Updated sprint tracker and traceability references |
-| 2. Architecture/design update | Capture the Gate 0 preflight boundary and readiness-coupled behavior | HMI blueprint and gate-flow design notes |
-| 3. Implementation change | Make the Gate 0 preflight path and summary presentation coherent | Orchestrator, HITL service, and gate ledger updates |
-| 4. Verification closure | Prove the branch behavior with automated and manual checks | Backend tests, frontend tests, walkthrough notes |
-| 5. Governance closeout | Tie the issue key to the branch, evidence, and merge decision | Execution log and closeout-ready traceability artifacts |
+| 1. Intake and traceability sync | Confirm issue keys, IDs, and chain evidence targets for both slices | Updated tracker, traceability matrix references, and intake notes |
+| 2. Architecture/design review and disposition | Review as-built behavior and record selected reconciliation paths for both slices | Issue-scoped disposition artifacts and architecture/design update notes |
+| 3. Implementation execution | Deliver focused code deltas for S12-013 and any required deltas for S12-033 missing legs | Orchestrator/HITL/UI updates and implementation evidence |
+| 4. Verification closure | Prove behavior and chain closure with automated and manual evidence | Backend tests, frontend tests, walkthrough evidence |
+| 5. Governance closeout | Synchronize all planning and review artifacts to final chain status | Execution log, issue tracker, traceability matrix, disposition index |
 
-## Selected Issue
+## Selected Primary Issue Slice
 
 - GitHub issue: #67
 - Sprint tracker key: S12-013
-- Title: Sprint Remediation: Issue #67 - Enforce Gate 0 input integrity preflight review
+- Title: Enforce Gate 0 input integrity preflight review
+
+### Governing Function IDs (S12-013)
+
+- GUI-032 Input Integrity Preflight Review Gate
+- RIC-001 Gate 0 Data Readiness Before Trigger
+- RIC-005 State Publication Ordering Invariant
+- HITL-009 Gate 0 Input Integrity
+
+## Additional Remediation Slice
+
+- Sprint tracker key: S12-033
+- Requirement: C01-ORCH-001
+- Title: Backfill LangGraph orchestrator architecture/design traceability
+- Rationale: implementation and verification evidence already exist while architecture/design traceability remains incomplete.
+
+## Traceability Integrity Contract (Mandatory)
+
+- Every active remediation slice shall be examined across the full chain:
+	capability -> function -> requirement -> architecture -> design -> implementation -> verification.
+- Missing traceability in any leg is a process failure and must trigger explicit remediation planning actions.
+- Sprint closeout is blocked for any slice with unresolved missing legs unless formally deferred by policy.
+- Automation outputs must persist chain status, missing legs, and remediation actions for each slice.
 
 ## Scope by Evidence Layer
 
-### Architecture / Design
+### Capabilities / Functions
 
-- Update the gate-flow architecture notes to describe the Gate 0 preflight boundary, the human-readable parsed input summary, and the readiness-coupled pause/resume behavior.
-- Keep the design aligned with the existing HMI blueprint and the runtime state contract.
+- Identify governing capability and function IDs for S12-013 and S12-033.
+- Link function-level behavior to requirement IDs and architecture/design references.
+- Record missing capability/function mapping as remediation blockers.
 
 ### Requirements
 
-- Confirm GUI-032 remains the governing requirement for this slice.
-- Update the traceability matrix so the issue is traceable from requirement to design to implementation to verification.
-- Keep the issue body and sprint tracker synchronized with the active requirement IDs.
+- Confirm active requirements for each slice remain synchronized with tracker and issue artifacts.
+- Keep requirement references aligned with capability/function and downstream implementation/verification evidence.
+
+### Architecture / Design
+
+- Complete architecture/design review before implementation closure.
+- Record reconciliation path in issue-scoped disposition artifacts.
+- Update architecture/design references for Gate 0 boundary behavior and LangGraph orchestrator traceability.
 
 ### Implementation
 
-- Review the orchestrator and HITL service path that opens Gate 0.
-- Review the gate ledger rendering path in the HMI so the preflight summary is visible before Stage 1 execution.
-- Keep the implementation change set small and focused on the single issue key.
+- Execute the focused S12-013 code path updates.
+- Execute any implementation deltas required by S12-033 missing-leg remediation actions.
 
 ### Verification
 
-- Require a backend test pass for the Gate 0 preflight path.
-- Require a frontend test pass for the gate ledger / summary presentation path.
-- Require a manual walkthrough that confirms Stage 1 does not begin until the Gate 0 decision is recorded.
+- Require backend and frontend automated evidence for S12-013.
+- Require verification evidence for S12-033 where missing legs indicate verification gaps.
+- Require manual walkthrough for Gate 0 pause/resume behavior.
 
 ### Governance / Traceability
 
-- Update the sprint issue tracker so the issue key is the authoritative planning reference for the remediation branch.
-- Keep the sprint traceability matrix and execution log synchronized with the issue key and with the concrete implementation/verification evidence.
-- Ensure the governance autoflow and review artifacts can point back to the same issue without relying on filename-based selection.
+- Keep issue tracker, traceability matrix, execution log, and disposition index synchronized.
+- Ensure governance outputs report missing legs and remediation actions per slice.
 
 ## Execution Sequence
 
-1. Intake and confirm the four-layer evidence path for issue #67.
-1. Update design and traceability references so Gate 0 preflight behavior is described consistently.
-1. Implement the smallest possible change set in the orchestrator, HITL service, and gate ledger rendering path.
-1. Run the backend and frontend checks, then perform a manual pause/resume walkthrough.
-1. Record closure evidence and keep the tracker, execution log, and issue body synchronized.
+1. Intake and confirm full-chain evidence path for S12-013 and S12-033.
+1. Complete architecture/design review and persist issue-scoped disposition artifacts for both slices.
+1. Update architecture/design references and traceability links.
+1. Execute focused implementation deltas from missing-leg remediation actions.
+1. Run automated and manual verification evidence collection.
+1. Synchronize governance artifacts and close sprint slice evidence.
+
+## Cross-Sprint Replan (2026-12 + 2027-01)
+
+| Sprint | Objective | Exit Gate |
+|---|---|---|
+| 2026-12 | Close remaining implementation/verification legs for S12-013 and S12-033 and stabilize artifact references | No unresolved slice-level P0 missing-leg action remains unassigned |
+| 2027-01 | Execute full governance context utilization and finalize chain-complete certification for Issue #67 plus S12-033 | All required contexts executed with ledger evidence and no unresolved chain legs |
+
+## Agent and Skill Utilization Plan
+
+The following matrix ensures all configured governance agents and skills are included in planning and execution scope.
+
+| Context | Agent Coverage | Skill Coverage | Execution Command |
+|---|---|---|---|
+| planning | repo-governance-autoflow-orchestrator; requirements-baseline-steward; architecture-design-disposition-planner; architecture-design-traceability-auditor; sprint-intake-gatekeeper; governance-policy-compiler | requirements-baseline-steward; architecture-design-disposition-planner; architecture-design-traceability-auditor; sprint-intake-gatekeeper; governance-policy-compiler | `.venv\\Scripts\\python.exe scripts/governance_autoflow.py --context planning --sprint 2026_12 --out-dir local_reviews/latest` |
+| blocker-planning | repo-governance-autoflow-orchestrator; traceability-blocker-planner; requirements-baseline-steward | traceability-blocker-planner; requirements-baseline-steward | `.venv\\Scripts\\python.exe scripts/governance_autoflow.py --context blocker-planning --sprint 2026_12 --out-dir local_reviews/latest` |
+| design-authoring | repo-governance-autoflow-orchestrator; architecture-design-disposition-planner; architecture-design-change-author; architecture-design-traceability-auditor | architecture-design-disposition-planner; architecture-design-change-author; architecture-design-traceability-auditor | `.venv\\Scripts\\python.exe scripts/governance_autoflow.py --context design-authoring --sprint 2026_12 --out-dir local_reviews/latest` |
+| pre-commit | repo-governance-autoflow-orchestrator; requirements-baseline-steward; architecture-design-change-author; architecture-design-traceability-auditor; requirements-implementation-auditor; architecture-contract-enforcer | requirements-baseline-steward; architecture-design-change-author; architecture-design-traceability-auditor; requirements-implementation-auditor; architecture-contract-enforcer | `.venv\\Scripts\\python.exe scripts/governance_autoflow.py --context pre-commit --sprint 2026_12 --out-dir local_reviews/latest --hook-fail-mode warn` |
+| pre-merge-commit | repo-governance-autoflow-orchestrator; architecture-contract-enforcer; architecture-design-change-author; architecture-design-traceability-auditor; requirements-implementation-auditor; verification-coverage-planner; sprint-execution-compliance-monitor | architecture-contract-enforcer; architecture-design-change-author; architecture-design-traceability-auditor; requirements-implementation-auditor; verification-coverage-planner; sprint-execution-compliance-monitor | `.venv\\Scripts\\python.exe scripts/governance_autoflow.py --context pre-merge-commit --sprint 2026_12 --out-dir local_reviews/latest --hook-fail-mode warn` |
+| pre-push | repo-governance-autoflow-orchestrator; independent-review-orchestrator; architecture-design-traceability-auditor; requirements-implementation-auditor; source-to-evidence-traceability-auditor; kpi-drift-analyst; artifact-lineage-auditor | independent-repo-review; architecture-design-traceability-auditor; requirements-implementation-auditor; source-to-evidence-traceability; kpi-drift-analyst; artifact-lineage-auditor | `.venv\\Scripts\\python.exe scripts/governance_autoflow.py --context pre-push --sprint 2026_12 --out-dir local_reviews/latest --hook-fail-mode warn` |
+| closeout | repo-governance-autoflow-orchestrator; sprint-closeout-certifier; remediation-readiness-strategist | sprint-closeout-certifier; remediation-readiness | `.venv\\Scripts\\python.exe scripts/governance_autoflow.py --context closeout --sprint 2027_01 --out-dir local_reviews/latest` |
+| portfolio | repo-governance-autoflow-orchestrator; multi-sprint-portfolio-planner; kpi-drift-analyst | multi-sprint-portfolio-planner; kpi-drift-analyst | `.venv\\Scripts\\python.exe scripts/governance_autoflow.py --context portfolio --sprint 2027_01 --out-dir local_reviews/latest` |
+
+## Utilization Evidence Rule
+
+- Every context run must be captured in `local_reviews/latest/governance_execution_ledger_latest.md` and appended history.
+- Execution logs must record whether each stage was direct or declared-only.
+- Sprint 2027-01 closeout cannot be claimed until all contexts above have at least one execution record during the two-sprint remediation window.
 
 ## Execution Status (Active)
 
-- [x] Phase 1 intake/traceability sync started and validated (issue key `#67`, requirement `GUI-032`, evidence targets confirmed).
-- [x] Phase 2 design/traceability baseline synchronization started via regenerated authoring workpack and governance ledger evidence.
-- [ ] Phase 3 implementation delta execution in `src/threat_modeler/orchestrator.py`, `src/threat_modeler/hitl/service.py`, and `frontend/src/components/HITLGateManager.tsx`.
-- [ ] Phase 4 verification closure (backend + frontend + manual Gate 0 pause/resume walkthrough).
-- [ ] Phase 5 governance closeout updates (execution log, issue tracker, and final evidence linkage).
+- [x] Phase 1 intake/traceability sync in progress with dual-slice alignment.
+- [x] Phase 2 disposition generation active with missing-leg detection and remediation action output.
+- [x] Phase 3 implementation execution against open missing-leg actions.
+- [x] Phase 4 verification closure for both slices.
+- [x] Phase 5 governance closeout and final chain certification (local branch evidence complete; merge closeout pending).
 
 ## Governance Checkpoints
 
-- Checkpoint A: issue key and requirement IDs confirmed before code changes begin.
-- Checkpoint B: architecture/design references updated before the implementation branch is considered complete.
-- Checkpoint C: tests and walkthrough evidence collected before closeout.
-- Checkpoint D: issue tracker and execution log updated before merge.
-
-## Focused Replan Addendum (Architecture/Design-First Enforcement)
-
-This remediation sprint keeps the same scope and issue key. The replan is limited to workflow enforcement so architecture and design disposition happens before implementation closure.
-
-### Mandatory Disposition Gate
-
-- A disposition decision is required whenever implementation and architecture/design are not aligned.
-- The decision must select exactly one path.
-- Path A: update architecture/design artifacts to reflect the implemented behavior.
-- Path B: update implementation to conform to architecture/design intent.
-- The selected path must include rationale and approval evidence in the execution log.
-
-### In-Flight Governance Invocation
-
-- Planning/intake checkpoint: requirements-baseline-steward, architecture-design-traceability-auditor, sprint-intake-gatekeeper.
-- Development checkpoints: architecture-design-traceability-auditor and requirements-implementation-auditor must run in pre-commit and pre-merge-commit governance flow.
-- Independent review checkpoint: source-to-evidence-traceability-auditor confirms the final disposition path remains complete through verification evidence.
-
-### Closure Rules for Disposition Cases
-
-- If architecture/design is updated to match implementation, closeout must include revised architecture/design references plus conformance verification evidence.
-- If implementation is updated to match architecture/design, closeout must include rerun verification on the new implementation baseline.
-- Existing verification evidence from the superseded path is historical context only and does not satisfy final closeout evidence.
-- Closeout certification requires a complete Requirement -> Architecture/Design -> Implementation -> Verification traceability chain for the final chosen state.
-
-## Risks and Controls
-
-| Risk | Control |
-|---|---|
-| Scope expands beyond Gate 0 input integrity | Split follow-on work into a new issue key and keep this branch narrow |
-| Implementation changes without design/traceability updates | Require architecture and traceability updates before merge |
-| Verification evidence is incomplete | Block closeout until backend, frontend, and manual walkthrough evidence are recorded |
-| Planning drifts back to filename-based selection | Use issue #67 as the only branch planning key |
-
-## Acceptance Criteria
-
-- The issue is the planning key for the remediation branch.
-- The remediation slice covers architecture/design, requirements, implementation, and verification together.
-- The sprint tracker and evidence artifacts can point back to the same issue key.
-- The branch can be closed and merged only after the four-layer evidence is complete.
-- The branch also carries the traceability-governance artifacts required to prove the remediation was planned and closed against the issue itself.
+- Checkpoint A: issue keys and governing IDs confirmed before code changes.
+- Checkpoint B: architecture/design review complete and disposition artifacts persisted before implementation closure.
+- Checkpoint C: missing-leg remediation actions planned and assigned per slice.
+- Checkpoint D: automated/manual verification evidence complete.
+- Checkpoint E: tracker, matrix, execution log, and disposition index aligned before merge.
 
 ## Evidence Targets
 
@@ -128,23 +157,26 @@ This remediation sprint keeps the same scope and issue key. The replan is limite
 - planning/Sprint_2026_12_Traceability_Matrix.md
 - planning/Sprint_2026_12_Execution_Log.md
 - planning/issues/Sprint_2026_12_Issue_Tracker.md
+- planning/Sprint_2027_01_Remediation_Issue_67_Extension.md
+- planning/Sprint_Remediation_C01_ORCH_001.md
+- planning/issues/issue_2026_12_S12_013_Gate_0_Design_Disposition.md
+- planning/issues/issue_2026_12_S12_033_LangGraph_Orchestrator_Architecture_Disposition.md
 - local_reviews/latest/governance_execution_ledger_latest.md
 - local_reviews/latest/remediation_readiness_latest.md
+- local_reviews/latest/issue_design_disposition_latest.md
+- local_reviews/latest/issue_design_disposition_index.md
 - docs/architecture/HMI_Architecture_Blueprint.md
+- docs/design/software/Runtime_And_Orchestration_Design_Specification.md
+- docs/design/software/Agent_Subsystem_Design_Specification.md
 - src/threat_modeler/orchestrator.py
 - src/threat_modeler/hitl/service.py
 - frontend/src/components/HITLGateManager.tsx
 - Tests/integration/test_avionics_expected_results.py
 - Tests/test_hmi_backend_api.py
 
-## Notes
-
-- This is the only selected remediation slice for the short branch.
-- If the issue expands, split follow-on work into a separate issue key rather than broadening this branch.
-
 ## Exit Criteria
 
-- The Gate 0 preflight behavior is documented, implemented, and verified.
-- The traceability matrix and execution log reference the same issue key as the branch.
-- The branch can be merged only after the four-layer evidence set is complete.
-- Any residual gaps are converted into new issues rather than widening this one.
+- S12-013 Gate 0 behavior is documented, implemented, and verified.
+- S12-033 architecture/design backfill is documented and any missing legs are closed or formally deferred.
+- Full chain status from capability through verification is explicit for both slices.
+- All governance artifacts reference this canonical sprint plan and remain cross-consistent.
