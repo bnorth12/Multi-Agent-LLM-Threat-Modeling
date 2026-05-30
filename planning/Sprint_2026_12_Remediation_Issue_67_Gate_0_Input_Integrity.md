@@ -6,6 +6,20 @@ Branch: `remediation/issue-67-gate-0-input-integrity`
 
 Run a short remediation sprint around the issue itself, not the issue filename. This slice is intentionally narrow and uses the GitHub issue as the planning key.
 
+## Sprint Objective
+
+Restore Gate 0 input-integrity behavior as a fully traced change set that is planned, implemented, and verified against the same issue key.
+
+## Planning Summary
+
+| Phase | Goal | Primary Output |
+|---|---|---|
+| 1. Intake and traceability sync | Confirm the issue key, requirement IDs, and evidence targets are aligned | Updated sprint tracker and traceability references |
+| 2. Architecture/design update | Capture the Gate 0 preflight boundary and readiness-coupled behavior | HMI blueprint and gate-flow design notes |
+| 3. Implementation change | Make the Gate 0 preflight path and summary presentation coherent | Orchestrator, HITL service, and gate ledger updates |
+| 4. Verification closure | Prove the branch behavior with automated and manual checks | Backend tests, frontend tests, walkthrough notes |
+| 5. Governance closeout | Tie the issue key to the branch, evidence, and merge decision | Execution log and closeout-ready traceability artifacts |
+
 ## Selected Issue
 
 - GitHub issue: #67
@@ -43,6 +57,30 @@ Run a short remediation sprint around the issue itself, not the issue filename. 
 - Keep the sprint traceability matrix and execution log synchronized with the issue key and with the concrete implementation/verification evidence.
 - Ensure the governance autoflow and review artifacts can point back to the same issue without relying on filename-based selection.
 
+## Execution Sequence
+
+1. Intake and confirm the four-layer evidence path for issue #67.
+1. Update design and traceability references so Gate 0 preflight behavior is described consistently.
+1. Implement the smallest possible change set in the orchestrator, HITL service, and gate ledger rendering path.
+1. Run the backend and frontend checks, then perform a manual pause/resume walkthrough.
+1. Record closure evidence and keep the tracker, execution log, and issue body synchronized.
+
+## Governance Checkpoints
+
+- Checkpoint A: issue key and requirement IDs confirmed before code changes begin.
+- Checkpoint B: architecture/design references updated before the implementation branch is considered complete.
+- Checkpoint C: tests and walkthrough evidence collected before closeout.
+- Checkpoint D: issue tracker and execution log updated before merge.
+
+## Risks and Controls
+
+| Risk | Control |
+|---|---|
+| Scope expands beyond Gate 0 input integrity | Split follow-on work into a new issue key and keep this branch narrow |
+| Implementation changes without design/traceability updates | Require architecture and traceability updates before merge |
+| Verification evidence is incomplete | Block closeout until backend, frontend, and manual walkthrough evidence are recorded |
+| Planning drifts back to filename-based selection | Use issue #67 as the only branch planning key |
+
 ## Acceptance Criteria
 
 - The issue is the planning key for the remediation branch.
@@ -70,3 +108,10 @@ Run a short remediation sprint around the issue itself, not the issue filename. 
 
 - This is the only selected remediation slice for the short branch.
 - If the issue expands, split follow-on work into a separate issue key rather than broadening this branch.
+
+## Exit Criteria
+
+- The Gate 0 preflight behavior is documented, implemented, and verified.
+- The traceability matrix and execution log reference the same issue key as the branch.
+- The branch can be merged only after the four-layer evidence set is complete.
+- Any residual gaps are converted into new issues rather than widening this one.
