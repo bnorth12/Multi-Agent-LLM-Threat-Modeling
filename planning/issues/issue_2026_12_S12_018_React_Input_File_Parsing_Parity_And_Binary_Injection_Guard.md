@@ -37,6 +37,7 @@ Context Builder, Trust Boundary, STRIDE, and Threat outputs.
 
 - `frontend: npm install`
 - `frontend: npm run test -- --run src/components/HITLGateManager.test.tsx`
+- `Tests/test_hmi_backend_api.py` (explicit sprint verification evidence reference)
 - Manual full UAS suite run in React wizard and review of downstream artifacts/screens
 
 ## Requirements and Traceability

@@ -84,6 +84,7 @@ reduces UI coupling risk, and allows each surface to evolve independently.
 
 - frontend: npm run test -- --run src/components/ArtifactsViewer.test.tsx
 - frontend: npm run test -- --run src/components/ThreatMitigationReviewViewer.test.tsx
+- Tests/test_hmi_backend_api.py (explicit sprint verification evidence reference)
 - manual: verify navigation separation, verify decision-state consistency across both
   surfaces, verify downstream report/diagram exclusion behavior for explicitly rejected items
 

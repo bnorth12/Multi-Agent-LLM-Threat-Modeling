@@ -110,6 +110,7 @@ acceptable for a primary review surface.
 ## Validation Plan
 
 - frontend: npm run test -- --run src/components/ArtifactsViewer.test.tsx
+- Tests/test_hmi_backend_api.py (explicit sprint verification evidence reference)
 - manual: open a completed run with multiple Mermaid diagrams, click each, verify dialog
   opens, verify zoom and pan, verify close returns to inline view unchanged
 
