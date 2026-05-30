@@ -44,7 +44,7 @@ python scripts/independent_repo_review.py \
 	--issue-quality-threshold 0.95 \
 	--max-planned-missing-requirement 0
 ```
-5. Read generated markdown/json in local_reviews/latest/.
+5. Read generated markdown/json in independent_reviews/latest/.
 6. Report prioritized gaps:
 - requirements without implementation evidence
 - requirements without verification evidence
@@ -83,9 +83,9 @@ python scripts/independent_repo_review.py --sprint <SPRINT> --run-context manual
 ```
 
 ## Expected Outputs
-- local_reviews/latest/independent_review_<sprint>_<context>.md
-- local_reviews/latest/independent_review_<sprint>_<context>.json
-- local_reviews/history/reports/independent_review_<sprint>_<context>_<timestamp>.* (when archived)
+- independent_reviews/latest/independent_review_<sprint>_<context>.md
+- independent_reviews/latest/independent_review_<sprint>_<context>.json
+- independent_reviews/history/reports/independent_review_<sprint>_<context>_<timestamp>.* (when archived)
 
 ## Health Metric
 - The report uses "health" rather than "goodness" as the primary remediation readiness framing.

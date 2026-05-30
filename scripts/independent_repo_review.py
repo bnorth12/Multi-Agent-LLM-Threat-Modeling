@@ -66,9 +66,9 @@ REQUIRED_TRACEABILITY_ARTIFACTS = [
     Path("Requirements/15_End_To_End_Traceability_Attributes_Registry.md"),
 ]
 
-TREND_HISTORY_FILE = Path("local_reviews/history/snapshot_index.json")
+TREND_HISTORY_FILE = Path("independent_reviews/history/snapshot_index.json")
 POLICY_PROFILES_FILE = Path("config/independent_review_policy_profiles.json")
-REPORT_ARCHIVE_DIR = Path("local_reviews/history/reports")
+REPORT_ARCHIVE_DIR = Path("independent_reviews/history/reports")
 
 
 @dataclass
@@ -1864,7 +1864,7 @@ def run_review(
         "Local-only review by default: no GitHub API calls unless --github-reconcile is explicitly provided.",
         "Issue parsing is table-header aware and only applies requirement-link checks where a Related Requirements column exists.",
         "Branch-awareness reports ahead/behind and merge-base risk against origin/main.",
-        "Trend history is stored locally under local_reviews/history/ and is ignored by git.",
+        "Trend history is stored locally under independent_reviews/history/ and is ignored by git.",
         "Traceability checks use full source-to-evidence chain legs (source, architecture/design, implementation, verification).",
         "Required traceability artifacts are validated for existence and planning/remediation references.",
         "Traceability artifact findings remain non-blocking until full remediation is marked complete in the latest disposition index.",
@@ -1991,7 +1991,7 @@ def write_reports(root: Path, result: ReviewResult, out_dir: Path, report_mode: 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run independent local repository governance review")
     parser.add_argument("--sprint", type=str, default="2026_12", help="Sprint identifier (YYYY-MM or YYYY_MM)")
-    parser.add_argument("--out-dir", type=str, default="local_reviews/latest", help="Output directory for generated review reports")
+    parser.add_argument("--out-dir", type=str, default="independent_reviews/latest", help="Output directory for generated review reports")
     parser.add_argument(
         "--run-context",
         choices=["manual", "pre-commit", "pre-merge-commit", "pre-push"],

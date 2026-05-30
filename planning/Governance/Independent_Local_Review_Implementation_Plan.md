@@ -36,7 +36,7 @@ Establish an independent, local-first review system that is decoupled from devel
 - [x] Calibrate requirement-ID parsing and tracker-table parsing to reduce false positives
 - [x] Add severity taxonomy (critical/major/minor/info) and policy thresholds
 - [x] Add branch-aware review metadata (current branch, merge base, ahead/behind)
-- [x] Add optional GitHub API status sync mode (explicit opt-in only)
+- [x] Add GitHub API status reconciliation mode (default-on, informational)
 - [x] Add trend snapshots (score deltas over time)
 
 ## Phase Deliverables
@@ -48,7 +48,7 @@ Establish an independent, local-first review system that is decoupled from devel
 - .github/skills/independent-repo-review/SKILL.md
 - .github/skills/issue-governance-review/SKILL.md
 - scripts/independent_repo_review.py
-- local_reviews/README.md
+- independent_reviews/README.md
 - Hook integration in .githooks/pre-commit, .githooks/pre-merge-commit, .githooks/pre-push
 
 ### Phase 2 (Implemented)
@@ -81,9 +81,9 @@ Establish an independent, local-first review system that is decoupled from devel
 ### Phase 7 (Implemented/In Progress)
 - One-time historical KPI backfill implemented via `scripts/backfill_independent_review_history.py`
 - Over-time scoreboard outputs added:
-	- `local_reviews/latest/kpi_trend_scoreboard_backfill.md`
-	- `local_reviews/latest/kpi_trend_scoreboard_backfill.json`
-	- `local_reviews/latest/independent_review_backfill_over_time.md`
+	- `independent_reviews/latest/kpi_trend_scoreboard_backfill.md`
+	- `independent_reviews/latest/kpi_trend_scoreboard_backfill.json`
+	- `independent_reviews/latest/independent_review_backfill_over_time.md`
 - Governance autoflow orchestration scaffolded:
 	- `scripts/governance_autoflow.py`
 	- `docs/process/Governance_Autoflow_Orchestration.md`
@@ -99,7 +99,7 @@ Establish an independent, local-first review system that is decoupled from devel
 
 ### On-demand
 ```bash
-python scripts/independent_repo_review.py --sprint 2026_12 --run-context manual --report-mode update --out-dir local_reviews/latest
+python scripts/independent_repo_review.py --sprint 2026_12 --run-context manual --report-mode update --out-dir independent_reviews/latest
 ```
 
 ### Profile-based blocking mode
@@ -153,12 +153,12 @@ python scripts/governance_autoflow.py --context pre-push --sprint 2026_12
 
 ## Current Baseline
 Pilot run generated:
-- local_reviews/latest/independent_review_2026-12_20260529_145900.md
-- local_reviews/latest/independent_review_2026-12_20260529_145900.json
+- independent_reviews/latest/independent_review_2026-12_20260529_145900.md
+- independent_reviews/latest/independent_review_2026-12_20260529_145900.json
 
 Phase 2 baseline generated:
-- local_reviews/latest/independent_review_2026-12_20260529_150953.md
-- local_reviews/latest/independent_review_2026-12_20260529_150953.json
+- independent_reviews/latest/independent_review_2026-12_20260529_150953.md
+- independent_reviews/latest/independent_review_2026-12_20260529_150953.json
 
 Latest score: 54.3%
 
@@ -180,4 +180,4 @@ Latest enforcement preset additions include:
 - hooks now pass `--enforcement-mode auto` and selected profile by default
 
 ## Governance Note
-This system is intentionally local-first and independent from GitHub-hosted workflow checks. Future remote integration, if desired, should be opt-in and documented as a separate control path.
+This system is intentionally local-first and independent from GitHub-hosted workflow checks. GitHub reconciliation runs by default in the local review engine when `gh` is available and is treated as informational evidence unless explicit enforcement controls are selected.

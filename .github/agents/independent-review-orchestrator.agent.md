@@ -17,7 +17,7 @@ Primary responsibilities:
  - verification coverage planning and missing-evidence prioritization
  - artifact lineage and retention hygiene validation
  - KPI drift analysis for trend-based governance insights
-3. Require report generation to local ignored output paths under local_reviews/.
+3. Require report generation to local ignored output paths under independent_reviews/.
 4. Keep reviews local-first and independent of GitHub Actions checks.
 
 Execution policy:

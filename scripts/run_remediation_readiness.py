@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUT_DIR = REPO_ROOT / "local_reviews" / "latest"
+DEFAULT_OUT_DIR = REPO_ROOT / "independent_reviews" / "latest"
 REVIEW_GLOB = "independent_review_*.md"
 REQUIRED_TRACEABILITY_ARTIFACTS = [
     "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -337,7 +337,7 @@ def summarize_review(review_md: Path, review_json: Optional[Path], sprint: str) 
 def write_legacy_backlog_report(out_dir: Path, result: Dict[str, Any]) -> None:
     json_path = out_dir / "legacy_findings_latest.json"
     md_path = out_dir / "legacy_findings_latest.md"
-    history_path = REPO_ROOT / "local_reviews" / "history" / "legacy_findings.jsonl"
+    history_path = REPO_ROOT / "independent_reviews" / "history" / "legacy_findings.jsonl"
 
     json_path.write_text(json.dumps({
         "generated_at": result["generated_at"],
@@ -388,7 +388,7 @@ def write_legacy_backlog_report(out_dir: Path, result: Dict[str, Any]) -> None:
 def write_issue_draft_report(out_dir: Path, result: Dict[str, Any]) -> None:
     json_path = out_dir / "remediation_issue_drafts_latest.json"
     md_path = out_dir / "remediation_issue_drafts_latest.md"
-    history_path = REPO_ROOT / "local_reviews" / "history" / "remediation_issue_drafts.jsonl"
+    history_path = REPO_ROOT / "independent_reviews" / "history" / "remediation_issue_drafts.jsonl"
 
     issue_drafts = result.get("issue_drafts", [])
     json_path.write_text(json.dumps({
@@ -437,7 +437,7 @@ def write_issue_draft_report(out_dir: Path, result: Dict[str, Any]) -> None:
 
 def write_report(out_dir: Path, result: Dict[str, Any]) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    history_dir = REPO_ROOT / "local_reviews" / "history"
+    history_dir = REPO_ROOT / "independent_reviews" / "history"
     history_dir.mkdir(parents=True, exist_ok=True)
 
     json_path = out_dir / "remediation_readiness_latest.json"
@@ -506,7 +506,7 @@ def main() -> int:
         if review_json and not review_json.exists():
             review_json = None
     else:
-        review_md, review_json = find_latest_review(REPO_ROOT / "local_reviews" / "latest")
+        review_md, review_json = find_latest_review(REPO_ROOT / "independent_reviews" / "latest")
 
     result = summarize_review(review_md, review_json, args.sprint.replace("-", "_"))
     write_report(Path(args.out_dir), result)

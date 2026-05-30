@@ -162,9 +162,9 @@ It also writes a separate legacy findings backlog artifact so older issues can b
 
 Governance autoflow writes auditable ledger artifacts on every run:
 
-- `local_reviews/latest/governance_execution_ledger_latest.json`
-- `local_reviews/latest/governance_execution_ledger_latest.md`
-- `local_reviews/history/governance_execution_ledger.jsonl`
+- `independent_reviews/latest/governance_execution_ledger_latest.json`
+- `independent_reviews/latest/governance_execution_ledger_latest.md`
+- `independent_reviews/history/governance_execution_ledger.jsonl`
 
 Each entry includes context, branch, profile, enforcement mode, declared agent chain, declared skill chain, command(s), and outcome.
 

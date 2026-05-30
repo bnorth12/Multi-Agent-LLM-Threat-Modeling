@@ -11,8 +11,8 @@ from typing import Any, Dict, List
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUT_DIR = REPO_ROOT / "local_reviews" / "latest"
-DEFAULT_SNAPSHOT_INDEX = REPO_ROOT / "local_reviews" / "history" / "snapshot_index.json"
+DEFAULT_OUT_DIR = REPO_ROOT / "independent_reviews" / "latest"
+DEFAULT_SNAPSHOT_INDEX = REPO_ROOT / "independent_reviews" / "history" / "snapshot_index.json"
 
 
 def load_json(path: Path) -> Any:
@@ -113,7 +113,7 @@ def build_plan(sprint: str, snapshot_index: List[Dict[str, Any]]) -> Dict[str, A
 
 def write_report(out_dir: Path, result: Dict[str, Any]) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
-    history_dir = REPO_ROOT / "local_reviews" / "history"
+    history_dir = REPO_ROOT / "independent_reviews" / "history"
     history_dir.mkdir(parents=True, exist_ok=True)
 
     json_path = out_dir / "multi_sprint_portfolio_plan_latest.json"

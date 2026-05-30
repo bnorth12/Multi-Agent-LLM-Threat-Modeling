@@ -8,7 +8,7 @@ description: "Analyze KPI trends over time to detect drift, regressions, and rem
 Translate trend history into governance insights and operator actions.
 
 ## Inputs
-- local_reviews/history/snapshot_index.json
+- independent_reviews/history/snapshot_index.json
 - backfill and latest KPI scoreboard artifacts
 
 ## Procedure

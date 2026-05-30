@@ -8,7 +8,7 @@ description: "Audit artifact provenance, lineage continuity, and retention hygie
 Maintain trustworthy artifact lineage from source evidence to generated outputs.
 
 ## Inputs
-- local_reviews/
+- independent_reviews/
 - exports_for_manual/
 - release evidence and archive artifacts
 
