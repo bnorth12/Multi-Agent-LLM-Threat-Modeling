@@ -280,15 +280,126 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
 - This entry is administrative/operational evidence (repo maintenance and sprint support), not application behavior change.
 - Kept in Sprint 2026-12 execution log to preserve traceability continuity for environment-control actions used during verification and triage.
 
+## 2026-05-29 (Update 11 - Late-Scope Dual-Slice Remediation Replan)
+
+### Two-Sprint Replan Summary
+
+- Replanned the active Sprint 2026-12 remediation work to carry two distinct slices in parallel:
+  - S12-013 / GitHub #67: Gate 0 input integrity preflight review
+  - S12-033 / audit-derived C01-ORCH-001: LangGraph orchestrator architecture/design traceability backfill
+- Preserved issue-level separation so the Gate 0 execution path remains distinct from the audit-derived architecture/design backfill.
+- Updated sprint planning artifacts so both slices have explicit evidence targets and disposition artifacts.
+
+### Traceability Alignment
+
+- The Gate 0 slice remains the primary active remediation item for issue #67.
+- The C01-ORCH-001 slice is active because the latest local independent audit identified missing architecture/design traceability even though implementation and verification artifacts exist.
+- Both slices now appear in the sprint planning notes, execution log, and traceability artifacts as active work rather than hidden carry-over.
+
+### Evidence Anchors
+
+- Primary remediation plan: `planning/Sprint_Remediation_Issue_67.md`
+- Secondary remediation plan: `planning/Sprint_Remediation_C01_ORCH_001.md`
+- Issue #67 disposition package: `planning/issues/issue_2026_12_S12_013_Gate_0_Design_Disposition.md`
+- C01-ORCH-001 disposition package: `planning/issues/issue_2026_12_S12_033_LangGraph_Orchestrator_Architecture_Disposition.md`
+
+### Active Work Note
+
+- This entry marks the sprint as actively reconciled for late-scope remediation work, not closed-out baseline delivery.
+- Follow-up verification should continue to reference both slice keys until the issue-level evidence set is complete.
+
 ## 2026-05-21 (Update 10 - Completed Run Artifact Persistence Defect)
 
-### Problem Observed
+### Update 11 Problem Observed
 
 - Completed runs remained visible in `GET /runs` and the React run list.
 - Artifact endpoints for those runs returned `404 Unknown or incomplete run_id` after backend restart.
 - Impact: operators could select a completed run but could not open Canonical Graph, Mermaid, STIX, or Report artifact screens.
 
-### Root Cause
+### Update 11 Root Cause
+
+## 2026-05-30 (Update 12 - Issue #67 Plus One Additional Remediation Sprint Replan)
+
+### Replan Summary
+
+- Replanned Issue #67 remediation into a two-sprint window:
+  - Sprint 2026-12 (active slice closure)
+  - Sprint 2027-01 (additional remediation sprint for full governance utilization and final chain certification)
+- Preserved dual active slices:
+  - S12-013 / Issue #67 Gate 0 input integrity
+  - S12-033 / C01-ORCH-001 architecture/design backfill
+- Added explicit full-context governance utilization objective so all configured agents and skills are included in planning and execution evidence.
+
+### Governance Utilization Objective
+
+- All governance contexts in `config/governance_autoflow_routing.json` must execute at least once across the two-sprint remediation window.
+- Execution evidence must include stage-level direct/declared-only status in `local_reviews/latest/governance_execution_ledger_latest.md`.
+- Closeout readiness now requires both chain-leg closure and context utilization coverage.
+
+### Replan Artifacts
+
+- `planning/Sprint_Remediation_Issue_67.md`
+- `planning/Sprint_2027_01_Remediation_Issue_67_Extension.md`
+- `planning/Sprint_2026_12_Traceability_Matrix.md`
+- `planning/issues/Sprint_2026_12_Issue_Tracker.md`
+
+## 2026-05-30 (Update 13 - Full Context Execution and Utilization Tracking)
+
+### Execution Summary
+
+- Executed governance autoflow across all configured contexts for the Issue #67 replan workflow.
+- Captured stage-level results for both agent and skill chains in governance execution ledger history.
+- Generated a dedicated sprint workflow utilization report from the latest execution set.
+
+### Context Outcomes
+
+- planning: success
+- blocker-planning: success
+- design-authoring: warning
+- pre-commit: success
+- pre-merge-commit: warning
+- pre-push: warning
+- closeout: warning
+- portfolio: success
+
+### Utilization Evidence
+
+- Distinct agents exercised/declared: 19
+- Distinct skills exercised/declared: 18
+- All configured contexts in `config/governance_autoflow_routing.json` were executed in this run window.
+
+### Evidence Artifacts
+
+- `local_reviews/latest/governance_execution_ledger_latest.md`
+- `local_reviews/history/governance_execution_ledger.jsonl`
+- `local_reviews/latest/sprint_workflow_execution_report_latest.md`
+
+## 2026-05-30 (Update 14 - Dual Remediation Engineering Closure)
+
+### Step-by-Step Closure Actions
+
+- Created missing GitHub issue for second remediation slice:
+  - S12-033 -> GitHub issue `#96`
+- Updated S12-033 remediation plan with explicit function and evidence targets.
+- Updated S12-033 issue-scoped disposition artifact with explicit chain references.
+- Updated tracker and traceability artifacts to replace audit-derived placeholder with issue linkage.
+- Updated disposition parser to treat `ORCH-*` IDs as function-level references.
+
+### Verification Execution
+
+- `.venv\\Scripts\\python.exe -m pytest Tests\\unit\\test_framework_orchestrator_langgraph.py -q` -> `9 passed`
+- `.venv\\Scripts\\python.exe -m pytest Tests\\integration\\test_agent_pipeline_completeness.py -q` -> `35 passed`
+- `.venv\\Scripts\\python.exe scripts\\run_architecture_design_disposition.py --sprint 2026_12 --out-dir local_reviews/latest`
+
+### Disposition Outcome
+
+- `S12-013` (Issue `#67`) -> missing legs: none
+- `S12-033` (Issue `#96`) -> missing legs: none
+
+### Closure Status
+
+- Both active remediation slices are solved and verified at local branch level.
+- Merge/PR closeout remains as final governance integration step.
 
 - `backend/run_manager.py` restored metadata-only run entries from
   `~/.multi_agent_threat_modeler_runs.json`.
@@ -296,7 +407,7 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
   (`result_state`/`live_state`) and returned `None` for restored metadata-only entries.
 - Result: run list and artifact retrieval paths diverged after process restart.
 
-### Remediation Implemented
+### Update 11 Remediation Implemented
 
 - Added persisted restorable state projection into run checkpoint records in
   `src/threat_modeler/backend/run_manager.py` (`persisted_state`).
@@ -304,12 +415,12 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
 - Updated `src/threat_modeler/server/api.py::_resolve_run_state()` to rehydrate
   `FrameworkState` from `persisted_state` when in-memory state is absent.
 
-### Verification
+### Update 11 Verification
 
 - `PYTHONPATH=src .venv\Scripts\python.exe -m pytest Tests/test_hmi_backend_api.py -q` -> `18 passed`.
 - Backend stability probes confirmed listener + health endpoint continuity during screen navigation.
 
-### Governance Linkage
+### Update 11 Governance Linkage
 
 - Requirement added: RHMI-016 in `Requirements/11_React_HMI_Refactor_Requirements.md`.
 - Traceability added in `Requirements/12_React_HMI_Traceability_To_Tests.md`.
