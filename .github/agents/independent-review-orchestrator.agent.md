@@ -17,6 +17,8 @@ Primary responsibilities:
  - verification coverage planning and missing-evidence prioritization
  - artifact lineage and retention hygiene validation
  - KPI drift analysis for trend-based governance insights
+ - hierarchy taxonomy stewardship for L0/L1/L2 decomposition consistency
+ - hierarchy conformance auditing for required field coverage and fan-out metrics
 3. Require report generation to local ignored output paths under independent_reviews/.
 4. Keep reviews local-first and independent of GitHub Actions checks.
 5. Require hierarchy-field validation for sprint remediation slices: parent capability, child function, decomposition level, allocated component/module, and verification method.

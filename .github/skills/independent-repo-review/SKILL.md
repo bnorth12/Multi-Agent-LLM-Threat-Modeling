@@ -68,7 +68,11 @@ python scripts/independent_repo_review.py \
 
 9. Enforce hierarchical decomposition checks in sprint artifacts so each requirement can be traced L0 -> L1 -> L2 with explicit parent-child relationships and code-level allocation.
 
-10. Optional local GitHub reconciliation:
+10. Run hierarchy governance sub-workflows:
+- hierarchy-taxonomy-steward for decomposition taxonomy normalization and drift control
+- hierarchy-conformance-auditor for enforceable hierarchy conformance findings and metrics
+
+11. Optional local GitHub reconciliation:
 ```bash
 python scripts/independent_repo_review.py \
 	--sprint <SPRINT> \
@@ -80,7 +84,7 @@ python scripts/independent_repo_review.py \
 	--github-repo <OWNER/REPO>
 ```
 
-11. Optional archival snapshot mode:
+12. Optional archival snapshot mode:
 ```bash
 python scripts/independent_repo_review.py --sprint <SPRINT> --run-context manual --report-mode archive
 ```

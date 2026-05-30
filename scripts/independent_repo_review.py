@@ -126,6 +126,21 @@ class ConceptualAsBuiltGapSummary:
 
 
 @dataclass
+class HierarchyGovernanceSummary:
+    sprint_issue_files_total: int = 0
+    sprint_issue_files_with_complete_hierarchy: int = 0
+    hierarchy_coverage_ratio: float = 0.0
+    unique_parent_capability_ids: int = 0
+    unique_parent_function_ids: int = 0
+    unique_child_function_ids: int = 0
+    decomposition_level_counts: Dict[str, int] = field(default_factory=dict)
+    phase_counts: Dict[str, int] = field(default_factory=dict)
+    parent_capability_fanout: Dict[str, int] = field(default_factory=dict)
+    parent_function_fanout: Dict[str, int] = field(default_factory=dict)
+    missing_field_rows: List[str] = field(default_factory=list)
+
+
+@dataclass
 class TrendSnapshot:
     timestamp: str
     sprint: str
@@ -242,6 +257,7 @@ class ReviewResult:
     full_remediation_complete: bool
     branch_awareness: BranchAwareness
     conceptual_as_built_gaps: ConceptualAsBuiltGapSummary
+    hierarchy_governance: HierarchyGovernanceSummary
     policy_profile: PolicyProfileConfig
     severity_policy: SeverityPolicy
     severity_summary: SeveritySummary
@@ -888,6 +904,90 @@ def is_full_remediation_complete(root: Path) -> bool:
     return True
 
 
+def evaluate_hierarchy_governance(root: Path, sprint_dash: str, sprint_us: str) -> HierarchyGovernanceSummary:
+    issues_dir = root / "planning" / "issues"
+    if not issues_dir.exists():
+        return HierarchyGovernanceSummary()
+
+    required_fields = {
+        "Parent Capability ID": re.compile(r"(?im)^\s*Parent Capability ID\s*:\s*(.+)$"),
+        "Parent Function ID": re.compile(r"(?im)^\s*Parent Function ID\s*:\s*(.+)$"),
+        "Child Function ID": re.compile(r"(?im)^\s*Child Function ID\s*:\s*(.+)$"),
+        "Decomposition Level": re.compile(r"(?im)^\s*Decomposition Level\s*:\s*(.+)$"),
+        "Allocated Component/Module": re.compile(r"(?im)^\s*Allocated Component/Module\s*:\s*(.+)$"),
+        "Verification Method": re.compile(r"(?im)^\s*Verification Method\s*:\s*(.+)$"),
+    }
+    phase_pattern = re.compile(r"(?im)^\s*Remediation Phase\s*:\s*(.+)$")
+    issue_heading_pattern = re.compile(r"(?im)^#\s*([^\n]+)$")
+
+    issue_files: Set[Path] = set(issues_dir.glob(f"issue_{sprint_us}_*.md"))
+    issue_files.update(issues_dir.glob(f"issue_{sprint_dash}_*.md"))
+    ordered_files = sorted(issue_files)
+
+    parent_caps: Set[str] = set()
+    parent_fns: Set[str] = set()
+    child_fns: Set[str] = set()
+    level_counts: Counter[str] = Counter()
+    phase_counts: Counter[str] = Counter()
+    cap_to_children: Dict[str, Set[str]] = {}
+    fn_to_children: Dict[str, Set[str]] = {}
+    missing_rows: List[str] = []
+    complete = 0
+
+    for issue_file in ordered_files:
+        text = read_text(issue_file)
+        heading_match = issue_heading_pattern.search(text)
+        issue_label = heading_match.group(1).strip() if heading_match else issue_file.stem
+
+        captured: Dict[str, str] = {}
+        missing: List[str] = []
+        for field_name, pattern in required_fields.items():
+            match = pattern.search(text)
+            if not match or not match.group(1).strip():
+                missing.append(field_name)
+            else:
+                captured[field_name] = match.group(1).strip()
+
+        phase_match = phase_pattern.search(text)
+        if phase_match and phase_match.group(1).strip():
+            phase_counts[phase_match.group(1).strip()] += 1
+
+        if missing:
+            missing_rows.append(f"{issue_label} -> missing [{', '.join(missing)}] ({issue_file.as_posix()})")
+            continue
+
+        complete += 1
+        parent_cap = captured["Parent Capability ID"]
+        parent_fn = captured["Parent Function ID"]
+        child_fn = captured["Child Function ID"]
+        level = captured["Decomposition Level"]
+
+        parent_caps.add(parent_cap)
+        parent_fns.add(parent_fn)
+        child_fns.add(child_fn)
+        level_counts[level] += 1
+
+        cap_to_children.setdefault(parent_cap, set()).add(child_fn)
+        fn_to_children.setdefault(parent_fn, set()).add(child_fn)
+
+    total = len(ordered_files)
+    coverage = (complete / total) if total else 0.0
+
+    return HierarchyGovernanceSummary(
+        sprint_issue_files_total=total,
+        sprint_issue_files_with_complete_hierarchy=complete,
+        hierarchy_coverage_ratio=round(coverage, 4),
+        unique_parent_capability_ids=len(parent_caps),
+        unique_parent_function_ids=len(parent_fns),
+        unique_child_function_ids=len(child_fns),
+        decomposition_level_counts=dict(sorted(level_counts.items())),
+        phase_counts=dict(sorted(phase_counts.items())),
+        parent_capability_fanout={k: len(v) for k, v in sorted(cap_to_children.items())},
+        parent_function_fanout={k: len(v) for k, v in sorted(fn_to_children.items())},
+        missing_field_rows=sorted(missing_rows),
+    )
+
+
 def evaluate_severity(
     policy: SeverityPolicy,
     structure_missing: List[str],
@@ -901,6 +1001,7 @@ def evaluate_severity(
     full_remediation_complete: bool,
     branch: BranchAwareness,
     conceptual_gaps: ConceptualAsBuiltGapSummary,
+    hierarchy: HierarchyGovernanceSummary,
 ) -> SeveritySummary:
     summary = SeveritySummary()
 
@@ -934,6 +1035,20 @@ def evaluate_severity(
         summary.major.append(
             f"Issue governance quality ratio {issue_quality_ratio:.2f} is below threshold {policy.issue_quality_threshold:.2f}."
         )
+
+    if hierarchy.sprint_issue_files_total > 0 and hierarchy.missing_field_rows:
+        severity_bucket = summary.major if hierarchy.hierarchy_coverage_ratio < 0.95 else summary.minor
+        severity_bucket.append(
+            "Hierarchy governance fields are incomplete in sprint issue artifacts: "
+            f"{len(hierarchy.missing_field_rows)}/{hierarchy.sprint_issue_files_total} issue file(s) missing required fields."
+        )
+
+    if hierarchy.sprint_issue_files_total > 0 and hierarchy.parent_capability_fanout:
+        if max(hierarchy.parent_capability_fanout.values()) <= 1 and hierarchy.sprint_issue_files_total >= 10:
+            summary.informational.append(
+                "Hierarchy taxonomy signal: no parent capability currently fans out to multiple child functions; "
+                "consider planned abstraction consolidation in a follow-on remediation phase."
+            )
 
     if len(planned_missing_reqs) > policy.max_planned_missing_requirement:
         summary.minor.append(
@@ -1605,6 +1720,61 @@ def render_markdown(result: ReviewResult) -> str:
         lines.append("- None")
     lines.append("")
 
+    lines.append("## 3.5) Hierarchy Governance Coverage")
+    lines.append(f"- Sprint issue files analyzed: {result.hierarchy_governance.sprint_issue_files_total}")
+    lines.append(
+        "- Issue files with complete hierarchy fields: "
+        f"{result.hierarchy_governance.sprint_issue_files_with_complete_hierarchy}"
+    )
+    lines.append(
+        "- Hierarchy coverage ratio: "
+        f"{result.hierarchy_governance.hierarchy_coverage_ratio * 100:.1f}%"
+    )
+    lines.append(
+        "- Unique parent capability IDs: "
+        f"{result.hierarchy_governance.unique_parent_capability_ids}"
+    )
+    lines.append(
+        "- Unique parent function IDs: "
+        f"{result.hierarchy_governance.unique_parent_function_ids}"
+    )
+    lines.append(
+        "- Unique child function IDs: "
+        f"{result.hierarchy_governance.unique_child_function_ids}"
+    )
+    lines.append("")
+
+    lines.append("### Decomposition Level Counts")
+    if result.hierarchy_governance.decomposition_level_counts:
+        for level, count in result.hierarchy_governance.decomposition_level_counts.items():
+            lines.append(f"- {level}: {count}")
+    else:
+        lines.append("- None")
+    lines.append("")
+
+    lines.append("### Phase Counts")
+    if result.hierarchy_governance.phase_counts:
+        for phase, count in result.hierarchy_governance.phase_counts.items():
+            lines.append(f"- {phase}: {count}")
+    else:
+        lines.append("- None")
+    lines.append("")
+
+    lines.append("### Parent Capability Fan-Out")
+    if result.hierarchy_governance.parent_capability_fanout:
+        for cap_id, fanout in result.hierarchy_governance.parent_capability_fanout.items():
+            lines.append(f"- {cap_id}: {fanout} child function(s)")
+    else:
+        lines.append("- None")
+    lines.append("")
+
+    lines.append("### Missing Hierarchy Fields")
+    if result.hierarchy_governance.missing_field_rows:
+        lines.extend([f"- {item}" for item in result.hierarchy_governance.missing_field_rows])
+    else:
+        lines.append("- None")
+    lines.append("")
+
     lines.append("## 4) Severity Policy and Findings")
     lines.append("### Active Thresholds")
     lines.append(f"- req_impl_threshold: {result.severity_policy.req_impl_threshold}")
@@ -1835,6 +2005,7 @@ def run_review(
 
     branch = get_branch_awareness(root)
     conceptual_gaps = classify_conceptual_vs_as_built(rows, impl, arch_design)
+    hierarchy_summary = evaluate_hierarchy_governance(root, sprint_dash, sprint_us)
     artifact_status, traceability_artifacts_missing, traceability_artifacts_unreferenced = evaluate_traceability_artifact_status(
         root,
         sprint_dash,
@@ -1855,6 +2026,7 @@ def run_review(
         full_remediation_complete,
         branch,
         conceptual_gaps,
+        hierarchy_summary,
     )
 
     github_summary, github_rows = run_github_reconciliation(
@@ -1870,6 +2042,7 @@ def run_review(
         "Branch-awareness reports ahead/behind and merge-base risk against origin/main.",
         "Trend history is stored locally under independent_reviews/history/ and is ignored by git.",
         "Traceability checks use full source-to-evidence chain legs (source, architecture/design, implementation, verification).",
+        "Hierarchy governance checks enforce parent capability/function, decomposition level, and allocation/verification fields on sprint issue artifacts.",
         "Required traceability artifacts are validated for existence and planning/remediation references.",
         "Traceability artifact findings remain non-blocking until full remediation is marked complete in the latest disposition index.",
     ]
@@ -1901,6 +2074,7 @@ def run_review(
         full_remediation_complete=full_remediation_complete,
         branch_awareness=branch,
         conceptual_as_built_gaps=conceptual_gaps,
+        hierarchy_governance=hierarchy_summary,
         policy_profile=profile_meta,
         severity_policy=policy,
         severity_summary=severity,
