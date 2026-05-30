@@ -22,6 +22,12 @@ GitHub issue: #96
 - Keep the requirement reference anchored to the existing traceability matrix entry for C01-ORCH-001.
 - Preserve the requirement wording in the issue-scoped disposition artifact so the audit trail remains requirement-led.
 
+## Required Traceability Artifacts (Governance Baseline)
+
+- docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md
+- docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md
+- Requirements/15_End_To_End_Traceability_Attributes_Registry.md
+
 ## Implementation / Verification Evidence
 
 - Tests/unit/test_framework_orchestrator_langgraph.py

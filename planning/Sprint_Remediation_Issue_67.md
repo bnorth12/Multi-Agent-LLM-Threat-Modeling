@@ -63,6 +63,12 @@ Issue #67 remediation is extended with one additional sprint:
 - Sprint closeout is blocked for any slice with unresolved missing legs unless formally deferred by policy.
 - Automation outputs must persist chain status, missing legs, and remediation actions for each slice.
 
+### Required Traceability Artifacts (Governance Baseline)
+
+- docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md
+- docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md
+- Requirements/15_End_To_End_Traceability_Attributes_Registry.md
+
 ## Scope by Evidence Layer
 
 ### Capabilities / Functions
