@@ -42,6 +42,23 @@ Planning and closeout operator commands:
 - `./scripts/run_governance_planning.sh <SPRINT>`
 - `./scripts/run_governance_closeout.sh <SPRINT>`
 
+## Testing The Agent Skill Structure
+
+When changes touch `.github/agents/`, `.github/skills/`, governance routing, or the runner scripts that execute governance stages, validate the structure in three layers:
+
+1. Syntax and import sanity
+	- Run `python -m py_compile scripts/governance_autoflow.py scripts/run_remediation_readiness.py scripts/run_kpi_drift_analysis.py scripts/run_sprint_closeout_certification.py scripts/run_multi_sprint_portfolio_planning.py`.
+
+1. Routed execution behavior
+	- Run the relevant governance autoflow context for the change, such as `python scripts/governance_autoflow.py --context pre-commit --sprint <SPRINT>` or `--context closeout` / `--context portfolio` when those routes are affected.
+	- Confirm the expected commands write artifacts into `local_reviews/latest/`.
+
+1. Documentation and evidence checks
+	- Update `docs/process/Governance_Autoflow_Orchestration.md` whenever routing or stage behavior changes.
+	- Update `README.md` when the governance agent/skill structure or repository layout changes.
+	- Update this file when contribution steps or validation expectations change.
+	- Run `npx --yes markdownlint-cli **/*.md` on touched markdown files.
+
 ## Branch Naming
 
 Recommended format:

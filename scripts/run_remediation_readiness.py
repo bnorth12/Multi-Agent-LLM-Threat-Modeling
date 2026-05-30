@@ -88,6 +88,58 @@ def pick_examples(items: List[str], limit: int = 3) -> List[str]:
     return items[:limit]
 
 
+def section_title_to_bucket(title: str) -> str:
+    cleaned = title.replace("### Requirements Missing ", "")
+    cleaned = cleaned.replace("## ", "").strip()
+    return cleaned or "legacy-findings"
+
+
+def build_legacy_backlog(sections: Dict[str, List[str]]) -> List[Dict[str, Any]]:
+    backlog: List[Dict[str, Any]] = []
+    for heading, items in sections.items():
+        if not items:
+            continue
+        backlog.append(
+            {
+                "bucket": section_title_to_bucket(heading),
+                "count": len(items),
+                "items": items,
+                "representative_items": pick_examples(items, limit=5),
+            }
+        )
+    return backlog
+
+
+def backlog_issue_key(index: int, bucket: str) -> str:
+    slug = re.sub(r"[^A-Za-z0-9]+", "-", bucket).strip("-").upper()
+    return f"LB-{index:03d}-{slug[:24]}" if slug else f"LB-{index:03d}"
+
+
+def build_issue_drafts(legacy_backlog: List[Dict[str, Any]], sprint: str) -> List[Dict[str, Any]]:
+    issue_drafts: List[Dict[str, Any]] = []
+    for index, bucket in enumerate(legacy_backlog, start=1):
+        issue_drafts.append(
+            {
+                "issue_key": backlog_issue_key(index, bucket["bucket"]),
+                "sprint": sprint,
+                "title": f"[{sprint}] {bucket['bucket']} remediation carry-forward",
+                "priority": "P0" if bucket["bucket"].lower().startswith(("implementation", "verification")) else "P1",
+                "source_bucket": bucket["bucket"],
+                "count": bucket["count"],
+                "representative_items": bucket.get("representative_items", []),
+                "starter_actions": [
+                    "Create or link the sprint issue using this backlog bucket as the issue body.",
+                    "Assign an owner, acceptance criteria, and evidence target before sprint commitment.",
+                ],
+                "acceptance_criteria": [
+                    "The selected backlog item is opened as a sprint issue with a unique issue key.",
+                    "The issue is linked to the sprint tracker and marked with the sprint label.",
+                ],
+            }
+        )
+    return issue_drafts
+
+
 def summarize_review(review_md: Path, review_json: Optional[Path], sprint: str) -> Dict[str, Any]:
     markdown_text = load_text(review_md)
     json_data = load_json(review_json)
@@ -135,6 +187,8 @@ def summarize_review(review_md: Path, review_json: Optional[Path], sprint: str) 
     implementation_section = next((items for heading, items in sections.items() if "implementation evidence" in heading.lower()), [])
     verification_section = next((items for heading, items in sections.items() if "verification evidence" in heading.lower()), [])
     architecture_section = next((items for heading, items in sections.items() if "architecture/design" in heading.lower()), [])
+    legacy_backlog = build_legacy_backlog(sections)
+    issue_drafts = build_issue_drafts(legacy_backlog, sprint)
 
     implementation_count = parse_int(r"Close implementation evidence gaps \(P0\) focuses on ([0-9]+) requirement id", markdown_text)
     verification_count = parse_int(r"Close verification evidence gaps \(P0\) focuses on ([0-9]+) requirement id", markdown_text)
@@ -234,8 +288,111 @@ def summarize_review(review_md: Path, review_json: Optional[Path], sprint: str) 
             "This runner reads the latest independent review artifact directly and does not re-run traceability closure.",
             "Concept-only or governance-only items should remain out of remediation intake until they have a concrete delivery path.",
         ],
+        "legacy_backlog": legacy_backlog,
+        "issue_drafts": issue_drafts,
     }
     return result
+
+
+def write_legacy_backlog_report(out_dir: Path, result: Dict[str, Any]) -> None:
+    json_path = out_dir / "legacy_findings_latest.json"
+    md_path = out_dir / "legacy_findings_latest.md"
+    history_path = REPO_ROOT / "local_reviews" / "history" / "legacy_findings.jsonl"
+
+    json_path.write_text(json.dumps({
+        "generated_at": result["generated_at"],
+        "sprint": result["sprint"],
+        "review_artifact": result["review_artifact"],
+        "verdict": result["verdict"],
+        "readiness": result["readiness"],
+        "overall_health": result.get("overall_health"),
+        "remediation_floor": result.get("remediation_floor"),
+        "legacy_backlog": result.get("legacy_backlog", []),
+        "starter_actions": result.get("starter_actions", []),
+        "acceptance_criteria": result.get("acceptance_criteria", []),
+    }, indent=2), encoding="utf-8")
+
+    md_lines = [
+        "# Legacy Findings Backlog",
+        "",
+        f"- Generated: {result['generated_at']}",
+        f"- Sprint: {result['sprint']}",
+        f"- Review Artifact: {result['review_artifact']}",
+        f"- Health Score: {result.get('overall_health'):.1f}%" if result.get("overall_health") is not None else "- Health Score: n/a",
+        f"- Remediation Floor: {result.get('remediation_floor'):.1f}%" if result.get("remediation_floor") is not None else "- Remediation Floor: n/a",
+        f"- Advisory Status: {result['readiness']}",
+        "",
+        "## Carry-Forward Buckets",
+    ]
+    for bucket in result.get("legacy_backlog", []):
+        md_lines.append(f"- {bucket['bucket']} | count={bucket['count']}")
+        if bucket.get("representative_items"):
+            md_lines.append("  representative items:")
+            md_lines.extend([f"  - {item}" for item in bucket["representative_items"]])
+    md_lines.extend(["", "## Starter Actions"])
+    md_lines.extend([f"- {item}" for item in result.get("starter_actions", [])])
+    md_lines.extend(["", "## Acceptance Criteria"])
+    md_lines.extend([f"- {item}" for item in result.get("acceptance_criteria", [])])
+    md_path.write_text("\n".join(md_lines), encoding="utf-8")
+
+    with history_path.open("a", encoding="utf-8") as history_file:
+        history_file.write(json.dumps({
+            "generated_at": result["generated_at"],
+            "sprint": result["sprint"],
+            "review_artifact": result["review_artifact"],
+            "legacy_backlog": result.get("legacy_backlog", []),
+        }))
+        history_file.write("\n")
+
+
+def write_issue_draft_report(out_dir: Path, result: Dict[str, Any]) -> None:
+    json_path = out_dir / "remediation_issue_drafts_latest.json"
+    md_path = out_dir / "remediation_issue_drafts_latest.md"
+    history_path = REPO_ROOT / "local_reviews" / "history" / "remediation_issue_drafts.jsonl"
+
+    issue_drafts = result.get("issue_drafts", [])
+    json_path.write_text(json.dumps({
+        "generated_at": result["generated_at"],
+        "sprint": result["sprint"],
+        "review_artifact": result["review_artifact"],
+        "issue_drafts": issue_drafts,
+    }, indent=2), encoding="utf-8")
+
+    md_lines = [
+        "# Remediation Sprint Issue Drafts",
+        "",
+        f"- Generated: {result['generated_at']}",
+        f"- Sprint: {result['sprint']}",
+        f"- Review Artifact: {result['review_artifact']}",
+        "",
+        "## Selectable Draft Issues",
+    ]
+    for draft in issue_drafts:
+        md_lines.append(f"- [ ] {draft['issue_key']} | {draft['title']} | priority={draft['priority']} | count={draft['count']}")
+        if draft.get("representative_items"):
+            md_lines.append("  representative items:")
+            md_lines.extend([f"  - {item}" for item in draft["representative_items"]])
+        if draft.get("starter_actions"):
+            md_lines.append("  starter actions:")
+            md_lines.extend([f"  - {item}" for item in draft["starter_actions"]])
+        if draft.get("acceptance_criteria"):
+            md_lines.append("  acceptance criteria:")
+            md_lines.extend([f"  - {item}" for item in draft["acceptance_criteria"]])
+    md_lines.extend([
+        "",
+        "## Planning Rule",
+        "- Check the rows you want to turn into sprint issues, then copy the selected keys into the sprint issue tracker or issue creation flow.",
+    ])
+    md_path.write_text("\n".join(md_lines), encoding="utf-8")
+
+    with history_path.open("a", encoding="utf-8") as history_file:
+        history_file.write(json.dumps({
+            "generated_at": result["generated_at"],
+            "sprint": result["sprint"],
+            "review_artifact": result["review_artifact"],
+            "issue_drafts": issue_drafts,
+        }))
+        history_file.write("\n")
 
 
 def write_report(out_dir: Path, result: Dict[str, Any]) -> None:
@@ -313,12 +470,16 @@ def main() -> int:
 
     result = summarize_review(review_md, review_json, args.sprint.replace("-", "_"))
     write_report(Path(args.out_dir), result)
+    write_legacy_backlog_report(Path(args.out_dir), result)
+    write_issue_draft_report(Path(args.out_dir), result)
 
     print("Remediation readiness analysis complete")
     print(f"- sprint: {result['sprint']}")
     print(f"- verdict: {result['verdict']}")
     print(f"- health score: {result['overall_health']:.1f}%" if result.get("overall_health") is not None else "- health score: n/a")
     print(f"- remediation floor: {result['remediation_floor']:.1f}%" if result.get("remediation_floor") is not None else "- remediation floor: n/a")
+    print("- legacy findings backlog: written")
+    print("- remediation issue drafts: written")
     return 0
 
 

@@ -244,6 +244,33 @@ Runtime and test dependencies are version-pinned and actively maintained.
 - Test/developer manifest: Tests/requirements_e2e.txt
 - Governance strategy and boundary rules: Python_Dependency_Strategy.md
 
+## Governance Agent and Skill Structure
+
+The repository now treats governance behavior as a first-class agent/skill system.
+
+Important distinction:
+
+- Repo governance automation is the local review, planning, closeout, and portfolio control layer that runs this repository's checks.
+- The Multi Agent Threat Modeler is the product runtime that analyzes source artifacts and produces the canonical threat-model outputs.
+- Both are multi-agent systems, but they serve different purposes and have different evidence outputs.
+
+- Canonical routing and execution rules live in `docs/process/Governance_Autoflow_Orchestration.md` and `config/governance_autoflow_routing.json`.
+- Agent definitions live under `.github/agents/`.
+- Skill definitions live under `.github/skills/`.
+- Generated governance evidence is written to `local_reviews/latest/` and historical append-only records are written to `local_reviews/history/`.
+
+Validation for this structure is expected to cover both direct runner behavior and routed governance behavior.
+
+| Family | Purpose | Example agents / skills | Test command | Evidence artifact |
+|---|---|---|---|---|
+| Repo governance automation | Validate repository health, route phases, and produce remediation guidance | `independent-review-orchestrator`, `repo-governance-autoflow-orchestrator`, `remediation-readiness`, `multi-sprint-portfolio-planner`, `kpi-drift-analyst` | `python scripts/governance_autoflow.py --context <context> --sprint <SPRINT>` plus direct runner checks such as `python scripts/run_remediation_readiness.py --sprint <SPRINT>` | `local_reviews/latest/governance_execution_ledger_latest.md`, `local_reviews/latest/remediation_readiness_latest.md`, `local_reviews/latest/legacy_findings_latest.md`, `local_reviews/latest/remediation_issue_drafts_latest.md` |
+| Multi Agent Threat Modeler runtime | Analyze input artifacts and produce threat-model outputs | `A1` through `A9` pipeline stages in the runtime architecture | `pytest Tests/` and the relevant runtime/e2e command for the feature under test | `Releases/v1.0.0/`, `exports_for_manual/`, `planning/Test_Execution_Summary_*.md`, `local runtime outputs` |
+
+- Direct checks: run the relevant Python runner scripts for the governance stage being changed.
+- Routed checks: run `python scripts/governance_autoflow.py --context <context> --sprint <SPRINT>` for the affected phase.
+- Documentation checks: run `npx --yes markdownlint-cli **/*.md` for files touched by the change.
+- Syntax checks: run `python -m py_compile` against touched governance scripts.
+
 ## Repository Layout
 
 - docs: source architecture, schemas, prompts, and process references
@@ -252,6 +279,8 @@ Runtime and test dependencies are version-pinned and actively maintained.
 - Releases: release notes and release evidence bundles
 - Tests: automated and scenario-based tests
 - src: Python source code workspace for runtime, agents, and interfaces
+- .github/agents: committed agent definitions for governance workflows
+- .github/skills: committed skill definitions for governance workflows
 
 ## Current Status
 

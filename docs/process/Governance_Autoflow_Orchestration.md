@@ -104,6 +104,7 @@ The dispatcher currently resolves several stages to concrete local commands and 
 - multi-sprint portfolio planning -> `scripts/run_multi_sprint_portfolio_planning.py`
 
 Remediation readiness is advisory only: it records the current health score, remediation floor, theme-based intake guidance, and suggested next actions, but it does not itself block merge or closeout.
+It also writes a separate legacy findings backlog artifact so older issues can be carried forward into remediation sprints without reintroducing them as hard gates.
 
 ## Execution Ledger
 
