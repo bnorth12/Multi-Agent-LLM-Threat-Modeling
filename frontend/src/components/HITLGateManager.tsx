@@ -98,7 +98,30 @@ function gateNeedsReviewData(
     return false
   }
   const isPendingPausedProjection = status === 'pending' && !!pausedGateId && gate.gate_id === pausedGateId
+  if (gate.gate_id === 'gate_0_input_integrity') {
+    return (['open', 'draft'].includes(status) || isPendingPausedProjection) && !gateHasInputPreflightData(gate)
+  }
   return (['open', 'draft'].includes(status) || isPendingPausedProjection) && !hasReviewData(gate)
+}
+
+function gateHasInputPreflightData(gate: Gate | null | undefined): boolean {
+  if (!gate?.artifact_snapshot || gate.gate_id !== 'gate_0_input_integrity') {
+    return false
+  }
+
+  const snapshot = gate.artifact_snapshot as Record<string, unknown>
+  const preflight = snapshot.input_preflight as Record<string, unknown> | undefined
+  if (!preflight || typeof preflight !== 'object') {
+    return false
+  }
+
+  const checks = (preflight.checks as Record<string, unknown> | undefined) ?? {}
+  const sourcePresent = Boolean(checks.source_present ?? false)
+  const rawTextLength = Number(preflight.raw_text_length ?? 0)
+  const tableCount = Number(preflight.table_count ?? 0)
+  const rawTextPreview = typeof preflight.raw_text_preview === 'string' && preflight.raw_text_preview.trim().length > 0
+
+  return sourcePresent && (rawTextLength > 0 || tableCount > 0 || rawTextPreview)
 }
 
 interface HITLGateManagerProps {

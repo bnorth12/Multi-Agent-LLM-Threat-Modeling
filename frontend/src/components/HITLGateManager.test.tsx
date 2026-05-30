@@ -296,6 +296,50 @@ describe('HITLGateManager', () => {
     )
   })
 
+  it('shows Gate 0 preflight details when parsed input data is available', async () => {
+    render(
+      <HITLGateManager
+        gates={[
+          buildGate({
+            gate_id: 'gate_0_input_integrity',
+            gate_name: 'Input Integrity Gate',
+            stage_id: 'agent_01',
+            status: 'pending',
+            artifact_snapshot: {
+              input_preflight: {
+                raw_text_length: 48,
+                raw_text_preview: 'System: AV\nOwner: Flight Ops',
+                table_count: 1,
+                table_headers_preview: ['system', 'owner'],
+                checks: {
+                  source_present: true,
+                  has_raw_text: true,
+                  has_tables: true,
+                },
+              },
+            },
+          }),
+        ]}
+        pausedGateId="gate_0_input_integrity"
+      />,
+    )
+
+    const gateTitle = screen.getByText(/Gate 0 .* Input Integrity Gate/)
+    const gateRow = gateTitle.closest('.MuiCardContent-root')
+    expect(gateRow).not.toBeNull()
+    const reviewButton = within(gateRow as HTMLElement).getByRole('button', { name: 'Review' })
+    expect(reviewButton).toBeEnabled()
+
+    fireEvent.click(reviewButton)
+    const dialog = await screen.findByRole('dialog')
+
+    expect(within(dialog).getByText('Raw Text Preview')).toBeInTheDocument()
+    expect(within(dialog).getByText('System: AV')).toBeInTheDocument()
+    expect(within(dialog).getByText('Detected Table Headers')).toBeInTheDocument()
+    expect(within(dialog).getByText('system')).toBeInTheDocument()
+    expect(within(dialog).getByText('owner')).toBeInTheDocument()
+  })
+
   it('shows waiting state and disables review when paused gate has no context data yet', () => {
     render(
       <HITLGateManager
