@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-05-30T15:12:23",
+  "plan_path": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/planning/Sprint_Remediation_Issue_67.md",
+  "requirement_ids": [
+    "GUI-032",
+    "HITL-009",
+    "ORCH-001",
+    "RIC-001",
+    "RIC-005"
+  ],
+  "architecture_targets": [
+    "docs/architecture/HMI_Architecture_Blueprint.md",
+    "docs/design/software/Agent_Subsystem_Design_Specification.md",
+    "docs/design/software/Runtime_And_Orchestration_Design_Specification.md"
+  ],
+  "implementation_targets": [
+    "frontend/src/components/HITLGateManager.tsx",
+    "src/threat_modeler/hitl/service.py",
+    "src/threat_modeler/orchestrator.py"
+  ],
+  "verification_targets": [
+    "Tests/integration/test_avionics_expected_results.py",
+    "Tests/test_hmi_backend_api.py"
+  ],
+  "gaps": []
+}
