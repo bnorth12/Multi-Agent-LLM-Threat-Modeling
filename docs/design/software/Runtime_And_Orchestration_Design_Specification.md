@@ -152,3 +152,12 @@ The following design extensions are now part of the runtime and orchestration ba
 
 6. PRJ-024 / F-PRJ_024-TRACE-L2
 - Visible-browser validation scenarios SHALL be treated as governed verification flows for UI upload behavior and fixture compatibility.
+
+7. RHMI-016 / F-S12-017-RHMI_016-L2
+- Restart-safe completed-run artifact retrieval SHALL preserve run lineage context across restarts and SHALL reject retrieval of stale or mismatched run artifacts.
+
+8. RHMI-017 / F-S12-018-RHMI_017-L2
+- React input file parsing SHALL enforce binary-injection guard controls with deterministic validation failure surfaces before runtime execution.
+
+9. PRJ-001 / F-S12-033-ORCH_001-L2
+- Orchestration baseline controls mapped to PRJ-001 SHALL preserve deterministic run-state governance when architecture disposition updates are applied.

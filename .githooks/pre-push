@@ -78,7 +78,7 @@ fi
 
 echo "[pre-push] Running governance autoflow..."
 INDEPENDENT_REVIEW_SPRINT="${INDEPENDENT_REVIEW_SPRINT:-$DEFAULT_SPRINT}"
-INDEPENDENT_REVIEW_HOOK_FAIL_MODE="${INDEPENDENT_REVIEW_HOOK_FAIL_MODE:-warn}"
+INDEPENDENT_REVIEW_HOOK_FAIL_MODE="${INDEPENDENT_REVIEW_HOOK_FAIL_MODE:-profile}"
 if ! "$PYTHON_BIN" scripts/governance_autoflow.py \
   --context pre-push \
   --sprint "$INDEPENDENT_REVIEW_SPRINT" \
