@@ -7,6 +7,17 @@
 
 # Sprint 2026-12 Planning: Web Interface & API Enablement
 
+## Planning Hierarchy
+
+- Capability is the highest-level planning concept.
+- Requirements are derived from capability-level intent and belong in sprint and multi-sprint planning artifacts.
+- Functions are derived from capabilities and requirements, and they appear in architecture and design artifacts.
+- Implementation realizes functions in code and runtime behavior.
+- Verification proves the implemented functions and their requirement coverage.
+- The relationship is usually many-to-many: one capability can drive multiple requirements and functions, and one requirement or function can support multiple related goals.
+- For the Multi-Agent Threat Modeler application, these concepts are mandatory planning anchors; they may also appear in data flows where the source material or tool maturity makes them part of the modeled behavior.
+- Agents and skills should be treated as active governance and implementation participants in the sprint plan, not just supporting documentation.
+
 ## Key Tasks
 
 ### 1. Expose Backend Endpoints
@@ -26,6 +37,10 @@
 ### 4. Automated Testing
 - Adapt/rewrite Playwright scripts for new frontend and API
 - Add/expand tests for new endpoints and UI flows
+
+## Planning Rule
+
+Keep capability, requirement, function, architecture/design, implementation, and verification in the same sprint plan so the execution slice can be traced from abstract intent through tested behavior, and ensure the relevant agents and skills are named in the execution path when they carry governance or implementation responsibility.
 
 ---
 

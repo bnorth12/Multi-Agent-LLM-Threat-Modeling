@@ -4,6 +4,9 @@
 
 This ICD defines internal, external, and user-facing interfaces for the Multi-Agent Threat Modeler application architecture.
 
+It represents the logical and physical path constraints for data flows between functions, components, and external systems.
+Interface functions are the boundary-crossing behaviors that this ICD constrains, including validation, transformation, protocol handling, and user interaction handoffs.
+
 ## 2. Interface Classification
 
 - `INTF-I`: internal interfaces (service-to-service, stage-to-stage)

@@ -8,6 +8,15 @@ Status: Proposed for immediate execution
 
 Close or stabilize open Sprint 2026-12 issues and stop recurring GitHub Actions failures from blocking confidence and release readiness.
 
+## 1.1 Planning Model
+
+- Capability is the top-level planning abstraction.
+- Requirements are decomposed from capability intent and belong in sprint and multi-sprint plans.
+- Functions are decomposed from capabilities and requirements, and they are documented in architecture and design artifacts.
+- Implementation delivers the functions in code, scripts, and runtime behavior.
+- Verification proves the implemented functions and their requirement coverage.
+- The mapping is many-to-many, not 1:1: a capability may break into multiple requirements and functions, and a single requirement may be supported by multiple functions.
+
 ## 2. Evidence Baseline
 
 Sources reviewed:
@@ -154,6 +163,9 @@ Required artifacts to complete this plan:
 4. Workflow change PR bundle
 - One PR for workflow hardening changes in .github/workflows/ci.yml and .github/workflows/sprint-traceability.yml.
 - One PR for S12 issue tracker and traceability synchronization updates.
+
+5. Planning hierarchy alignment
+- Keep the capability-to-requirement-to-function hierarchy visible in sprint and multi-sprint planning artifacts so architecture, implementation, and verification stay linked to the same intent.
 
 ## 7. Exit Criteria
 

@@ -4,6 +4,9 @@
 
 Provide architecture-level traceability from decomposed functions and interfaces to project, interface, and GUI requirement authorities.
 
+Functional requirements are expected to appear as one or more functions in the decomposition hierarchy. Interfaces and ICDs capture the data flows and boundary paths that connect those functions.
+Interface functions are treated as first-class functions in the matrix because boundary behavior often carries the primary requirement obligation across internal, external, and user-facing interfaces.
+
 ## 2. Functional Requirements Coverage Matrix
 
 This matrix uses requirement identifiers together with requirement names so that readers can understand coverage intent without constantly switching over to the `Requirements/` package.

@@ -6,6 +6,12 @@ This document defines the internal application architecture for the Multi-Agent 
 
 The modeled system under analysis is represented in the canonical graph. This architecture defines the platform that builds, refines, validates, governs, and exports that canonical graph.
 
+The repository should enforce the architectural concepts in this document now, not later: capability, requirement, function, interface function, architecture/design, implementation, and verification all participate in the development lifecycle for the Multi-Agent Threat Modeler application.
+
+These concepts are primarily application-modeling concepts for the Multi-Agent Threat Modeler itself, but they may also surface in the application's data flows when source material, ICD structure, or later tool maturity makes them relevant.
+
+Agents and skills are part of the implementation and governance mechanism for this repo, not a separate side channel. They are expected to help shape development, architecture, requirements, and verification, especially where traceability and boundary behavior are under review.
+
 ## 2. Mission Context
 
 ### 2.1 L0 Mission Function
