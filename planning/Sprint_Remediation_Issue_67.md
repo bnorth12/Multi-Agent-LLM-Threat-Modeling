@@ -1,4 +1,4 @@
-# Sprint 2026-12 Remediation Slice: Issue #67 / S12-013 Gate 0 Input Integrity
+# Sprint Remediation: Issue #67 / S12-013 Gate 0 Input Integrity
 
 Branch: `remediation/issue-67-gate-0-input-integrity`
 
@@ -24,7 +24,7 @@ Restore Gate 0 input-integrity behavior as a fully traced change set that is pla
 
 - GitHub issue: #67
 - Sprint tracker key: S12-013
-- Title: Sprint 2026-12: Enforce Gate 0 input integrity preflight review
+- Title: Sprint Remediation: Issue #67 - Enforce Gate 0 input integrity preflight review
 
 ## Scope by Evidence Layer
 

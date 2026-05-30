@@ -16,11 +16,17 @@ def find_remediation_plan(repo_root: Path, sprint: str, explicit_path: str) -> P
             return candidate
         raise FileNotFoundError(f"Remediation plan not found: {candidate.as_posix()}")
 
-    pattern = f"planning/Sprint_{sprint}_Remediation_*.md"
-    candidates = sorted(repo_root.glob(pattern))
-    if not candidates:
-        raise FileNotFoundError(f"No remediation plan matches: {pattern}")
-    return candidates[0]
+    patterns = [
+        "planning/Sprint_Remediation_Issue_*.md",
+        f"planning/Sprint_{sprint}_Remediation_*.md",
+    ]
+    for pattern in patterns:
+        candidates = sorted(repo_root.glob(pattern))
+        if candidates:
+            return candidates[0]
+
+    joined_patterns = ", ".join(patterns)
+    raise FileNotFoundError(f"No remediation plan matches: {joined_patterns}")
 
 
 def parse_evidence_targets(lines: List[str]) -> List[str]:
