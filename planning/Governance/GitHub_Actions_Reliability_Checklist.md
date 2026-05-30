@@ -1,4 +1,4 @@
-# GitHub Actions Reliability Checklist
+﻿# GitHub Actions Reliability Checklist
 
 Date: 2026-05-26
 Scope: CI and governance workflow reliability hardening
@@ -43,7 +43,7 @@ These are acceptable for defer to next sprint when documented and linked.
 
 | Finding ID | Finding | Severity | Defer Decision | Required Next-Sprint Action |
 |---|---|---|---|---|
-| ACT-2026-05-001 | Add workflow-level concurrency cancel-in-progress for CI and traceability | Minor | Deferred | Implement in Sprint 2026-13 workflow hardening tranche |
+| ACT-2026-05-001 | Add workflow-level concurrency cancel-in-progress for CI and traceability | Minor | Deferred | Implement in Parking Lot 2026-99 workflow hardening tranche |
 | ACT-2026-05-002 | Add path-based short-circuit to skip full fan-out for docs-only deltas | Minor | Deferred | Add conditional execution matrix and document exemptions |
 | ACT-2026-05-003 | Publish failure taxonomy runbook linked from workflow summaries | Minor | Deferred | Add governance runbook and owner routing map |
 | ACT-2026-05-004 | Split live lane into dedicated workflow file (scheduled + manual) | Minor | Deferred | Extract job from CI into dedicated live-lane workflow |
@@ -83,3 +83,4 @@ Checklist complete when:
 - Live-lane failures no longer fail overall CI workflow status.
 - Traceability workflow failures are limited to pull-request governance violations.
 - All deferred findings are logged with owner and next-sprint linkage.
+

@@ -1,4 +1,4 @@
-# Sprint 2026-12 Issue Tracker
+﻿# Sprint 2026-12 Issue Tracker
 
 Date: 2026-05-21
 Status: Open for late-scope governance reconciliation and dual-slice remediation execution
@@ -19,22 +19,22 @@ Minor findings may be deferred only when logged with explicit next-sprint intake
 | S12-016 | #69 | In Review | bnorth12 | 2026-05-28 | Close in Sprint 2026-12 after evidence refresh |
 | S12-017 | #70 | In Review | bnorth12 | 2026-05-28 | Close in Sprint 2026-12 after evidence refresh |
 | S12-018 | #71 | In Review | bnorth12 | 2026-05-29 | Close with evidence refresh |
-| S12-019 | #72 | Proposed | bnorth12 | 2026-06-07 | Defer to Sprint 2026-13 Wave 1 |
-| S12-020 | #73 | Proposed (Post-Run) | bnorth12 | 2026-06-10 | Defer to Sprint 2026-13 Wave 3 |
-| S12-021 | #74 | Proposed (Post-Run) | bnorth12 | 2026-06-10 | Defer to Sprint 2026-13 Wave 2 |
-| S12-022 | #75 | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Sprint 2026-13 Wave 2 |
-| S12-023 | #76 | Proposed (Post-Run) | bnorth12 | 2026-06-07 | Defer to Sprint 2026-13 Wave 1 |
-| S12-024 | #77 | Proposed (Post-Run) | bnorth12 | 2026-06-07 | Defer to Sprint 2026-13 Wave 1 |
-| S12-025 | #78 | Proposed (Post-Run) | bnorth12 | 2026-06-07 | Defer to Sprint 2026-13 Wave 1 |
+| S12-019 | #72 | Proposed | bnorth12 | 2026-06-07 | Defer to Parking Lot 2026-99 Wave 1 |
+| S12-020 | #73 | Proposed (Post-Run) | bnorth12 | 2026-06-10 | Defer to Parking Lot 2026-99 Wave 3 |
+| S12-021 | #74 | Proposed (Post-Run) | bnorth12 | 2026-06-10 | Defer to Parking Lot 2026-99 Wave 2 |
+| S12-022 | #75 | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Parking Lot 2026-99 Wave 2 |
+| S12-023 | #76 | Proposed (Post-Run) | bnorth12 | 2026-06-07 | Defer to Parking Lot 2026-99 Wave 1 |
+| S12-024 | #77 | Proposed (Post-Run) | bnorth12 | 2026-06-07 | Defer to Parking Lot 2026-99 Wave 1 |
+| S12-025 | #78 | Proposed (Post-Run) | bnorth12 | 2026-06-07 | Defer to Parking Lot 2026-99 Wave 1 |
 | S12-026 | #79 | Closed | bnorth12 | 2026-05-26 | Closed as non-blocking RC1 catch-up disposition; residual refinements may continue post-RC |
 | S12-027 | #80 | Closed | bnorth12 | 2026-05-26 | Closed after mitigations viewer plus export control delivery |
-| S12-028 | #81 | Proposed (Post-Run) | bnorth12 | 2026-06-14 | Defer to Sprint 2026-13 Wave 3 |
-| S12-029 | #82 | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Sprint 2026-13 Wave 2 |
-| S12-030 | #83 | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Sprint 2026-13 Wave 2 |
+| S12-028 | #81 | Proposed (Post-Run) | bnorth12 | 2026-06-14 | Defer to Parking Lot 2026-99 Wave 3 |
+| S12-029 | #82 | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Parking Lot 2026-99 Wave 2 |
+| S12-030 | #83 | Proposed (Post-Run) | bnorth12 | 2026-06-12 | Defer to Parking Lot 2026-99 Wave 2 |
 | S12-031 | #84 | In Progress | bnorth12 | 2026-06-02 | Complete implementation and close |
-| S12-032 | #85 | Proposed (Post-Run) | bnorth12 | 2026-06-14 | Defer to Sprint 2026-13 Wave 3 |
+| S12-032 | #85 | Proposed (Post-Run) | bnorth12 | 2026-06-14 | Defer to Parking Lot 2026-99 Wave 3 |
 | S12-033 | #96 | In Review | bnorth12 | 2026-05-31 | Backfill architecture/design traceability for LangGraph orchestrator route evidence |
-| D-S12-011 | #65 | Proposed | bnorth12 | 2026-06-05 | Defer decision to Sprint 2026-13 governance review |
+| D-S12-011 | #65 | Proposed | bnorth12 | 2026-06-05 | Defer decision to Parking Lot 2026-99 governance review |
 
 ## 0.1 Late-Scope Active Work
 
@@ -55,7 +55,7 @@ Issue #67 remediation is explicitly extended by one additional sprint to prove f
 
 ### Defer Documentation Rule
 
-- Any deferred minor finding must be recorded in `planning/Sprint_2026_13_Skills_Layer_and_Avionics_Specialization.md` and linked from this tracker row before Sprint 2026-12 closure.
+- Any deferred minor finding must be recorded in `planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md` and linked from this tracker row before Sprint 2026-12 closure.
 - Deferred items must include: rationale, risk level, verification impact, and explicit next-sprint owner.
 
 ## 1. Sprint 2026-12 Late-Scope HMI/HITL Issues
@@ -140,3 +140,4 @@ Each Sprint 2026-12 issue is only closed when all are true:
 - The issue-scoped design disposition package for issue #67 is captured in `planning/issues/issue_2026_12_S12_013_Gate_0_Design_Disposition.md` and is the authoritative reconciliation-path artifact.
 - The audit-derived architecture/design backfill for `C01-ORCH-001` is captured in `planning/issues/issue_2026_12_S12_033_LangGraph_Orchestrator_Architecture_Disposition.md` and records the architecture-first reconciliation path.
 - Final issue closure remains a Sprint 2026-12 closeout activity after the implementation PR and closure evidence are finalized, including assignment of a GitHub issue number for S12-015.
+

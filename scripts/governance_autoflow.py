@@ -501,7 +501,7 @@ def main() -> int:
         required=True,
         help="Governance execution context",
     )
-    parser.add_argument("--sprint", type=str, default="2026_12", help="Sprint identifier (YYYY_MM)")
+    parser.add_argument("--sprint", type=str, default="2026_12", help="Sprint identifier (YYYY-NN, YYYY_NN, YYYY-NNN, or YYYY_NNN)")
     parser.add_argument("--policy-profile", type=str, default="", help="Explicit policy profile override")
     parser.add_argument("--trend-window", type=int, default=5, help="Trend window for independent review")
     parser.add_argument("--out-dir", type=str, default="independent_reviews/latest", help="Output directory")

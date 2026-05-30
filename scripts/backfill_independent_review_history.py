@@ -8,6 +8,8 @@ import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
+from sprint_naming import parse_sprint_token
+
 
 def run_command(cwd: Path, args: List[str], check: bool = True) -> subprocess.CompletedProcess:
     return subprocess.run(args, cwd=str(cwd), text=True, capture_output=True, check=check)
@@ -60,7 +62,7 @@ def replay_commits(
     worktree_path = Path(tempfile.mkdtemp(prefix="independent-review-backfill-"))
     script_source = repo_root / "scripts" / "independent_repo_review.py"
     policy_source = repo_root / "config" / "independent_review_policy_profiles.json"
-    sprint_dash = sprint.replace("_", "-")
+    sprint_dash = parse_sprint_token(sprint).dash
 
     safe_remove_worktree(repo_root, worktree_path)
     run_command(repo_root, ["git", "worktree", "add", "--detach", str(worktree_path), "main"])
@@ -320,7 +322,7 @@ def write_overtime_report(repo_root: Path, sprint: str, entries: List[Dict[str, 
 def main() -> int:
     parser = argparse.ArgumentParser(description="One-time KPI backfill across historical commits")
     parser.add_argument("--branch", type=str, default="main", help="Branch to replay from oldest to newest")
-    parser.add_argument("--sprint", type=str, default="2026_12", help="Sprint identifier for generated review files")
+    parser.add_argument("--sprint", type=str, default="2026_12", help="Sprint identifier (YYYY-NN, YYYY_NN, YYYY-NNN, or YYYY_NNN) for generated review files")
     parser.add_argument("--policy-profile", type=str, default="strict", help="Policy profile passed to independent review")
     parser.add_argument("--max-commits", type=int, default=0, help="Optional cap on number of replayed commits; 0 means all")
     parser.add_argument("--replay-timeout-seconds", type=int, default=180, help="Per-commit timeout for synthetic replay execution")
@@ -328,6 +330,7 @@ def main() -> int:
 
     repo_root = Path(__file__).resolve().parents[1]
     python_exe = Path(sys.executable).resolve()
+    sprint = parse_sprint_token(args.sprint).underscore
 
     commits = get_commit_rows(repo_root, args.branch, args.max_commits)
     if not commits:
@@ -339,13 +342,13 @@ def main() -> int:
         repo_root=repo_root,
         python_exe=python_exe,
         commits=commits,
-        sprint=args.sprint,
+        sprint=sprint,
         policy_profile=args.policy_profile,
         replay_timeout_seconds=max(30, args.replay_timeout_seconds),
     )
 
-    json_path, scoreboard_path = write_scoreboard(repo_root, args.sprint, entries, errors)
-    report_path = write_overtime_report(repo_root, args.sprint, entries, errors)
+    json_path, scoreboard_path = write_scoreboard(repo_root, sprint, entries, errors)
+    report_path = write_overtime_report(repo_root, sprint, entries, errors)
 
     print("[backfill] Complete")
     print(f"[backfill] Replayed points: {len(entries)}")

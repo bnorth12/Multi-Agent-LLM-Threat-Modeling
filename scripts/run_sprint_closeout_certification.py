@@ -10,13 +10,15 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List
 
+from sprint_naming import parse_sprint_token
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT_DIR = REPO_ROOT / "independent_reviews" / "latest"
 
 
 def sprint_token(sprint: str) -> str:
-    return sprint.replace("-", "_")
+    return parse_sprint_token(sprint).underscore
 
 
 def artifact_path(relative_root: Path, sprint: str, suffix: str) -> Path:
@@ -132,7 +134,7 @@ def write_report(out_dir: Path, sprint: str, result: Dict[str, Any]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Certify sprint closeout quality")
-    parser.add_argument("--sprint", default="2026_12")
+    parser.add_argument("--sprint", default="2026_12", help="Sprint identifier (YYYY-NN, YYYY_NN, YYYY-NNN, or YYYY_NNN)")
     parser.add_argument("--checklist")
     parser.add_argument("--summary")
     parser.add_argument("--issue-tracker")

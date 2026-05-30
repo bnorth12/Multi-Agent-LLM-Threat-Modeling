@@ -83,7 +83,7 @@ def write_outputs(repo_root: Path, out_dir: str, sprint: str, verify_exit: int, 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate a blocker backlog from sprint traceability validation output")
-    parser.add_argument("--sprint", type=str, required=True, help="Sprint identifier (YYYY_MM)")
+    parser.add_argument("--sprint", type=str, required=True, help="Sprint identifier (YYYY-NN, YYYY_NN, YYYY-NNN, or YYYY_NNN)")
     parser.add_argument("--out-dir", type=str, default="independent_reviews/latest", help="Output directory")
     args = parser.parse_args()
 

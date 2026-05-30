@@ -15,8 +15,8 @@ planning/
 ├── archives/
 ├── work_items/
 ├── Sprint_2026_12_*.md
-├── Sprint_2026_13_*.md
-└── Sprint_2026_14_*.md
+├── Sprint_2026_99_Parking_Lot_*.md
+└── Sprint_2026_01_Remediation_Restart_Manifest.md
 ```
 
 ---
@@ -25,7 +25,7 @@ planning/
 
 ### For Sprint Teams
 
-- Current and prior sprint planning narratives: `planning/Sprint_2026_12_*.md`, `planning/Sprint_2026_13_*.md`, `planning/Sprint_2026_14_*.md`
+- Current and prior sprint planning narratives: `planning/Sprint_2026_12_*.md`, `planning/Sprint_2026_01_*.md`, `planning/Sprint_2026_99_Parking_Lot_*.md`
 - Issue records: `planning/issues/`
 - Sprint-scoped folders and work items: `planning/Sprints/`, `planning/work_items/`
 - Archived closure evidence: `planning/archives/`
@@ -49,11 +49,19 @@ planning/
 Sprints may be represented as either dedicated subfolders under `Sprints/` or top-level sprint documents in `planning/`.
 
 ```
-Sprints/Sprint_YYYY_MM/
+Sprints/Sprint_YYYY_NN/
 ├── README.md
 ├── issues/
 └── work_items/
 ```
+
+## Sprint Identifier Policy
+
+- Use `YYYY_NN` as the canonical repository token for sprint files and automation inputs.
+- The trailing token is a sprint ordinal, not a month number.
+- Human-readable prose may use `YYYY-NN`, but generated artifacts and scripts should prefer `YYYY_NN`.
+- `2026_99` is the parking-lot lane for non-remediation or speculative planning work.
+- Legacy references to `YYYY_MM` remain in code variable names for compatibility; see `docs/process/Sprint_Naming_Governance.md` for the rationale and migration policy.
 
 ## Historical Record Policy
 
@@ -99,6 +107,7 @@ To start a new sprint:
 - **Test Documentation**: `Tests/README.md` - Test execution and reporting
 - **Data Infrastructure**: `data/README.md` - RAG and vector DB patterns
 - **Source Code**: `src/` - Application implementation
+- **Sprint Naming Governance**: `docs/process/Sprint_Naming_Governance.md` - Active sprint naming and parking-lot policy
 
 ---
 

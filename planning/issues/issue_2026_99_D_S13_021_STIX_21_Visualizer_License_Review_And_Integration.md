@@ -57,7 +57,7 @@ Deferred
 
 ## Metadata
 
-- Sprint: 2026-13 (or next available visualization sprint)
+- Sprint: 2026-99 parking lot (or next explicitly activated visualization sprint)
 - Created: 2026-05-21
 - Source: Deferred enhancement request from STIX visualization roadmap discussion
 - Dependency: License and compliance review gate must pass before coding starts

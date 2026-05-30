@@ -1,4 +1,4 @@
-# Sprint 2026-12: Release Engineering & Test Environment Separation
+﻿# Sprint 2026-12: Release Engineering & Test Environment Separation
 
 **Date**: 2026-05-18
 **Status**: Planning
@@ -67,7 +67,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 - Release testing strategy and validation checklist
 - GitHub release page configuration and publication of RC1
 
-### Out-of-Scope for Sprint 2026-12 (Defer to Sprint 2026-13)
+### Out-of-Scope for Sprint 2026-12 (Defer to Parking Lot 2026-99)
 
 - Full production deployment automation (CI/CD for releases)
 - Alternative frontend implementations (Web UI, REST API service wrapper)
@@ -395,7 +395,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 - [ ] GitHub release published as pre-release.
 - [ ] PO review complete for promotion path.
 
-### Handoff to Sprint 2026-13
+### Handoff to Parking Lot 2026-99
 
 - [ ] S13 consumes the RC1 baseline and builds on the release-clean backend boundary.
 - [ ] Any S13 packaging changes remain coordinated with the RC1 artifact model.
@@ -405,7 +405,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 
 ## 9. Next Sprint Planning (S13 Preview)
 
-After RC1 baseline, Sprint 2026-13 will focus on:
+After RC1 baseline, Parking Lot 2026-99 will focus on:
 
 - [ ] GA promotion: execute Release Promotion Checklist items (PO review, deployment testing, security audit if needed).
 - [ ] v1.0.0 release: promote RC1 to GA; publish v1.0.0 on GitHub Releases and PyPI if applicable.
@@ -491,3 +491,4 @@ v1.0.0-rc1 Artifacts:
 **Document Version**: 1.0
 **Last Updated**: 2026-05-18
 **Next Review**: 2026-05-23 (Mid-sprint check-in)
+

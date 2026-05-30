@@ -10,6 +10,8 @@ import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+from sprint_naming import parse_sprint_token
+
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT_DIR = REPO_ROOT / "independent_reviews" / "latest"
@@ -491,7 +493,7 @@ def write_report(out_dir: Path, result: Dict[str, Any]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Assess remediation readiness from the latest independent review")
-    parser.add_argument("--sprint", default="2026_12")
+    parser.add_argument("--sprint", default="2026_12", help="Sprint identifier (YYYY-NN, YYYY_NN, YYYY-NNN, or YYYY_NNN)")
     parser.add_argument("--review-md")
     parser.add_argument("--review-json")
     parser.add_argument("--out-dir", default=str(DEFAULT_OUT_DIR))
@@ -508,7 +510,7 @@ def main() -> int:
     else:
         review_md, review_json = find_latest_review(REPO_ROOT / "independent_reviews" / "latest")
 
-    result = summarize_review(review_md, review_json, args.sprint.replace("-", "_"))
+    result = summarize_review(review_md, review_json, parse_sprint_token(args.sprint).underscore)
     write_report(Path(args.out_dir), result)
     write_legacy_backlog_report(Path(args.out_dir), result)
     write_issue_draft_report(Path(args.out_dir), result)

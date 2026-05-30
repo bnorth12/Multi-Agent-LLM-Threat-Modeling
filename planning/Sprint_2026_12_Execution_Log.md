@@ -1,4 +1,4 @@
-# Sprint 2026-12 Execution Log
+﻿# Sprint 2026-12 Execution Log
 
 ## 2026-05-19
 
@@ -235,7 +235,7 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
 ### Closeout Package Closure Status
 
 - Sprint 12 implementation scope validated and documented.
-- Deferred item (approved): GraphQL implementation targeted to Sprint 2026-13.
+- Deferred item (approved): GraphQL implementation targeted to Parking Lot 2026-99.
 
 ## 2026-05-19 (Update 8 - Scope Rebaseline to Full HTML Conversion)
 
@@ -626,3 +626,4 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
   - `src/threat_modeler/hitl/service.py`
   - `frontend/src/components/HITLGateManager.tsx`
 - Run Phase 4 verification closure lanes and record evidence before closeout synchronization.
+

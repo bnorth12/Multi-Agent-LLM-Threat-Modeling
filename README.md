@@ -16,6 +16,18 @@ This project defines and implements a multi-agent workflow that converts archite
 
 The architecture is designed for human-in-the-loop governance and auditable, stage-based execution.
 
+## Sprint Naming Governance
+
+Sprint naming was restructured to separate active remediation execution from speculative or parked planning work.
+
+- Canonical automation token: `YYYY_NN` stored in filenames and script arguments as `YYYY_NN`
+- Human-readable prose alias: `YYYY-NN`
+- The trailing token is a sprint ordinal, not a calendar month
+- `2026_99` is reserved as a parking-lot lane for non-remediation or speculative planning work that must not interfere with active sprint automation
+- Completed legacy `YYYY-MM` work is preserved as historical record and does not need to be renumbered
+
+See `docs/process/Sprint_Naming_Governance.md` for the migration rationale, current rules, and future `YYYY_NNN` expansion guidance.
+
 ## Architecture Baseline and Target State
 
 The current architecture diagram has been validated against implemented runtime and frontend

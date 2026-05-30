@@ -1,4 +1,4 @@
-# Runtime State and Gate Contract Resolution (2026-05)
+﻿# Runtime State and Gate Contract Resolution (2026-05)
 
 ## Purpose
 
@@ -7,7 +7,7 @@ Capture the implemented resolution for Gate 0 readiness sequencing and cancelled
 ## Traceability Links
 
 - Requirement set: Requirements/13_Runtime_State_And_Input_Contract_Requirements.md
-- Issue record: planning/issues/issue_2026_13_D_S13_022_Run_State_And_Gate_Contract_Corrections.md
+- Issue record: planning/issues/issue_2026_99_D_S13_022_Run_State_And_Gate_Contract_Corrections.md
 
 ## Resolved Defects
 
@@ -37,3 +37,4 @@ Capture the implemented resolution for Gate 0 readiness sequencing and cancelled
   - Prompt expected-output/schema drift detection
 
 No open blocker remains for this correction package.
+

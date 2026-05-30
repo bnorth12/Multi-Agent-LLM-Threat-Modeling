@@ -42,6 +42,19 @@ Planning and closeout operator commands:
 - `./scripts/run_governance_planning.sh <SPRINT>`
 - `./scripts/run_governance_closeout.sh <SPRINT>`
 
+## Sprint Identifier Policy
+
+Use sprint identifiers as governed ordinals, not month numbers.
+
+- Canonical repository token: `YYYY_NN`
+- Human-readable prose alias: `YYYY-NN`
+- Current scripts still use legacy `MM` variable names in places, but the suffix is semantically an ordinal sprint number
+- Reserve `YYYY_99` for parking-lot or speculative work that must stay outside active remediation automation
+- Completed legacy `YYYY-MM` and `YYYY_MM` sprint artifacts are accepted as historical records and should not be renumbered just for policy conformance
+- Governance automation accepts both two-digit and three-digit ordinal inputs so future expansion does not require emergency parser changes
+
+Before creating or renaming sprint artifacts, read `docs/process/Sprint_Naming_Governance.md`.
+
 ## Testing The Agent Skill Structure
 
 When changes touch `.github/agents/`, `.github/skills/`, governance routing, or the runner scripts that execute governance stages, validate the structure in three layers:

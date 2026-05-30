@@ -1,4 +1,4 @@
-# Governance & Traceability Process Index
+﻿# Governance & Traceability Process Index
 
 **Purpose**: Central reference for all requirements-driven development governance, process automation, and sprint lifecycle management.
 
@@ -82,7 +82,7 @@ Complete walkthrough of how traceability is maintained throughout a sprint:
    - **Planning Phase** (Day 0)
      - 1a. Requirement grooming → Requirements/ folder
      - 1b. Issue creation → planning/issues/
-     - 1c. Traceability matrix setup → planning/Sprint_YYYY_MM_Traceability_Matrix.md
+   - 1c. Traceability matrix setup → planning/Sprint_YYYY_NN_Traceability_Matrix.md
      - 1d. Team onboarding → Definition of Done reviewed
 
    - **Execution Phase** (Days 1-9)
@@ -270,7 +270,7 @@ Scripts and workflows that automatically enforce traceability:
 
    **Links**:
    - Requirement set: `Requirements/13_Runtime_State_And_Input_Contract_Requirements.md`
-   - Issue record: `planning/issues/issue_2026_13_D_S13_022_Run_State_And_Gate_Contract_Corrections.md`
+   - Issue record: `planning/issues/issue_2026_99_D_S13_022_Run_State_And_Gate_Contract_Corrections.md`
 
    **When to Use**:
    - Reviewing cancellation and Gate 0 behavior corrections
@@ -465,4 +465,5 @@ Use this to bootstrap any future sprint:
 **Last Updated**: May 8, 2026
 **Maintained By**: Technical Leadership
 **Review Frequency**: Every sprint (retrospective)
+
 

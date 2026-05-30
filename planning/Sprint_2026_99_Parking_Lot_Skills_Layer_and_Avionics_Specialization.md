@@ -1,7 +1,7 @@
-# Sprint 2026-13: Skills Layer & Avionics Specialization
+# Parking Lot 2026-99: Skills Layer & Avionics Specialization
 
 **Date**: 2026-06-01
-**Status**: Planning
+**Status**: Parking Lot Backlog
 **Sprint Length**: 2 weeks
 **Target End**: 2026-06-15
 **Sprint Lead**: [To be assigned]
@@ -10,7 +10,7 @@
 
 ## Executive Summary
 
-Sprint 2026-13 will introduce a modular "skills" layer to the LangGraph agent framework, enabling:
+Parking Lot 2026-99 preserves a modular "skills" layer concept for the LangGraph agent framework, enabling:
 - Domain specialization (threat, governance, reporting, data, workflow, integration, UI/UX)
 - Avionics/IOT-specific skills (drawing from secure aerospace design, mixed-criticality, and mitigation architecture)
 - Extensibility for future domain-specific skills
@@ -60,7 +60,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 
 ## 0. Scope & Deferrals
 
-### In-Scope for Sprint 2026-13
+### Candidate Scope for Parking Lot 2026-99
 - Skills interface and registry design
 - Implementation of at least 6 core skills (see above)
 - At least 2 avionics/IOT-specific skills
@@ -68,7 +68,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 - Documentation and usage examples
 - Backend integration of the skills layer into the LangGraph/orchestrator stack after the GUI/backend split is complete
 
-### Out-of-Scope (Defer to S14+)
+### Out-of-Scope (Remain Parked Until Explicit Activation)
 - Full plugin ecosystem or user-defined skills
 - Deep integration with external aerospace/IOT data sources
 - Performance optimization of skills engine

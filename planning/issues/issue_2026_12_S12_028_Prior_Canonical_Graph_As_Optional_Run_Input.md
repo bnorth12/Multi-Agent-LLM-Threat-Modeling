@@ -1,4 +1,4 @@
-# Issue S12-028: Previous Canonical Graph as Optional Run Input for Incremental Enrichment
+﻿# Issue S12-028: Previous Canonical Graph as Optional Run Input for Incremental Enrichment
 
 Status: Proposed (Post-Run)
 Priority: P1
@@ -136,9 +136,10 @@ the setup wizard nor orchestrator exposes this baseline input path.
 
 ## Sprint Deferment Language (2026-05-26)
 
-- Defer Decision: Deferred from Sprint 2026-12 closure scope into Sprint 2026-13 intake unless elevated by governance review.
+- Defer Decision: Deferred from Sprint 2026-12 closure scope into Parking Lot 2026-99 intake unless elevated by governance review.
 - Rationale: Minor-to-moderate scope expansion relative to current Sprint 2026-12 critical-path closure work.
 - Risk Level: Controlled and acceptable for defer with explicit tracking.
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
-- Intake Linkage: planning/Sprint_2026_13_Skills_Layer_and_Avionics_Specialization.md
+- Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
+

@@ -25,6 +25,8 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 
+from sprint_naming import parse_sprint_token
+
 REQ_ID_CANDIDATE_PATTERN = re.compile(r"\b([A-Z][A-Z0-9]{1,}(?:-[A-Z0-9]{2,})+)\b")
 ISSUE_ID_PATTERN = re.compile(r"^(D-S\d{2}-\d{3}|S\d{2}-\d{3})$")
 GITHUB_ISSUE_PATTERN = re.compile(r"#\d+|github\.com/.*/issues/\d+", re.IGNORECASE)
@@ -291,10 +293,8 @@ def run_git(root: Path, args: List[str]) -> Tuple[bool, str]:
 
 
 def normalize_sprint(raw: str) -> Tuple[str, str]:
-    sprint_dash = raw.replace("_", "-")
-    if not re.fullmatch(r"\d{4}-\d{2}", sprint_dash):
-        raise ValueError("sprint must be YYYY-MM or YYYY_MM")
-    return sprint_dash, sprint_dash.replace("-", "_")
+    token = parse_sprint_token(raw)
+    return token.dash, token.underscore
 
 
 def load_policy_profiles(root: Path) -> Dict[str, Dict[str, float]]:
@@ -2168,7 +2168,7 @@ def write_reports(root: Path, result: ReviewResult, out_dir: Path, report_mode: 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run independent local repository governance review")
-    parser.add_argument("--sprint", type=str, default="2026_12", help="Sprint identifier (YYYY-MM or YYYY_MM)")
+    parser.add_argument("--sprint", type=str, default="2026_12", help="Sprint identifier (YYYY-NN, YYYY_NN, YYYY-NNN, or YYYY_NNN)")
     parser.add_argument("--out-dir", type=str, default="independent_reviews/latest", help="Output directory for generated review reports")
     parser.add_argument(
         "--run-context",

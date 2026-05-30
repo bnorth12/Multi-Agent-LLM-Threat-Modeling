@@ -1,8 +1,8 @@
-# S14 Reference Register
+﻿# S14 Reference Register
 
 ## Purpose
 
-Governed reference list for Sprint 2026-14 concept, retrieval, and vector DB planning inputs.
+Governed reference list for Parking Lot 2026-99 concept, retrieval, and vector DB planning inputs.
 
 ## Reference Coverage Objective
 
@@ -24,7 +24,7 @@ protocol wrapper, threat propagation, and mitigation rationale use cases.
 | REF-S14-003 | Cyber Kill Chain Methodology (Web Reference) | Lockheed Martin (`/capabilities/cyber/cyber-kill-chain.html`) | Stage-based adversary progression model for threat path decomposition and detection coverage mapping | `lm_kill_chain_stage_mapping.jsonl` | Approved input |
 | REF-S14-004 | Intelligence-Driven Computer Network Defense (White Paper) | Lockheed Martin (`LM-White-Paper-Intel-Driven-Defense.pdf`) | Intelligence Driven Defense tradecraft and intrusion-chain analytics for retrieval reasoning | `lm_intel_driven_defense_mapping.jsonl` | Approved input |
 | REF-S14-005 | Vector DB Design — Offline Aerospace Threat Modeling | Internal project reference (`docs/references/Vector DB Design.txt`) | Vector collection baseline, embedding and ingestion strategy | `vector_collection_inventory_s14.yaml` | Approved input |
-| REF-S14-006 | Sprint 2026-14 Concept Review: Threat Model Abstractions and Compositional Flows | Internal project planning artifact | Concept baseline and retrieval acceptance objectives | `retrieval_acceptance_queries.yaml` | Approved input |
+| REF-S14-006 | Parking Lot 2026-99 Concept Review: Threat Model Abstractions and Compositional Flows | Internal project planning artifact | Concept baseline and retrieval acceptance objectives | `retrieval_acceptance_queries.yaml` | Approved input |
 | REF-S14-007 | STRIDE Model Limitations and Modern Cyber Threat Categories | Internal project reference (`docs/references/STRIDE_Model_Limitations_and_Modern_Cyber_Threat_Categories.md`) | STRIDE augmentation model for campaign, supply-chain, identity, control-plane, and mission-impact threat reasoning | `stride_modern_category_crosswalk.jsonl` | Approved input |
 
 ## S14 Maximum-Utility Coverage Matrix
@@ -115,3 +115,4 @@ This table maps the requested aerospace-relevant source set to S14 reference ids
 1. Add the reference id field to S14 normalized dataset schema definitions.
 1. Create a `reference_coverage_status_s14.yaml` tracker with `Target`, `Ingesting`, `Validated`, `Deferred` states per reference id.
 1. Prioritize P0 references for first ingestion wave before index quality baseline sign-off.
+

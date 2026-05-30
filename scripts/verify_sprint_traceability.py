@@ -14,6 +14,8 @@ from argparse import ArgumentParser
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
+from sprint_naming import parse_sprint_token
+
 
 class Color:
     HEADER = "\033[95m"
@@ -26,10 +28,10 @@ class Color:
 
 
 REQ_ID_PATTERN = re.compile(r"\b([A-Z]{2,}-\d+[A-Z]?)\b")
-ISSUE_ID_IN_TEXT_PATTERN = re.compile(r"\b(D-S\d{2}-\d{3}|S\d{2}-\d+|[A-Z]{2,}-\d+[A-Z]?)\b")
-DS_FILENAME_PATTERN = re.compile(r"^D_S(\d{2})_(\d{3})(?:_|$)")
+ISSUE_ID_IN_TEXT_PATTERN = re.compile(r"\b(D-S\d{2,3}-\d{3}|S\d{2,3}-\d+|[A-Z]{2,}-\d+[A-Z]?)\b")
+DS_FILENAME_PATTERN = re.compile(r"^D_S(\d{2,3})_(\d{3})(?:_|$)")
 GENERIC_ISSUE_FILENAME_PATTERN = re.compile(r"^([A-Z]{1,}\d{0,2}[-_]\d+[A-Z]?)(?:_|$)")
-TRACKER_ID_PATTERN = re.compile(r"\b(D-S\d{2}-\d{3}|S\d{2}-\d+)\b")
+TRACKER_ID_PATTERN = re.compile(r"\b(D-S\d{2,3}-\d{3}|S\d{2,3}-\d+)\b")
 REQUIRED_HIERARCHY_FIELDS = {
     "Parent Capability ID": re.compile(r"(?im)^\s*Parent Capability ID\s*:\s*(.+)$"),
     "Child Function ID": re.compile(r"(?im)^\s*Child Function ID\s*:\s*(.+)$"),
@@ -56,18 +58,13 @@ def log_info(msg: str) -> None:
 
 
 def normalize_sprint(sprint: str) -> Tuple[str, str, str]:
-    """Return sprint as (YYYY-MM, YYYY_MM, Sxx)."""
-    normalized_dash = sprint.replace("_", "-")
-    if not re.fullmatch(r"\d{4}-\d{2}", normalized_dash):
-        raise ValueError("Sprint must be YYYY-MM or YYYY_MM")
-    year, month = normalized_dash.split("-")
-    normalized_us = f"{year}_{month}"
-    sprint_tag = f"S{month}"
-    return normalized_dash, normalized_us, sprint_tag
+    """Return sprint as (YYYY-NN, YYYY_NN, SNN) with legacy dash acceptance."""
+    token = parse_sprint_token(sprint)
+    return token.dash, token.underscore, token.tag
 
 
 def is_issue_like_id(token: str) -> bool:
-    return bool(re.fullmatch(r"D-S\d{2}-\d{3}", token) or re.fullmatch(r"S\d{2}-\d+", token))
+    return bool(re.fullmatch(r"D-S\d{2,3}-\d{3}", token) or re.fullmatch(r"S\d{2,3}-\d+", token))
 
 
 def extract_requirement_ids(text: str) -> Set[str]:
@@ -127,7 +124,7 @@ def detect_issue_status(text: str) -> str:
 
 
 def parse_issue_id_from_filename(issue_file: Path, content: str) -> str:
-    """Parse canonical issue ID from filename, including D_Sxx_NNN => D-Sxx-NNN."""
+    """Parse canonical issue ID from filename, including D_Sxx[x]_NNN => D-Sxx[x]-NNN."""
     stem = issue_file.stem
     base = re.sub(r"^issue_\d{4}[-_]\d{2}_", "", stem)
 
@@ -434,7 +431,7 @@ def verify_traceability(sprint: str, audit: bool = False, closure: bool = False)
 
 def main() -> None:
     parser = ArgumentParser(description="Verify sprint traceability compliance")
-    parser.add_argument("--sprint", required=True, help="Sprint ID (YYYY-MM or YYYY_MM)")
+    parser.add_argument("--sprint", required=True, help="Sprint ID (YYYY-NN, YYYY_NN, YYYY-NNN, or YYYY_NNN)")
     parser.add_argument("--audit", action="store_true", help="Run strict audit checks")
     parser.add_argument("--closure", action="store_true", help="Enforce sprint closure prerequisites")
     parser.add_argument("--log", type=str, default=None, help="Optional log file path. If set, all output is written to this file.")

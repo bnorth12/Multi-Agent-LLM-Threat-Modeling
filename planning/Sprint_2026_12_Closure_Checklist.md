@@ -1,4 +1,4 @@
-# Sprint 2026-12 Closure Checklist
+﻿# Sprint 2026-12 Closure Checklist
 
 **Sprint Name**: 2026-12 (May 2026)
 **Sprint End Date**: 2026-05-19
@@ -72,10 +72,10 @@
 
 ---
 
-## Handoff to Sprint 2026-13
+## Handoff to Parking Lot 2026-99
 
 - [x] Carryover items identified
-- [x] GraphQL endpoint deferred to Sprint 2026-13
+- [x] GraphQL endpoint deferred to Parking Lot 2026-99
 
 | Carryover Item | Reason | Target Sprint |
 |---|---|---|
@@ -113,3 +113,4 @@
 - [x] Final sign-off complete
 
 **Sprint Status**: ✅ CLOSED
+

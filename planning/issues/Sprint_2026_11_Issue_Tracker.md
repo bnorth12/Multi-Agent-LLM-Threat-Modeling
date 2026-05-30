@@ -1,4 +1,4 @@
-# Sprint 2026-11 Issue Tracker
+﻿# Sprint 2026-11 Issue Tracker
 
 Date: 2026-05-14
 Status: Closed (Closeout Complete)
@@ -130,7 +130,7 @@ The following known items are intentionally not part of Sprint 2026-11 closeout 
 | Deferred ID | Title | Current Status | Next Target Sprint | Reason Deferred |
 |---|---|---|---|---|
 | D-S11-001 | Custom HTML Frontend for Non-Streamlit Release | Closed (completed via #62) | Sprint 2026-12 (completed) | Large architecture/program increment; completed as part of Sprint 2026-12 release-engineering separation work. |
-| D-S11-002 | Connection Verify Must Perform Live Prompt Ping | Proposed (#87) | Sprint 2026-13 (planning target) | Verify currently requires explicit live prompt round-trip hardening to prevent false-positive connectivity checks and post-verify run failures. |
+| D-S11-002 | Connection Verify Must Perform Live Prompt Ping | Proposed (#87) | Parking Lot 2026-99 (planning target) | Verify currently requires explicit live prompt round-trip hardening to prevent false-positive connectivity checks and post-verify run failures. |
 
 Planning linkage:
 
@@ -152,3 +152,4 @@ Planning linkage:
 - ✅ S11-016 (Enhanced Error Display): Execution errors rendered with decoded HTML entities; HTTP status code extraction working (verified on backend FAILED transitions).
 
 **Next Actions**: Keep the remaining open Sprint 11 backlog items moving through implementation and closure; treat D-S11-001 / issue #62 as completed and track live verify hardening as D-S11-002 / issue #87.
+

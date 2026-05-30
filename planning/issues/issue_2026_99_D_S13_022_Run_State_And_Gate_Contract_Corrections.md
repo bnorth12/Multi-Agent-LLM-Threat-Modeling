@@ -2,7 +2,7 @@
 
 Status: Reopened (Regression Confirmed)
 Priority: P1
-Sprint: 2026-13
+Sprint: 2026-99
 Date Opened: 2026-05-22
 Date Resolved: 2026-05-22
 Date Reopened: 2026-05-22

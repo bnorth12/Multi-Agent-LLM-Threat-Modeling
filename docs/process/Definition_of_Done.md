@@ -11,7 +11,7 @@ Every sprint task and code change must satisfy **ALL criteria** before marking c
   - Title format: `[SPRINT] <REQ_ID>: <work_title>` (e.g., `[SPRINT] HITL-012: Implement Conditional Gate State Reporting`)
   - Clear Acceptance Criteria linked to requirement
   - Related Requirement section populated
-- [ ] **Traceability Matrix Updated**: Issue added to `planning/Sprint_YYYY_MM_Traceability_Matrix.md`
+- [ ] **Traceability Matrix Updated**: Issue added to `planning/Sprint_YYYY_NN_Traceability_Matrix.md`
 
 ## Implementation
 

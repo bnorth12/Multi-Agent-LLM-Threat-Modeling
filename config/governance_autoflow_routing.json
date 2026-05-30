@@ -23,6 +23,7 @@
         "requirements-baseline-steward",
         "architecture-design-disposition-planner",
         "architecture-design-traceability-auditor",
+        "multi-sprint-portfolio-planner",
         "sprint-intake-gatekeeper",
         "governance-policy-compiler"
       ],
@@ -30,6 +31,7 @@
         "requirements-baseline-steward",
         "architecture-design-disposition-planner",
         "architecture-design-traceability-auditor",
+        "multi-sprint-portfolio-planner",
         "sprint-intake-gatekeeper",
         "governance-policy-compiler"
       ]

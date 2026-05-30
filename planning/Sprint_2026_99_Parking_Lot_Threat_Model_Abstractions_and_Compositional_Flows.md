@@ -1,7 +1,7 @@
-# Sprint 2026-014 Concept Review: Threat Model Abstractions and Compositional Flows
+# Parking Lot 2026-99 Concept Review: Threat Model Abstractions and Compositional Flows
 
 **Date**: 2026-05-21
-**Status**: Concept Collection (Pre-Planning, Post-S13 Input)
+**Status**: Parking Lot Concept Collection
 **Source Conversation**: https://grok.com/share/bGVnYWN5LWNvcHk_3e5001c7-2448-4dc8-849a-7e219f843647
 
 ---
@@ -12,14 +12,14 @@ This review captures the concept baseline from the linked chat and translates it
 
 Primary objective:
 - Ensure the canonical graph can represent System-of-Systems hierarchy, compositional data-flow abstractions, and low-level realizations where true attack surfaces exist.
-- Define Sprint 2026-014 as the starting point for a retrieval-aligned concept
+- Define Parking Lot 2026-99 as the holding lane for a retrieval-aligned concept
 	database (RAG) that links abstractions, protocol wrappers, threats, and
 	mitigations.
 
-Planning posture for S14:
-- S14 is currently a concept collection and research backlog, not a committed
+Planning posture for Parking Lot 2026-99:
+- This lane is currently a concept collection and research backlog, not a committed
 	sprint execution plan.
-- Formal sprint planning is expected after S13 closure and capacity review.
+- Formal sprint planning is expected only after explicit portfolio activation and capacity review.
 
 ---
 
