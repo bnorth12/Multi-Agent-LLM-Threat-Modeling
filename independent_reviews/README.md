@@ -8,7 +8,8 @@ Naming note:
 
 Policy:
 - Reports are generated on demand and by local hooks.
-- Outputs remain local and are ignored by Git.
+- Current operational snapshots in `independent_reviews/latest/` are tracked by Git via selective allowlist rules.
+- High-churn historical artifacts are compacted into `independent_reviews/history/` and remain ignored to prevent uncontrolled repository growth.
 - Runtime application implementation is not modified by review generation.
 - `independent_reviews/latest/` is intentionally compact and keeps current per-context reports.
 - `independent_reviews/history/` stores long-term trend snapshots and archived timestamped reports.
