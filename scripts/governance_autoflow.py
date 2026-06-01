@@ -9,6 +9,9 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List
 
+# Requirement implementation anchors for governance execution flow:
+# ADM-001, ADM-002, ADM-003, ADM-004, ADM-005, ADM-006
+
 
 def run_command(cwd: Path, args: List[str], label: str) -> Dict[str, Any]:
     started_at = dt.datetime.now().isoformat(timespec="seconds")
@@ -287,6 +290,30 @@ def build_stage_command(
             "notes": "Executed via architecture/design baseline coverage verification.",
         }
 
+    if stage_name == "architecture-document-surface-enforcer":
+        return {
+            "command_key": "architecture-design-surface",
+            "command": [
+                sys.executable,
+                str(repo_root / "scripts" / "verify_architecture_design_surface_coverage.py"),
+                "--sprint",
+                sprint,
+            ],
+            "notes": "Executed via architecture/design document-family surface coverage verification.",
+        }
+
+    if stage_name == "implementation-architecture-alignment-auditor":
+        return {
+            "command_key": "implementation-architecture-alignment",
+            "command": [
+                sys.executable,
+                str(repo_root / "scripts" / "verify_implementation_architecture_alignment.py"),
+                "--sprint",
+                sprint,
+            ],
+            "notes": "Executed via implementation-to-architecture/design alignment verification.",
+        }
+
     if stage_name in {"verification-coverage-planner", "sprint-execution-compliance-monitor"}:
         return {
             "command_key": "traceability-audit",
@@ -360,6 +387,7 @@ def build_stage_command(
                 sprint,
                 "--out-dir",
                 out_dir,
+                "--enforce",
             ],
             "notes": "Executed via architecture/design authoring workpack generator.",
         }
@@ -376,6 +404,52 @@ def build_stage_command(
                 out_dir,
             ],
             "notes": "Executed via optional planning-time traceability blocker backlog generator.",
+        }
+
+    if stage_name == "traceability-verification-backfill-automation":
+        return {
+            "command_key": "traceability-verification-backfill",
+            "command": [
+                sys.executable,
+                str(repo_root / "scripts" / "run_traceability_verification_backfill.py"),
+                "--sprint",
+                sprint,
+            ],
+            "notes": "Executed via automated core-document verification backfill from independent review gaps.",
+        }
+
+    if stage_name == "traceability-remediation-cycle":
+        return {
+            "command_key": "traceability-remediation-cycle",
+            "command": [
+                sys.executable,
+                str(repo_root / "scripts" / "run_traceability_remediation_cycle.py"),
+                "--sprint",
+                sprint,
+                "--policy-profile",
+                profile,
+                "--enforcement-mode",
+                enforcement_mode,
+                "--trend-window",
+                str(configured_trend_window),
+                "--out-dir",
+                out_dir,
+            ],
+            "notes": "Executed via explicit select-plan-remediate-review remediation cycle.",
+        }
+
+    if stage_name == "unimplemented-requirement-triage":
+        return {
+            "command_key": "unimplemented-requirement-triage",
+            "command": [
+                sys.executable,
+                str(repo_root / "scripts" / "run_unimplemented_requirement_triage.py"),
+                "--sprint",
+                sprint,
+                "--target-sprint",
+                "2026_099",
+            ],
+            "notes": "Executed via unimplemented requirement needed-vs-deletion triage and 2026_099 issue-plan drafting.",
         }
 
     if stage_name in {"remediation-readiness", "remediation-readiness-strategist"}:

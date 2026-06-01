@@ -17,6 +17,8 @@ Define the system-level design for how the Multi-Agent Threat Modeler interacts 
 
 ## Related Requirements
 
+- PRJ-005 End-to-End Pipeline Capability: integration boundaries must support complete stage-to-stage threat modeling flow with approved handoff behavior.
+- PRJ-026 Inter-Agent Handoff Integrity: external and internal interface boundaries must preserve approved handoff records and associated metadata.
 - PRJ-009 Deployment Mode Flexibility: integration boundaries must support offline, non-live, and policy-approved connected operating modes.
 - PRJ-012 Role-Based Access Control: interface design must preserve role-gated actions and separation of duty.
 - PRJ-021 Component Semantic Version Authority: external evidence consumers need version-aware delivery artifacts.

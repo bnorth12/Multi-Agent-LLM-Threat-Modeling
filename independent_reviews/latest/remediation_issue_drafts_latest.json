@@ -1,0 +1,64 @@
+{
+  "generated_at": "2026-05-31T23:39:03",
+  "sprint": "2026_102",
+  "review_artifact": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\independent_reviews\\latest\\independent_review_2026-102_pre-push.md",
+  "issue_drafts": [
+    {
+      "issue_key": "LB-001-IMPLEMENTATION-EVIDENCE",
+      "sprint": "2026_102",
+      "title": "[2026_102] Implementation Evidence remediation carry-forward",
+      "priority": "P0",
+      "source_bucket": "Implementation Evidence",
+      "count": 1,
+      "representative_items": [
+        "None"
+      ],
+      "starter_actions": [
+        "Create or link the sprint issue using this backlog bucket as the issue body.",
+        "Assign an owner, acceptance criteria, and evidence target before sprint commitment."
+      ],
+      "acceptance_criteria": [
+        "The selected backlog item is opened as a sprint issue with a unique issue key.",
+        "The issue is linked to the sprint tracker and marked with the sprint label."
+      ]
+    },
+    {
+      "issue_key": "LB-002-VERIFICATION-EVIDENCE",
+      "sprint": "2026_102",
+      "title": "[2026_102] Verification Evidence remediation carry-forward",
+      "priority": "P0",
+      "source_bucket": "Verification Evidence",
+      "count": 1,
+      "representative_items": [
+        "None"
+      ],
+      "starter_actions": [
+        "Create or link the sprint issue using this backlog bucket as the issue body.",
+        "Assign an owner, acceptance criteria, and evidence target before sprint commitment."
+      ],
+      "acceptance_criteria": [
+        "The selected backlog item is opened as a sprint issue with a unique issue key.",
+        "The issue is linked to the sprint tracker and marked with the sprint label."
+      ]
+    },
+    {
+      "issue_key": "LB-003-ARCHITECTURE-DESIGN-TRAC",
+      "sprint": "2026_102",
+      "title": "[2026_102] Architecture/Design Traceability remediation carry-forward",
+      "priority": "P1",
+      "source_bucket": "Architecture/Design Traceability",
+      "count": 1,
+      "representative_items": [
+        "None"
+      ],
+      "starter_actions": [
+        "Create or link the sprint issue using this backlog bucket as the issue body.",
+        "Assign an owner, acceptance criteria, and evidence target before sprint commitment."
+      ],
+      "acceptance_criteria": [
+        "The selected backlog item is opened as a sprint issue with a unique issue key.",
+        "The issue is linked to the sprint tracker and marked with the sprint label."
+      ]
+    }
+  ]
+}

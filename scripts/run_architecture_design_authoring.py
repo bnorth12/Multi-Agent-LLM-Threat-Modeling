@@ -17,11 +17,22 @@ def find_remediation_plan(repo_root: Path, sprint: str, explicit_path: str) -> P
         raise FileNotFoundError(f"Remediation plan not found: {candidate.as_posix()}")
 
     patterns = [
+        f"planning/issues/issue_{sprint}_*.md",
+        f"planning/issues/issue_{sprint.replace('_', '-')}_*.md",
+        f"planning/issues/issue_{sprint.replace('-', '_')}_*.md",
         "planning/Sprint_Remediation_Issue_*.md",
         f"planning/Sprint_{sprint}_Remediation_*.md",
     ]
     for pattern in patterns:
-        candidates = sorted(repo_root.glob(pattern))
+        candidates = sorted(
+            repo_root.glob(pattern),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+        for candidate in candidates:
+            text = candidate.read_text(encoding="utf-8", errors="ignore")
+            if "## Remediation Targets" in text:
+                return candidate
         if candidates:
             return candidates[0]
 
@@ -34,7 +45,7 @@ def parse_evidence_targets(lines: List[str]) -> List[str]:
     capture = False
     for line in lines:
         stripped = line.strip()
-        if stripped == "## Evidence Targets":
+        if stripped in {"## Evidence Targets", "## Remediation Targets"}:
             capture = True
             continue
         if capture and stripped.startswith("## "):
@@ -61,6 +72,26 @@ def build_workpack(repo_root: Path, plan_path: Path) -> Dict[str, object]:
         gaps.append("Requirement IDs are present but architecture/design references are missing from evidence targets.")
     if implementation_targets and not verification_targets:
         gaps.append("Implementation targets are listed without verification targets.")
+
+    if requirement_ids and architecture_targets:
+        missing_requirement_evidence: Dict[str, List[str]] = {}
+        for req_id in requirement_ids:
+            evidence_hits: List[str] = []
+            for rel in architecture_targets:
+                target = repo_root / rel
+                if not target.exists():
+                    continue
+                text = target.read_text(encoding="utf-8", errors="ignore")
+                if req_id in text:
+                    evidence_hits.append(rel)
+            if not evidence_hits:
+                missing_requirement_evidence[req_id] = []
+
+        if missing_requirement_evidence:
+            for req_id in sorted(missing_requirement_evidence):
+                gaps.append(
+                    f"Requirement {req_id} is not found in architecture/design authority targets listed by remediation plan."
+                )
 
     return {
         "timestamp": dt.datetime.now().isoformat(timespec="seconds"),
@@ -161,6 +192,11 @@ def main() -> int:
         default="",
         help="Optional workspace-relative path to a remediation sprint markdown file",
     )
+    parser.add_argument(
+        "--enforce",
+        action="store_true",
+        help="Return non-zero when workpack gaps are detected",
+    )
     args = parser.parse_args()
 
     repo_root = Path(__file__).resolve().parents[1]
@@ -175,6 +211,9 @@ def main() -> int:
     print(f"- Implementation targets: {len(workpack['implementation_targets'])}")
     print(f"- Verification targets: {len(workpack['verification_targets'])}")
     print(f"- Gaps: {len(workpack['gaps'])}")
+    if args.enforce and workpack["gaps"]:
+        print("Architecture/design authoring workpack enforcement failed due to detected gaps.")
+        return 1
     return 0
 
 

@@ -28,6 +28,10 @@ Establish Sprint 2026-013 governance execution scaffold and begin hierarchy alig
 
 - docs/architecture/Function_Hierarchy_Registry.md
 - docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md
+- docs/architecture/Multi_Agent_Logical_Decomposition.md
+- docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md
+- docs/design/software/Runtime_And_Orchestration_Design_Specification.md
+- docs/design/system/External_Interface_And_Integration_Design_Package.md
 - docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md
 - Requirements/15_End_To_End_Traceability_Attributes_Registry.md
 

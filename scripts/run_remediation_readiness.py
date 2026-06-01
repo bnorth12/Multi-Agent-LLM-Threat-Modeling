@@ -7,6 +7,8 @@ import argparse
 import datetime as dt
 import json
 import re
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -437,6 +439,199 @@ def write_issue_draft_report(out_dir: Path, result: Dict[str, Any]) -> None:
         history_file.write("\n")
 
 
+def build_concrete_remediation_issue(result: Dict[str, Any]) -> Dict[str, Any] | None:
+    themes = result.get("themes", [])
+    top_theme = next((theme for theme in themes if str(theme.get("name", "")).lower() == "implementation evidence closure"), None)
+    if not top_theme:
+        return None
+
+    sprint = result.get("sprint", "2026_12")
+    return {
+        "issue_key": f"RR-{sprint}-IMPLEMENTATION-EVIDENCE",
+        "sprint": sprint,
+        "title": f"[{sprint}] Implementation Evidence closure remediation",
+        "priority": top_theme.get("priority", "P0"),
+        "status": "Sprint Committed",
+        "requirement_id": "RHMI-017",
+        "parent_capability_id": "C16-PRJ-001",
+        "parent_function_id": "F-S12-018-RHMI_017-L2",
+        "child_function_id": "F-S12-018-RHMI_017-L2",
+        "decomposition_level": "L2",
+        "allocated_component_module": "frontend/src/App.test.tsx",
+        "verification_method": "Governance",
+        "data_flow_id": "DF-S12-018-RHMI_017",
+        "summary": f"Implementation evidence closure | count={top_theme.get('count', 0)} | coverage={top_theme.get('coverage', 'n/a')}",
+        "starter_actions": list(top_theme.get("starter_actions", [])),
+        "acceptance_criteria": list(top_theme.get("acceptance_criteria", [])),
+        "examples": list(top_theme.get("examples", [])),
+        "review_artifact": result.get("review_artifact", ""),
+        "remediation_floor": result.get("remediation_floor"),
+    }
+
+
+def write_concrete_remediation_work_item(out_dir: Path, result: Dict[str, Any]) -> None:
+    committed = build_concrete_remediation_issue(result)
+    if not committed:
+        return
+
+    sprint = committed["sprint"]
+    issue_path = REPO_ROOT / "planning" / "issues" / f"issue_{sprint}_Implementation_Evidence_Closure.md"
+    issue_path.parent.mkdir(parents=True, exist_ok=True)
+
+    lines = [
+        f"# {committed['issue_key']} - {committed['title'].split('] ', 1)[-1]}",
+        "",
+        f"Sprint: {sprint}",
+        f"Status: {committed['status']}",
+        "GitHub Issue: Pending Create",
+        f"Priority: {committed['priority']}",
+        "Type: Remediation / Implementation",
+        "Source Bucket: Implementation Evidence",
+        f"Requirement ID: {committed['requirement_id']}",
+        f"Parent Capability ID: {committed['parent_capability_id']}",
+        f"Parent Function ID: {committed['parent_function_id']}",
+        f"Child Function ID: {committed['child_function_id']}",
+        f"Decomposition Level: {committed['decomposition_level']}",
+        f"Allocated Component/Module: {committed['allocated_component_module']}",
+        f"Verification Method: {committed['verification_method']}",
+        f"Data-Flow ID: {committed['data_flow_id']}",
+        f"Review Artifact: {committed['review_artifact']}",
+        f"Remediation Floor: {committed['remediation_floor']:.1f}%" if committed.get("remediation_floor") is not None else "Remediation Floor: n/a",
+        "",
+        "## Remediation Objective",
+        "",
+        "Convert the highest-priority implementation evidence theme into a concrete sprint work item with explicit owners, evidence targets, and closure criteria.",
+        "",
+        "## Related Requirements",
+        "",
+        f"- {committed['requirement_id']}",
+        "",
+        "## Source References",
+        "",
+        "- Requirements/04_Traceability_Matrix.md",
+        "- Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "- docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "- docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "",
+        "## Existing Implementation Evidence",
+        "",
+        "- frontend/src/App.tsx",
+        "- frontend/src/App.test.tsx",
+        "- src/threat_modeler/backend/run_manager.py",
+        "- Tests/integration/test_agent_pipeline_completeness.py",
+        "- Tests/test_hmi_backend_api.py",
+        "",
+        "## Existing Verification Evidence",
+        "",
+        "- Tests/integration/test_agent_pipeline_completeness.py",
+        "- Tests/test_hmi_backend_api.py",
+        "- Tests/unit/test_framework_orchestrator_langgraph.py",
+        "- scripts/verify_sprint_traceability.py",
+        "",
+        "## Hierarchy Chain",
+        "",
+        "- L0 Capability: CAP-L0-THREAT-MODELER",
+        f"- L1 Parent Capability: {committed['parent_capability_id']}",
+        f"- L1 Parent Function: {committed['parent_function_id']}",
+        f"- L2 Child Function: {committed['child_function_id']}",
+        "",
+        "## Remediation Targets",
+        "",
+        "- docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "- docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "- Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "",
+        "## Exit Criteria",
+        "",
+        "- Requirement has complete structural trace legs in the next independent review pass.",
+        "- Hierarchy fields are present and consistent across tracker, issue file, architecture matrix, design package, and registry.",
+        "- Allocation and verification method remain linked to implementation and verification evidence.",
+        "",
+        "## Starter Actions",
+        "",
+    ]
+    if committed.get("starter_actions"):
+        lines.extend([f"- {item}" for item in committed["starter_actions"]])
+    else:
+        lines.append("- none")
+
+    lines.extend([
+        "",
+        "## Acceptance Criteria",
+        "",
+    ])
+    if committed.get("acceptance_criteria"):
+        lines.extend([f"- {item}" for item in committed["acceptance_criteria"]])
+    else:
+        lines.append("- none")
+
+    lines.extend([
+        "",
+        "## Representative Examples",
+        "",
+    ])
+    if committed.get("examples"):
+        lines.extend([f"- {item}" for item in committed["examples"]])
+    else:
+        lines.append("- none")
+
+    lines.extend([
+        "",
+        "## Execution Notes",
+        "",
+        "1. Assign an owner and split the work into the smallest cohesive implementation slices.",
+        "2. Attach evidence targets for the missing implementation legs before closure.",
+        "3. Re-run the review after the committed work item is updated to capture the concrete remediation delta.",
+    ])
+    issue_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    tracker_path = REPO_ROOT / "planning" / "issues" / f"Sprint_{sprint}_Issue_Tracker.md"
+    tracker_text = tracker_path.read_text(encoding="utf-8") if tracker_path.exists() else ""
+    committed_block = [
+        "## Committed Remediation Work Items",
+        "",
+        "| ID | GitHub Issue | Type | Priority | Status | Summary | Related Requirements | Primary Files |",
+        "|---|---|---|---|---|---|---|---|",
+        "| RR-2026_102-IMPLEMENTATION-EVIDENCE | Pending Create | Remediation / Implementation | P0 | Sprint Committed | Implementation evidence closure | 74 requirement ids in the top readiness theme | planning/issues/issue_2026_102_Implementation_Evidence_Closure.md |",
+        "",
+    ]
+
+    marker_start = "<!-- AUTO-COMMITTED-REMEDIATION:START -->"
+    marker_end = "<!-- AUTO-COMMITTED-REMEDIATION:END -->"
+    committed_block_text = "\n".join([marker_start, *committed_block, marker_end])
+    if marker_start in tracker_text and marker_end in tracker_text:
+        before = tracker_text.split(marker_start, 1)[0].rstrip()
+        after = tracker_text.split(marker_end, 1)[1].lstrip()
+        tracker_text = f"{before}\n\n{committed_block_text}\n\n{after}".rstrip() + "\n"
+    else:
+        tracker_text = tracker_text.rstrip() + "\n\n" + committed_block_text + "\n"
+
+    tracker_path.write_text(tracker_text, encoding="utf-8")
+
+
+def backfill_traceability_registry(result: Dict[str, Any], review_json: Optional[Path]) -> None:
+    if review_json is None or not review_json.exists():
+        return
+
+    backfill_script = REPO_ROOT / "scripts" / "run_traceability_verification_backfill.py"
+    if not backfill_script.exists():
+        return
+
+    subprocess.run(
+        [
+            sys.executable,
+            str(backfill_script),
+            "--sprint",
+            result["sprint"],
+            "--review-json",
+            str(review_json),
+        ],
+        cwd=str(REPO_ROOT),
+        check=True,
+        text=True,
+    )
+
+
 def write_report(out_dir: Path, result: Dict[str, Any]) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     history_dir = REPO_ROOT / "independent_reviews" / "history"
@@ -514,6 +709,8 @@ def main() -> int:
     write_report(Path(args.out_dir), result)
     write_legacy_backlog_report(Path(args.out_dir), result)
     write_issue_draft_report(Path(args.out_dir), result)
+    write_concrete_remediation_work_item(Path(args.out_dir), result)
+    backfill_traceability_registry(result, review_json)
 
     print("Remediation readiness analysis complete")
     print(f"- sprint: {result['sprint']}")
@@ -522,6 +719,8 @@ def main() -> int:
     print(f"- remediation floor: {result['remediation_floor']:.1f}%" if result.get("remediation_floor") is not None else "- remediation floor: n/a")
     print("- legacy findings backlog: written")
     print("- remediation issue drafts: written")
+    print("- committed implementation-evidence remediation item: written")
+    print("- traceability registry backfill: requested")
     return 0
 
 

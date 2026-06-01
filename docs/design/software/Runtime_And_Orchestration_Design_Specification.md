@@ -17,6 +17,7 @@ Define the software design for the runtime control plane that executes, governs,
 
 ## Related Requirements
 
+- PRJ-005 Core Threat Modeling Pipeline: orchestration must execute trust-boundary analysis, STRIDE scoring, threat generation, mitigation mapping, STIX packaging, diagram generation, and report generation as an integrated governed sequence.
 - PRJ-006 HITL Governance: the runtime must pause, collect, and apply governed human decisions at required control points.
 - PRJ-011 Export Artifact Set: orchestration must close each run with the expected export bundle or an explicit degraded-artifact record.
 - PRJ-021 Component Semantic Version Authority: runtime evidence must capture which versioned components produced the delivered run outputs.
@@ -161,3 +162,16 @@ The following design extensions are now part of the runtime and orchestration ba
 
 9. PRJ-001 / F-S12-033-ORCH_001-L2
 - Orchestration baseline controls mapped to PRJ-001 SHALL preserve deterministic run-state governance when architecture disposition updates are applied.
+
+## 8. Governance and State Continuity Design Allocations
+
+The following requirement IDs are allocated to runtime governance control behavior and are part of the active architecture/design baseline:
+
+1. ADM-001, ADM-002, ADM-003, ADM-004, ADM-005, ADM-006
+- Governance workflow controls SHALL enforce issue-linked branch execution, pull-request linkage, checklist retention, release-readiness aggregation, and recurring cadence reviews through the orchestrated governance execution path.
+
+2. C01-ORCH-004, C01-ORCH-005
+- Orchestrator control logic SHALL preserve gate-context persistence and approved handoff record continuity across every stage transition.
+
+3. C01-STATE-001, C01-STATE-002, C01-STATE-003
+- Runtime state authority SHALL version stage snapshots, preserve approved baselines as immutable history entries, and block handoff on schema-validation failure with structured error signaling.

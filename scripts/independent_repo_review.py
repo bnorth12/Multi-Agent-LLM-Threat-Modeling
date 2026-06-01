@@ -32,7 +32,14 @@ ISSUE_ID_PATTERN = re.compile(r"^(D-S\d{2}-\d{3}|S\d{2}-\d{3})$")
 GITHUB_ISSUE_PATTERN = re.compile(r"#\d+|github\.com/.*/issues/\d+", re.IGNORECASE)
 GITHUB_URL_PATTERN = re.compile(r"github\.com/([^/]+/[^/]+)/issues/(\d+)", re.IGNORECASE)
 CODE_PATH_PATTERN = re.compile(r"\b(?:src/|frontend/src/|scripts/|Tests/)[\w\-./]+")
-TEST_EVIDENCE_PATTERN = re.compile(r"\b(?:Tests/|pytest|test_[\w\-./]+\.py)\b", re.IGNORECASE)
+TEST_EVIDENCE_PATTERN = re.compile(
+    r"\b(?:Tests/|pytest|test_[\w\-./]+\.py|[\w\-./]+(?:\.test|\.spec)\.(?:ts|tsx|js|jsx|py))\b",
+    re.IGNORECASE,
+)
+TEST_FILE_PATH_PATTERN = re.compile(
+    r"(?:^|/)(?:test_[\w\-./]+\.py|[\w\-.]+(?:\.test|\.spec)\.(?:ts|tsx|js|jsx|py))$",
+    re.IGNORECASE,
+)
 ARCH_DESIGN_PATH_PATTERN = re.compile(r"\bdocs/(?:architecture|design)/[\w\-./]+")
 
 ALLOWED_REQ_PREFIXES = {
@@ -814,6 +821,12 @@ def build_requirement_traceability(
             code_refs = CODE_PATH_PATTERN.findall(line)
             test_refs = TEST_EVIDENCE_PATTERN.findall(line)
             arch_refs = ARCH_DESIGN_PATH_PATTERN.findall(line)
+
+            # Treat test/spec source paths as verification evidence even when they
+            # are listed under frontend/src or src path prefixes.
+            for ref in code_refs:
+                if TEST_FILE_PATH_PATTERN.search(ref):
+                    test_refs.append(ref)
 
             for rid in scoped_ids:
                 if code_refs:

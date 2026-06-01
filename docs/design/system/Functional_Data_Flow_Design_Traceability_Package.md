@@ -26,6 +26,7 @@ This package is the design-side authority for data-flow behavior and transformat
 | DF-UI-012A | Stage Selection Persistence Flow | Configuration save action | Stage enablement selections and validation policy | Persist selection set and enforce non-empty enabled-stage rule | Stored stage configuration and run-start eligibility state | UI configuration boundary | Empty-selection validation failure blocks execution start | C13-UI-012A-CAP | F-GUI_012A-TRACE-L2 | GUI-012A |
 | DF-UI-029 | Prompt-Response Correlation Flow | Prompt history selection and response rendering | Prompt record ID, response payload set | Response filtering by prompt ID and stale-response suppression | Correlated prompt-response projection | Prompt history and response retrieval boundary | Correlation mismatch suppresses stale payload and raises diagnostics flag | C13-UI-029-CAP | F-GUI_029-TRACE-L2 | GUI-029, PRJ-018 |
 | DF-PRJ-024 | Visible Browser Upload Validation Flow | Browser validation scenario start | Approved fixture ICD and markdown narrative files | UI upload execution, fixture ingestion checks, evidence capture | Validation report and run input evidence artifacts | Browser automation boundary to UI input surface | Upload mismatch or fixture rejection records validation failure | C16-PRJ-024-CAP | F-PRJ_024-TRACE-L2 | PRJ-024, VS-009 |
+| DF-ADM-001 | Administration Governance Control Verification Flow | Sprint governance pre-push and pre-merge checks | Feature branch checklist template, release process policy, administration requirement baseline | Governance token checks, policy conformance verification, control result publication | Administration control verification status and remediation signal | Governance policy boundary between planning controls and execution gates | Missing required governance controls opens remediation and blocks closure readiness | C18-ADM-001 | F-ADM-GOV-CONTROLS-L2 | ADM-001, ADM-002, ADM-003, ADM-004, ADM-005, ADM-006 |
 
 ## Traceability Bridge
 
@@ -42,10 +43,16 @@ Use this table to bind each flow to downstream realization artifacts.
 | DF-UI-012A | docs/architecture/HMI_Architecture_Blueprint.md | docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | frontend/src/components/ModelConfiguration.tsx | Tests/test_hmi_backend_api.py | Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 | DF-UI-029 | docs/architecture/HMI_Architecture_Blueprint.md | docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | frontend/src/components/LastPromptView.tsx | Tests/test_hmi_backend_api.py | Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 | DF-PRJ-024 | docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md | docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | scripts/live_browser_e2e_smoke_react.py | Tests/e2e/test_browser_run_validation.py | Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
+| DF-ADM-001 | docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md | docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | scripts/verify_administration_controls.py | Tests/unit/test_administration_controls.py | Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 
 ## Review Rule
 
 Each active remediation slice must confirm that every governing flow row has non-empty links in all bridge columns before closeout.
+
+## Sprint 2026-013 Coverage Anchors
+
+- PRJ-005 is allocated through orchestration and data-flow paths in this package and its bridge rows.
+- PRJ-026 is allocated through approved handoff and runtime state continuity data-flow paths in this package and its bridge rows.
 
 ### Closed Slice Evidence
 
