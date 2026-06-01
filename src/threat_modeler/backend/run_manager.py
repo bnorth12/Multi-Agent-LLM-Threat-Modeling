@@ -10,6 +10,8 @@ JSON checkpoint file so that browser-reload recovery survives Streamlit
 reruns.  The ``FrameworkState`` objects themselves are kept in-memory only;
 use the snapshot helpers in ``ui/runtime_io`` when persistent state snapshots
 are needed.
+
+Requirement implementation anchors: C01-STATE-001, C01-STATE-002, C01-STATE-003
 """
 
 from __future__ import annotations

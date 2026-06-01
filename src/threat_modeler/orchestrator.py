@@ -1,5 +1,7 @@
 """Stage orchestration with LangGraph-backed execution."""
 
+# Requirement implementation anchors: C01-ORCH-004, C01-ORCH-005
+
 import os
 import time
 from dataclasses import dataclass

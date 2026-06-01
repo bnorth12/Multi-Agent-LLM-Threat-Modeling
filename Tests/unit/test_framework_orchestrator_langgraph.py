@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+# Verification anchors: C01-ORCH-004, C01-ORCH-005, C01-STATE-001, C01-STATE-002, C01-STATE-003
+
 import pytest
 
 from threat_modeler.config import ModelSelection, PipelineSettings, RuntimeSettings

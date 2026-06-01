@@ -8,6 +8,8 @@ Covers:
 - Contract validation passes at every stage transition in the full fixture run
 - A stage that produces invalid state causes ValidationHaltError before the next stage
 - Fixture mode / LLM mode selected solely by adapter configuration
+
+Verification anchors: ADM-001, ADM-002, ADM-003, ADM-004, ADM-005, ADM-006
 """
 
 from __future__ import annotations
