@@ -431,7 +431,7 @@ def build_stage_command(
                 "--enforcement-mode",
                 enforcement_mode,
                 "--trend-window",
-                str(configured_trend_window),
+                str(trend_window),
                 "--out-dir",
                 out_dir,
             ],
