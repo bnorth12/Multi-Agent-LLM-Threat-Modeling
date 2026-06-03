@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-03T05:27:01",
+  "generated_at": "2026-06-03T05:34:29",
   "sprint": "2026-013",
   "run_context": "pre-push",
   "requirement_descriptions": {
@@ -6936,11 +6936,7 @@
   "req_without_arch_design_trace": [],
   "issue_rows_total": 4,
   "issue_rows_without_requirements": [],
-  "issue_rows_without_github_ref": [
-    "S13-002 (C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/planning/issues/Sprint_2026_013_Issue_Tracker.md)",
-    "S13-003 (C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/planning/issues/Sprint_2026_013_Issue_Tracker.md)",
-    "S13-004 (C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/planning/issues/Sprint_2026_013_Issue_Tracker.md)"
-  ],
+  "issue_rows_without_github_ref": [],
   "planned_rows_missing_requirement": [],
   "required_traceability_artifacts": [
     "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -6990,10 +6986,10 @@
   "traceability_artifacts_unreferenced": [],
   "full_remediation_complete": true,
   "branch_awareness": {
-    "current_branch": "main",
-    "head_commit": "1bce584",
-    "merge_base_with_origin_main": "6def0565656061c971347458bbdd429d7c4565f6",
-    "ahead_of_origin_main": 7,
+    "current_branch": "closeout/sprint-2026-013",
+    "head_commit": "a05cd08",
+    "merge_base_with_origin_main": "1bce584a114dabfc3c9511f5e7d844324ad784e4",
+    "ahead_of_origin_main": 2,
     "behind_origin_main": 0,
     "working_tree_dirty": false,
     "merge_risk": "MODERATE",
@@ -7027,50 +7023,45 @@
     "missing_field_rows": []
   },
   "policy_profile": {
-    "profile_name": "strict",
+    "profile_name": "default",
     "policy_file": "config/independent_review_policy_profiles.json",
-    "enforce_on": [
-      "critical",
-      "major"
-    ],
+    "enforce_on": [],
     "remediation_health_floor": 85.0
   },
   "severity_policy": {
-    "req_impl_threshold": 0.8,
-    "req_verify_threshold": 0.75,
-    "req_arch_threshold": 0.8,
-    "issue_quality_threshold": 0.95,
+    "req_impl_threshold": 0.7,
+    "req_verify_threshold": 0.6,
+    "req_arch_threshold": 0.7,
+    "issue_quality_threshold": 0.9,
     "max_planned_missing_requirement": 0
   },
   "severity_summary": {
     "critical": [],
-    "major": [
-      "Issue governance quality ratio 0.62 is below threshold 0.95."
-    ],
+    "major": [],
     "minor": [],
     "informational": [
       "Branch merge risk is MODERATE: Branch is ahead of origin/main; integration impact must be reviewed."
     ]
   },
   "trend_snapshot": {
-    "timestamp": "2026-06-03T05:27:01",
+    "timestamp": "2026-06-03T05:34:29",
     "sprint": "2026-013",
-    "score": 96.2,
+    "score": 100.0,
     "critical_count": 0,
-    "major_count": 1,
+    "major_count": 0,
     "minor_count": 0,
     "informational_count": 1,
     "req_impl_ratio": 1.0,
     "req_verify_ratio": 1.0,
     "req_arch_ratio": 1.0,
     "full_chain_ratio": 1.0,
-    "issue_quality_ratio": 0.625
+    "issue_quality_ratio": 1.0
   },
   "trend_delta": {
-    "previous_timestamp": "2026-06-01T19:11:17",
-    "score_delta": 0.0,
+    "previous_timestamp": "2026-06-03T05:27:01",
+    "score_delta": 3.8,
     "critical_delta": 0,
-    "major_delta": 0,
+    "major_delta": -1,
     "minor_delta": 0,
     "informational_delta": 0
   },
@@ -7079,22 +7070,13 @@
     "overall_trend": "regressing",
     "entries": [
       {
-        "timestamp": "2026-05-31T23:31:42",
-        "score": 99.8,
-        "critical_count": 0,
-        "major_count": 1,
-        "minor_count": 1,
-        "informational_count": 2,
-        "direction": "baseline"
-      },
-      {
         "timestamp": "2026-05-31T23:35:01",
         "score": 100.0,
         "critical_count": 0,
         "major_count": 1,
         "minor_count": 1,
         "informational_count": 2,
-        "direction": "improving"
+        "direction": "baseline"
       },
       {
         "timestamp": "2026-05-31T23:38:40",
@@ -7122,6 +7104,15 @@
         "minor_count": 0,
         "informational_count": 1,
         "direction": "stable"
+      },
+      {
+        "timestamp": "2026-06-03T05:34:29",
+        "score": 100.0,
+        "critical_count": 0,
+        "major_count": 0,
+        "minor_count": 0,
+        "informational_count": 1,
+        "direction": "improving"
       }
     ]
   },
@@ -7146,23 +7137,21 @@
     "Required traceability artifacts are validated for existence and planning/remediation references.",
     "Traceability artifact findings remain non-blocking until full remediation is marked complete in the latest disposition index."
   ],
-  "overall_score": 96.2,
-  "issue_quality_ratio": 0.625,
+  "overall_score": 100.0,
+  "issue_quality_ratio": 1.0,
   "kpi_delta": {
     "req_impl_pct_delta": 0.0,
     "req_verify_pct_delta": 0.0,
     "req_arch_pct_delta": 0.0,
     "full_chain_pct_delta": 0.0,
-    "issue_quality_pct_delta": 0.0,
-    "critical_major_count_delta": 0.0
+    "issue_quality_pct_delta": 37.5,
+    "critical_major_count_delta": -1.0
   },
   "remediation_strategy": {
-    "required": true,
-    "planning_readiness": "not planning-ready",
+    "required": false,
+    "planning_readiness": "planning-ready",
     "health_floor": 85.0,
-    "trigger_reasons": [
-      "1 major finding(s) remain open."
-    ],
+    "trigger_reasons": [],
     "summary_notes": [
       "Remediation should be organized by prefix cluster and evidence type, not by raw list order.",
       "The highest-priority work is the set that removes critical and major findings first.",
