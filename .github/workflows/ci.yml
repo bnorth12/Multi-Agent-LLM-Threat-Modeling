@@ -149,6 +149,33 @@ jobs:
       - name: Enforce cross-domain exception policy gate
         run: python scripts/validate_cross_domain_exception_policy.py
 
+      - name: Enforce reachable full-chain traceability gate
+        run: |
+          python scripts/verify_reachable_full_chain_traceability.py \
+            --report test_reports/reachable_full_chain_traceability_report.md
+
+      - name: Enforce core registry Phase 3 hardening checks
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}" --depth=1
+            python scripts/verify_core_registry_hardening.py \
+              --changed-against "origin/${{ github.base_ref }}" \
+              --report-json test_reports/core_registry_hardening_report.json
+          else
+            python scripts/verify_core_registry_hardening.py \
+              --changed-against HEAD~1 \
+              --report-json test_reports/core_registry_hardening_report.json
+          fi
+
+      - name: Upload core registry hardening report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-registry-hardening-report
+          path: test_reports/core_registry_hardening_report.json
+          if-no-files-found: ignore
+
       - name: Run full test suite (Lane A gate)
         run: python -m pytest Tests/ -q --tb=short -m "not llm_live and not llm_live_browser"
 
