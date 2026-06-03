@@ -41,4 +41,3 @@ Deferred findings are intentionally non-blocking for Sprint 2026-12 closure and 
 
 - Local markdown lint was run on touched governance files and identified pre-existing style debt in legacy issue docs.
 - No blocking workflow syntax errors remain in .github/workflows/ci.yml or .github/workflows/sprint-traceability.yml.
-

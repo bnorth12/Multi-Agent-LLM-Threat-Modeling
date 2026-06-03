@@ -13,8 +13,8 @@ The browser-based UI was falling back to **Local/Fixture** mode instead of maint
 ## Root Cause Analysis
 
 1. **Session State Serialization Issue**: `RuntimeSettings` dataclass may not persist properly across full page reruns (Streamlit's navigation model)
-2. **No Visibility into Fallback**: No indicator showing which provider was active, making it hard to debug
-3. **Silent Fallback**: When `settings_override` is not found in session_state, the code falls back to `build_default_settings()` which defaults to fixture mode without warning
+1. **No Visibility into Fallback**: No indicator showing which provider was active, making it hard to debug
+1. **Silent Fallback**: When `settings_override` is not found in session_state, the code falls back to `build_default_settings()` which defaults to fixture mode without warning
 
 ## Solution Implemented
 
@@ -115,13 +115,13 @@ verify_provider_not_fallen_back()            # Verify provider + log fallback if
 ### Manual Test: Verify Provider Persists
 
 1. **Navigate** to Pipeline Configuration
-2. **Select** Provider: xAI/Grok
-3. **Click** Apply Settings → see `✅ Settings applied. Provider: xAI/Grok`
-4. **Check Sidebar** → should show: `xAI/Grok` + `✅ LIVE LLM`
-5. **Navigate** to Home screen
-6. **Verify Sidebar** → should STILL show: `xAI/Grok` + `✅ LIVE LLM`
-7. **Click** on 5+ different screens (Stage Results, Threat Review, Token Usage, etc.)
-8. **Verify** provider status remains consistent on all screens
+1. **Select** Provider: xAI/Grok
+1. **Click** Apply Settings → see `✅ Settings applied. Provider: xAI/Grok`
+1. **Check Sidebar** → should show: `xAI/Grok` + `✅ LIVE LLM`
+1. **Navigate** to Home screen
+1. **Verify Sidebar** → should STILL show: `xAI/Grok` + `✅ LIVE LLM`
+1. **Click** on 5+ different screens (Stage Results, Threat Review, Token Usage, etc.)
+1. **Verify** provider status remains consistent on all screens
 
 ### Console Test: Check Debug Logs
 
@@ -152,9 +152,9 @@ Open browser DevTools (F12) → Console tab, then navigate between screens:
 
 1. **Session State Persistence**: If session is lost (browser tab closed/reloaded), settings_override may not restore. Mitigated by persisting settings to run registry on execution start.
 
-2. **Cross-Tab Sync**: Settings changes in one tab don't auto-sync to another tab. User must refresh to see changes.
+1. **Cross-Tab Sync**: Settings changes in one tab don't auto-sync to another tab. User must refresh to see changes.
 
-3. **Initial Load**: First time loading a paused run may show "Unconfigured" briefly before syncing. Fixed on first navigation.
+1. **Initial Load**: First time loading a paused run may show "Unconfigured" briefly before syncing. Fixed on first navigation.
 
 ## Debugging: When to Check Logs
 
@@ -170,10 +170,11 @@ Open browser DevTools (F12) → Console tab, then navigate between screens:
 The provider status indicator works with the new `test_live_llm_validation.py` test suite:
 
 1. **Before running tests**: Verify sidebar shows "✅ LIVE LLM"
-2. **During test run**: Monitor token usage in Last Prompt screen
-3. **After test run**: Check console logs for `[PROVIDER OK]` on every screen
+1. **During test run**: Monitor token usage in Last Prompt screen
+1. **After test run**: Check console logs for `[PROVIDER OK]` on every screen
 
 This ensures that:
+
 - ✅ Live LLM is being used (not fixture)
 - ✅ Token counts are > 0 (not fixture fallback)
 - ✅ Prompts vary by stage (real LLM, not cached)
@@ -184,6 +185,6 @@ This ensures that:
 The new provider status verification system provides:
 
 1. **Visibility**: Always see which provider is active via sidebar metric
-2. **Verification**: Automatic validation on every screen change
-3. **Debugging**: Console logs pinpoint when/why fallback occurs
-4. **Confidence**: Verify live LLM is actually being used before relying on results
+1. **Verification**: Automatic validation on every screen change
+1. **Debugging**: Console logs pinpoint when/why fallback occurs
+1. **Confidence**: Verify live LLM is actually being used before relying on results

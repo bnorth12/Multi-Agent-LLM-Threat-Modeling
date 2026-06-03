@@ -37,6 +37,7 @@
 | `LICENSE` | Legal | License file | **Keep in root** (standard location) |
 
 ### Recommended Root Structure After Cleanup
+
 ```
 / (root)
 ├── README.md              ✅ Project overview

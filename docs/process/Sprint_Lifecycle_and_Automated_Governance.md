@@ -38,6 +38,7 @@ CLOSURE PHASE (Day 10)
 **Goal**: Ensure all backlog items have clear, testable requirements with unique IDs
 
 **Inputs**:
+
 - Backlog of user stories and technical items
 - Previous sprint retrospective feedback
 - Business/product priorities
@@ -49,27 +50,29 @@ CLOSURE PHASE (Day 10)
    - Clarify acceptance criteria
    - Estimate complexity/story points
 
-2. **Assign Requirement IDs**
+1. **Assign Requirement IDs**
    - Follow ID scheme: `COMPONENT-NNN[Letter]`
    - Examples: `HITL-012`, `GUI-003A`, `INT-015`, `PRJ-008`
    - If requirement created during sprint, assign next ID in sequence
 
-3. **Document Requirements**
+1. **Document Requirements**
    - Create/update file in `Requirements/` folder
    - Include: ID, name, description, AC, test method, related issue link (if exists)
    - Example: `Requirements/HITL-012_Conditional_Gate_State_Tracking.md`
 
-4. **Commit & Link**
+1. **Commit & Link**
    - Commit: `git add Requirements/; git commit -m "Groom backlog: Add HITL-012, HITL-013, HITL-014, HITL-015"`
 
 **Automation**: None (manual PO responsibility)
 
 **Success Criteria**:
+
 - ✅ All sprint candidates have unique requirement ID
 - ✅ All ACs are testable (verifiable, measurable)
 - ✅ All requirements documented in `Requirements/` folder
 
 **Tool References**:
+
 - Requirement template: [Requirements/COMPONENT-NNN_Example.md]
 - Traceability policy: [docs/process/Requirements_and_Issues_Policy.md]
 
@@ -80,6 +83,7 @@ CLOSURE PHASE (Day 10)
 **Goal**: Create one issue per accepted requirement; establish bidirectional traceability
 
 **Inputs**:
+
 - Groomed requirements from Phase 1a
 - Team capacity/velocity estimate
 
@@ -89,7 +93,7 @@ CLOSURE PHASE (Day 10)
    - Team commits to sprint workload
    - PO confirms priority/scope for accepted items
 
-2. **Create Issues** (one per requirement)
+1. **Create Issues** (one per requirement)
 
    ```bash
    # Example issue creation checklist per requirement:
@@ -109,18 +113,19 @@ CLOSURE PHASE (Day 10)
    Issue Assigned:    [Developer Name] - Target: [Sprint End Date]
    ```
 
-3. **Verify Bidirectional Link**
+1. **Verify Bidirectional Link**
    - Requirement → Issue: Requirement file links to issue ID
    - Issue → Requirement: Issue title/description references requirement ID
    - **Verification Command**: `grep -r "HITL-012" planning/ Requirements/`
 
-4. **Commit Issues**
+1. **Commit Issues**
    - Each issue stored as: `planning/issues/issue_2026_09_HITL_012_*.md`
    - Commit: `git add planning/issues/; git commit -m "Create sprint issues for HITL-012 through HITL-015"`
 
 **Automation**: CI/CD will verify links later (Phase 2)
 
 **Success Criteria**:
+
 - ✅ Every accepted requirement has corresponding issue
 - ✅ Every issue title references requirement ID
 - ✅ Every issue description contains requirement ID
@@ -133,6 +138,7 @@ CLOSURE PHASE (Day 10)
 **Goal**: Create single source of truth for sprint requirements → issues → code → tests
 
 **Inputs**:
+
 - Accepted requirements + created issues from Phases 1a-1b
 
 **Steps**:
@@ -143,32 +149,33 @@ CLOSURE PHASE (Day 10)
       planning/Sprint_2026_09_Traceability_Matrix.md
    ```
 
-2. **Update Header**
+1. **Update Header**
    - Sprint: 2026-09
    - Start Date: [Sprint Start]
    - End Date: [Sprint End]
    - Status: 🔄 Active
 
-3. **Populate Requirement Rows**
+1. **Populate Requirement Rows**
    - One row per accepted requirement
    - Columns:
      | # | REQ ID | REQ Name | Issue ID | Status | Assigned To | Test File | Verification Status | Notes |
    - Example:
      | 1 | HITL-012 | Trigger State Tracking | D-S08-020 | Open | Jane Doe | Tests/unit/test_hitl_gate_trigger_state.py | ⏳ Pending Implementation | Track triggered field |
 
-4. **Add to Version Control**
+1. **Add to Version Control**
    ```bash
    git add planning/Sprint_2026_09_Traceability_Matrix.md
    git commit -m "Create Sprint 2026-09 Traceability Matrix with 4 requirements"
    ```
 
-5. **Link in Planning Docs**
+1. **Link in Planning Docs**
    - Add link to `planning/README.md` or sprint summary
    - Share link in sprint kickoff meeting
 
 **Automation**: Script `scripts/verify_sprint_traceability.py` will read this file during execution phase
 
 **Success Criteria**:
+
 - ✅ Traceability matrix file exists with all sprint requirements
 - ✅ Every requirement row has: REQ ID, Issue ID, Assigned To, Test File column
 - ✅ Matrix committed to version control
@@ -187,23 +194,23 @@ CLOSURE PHASE (Day 10)
    - Team reviews all DoD criteria
    - Call out any waivers for this sprint
 
-2. **Review Requirements & Issues Policy**
+1. **Review Requirements & Issues Policy**
    - Share: `docs/process/Requirements_and_Issues_Policy.md`
    - Emphasize: Commit message format, issue reference requirements
    - Demonstrate: Good vs. bad commit messages
 
-3. **Demo CI/CD Automation**
+1. **Demo CI/CD Automation**
    - Show: `.github/workflows/sprint-traceability.yml`
    - Explain: What CI/CD will check, what will block PR
    - Demo: Example PR that passes vs. fails traceability checks
 
-4. **Distribute Tools Reference**
+1. **Distribute Tools Reference**
    - Email/Slack:
      - Verification script: `python scripts/verify_sprint_traceability.py --sprint 2026-09`
      - Definition of Done: `docs/process/Definition_of_Done.md`
      - GitHub Actions results: `.github/workflows/sprint-traceability.yml`
 
-5. **Sign-Off**
+1. **Sign-Off**
    - Team confirms understanding
    - Document in: `planning/Sprint_2026_09_Planning_Checklist.md` → Sprint Planning Sign-Off section
    - Sprint Lead signature
@@ -211,6 +218,7 @@ CLOSURE PHASE (Day 10)
 **Automation**: Documentation auto-generated (no execution automation)
 
 **Success Criteria**:
+
 - ✅ Team understands commit message format
 - ✅ Team knows CI/CD will block PRs without issue references
 - ✅ Team knows DoD requirements before starting work
@@ -233,12 +241,12 @@ CLOSURE PHASE (Day 10)
    git checkout -b D-S08-020/state-reporting
    ```
 
-2. **Write Code + Tests Together**
+1. **Write Code + Tests Together**
    - Create/modify code file: `src/threat_modeler/hitl/models.py`
    - Create test file: `Tests/unit/test_hitl_gate_trigger_state.py`
    - Tests reference requirement in header comment: `# Tests for HITL-012`
 
-3. **Commit with Issue Reference** (AUTOMATIC ENFORCEMENT)
+1. **Commit with Issue Reference** (AUTOMATIC ENFORCEMENT)
    ```bash
    # Good commit message (will PASS CI/CD):
    git commit -m "Implements HITL-012: Add triggered field to HitlGateRecord
@@ -252,12 +260,12 @@ CLOSURE PHASE (Day 10)
    git commit -m "Fix bug in models.py"  # ❌ No issue reference
    ```
 
-4. **Run Tests Locally**
+1. **Run Tests Locally**
    ```bash
    pytest Tests/unit/test_hitl_gate_trigger_state.py -v
    ```
 
-5. **Push & Create PR**
+1. **Push & Create PR**
    ```bash
    git push origin HITL-012/trigger-state-tracking
    # Create PR on GitHub with title: "[SPRINT] HITL-012: Implement Conditional Gate State Tracking"
@@ -272,6 +280,7 @@ CLOSURE PHASE (Day 10)
 **What Runs Automatically** (no manual action needed):
 
 ✅ **Commit Message Verification**
+
 - Regex check: Does commit message contain issue ID (D-S08-*, HITL-*, etc.)?
 - **Result**:
   - ✅ PASS: Green check, PR allowed to proceed
@@ -279,6 +288,7 @@ CLOSURE PHASE (Day 10)
   - **Error Message**: "Commit message must reference issue ID (e.g., `Fix D-S08-020: ...`)"
 
 ✅ **Issue → Requirement Traceability Check**
+
 - Script runs: `python scripts/verify_sprint_traceability.py --sprint 2026-09`
 - Checks: Does issue link to requirement?
 - **Result**:
@@ -286,6 +296,7 @@ CLOSURE PHASE (Day 10)
   - ❌ FAIL: Red check, blocks merge
 
 ✅ **Test File Reference Check**
+
 - Looks for: "Tests/" or "Test File" in issue description
 - **Result**:
   - ✅ PASS: Green check
@@ -341,23 +352,23 @@ CLOSURE PHASE (Day 10)
    python scripts/verify_sprint_traceability.py --sprint 2026-09
    ```
 
-2. **Review Output**
+1. **Review Output**
    - Look for ✅ PASS indicators
    - Look for ❌ FAIL or ⚠️ WARN indicators
    - Review any orphan issues or requirements
 
-3. **Address Gaps**
+1. **Address Gaps**
    - If orphan requirement (no issue): Create issue immediately
    - If orphan issue (no requirement): Link to requirement or create one
    - If missing test file: Add to issue description
    - If tests failing: Escalate to developer
 
-4. **Update Traceability Matrix**
+1. **Update Traceability Matrix**
    - Update "Verification Status" column
    - If issue moved to "In Progress": update status
    - If new test results available: update test pass rate
 
-5. **Report to Team**
+1. **Report to Team**
    - Share results in standup
    - Highlight any blockers
    - Confirm on track to closure
@@ -365,6 +376,7 @@ CLOSURE PHASE (Day 10)
 **Automation**: Verification script auto-generated output (manual interpretation)
 
 **Success Criteria**:
+
 - ✅ 0 orphan requirements
 - ✅ 0 orphan issues
 - ✅ All issues have test file reference
@@ -401,18 +413,18 @@ Dev: "HITL-012 is 80% done, tests all passing locally, PR under review.
    python scripts/verify_sprint_traceability.py --sprint 2026-09 --audit
    ```
 
-2. **Review Full Matrix**
+1. **Review Full Matrix**
    - All requirements: ✅ PASS
    - All issues: Closed or labeled "carryover"
    - All tests: Passing
    - All evidence: Collected
 
-3. **Check for Waivers**
+1. **Check for Waivers**
    - Any `dod-waiver:*` labels on issues?
    - If yes: Technical Lead must have approved
    - Document in Traceability Matrix "Notes" column
 
-4. **Verify CI/CD Green**
+1. **Verify CI/CD Green**
    - All PRs merged with green ✅ checks
    - No red ❌ indicators remaining
    - All commits reference issues
@@ -432,17 +444,17 @@ Dev: "HITL-012 is 80% done, tests all passing locally, PR under review.
    - Coverage report (if applicable)
    - CI/CD run summary
 
-2. **Issue Evidence**
+1. **Issue Evidence**
    - For each closed issue: screenshot or link to verification artifact
    - Example: "Added screenshot of dashboard showing 🟢 Auto-Bypassed emoji"
    - Added to issue description or PR
 
-3. **Requirement Evidence**
+1. **Requirement Evidence**
    - For each requirement: Link to closed issue
    - Link to merged PR/commit
    - Test file reference
 
-4. **Archive Artifacts**
+1. **Archive Artifacts**
    ```bash
    mkdir -p planning/archives/sprint_2026_09_evidence/
    cp planning/Sprint_2026_09_Traceability_Matrix.md \
@@ -460,6 +472,7 @@ Dev: "HITL-012 is 80% done, tests all passing locally, PR under review.
 **Task**: Complete `planning/Sprint_2026_09_Closure_Checklist.md`
 
 **Sections**:
+
 - ✅ Traceability Matrix Complete
 - ✅ Issue Status Verified
 - ✅ Test Evidence Complete
@@ -482,6 +495,7 @@ Dev: "HITL-012 is 80% done, tests all passing locally, PR under review.
 **Create**: `planning/Sprint_2026_09_Retrospective.md`
 
 **Questions to Document**:
+
 - What worked? What didn't?
 - Did traceability governance help or hinder?
 - Any process improvements for next sprint?
@@ -501,26 +515,26 @@ Dev: "HITL-012 is 80% done, tests all passing locally, PR under review.
       planning/archives/Sprint_2026_09_Traceability_Matrix_FINAL.md
    ```
 
-2. **Prepare Next Sprint Template**
+1. **Prepare Next Sprint Template**
    ```bash
    cp planning/Sprint_Traceability_Matrix_Template.md \
       planning/Sprint_2026_10_Traceability_Matrix.md
    # Update header with new sprint dates
    ```
 
-3. **Archive Carryover Items**
+1. **Archive Carryover Items**
    - Move unfinished issues to backlog
    - Label: `carryover-2026-10`
    - Link to next sprint
 
-4. **Commit & Push**
+1. **Commit & Push**
    ```bash
    git add planning/archives/ planning/Sprint_2026_10_Traceability_Matrix.md
    git commit -m "Close Sprint 2026-09; archive artifacts and prepare Sprint 2026-10"
    git push
    ```
 
-5. **Communicate to Team**
+1. **Communicate to Team**
    - Sprint officially closed
    - Next sprint ready to kick off
    - Link to lessons learned
@@ -549,16 +563,16 @@ Dev: "HITL-012 is 80% done, tests all passing locally, PR under review.
    - Pre-commit hook (optional): Warns about issue reference
    - ⚠️ If `--no-verify`: Can bypass (not recommended)
 
-2. **PR Creation Time** (Developer pushes, creates PR)
+1. **PR Creation Time** (Developer pushes, creates PR)
    - ✅ GitHub Actions runs sprint-traceability.yml
    - ✅ Verifies commit message, issue link, test reference
    - ✅ Blocks merge if verification fails (non-waivable)
 
-3. **Review Time** (Reviewer approves)
+1. **Review Time** (Reviewer approves)
    - Manual: Reviewer checks traceability too
    - CI/CD must pass before review even considered
 
-4. **Merge Time** (PR merged)
+1. **Merge Time** (PR merged)
    - Issue auto-closes (if configured)
    - Traceability matrix updated manually (or via script)
 
@@ -676,13 +690,13 @@ Deploy this automated governance by creating these files:
    - Demo CI/CD workflow
    - Q&A
 
-2. **First Sprint Execution** (Sprint 2026-09):
+1. **First Sprint Execution** (Sprint 2026-09):
    - Follow Sprint Lifecycle checklist
    - Developers use commit message format
    - Note any friction points
    - Capture in retrospective
 
-3. **Continuous Improvement** (Every sprint):
+1. **Continuous Improvement** (Every sprint):
    - Sprint retrospective: What worked? What didn't?
    - Update policy/templates as needed
    - Refine automation based on feedback
@@ -690,4 +704,3 @@ Deploy this automated governance by creating these files:
 ---
 
 **This Sprint Lifecycle ensures that every piece of work is tied to a requirement, tracked via an issue, verified with tests, and documented for auditability.**
-

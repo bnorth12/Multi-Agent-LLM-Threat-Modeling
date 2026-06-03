@@ -23,6 +23,7 @@ Verification Evidence (test pass screenshot, CI/CD run)
 ```
 
 **Why This Matters**:
+
 - ✅ Every requirement is implemented (nothing forgotten)
 - ✅ Every code change is tied to a requirement (no "orphan" code)
 - ✅ Every feature is tested (verification evidence collected)
@@ -79,89 +80,89 @@ Follow this to deploy the framework for your next sprint:
 ### Sprint Planning Day (Day 0)
 
 - [ ] 5. **Groom Backlog** (PO)
-   - Create requirements with IDs (HITL-012, PRJ-008, etc.)
-   - Write to Requirements/ folder
-   - Ensure AC are clear and testable
+  - Create requirements with IDs (HITL-012, PRJ-008, etc.)
+  - Write to Requirements/ folder
+  - Ensure AC are clear and testable
 
 - [ ] 6. **Accept Sprint Items** (Team)
-   - Commit to backlog items for this sprint
-   - Determine capacity/velocity
+  - Commit to backlog items for this sprint
+  - Determine capacity/velocity
 
 - [ ] 7. **Create Issues** (Team)
-   - For each requirement: Create GitHub issue
-   - Issue title format: `[SPRINT] <REQ_ID>: <description>`
-   - Link requirement in issue description
+  - For each requirement: Create GitHub issue
+  - Issue title format: `[SPRINT] <REQ_ID>: <description>`
+  - Link requirement in issue description
 
 - [ ] 8. **Set Up Traceability Matrix** (Scrum Master / Tech Lead)
    ```bash
    cp planning/Sprint_Traceability_Matrix_Template.md \
       planning/Sprint_2026_09_Traceability_Matrix.md
    ```
-   - Update header (sprint dates)
-   - Add all requirement rows
-   - Add to version control
+  - Update header (sprint dates)
+  - Add all requirement rows
+  - Add to version control
 
 - [ ] 9. **Create Planning Checklist** (Scrum Master / Tech Lead)
    ```bash
    cp planning/Sprint_Planning_Checklist_Template.md \
       planning/Sprint_2026_09_Planning_Checklist.md
    ```
-   - Update sprint number
-   - Complete all sections
-   - Get team signatures
+  - Update sprint number
+  - Complete all sections
+  - Get team signatures
 
 - [ ] 10. **Create Closure Checklist** (Scrum Master / Tech Lead)
    ```bash
    cp planning/Sprint_2026_09_Closure_Checklist.md \
       planning/Sprint_2026_09_Closure_Checklist.md
    ```
-   - For use on Day 10 (keep on hand)
+  - For use on Day 10 (keep on hand)
 
 - [ ] 11. **Team Onboarding** (Tech Lead)
-   - Review Definition of Done with team (10 min)
-   - Demo commit message format: `git commit -m "Implements HITL-012: ..."`
-   - Demo CI/CD workflow (show example PR)
-   - Answer questions
+  - Review Definition of Done with team (10 min)
+  - Demo commit message format: `git commit -m "Implements HITL-012: ..."`
+  - Demo CI/CD workflow (show example PR)
+  - Answer questions
 
 - [ ] 12. **Optional: Setup Git Hooks** (Each Developer)
    ```bash
    bash scripts/setup_git_hooks.sh
    ```
-   - Provides local pre-commit warning (optional)
-   - Helps catch issue refs before push
+  - Provides local pre-commit warning (optional)
+  - Helps catch issue refs before push
 
 ### During Sprint (Days 1-9)
 
 - [ ] 13. **Developer Workflow** (Every developer, on each task)
-   - Create branch: `git checkout -b HITL-012/trigger-tracking`
-   - Write code + tests together
-   - Commit with issue ref: `git commit -m "Implements HITL-012: ..."`
-   - Tests pass locally: `pytest Tests/ -v`
-   - Push & create PR
-   - **CI/CD runs automatically** ✅ (no manual action)
-   - Wait for green ✅ check
-   - Request code review
+  - Create branch: `git checkout -b HITL-012/trigger-tracking`
+  - Write code + tests together
+  - Commit with issue ref: `git commit -m "Implements HITL-012: ..."`
+  - Tests pass locally: `pytest Tests/ -v`
+  - Push & create PR
+  - **CI/CD runs automatically** ✅ (no manual action)
+  - Wait for green ✅ check
+  - Request code review
 
 - [ ] 14. **Code Review** (Every reviewer)
-   - Verify commit messages reference issue IDs
-   - Verify issue links to requirement
-   - Verify tests exist and cover AC
-   - Verify CI/CD checks passing
-   - Approve or request changes
+  - Verify commit messages reference issue IDs
+  - Verify issue links to requirement
+  - Verify tests exist and cover AC
+  - Verify CI/CD checks passing
+  - Approve or request changes
 
 - [ ] 15. **Mid-Sprint Verification** (Tech Lead, Day 3-4)
    ```bash
    python scripts/verify_sprint_traceability.py --sprint 2026-09
    ```
-   - Run verification script
-   - Review output for any ❌ FAIL items
-   - Address gaps immediately
-   - Report status in standup
+  - Run verification script
+  - Review output for any ❌ FAIL items
+  - Address gaps immediately
+  - Report status in standup
 
 - [ ] 16. **Daily Standup** (Everyone, every day)
-   - Update issue status
-   - Mention traceability status (CI/CD green? tests passing?)
-   - Call out blockers
+  - Update issue status
+  - Mention traceability status (CI/CD green? tests passing?)
+  - Call out blockers
 
 ### Sprint Closure Day (Day 10)
 
@@ -169,20 +170,20 @@ Follow this to deploy the framework for your next sprint:
    ```bash
    python scripts/verify_sprint_traceability.py --sprint 2026-09 --audit
    ```
-   - Run audit mode
-   - Verify 0 orphans, all tests ✅
-   - Verify all issues closed or deferred
+  - Run audit mode
+  - Verify 0 orphans, all tests ✅
+  - Verify all issues closed or deferred
 
 - [ ] 18. **Evidence Collection** (Tech Lead, morning-afternoon)
-   - Collect test results (screenshot/log)
-   - Collect UI change screenshots (if applicable)
-   - Collect deployment evidence (if applicable)
-   - Archive to: `planning/archives/sprint_2026_09_evidence/`
+  - Collect test results (screenshot/log)
+  - Collect UI change screenshots (if applicable)
+  - Collect deployment evidence (if applicable)
+  - Archive to: `planning/archives/sprint_2026_09_evidence/`
 
 - [ ] 19. **Complete Closure Checklist** (Tech Lead, afternoon)
-   - Complete `planning/Sprint_2026_09_Closure_Checklist.md`
-   - All sections: ✅
-   - Technical Lead signature: ✅
+  - Complete `planning/Sprint_2026_09_Closure_Checklist.md`
+  - All sections: ✅
+  - Technical Lead signature: ✅
 
 - [ ] 20. **Archive Sprint Artifacts** (Scrum Master)
    ```bash
@@ -193,14 +194,14 @@ Follow this to deploy the framework for your next sprint:
    ```
 
 - [ ] 21. **Retrospective** (Team, post-standup)
-   - What worked? What didn't?
-   - Update governance docs if needed
-   - Lessons captured in: `planning/Sprint_2026_09_Retrospective.md`
+  - What worked? What didn't?
+  - Update governance docs if needed
+  - Lessons captured in: `planning/Sprint_2026_09_Retrospective.md`
 
 - [ ] 22. **Handoff to Next Sprint** (Scrum Master)
-   - Prepare templates for Sprint 2026-10
-   - Archive Sprint 2026-09 docs
-   - Commit & push
+  - Prepare templates for Sprint 2026-10
+  - Archive Sprint 2026-09 docs
+  - Commit & push
 
 ---
 
@@ -366,16 +367,21 @@ Missing Test File
 ## ❓ FAQ
 
 ### Q: Is this framework mandatory?
+
 **A**: Yes, for all sprints starting with 2026-09. It ensures every requirement is implemented, tested, and traceable.
 
 ### Q: What if I forget the issue ID in my commit message?
+
 **A**:
+
 - Pre-commit hook (optional): Warns locally (non-blocking)
 - CI/CD (automatic): Blocks PR merge until fixed
 - Fix: `git commit --amend -m "Implements HITL-012: ..."` then `git push --force`
 
 ### Q: Can I bypass the traceability checks?
+
 **A**: Yes, with Technical Lead approval:
+
 - Add `dod-waiver:commit-message` label to issue
 - Document reason in issue description
 - TL approves waiver
@@ -383,19 +389,25 @@ Missing Test File
 - Usually not needed; DO NOT make a habit of it
 
 ### Q: How often should I run the verification script?
+
 **A**:
+
 - Mid-sprint (Day 3-4): Catch gaps early
 - Pre-closure (Day 10): Ensure 100% before sign-off
 - Optional: Anytime during sprint to spot-check
 
 ### Q: What if a requirement doesn't need an issue?
+
 **A**: It still needs one if it's in the active sprint. Backlog requirements can exist without issues. Once moved to sprint → must create issue.
 
 ### Q: Can CI/CD ever be bypassed?
+
 **A**: No. CI/CD checks are non-waivable gates. If commit message lacks issue ID, PR cannot merge. This is by design to enforce traceability.
 
 ### Q: What happens at sprint closure?
+
 **A**:
+
 - Run audit script: `verify_sprint_traceability.py --sprint 2026-09 --audit`
 - Complete Closure Checklist
 - Get TL signature (non-waivable)
@@ -418,16 +430,19 @@ Missing Test File
 ## 📞 Support
 
 **Questions?**
+
 - Read: [docs/process/Requirements_and_Issues_Policy.md](docs/process/Requirements_and_Issues_Policy.md) → Exceptions & Waivers section
 - Ask: Technical Lead
 
 **CI/CD Failing?**
+
 - Check: Commit message has issue ID
 - Check: Issue links to requirement
 - Check: Issue mentions test file
 - Run locally: `python scripts/verify_sprint_traceability.py --sprint 2026-09`
 
 **Process Improvements?**
+
 - Suggest in Sprint Retrospective
 - Update docs + templates as needed
 - Commit changes with: `git commit -m "Update governance docs based on retrospective feedback"`
@@ -456,4 +471,3 @@ Missing Test File
 **Author**: Technical Leadership
 **Version**: 1.0
 **Next Review**: After Sprint 2026-09 Retrospective
-

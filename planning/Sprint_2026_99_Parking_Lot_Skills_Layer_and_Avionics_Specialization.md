@@ -11,6 +11,7 @@
 ## Executive Summary
 
 Parking Lot 2026-99 preserves a modular "skills" layer concept for the LangGraph agent framework, enabling:
+
 - Domain specialization (threat, governance, reporting, data, workflow, integration, UI/UX)
 - Avionics/IOT-specific skills (drawing from secure aerospace design, mixed-criticality, and mitigation architecture)
 - Extensibility for future domain-specific skills
@@ -38,29 +39,30 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 ## Strategic Objectives
 
 1. **Skills Layer Architecture**: Design and implement a modular skills interface and registry for LangGraph agents.
-2. **Core Skills Implementation**: Add initial skills for threat intelligence, governance, reporting, data processing, workflow, integration, and UI/UX.
-3. **Risk Analysis & Management Skills**: Implement modular skills for:
+1. **Core Skills Implementation**: Add initial skills for threat intelligence, governance, reporting, data processing, workflow, integration, and UI/UX.
+1. **Risk Analysis & Management Skills**: Implement modular skills for:
    - Risk scoping/aggregation (combining impact and probability)
    - Impact analysis (loss modeling, consequence estimation)
    - Probability/likelihood estimation (with HITL support for subjective/uncertain cases)
    - Risk register management and prioritization
    - Integration with threat, mitigation, and governance skills
-4. **Avionics/IOT Specialization**: Develop avionics-inspired skills, including:
+1. **Avionics/IOT Specialization**: Develop avionics-inspired skills, including:
    - Mixed-criticality data flow analysis
    - Safety/security domain boundary enforcement
    - Ethernet/data center protocol mapping
    - Mitigation architecture skills (e.g., defense-in-depth, partitioning, redundancy)
-5. **Mitigation Architecture Skills**: Implement skills for:
+1. **Mitigation Architecture Skills**: Implement skills for:
    - Mitigation pattern recognition
    - Architecture gap analysis
    - Automated mitigation recommendation
-6. **Extensibility & Documentation**: Provide clear interfaces and documentation for adding new skills, including a section for future skills inspired by secure aerospace design literature and loss-based systems engineering.
+1. **Extensibility & Documentation**: Provide clear interfaces and documentation for adding new skills, including a section for future skills inspired by secure aerospace design literature and loss-based systems engineering.
 
 ---
 
 ## 0. Scope & Deferrals
 
 ### Candidate Scope for Parking Lot 2026-99
+
 - Skills interface and registry design
 - Implementation of at least 6 core skills (see above)
 - At least 2 avionics/IOT-specific skills
@@ -69,6 +71,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 - Backend integration of the skills layer into the LangGraph/orchestrator stack after the GUI/backend split is complete
 
 ### Out-of-Scope (Remain Parked Until Explicit Activation)
+
 - Full plugin ecosystem or user-defined skills
 - Deep integration with external aerospace/IOT data sources
 - Performance optimization of skills engine
@@ -85,17 +88,16 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 
 ---
 
-
 ## 2. Key Deliverables
 
 - `src/skills/` module with base Skill class/protocol
 - Skills registry and agent integration
 - Core skills: threat intelligence, governance, reporting, data processing, workflow, integration, UI/UX
 - **Risk analysis & management skills:**
-   - RiskScopingSkill (aggregates impact and probability)
-   - ImpactAnalysisSkill (loss/consequence modeling)
-   - ProbabilityEstimationSkill (likelihood, with HITL)
-   - RiskRegisterSkill (risk tracking/prioritization)
+  - RiskScopingSkill (aggregates impact and probability)
+  - ImpactAnalysisSkill (loss/consequence modeling)
+  - ProbabilityEstimationSkill (likelihood, with HITL)
+  - RiskRegisterSkill (risk tracking/prioritization)
 - Avionics/IOT skills: mixed-criticality analysis, domain boundary enforcement
 - Mitigation architecture skills: pattern recognition, gap analysis, recommendation
 - Planning doc section: "Future Skills from Secure Aerospace Design and Loss-Based Systems Engineering"
@@ -106,24 +108,29 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 ## 3. Phase-Ordered Sprint Execution
 
 ### Phase 1: Skills Layer Design (Days 1-3)
+
 - [ ] **Story S13-01**: Define Skill interface/protocol
 - [ ] **Story S13-01**: Implement skills registry
 - [ ] **Story S13-06**: Integrate with LangGraph agents
 
 ### Phase 2: Core Skills Implementation (Days 4-7)
+
 - [ ] **Story S13-02**: Implement and test core skills
 - [ ] **Story S13-02**: Document usage and interfaces
 
 ### Phase 3: Avionics/IOT & Mitigation Skills (Days 8-11)
+
 - [ ] **Story S13-04**: Implement avionics/IOT skills
 - [ ] **Story S13-05**: Implement mitigation architecture skills
 - [ ] **Story S13-04 / S13-05**: Add tests and usage examples
 
 ### Phase 4: Documentation & Extensibility (Days 12-13)
+
 - [ ] **Story S13-07**: Write developer guide for adding new skills
 - [ ] **Story S13-07**: Add section for future skills (secure aerospace design)
 
 ### Phase 5: Sprint Review & Closure (Day 14)
+
 - [ ] **Story S13-07**: Review deliverables
 - [ ] **Story S13-07**: Update traceability matrix
 - [ ] **Story S13-07**: Sprint closure summary
@@ -157,13 +164,12 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 
 ---
 
-
-
 ## 6. Technical Requirements for Skills Integration (Draft)
 
 The following technical requirements are to be addressed in this sprint for the skills layer and its integration. These will be refined and moved to the application requirements as the architecture matures.
 
 ### 6.1 Skills Framework Requirements
+
 - **REQ-SKILL-001**: The system SHALL provide a base Skill interface or protocol that all skills must implement, supporting initialization, execution, and metadata.
 - **REQ-SKILL-002**: The system SHALL provide a skills registry for dynamic discovery, registration, and lookup of available skills.
 - **REQ-SKILL-003**: The skills framework SHALL support dependency injection for skills that require access to shared resources (e.g., data stores, config, agent context).
@@ -171,12 +177,14 @@ The following technical requirements are to be addressed in this sprint for the 
 - **REQ-SKILL-005**: The system SHALL provide error handling and logging for skill execution and integration failures.
 
 ### 6.2 Skill Definition Requirements
+
 - **REQ-SKILL-101**: Each skill SHALL have a unique identifier, name, and description.
 - **REQ-SKILL-102**: Each skill SHALL define its required inputs, outputs, and any preconditions or postconditions.
 - **REQ-SKILL-103**: Skills SHOULD be stateless by default, but MAY support stateful operation if required.
 - **REQ-SKILL-104**: Skills SHALL provide metadata for documentation and traceability (e.g., version, author, tags).
 
 ### 6.3 Skills Integration Requirements
+
 - **REQ-SKILL-201**: The agent framework SHALL support dynamic loading and unloading of skills at runtime.
 - **REQ-SKILL-202**: The agent framework SHALL allow skills to be composed into workflows or pipelines.
 - **REQ-SKILL-203**: The integration layer SHALL provide mechanisms for skills to communicate or share context when necessary.
@@ -187,11 +195,13 @@ The following technical requirements are to be addressed in this sprint for the 
 - **REQ-SKILL-208**: The integration layer SHALL support adapter or facade patterns where existing agent code must call into the new skills framework.
 
 ### 6.4 Extensibility and Governance
+
 - **REQ-SKILL-301**: The skills framework SHALL provide clear extension points and developer documentation for adding new skills.
 - **REQ-SKILL-302**: The system SHALL support traceability from requirements to skills and from skills to test evidence.
 - **REQ-SKILL-303**: The system SHOULD support HITL (human-in-the-loop) override or review for skills where subjective judgment is required (e.g., risk likelihood estimation).
 
 ### 6.5 Migration Path from Hardcoded Logic
+
 - **REQ-SKILL-401**: The sprint SHALL define a migration path from current hardcoded or implicit agent logic into discrete skills.
 - **REQ-SKILL-402**: The migration path SHALL identify priority seams for extraction, starting with low-risk utility skills and read-only analysis skills.
 - **REQ-SKILL-403**: The migration path SHALL preserve existing stage behavior until the corresponding skill replacement is validated.
@@ -199,6 +209,7 @@ The following technical requirements are to be addressed in this sprint for the 
 - **REQ-SKILL-405**: The migration path SHALL document any temporary compatibility shims and their removal criteria.
 
 ### 6.6 Architecture Integration Requirements
+
 - **REQ-SKILL-501**: The skills framework SHALL integrate with the LangGraph orchestrator and the existing framework state model.
 - **REQ-SKILL-502**: The skills framework SHALL support stage-aware execution so skills can be invoked at defined points in the agent pipeline.
 - **REQ-SKILL-503**: The skills framework SHALL support traceable handoffs between existing agents and new skills.

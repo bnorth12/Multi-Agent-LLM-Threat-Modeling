@@ -1,4 +1,5 @@
 ﻿# Issue S12-030: Header Navigation Consolidation and Artifact Icon Migration
+
 Sprint: 2026-12
 Requirement ID: UNKNOWN-REQ
 Parent Capability ID: C16-PRJ-001
@@ -8,7 +9,6 @@ Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_030_Header_Navigation_Consolidation_And_Artifact_Icon_Migration.md
 Verification Method: Sprint traceability verification
 Status: In Review
-
 
 Status: Proposed (Post-Run)
 Priority: P1
@@ -22,6 +22,7 @@ header now carries primary artifact navigation. This duplicates controls, consum
 vertical space, and creates visual ambiguity about which navigation surface is authoritative.
 
 The requested behavior is:
+
 - Keep a single authoritative artifact-domain navigation surface in the header
   (while retaining left nav as global app/workspace navigation).
 - Migrate the existing in-panel artifact navigation icons to the header navigation.
@@ -145,7 +146,3 @@ The requested behavior is:
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
 - Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
-
-
-
-

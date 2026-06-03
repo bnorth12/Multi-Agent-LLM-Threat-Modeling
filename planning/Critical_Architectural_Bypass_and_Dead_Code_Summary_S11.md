@@ -12,7 +12,7 @@
 Discovery phase identified **three critical categories of work** required before Sprint 2026-11 sign-off:
 
 1. **Two critical architectural bypass defects** (S11-017, S11-018) that block prompt persistence reliability — **must fix both together**.
-2. **Dead code remediation** with systematic multi-step approach (code-to-comment → test → delete → test again).
+1. **Dead code remediation** with systematic multi-step approach (code-to-comment → test → delete → test again).
 
 **Combined effort**: ~12–14 points
 **Critical path**: S11-017 + S11-018 → Dead code Phases 1–4
@@ -27,11 +27,13 @@ Discovery phase identified **three critical categories of work** required before
 **Issue**: User edits to agent prompts in the UI are saved to Streamlit session state only; they are never written to the backend persistence layer.
 
 **Evidence**:
+
 - `src/threat_modeler/ui/prompt_store.py` has `set_prompt()` that updates `st.session_state[...]` only.
 - `set_prompt()` does NOT call `backend.prompt_store.PromptStore.set_prompt()`.
 - No file-backed persistence mechanism wired.
 
 **Impact**:
+
 - Users edit prompts (including single/multi-shot examples) expecting them to be saved.
 - Edits are lost when UI session ends.
 - Agents always execute with hardcoded defaults.
@@ -53,6 +55,7 @@ except Exception:
 
 **Effort**: 1–2 points
 **Tests needed**:
+
 - Unit: Verify backend file contains edited prompt
 - Integration: Execute agent after UI edit, confirm agent uses edited prompt
 
@@ -82,6 +85,7 @@ def _load_expected_output(self) -> str:
 ```
 
 **Impact**:
+
 - If backend prompt store is inaccessible (missing file, IO error, import error, etc.), agents execute with defaults.
 - No logging, no error state, no user visibility.
 - **Combined with S11-017**: Even if UI edits are saved to backend (after S11-017 fix), if backend is ever inaccessible, the failure is invisible.
@@ -111,6 +115,7 @@ def _load_system_prompt(self) -> str:
 
 **Effort**: 1–2 points
 **Tests needed**:
+
 - Unit: Verify logging on each exception type
 - Unit: Verify file fallback is used only when backend fails
 - Integration: Verify edited prompts reach agents when backend is available
@@ -156,24 +161,28 @@ Dead code identified in LangGraph migration (DCI-001 through DCI-005) must be sy
 ### Four-Phase Remediation Process
 
 **Phase 1: Code-to-Comment Conversion** (1.5 points)
+
 - Wrap dead code with `# DEAD CODE MARKER: <ID>` comments and deprecation notices.
 - Code still runs; no behavior change.
 - Test: Lane A full pass (unit + integration).
 - Commit: `docs(dead-code): mark DCI-001 through DCI-004 with deprecation notices`.
 
 **Phase 2: Test Coverage Replacement** (2–3 points) — *Prerequisite to deletion*
+
 - Replace legacy orchestrator tests with LangGraph-native tests (S11-003).
 - Verify test parity or improvement.
 - Test: Lane A + Lane C e2e.
 - Gate: Must pass before Phase 3 deletion.
 
 **Phase 3: Dead Code Deletion** (1 point)
+
 - Step 3.1: Delete DCI-003, DCI-004 (stubs) → Lane A test.
 - Step 3.2: Delete DCI-002 (build_default_state_graph) → Lane A test.
 - Step 3.3: Delete DCI-001 (StateGraph wrapper) + legacy tests → Lane A + Lane C test.
 - Each step has full test re-run to catch regressions.
 
 **Phase 4: Final Validation** (1 point)
+
 - Full Lane A with coverage metrics (coverage >= baseline).
 - Full Lane C e2e test.
 - Manual regression spot-check (threat modeling output quality).
@@ -209,24 +218,24 @@ Sprint Close: All evidence recorded in test summary
    - Add integration tests
    - Lane A pass required
 
-2. **Tue–Wed**: Implement S11-018 (exception handling + logging) — 2 points
+1. **Tue–Wed**: Implement S11-018 (exception handling + logging) — 2 points
    - Modify `agents/base.py`
    - Add unit tests for exception scenarios
    - Add integration test for combined S11-017 + S11-018
    - Lane A pass required
 
-3. **Wed–Thu**: Phase 1 + Phase 2 of dead code remediation — 3.5 points
+1. **Wed–Thu**: Phase 1 + Phase 2 of dead code remediation — 3.5 points
    - Phase 1: Code-to-comment conversion
    - Phase 1: Lane A validation
    - Phase 2: Complete test migration (S11-003)
    - Phase 2: Lane A + C validation
 
-4. **Thu–Fri**: Phase 3 + Phase 4 of dead code remediation — 2 points
+1. **Thu–Fri**: Phase 3 + Phase 4 of dead code remediation — 2 points
    - Phase 3: Delete dead code in 3 steps (full test after each)
    - Phase 4: Final validation + coverage check
    - Record all evidence
 
-5. **Fri**: Sprint closeout activities — 1 point
+1. **Fri**: Sprint closeout activities — 1 point
    - Update test execution summary with all evidence
    - Update GitHub issues (S11-017, S11-018, S11-009) with closure notes
    - Finalize traceability delta appendix
@@ -239,6 +248,7 @@ Sprint Close: All evidence recorded in test summary
 ## Success Criteria
 
 ### S11-017 Success
+
 - [ ] UI prompt edits are persisted to `~/.multi_agent_threat_modeler_prompts.json`.
 - [ ] Agent execution loads edited prompts (not hardcoded defaults).
 - [ ] Unit test confirms backend file contains edited text.
@@ -246,6 +256,7 @@ Sprint Close: All evidence recorded in test summary
 - [ ] Issue closed with evidence link.
 
 ### S11-018 Success
+
 - [ ] `_load_system_prompt()` and `_load_expected_output()` have specific exception handlers.
 - [ ] All fallback paths log at appropriate level (ERROR, WARNING, DEBUG).
 - [ ] Unit tests verify each exception type is handled and logged.
@@ -253,6 +264,7 @@ Sprint Close: All evidence recorded in test summary
 - [ ] Issue closed with evidence link.
 
 ### Dead Code Remediation Success
+
 - [ ] Phase 1: Deprecation markers added; Lane A tests pass.
 - [ ] Phase 2: Replacement tests complete; Lane A + C tests pass; coverage parity achieved.
 - [ ] Phase 3: All dead code deleted; Lane A + C tests pass; no regressions.

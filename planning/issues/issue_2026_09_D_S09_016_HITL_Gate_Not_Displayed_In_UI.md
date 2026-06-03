@@ -19,17 +19,18 @@ The Home Dashboard correctly shows the run is PAUSED at gate_1_scope_confirmatio
 ## Reproduction
 
 1. Configure pipeline with all 9 stages enabled and HITL gates required.
-2. Use live LLM provider (xAI/Grok).
-3. Start threat model run with minimal system architecture.
-4. Wait for run to reach Gate 1 (Scope Confirmation) - typically after stages 01-02 complete (~2-3 min).
-5. Observe Home Dashboard shows status: 🟠 PAUSED at gate_1_scope_confirmation.
-6. Open Threat Review screen.
-7. Observe HITL Gate Review section shows "No HITL gates recorded for this run."
-8. No gate approval/rejection buttons are visible.
+1. Use live LLM provider (xAI/Grok).
+1. Start threat model run with minimal system architecture.
+1. Wait for run to reach Gate 1 (Scope Confirmation) - typically after stages 01-02 complete (~2-3 min).
+1. Observe Home Dashboard shows status: 🟠 PAUSED at gate_1_scope_confirmation.
+1. Open Threat Review screen.
+1. Observe HITL Gate Review section shows "No HITL gates recorded for this run."
+1. No gate approval/rejection buttons are visible.
 
 ## Expected Behavior
 
 When pipeline is paused at a HITL gate:
+
 - HITL Gate Review section SHALL display the paused gate with its metadata.
 - Gate artifact data (scope confirmation, review context) SHALL be visible.
 - Approve/Reject/Edit action buttons SHALL be present and functional.
@@ -38,9 +39,9 @@ When pipeline is paused at a HITL gate:
 ## Scope
 
 1. Trace gate data population path from backend run registry to Threat Review screen.
-2. Identify why gate data is not being queried or rendered in HITL Gate Review section.
-3. Implement gate-present state UI rendering with gate metadata and action controls.
-4. Test gate visibility and interactivity for all defined HITL gates in pipeline.
+1. Identify why gate data is not being queried or rendered in HITL Gate Review section.
+1. Implement gate-present state UI rendering with gate metadata and action controls.
+1. Test gate visibility and interactivity for all defined HITL gates in pipeline.
 
 ## Acceptance Criteria
 

@@ -21,10 +21,10 @@ Define the canonical requirement types used across the repository so requirement
 ## Classification Rules
 
 1. Every requirement SHALL have exactly one primary type.
-2. If a requirement clearly contains multiple unrelated behaviors, split it into separate requirements instead of overloading one row.
-3. If a requirement mixes behavior with a boundary contract, classify the row by the dominant contract and move the remaining behavior into a separate requirement when possible.
-4. If no existing type fits, propose a new type before sprint commitment rather than silently overloading another class.
-5. Requirement rationale text SHOULD explain why the selected type is correct when the classification is not obvious.
+1. If a requirement clearly contains multiple unrelated behaviors, split it into separate requirements instead of overloading one row.
+1. If a requirement mixes behavior with a boundary contract, classify the row by the dominant contract and move the remaining behavior into a separate requirement when possible.
+1. If no existing type fits, propose a new type before sprint commitment rather than silently overloading another class.
+1. Requirement rationale text SHOULD explain why the selected type is correct when the classification is not obvious.
 
 ## Repository Guidance
 
@@ -48,10 +48,10 @@ Each requirement type MUST map to at least one primary verification artifact, ev
 ## Verification Selection Rules
 
 1. Every requirement record SHOULD name one primary verification artifact and may list supporting artifacts.
-2. If the primary artifact is not a test file, the rationale SHOULD explain why the alternate artifact is the best proof of compliance.
-3. Policy requirements are not expected to rely on unit tests alone; they SHOULD reference the policy document plus the enforcement path or review evidence.
-4. Design constraints are not complete until the design artifact and the implementation artifact both show the constraint is honored.
-5. Interface requirements SHOULD show the contract and at least one verification artifact proving the contract is respected across the boundary.
+1. If the primary artifact is not a test file, the rationale SHOULD explain why the alternate artifact is the best proof of compliance.
+1. Policy requirements are not expected to rely on unit tests alone; they SHOULD reference the policy document plus the enforcement path or review evidence.
+1. Design constraints are not complete until the design artifact and the implementation artifact both show the constraint is honored.
+1. Interface requirements SHOULD show the contract and at least one verification artifact proving the contract is respected across the boundary.
 
 ## Change Control
 

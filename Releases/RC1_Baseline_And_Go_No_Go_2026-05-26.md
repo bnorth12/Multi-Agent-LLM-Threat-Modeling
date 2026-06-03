@@ -68,7 +68,7 @@ cd ..\Multi-Agent-LLM-Threat-Modeling-rc1
 git switch -c release/rc1-prep-2026-05-26
 ```
 
-2. Re-run the RC entry validation bundle in the clean RC worktree:
+1. Re-run the RC entry validation bundle in the clean RC worktree:
 
 ```powershell
 $env:PYTHONPATH='src'; .\.venv\Scripts\python.exe -m pytest Tests/unit Tests/integration -q
@@ -76,11 +76,12 @@ Push-Location frontend; npm run lint; npm run build; Pop-Location
 .\.venv\Scripts\python.exe scripts/verify_dependency_boundary.py
 ```
 
-3. Decide release posture:
+1. Decide release posture:
+
 - Option A: publish RC1 as internal/limited preview with accepted residual risk (#88) documented.
 - Option B: hold RC1 publication until #88 full hardening is implemented and validated.
 
-4. Complete manual sign-off fields in `planning/Sprint_2026_12_Closure_Checklist.md` and record final release decision in Releases.
+1. Complete manual sign-off fields in `planning/Sprint_2026_12_Closure_Checklist.md` and record final release decision in Releases.
 
 ## 6. Decision Log
 

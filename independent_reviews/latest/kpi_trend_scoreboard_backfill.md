@@ -6,11 +6,13 @@
 - Method: synthetic replay of current independent review logic against historical commit trees
 
 ## Health Trajectory
+
 - Start (21af8ca): 17.3%
 - End (db077f0): 54.3%
 - Net change: +37.0 pts
 
 ## Event Scoreboard
+
 | # | Time | Event | Commit | Health | Impl | Verify | Arch | Full Chain | Issue Quality | C+M | Delta Health |
 |---:|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
 | 1 | 2026-04-20T21:18:49-05:00 | commit | 21af8ca | 17.3% | 0.0% | 0.0% | 0.0% | 0.0% | 100.0% | 5 | +0.0 |

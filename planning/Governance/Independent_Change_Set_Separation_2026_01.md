@@ -14,11 +14,11 @@ Maintain two independently governable change sets so governance/automation work 
 ## Hard Separation Rules
 
 1. Do not close any R01 item using only GOV evidence.
-2. Do not mark GOV items complete based on R01 implementation-only evidence.
-3. Commit and review by lane where feasible:
+1. Do not mark GOV items complete based on R01 implementation-only evidence.
+1. Commit and review by lane where feasible:
    - Lane A commit set: governance scripts, governance trackers, skills, policy docs.
    - Lane B commit set: remediation issue files, requirement rows, architecture/design rows, verification evidence links.
-4. Run automation for both lanes, but report outcomes independently.
+1. Run automation for both lanes, but report outcomes independently.
 
 ## Independent Reporting Contract
 

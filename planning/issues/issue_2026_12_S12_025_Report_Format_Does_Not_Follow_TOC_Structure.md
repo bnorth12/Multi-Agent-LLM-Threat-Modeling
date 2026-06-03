@@ -1,4 +1,5 @@
 ﻿# Issue S12-025: Generated Report Does Not Follow Table of Contents Structure
+
 Sprint: 2026-12
 Requirement ID: UNKNOWN-REQ
 Parent Capability ID: C16-PRJ-001
@@ -8,7 +9,6 @@ Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_025_Report_Format_Does_Not_Follow_TOC_Structure.md
 Verification Method: Sprint traceability verification
 Status: In Review
-
 
 Status: Proposed (Post-Run)
 Priority: P1
@@ -151,7 +151,3 @@ viewer and in any PDF/HTML conversion output.
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
 - Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
-
-
-
-

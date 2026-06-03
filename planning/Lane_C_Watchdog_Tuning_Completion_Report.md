@@ -11,6 +11,7 @@
 **Heartbeat watchdog timeout tuning from 35 seconds → 10 seconds is validated as safe and production-ready.**
 
 **THREE autonomous E2E smoke test runs** exercised the full pipeline with the new 10-second watchdog active:
+
 - **Run 1**: 1227s of execution, stages 01-06 completed + stage 07 entered, **zero false watchdog triggers**
 - **Run 2**: 116s execution; **zero false watchdog triggers** before detecting backend FAILED state at Stage 02
 - **Run 3**: 1227s of execution, **all stages 01-06 completed successfully**, Stage 07 entered, **Stage 02 failure was transient** (not deterministic)
@@ -53,18 +54,21 @@ All three new observability features (heartbeat ticker, sidebar display, Run Dia
 ### Watchdog Validation Results
 
 **Idle Time Analysis**:
+
 - Maximum idle time observed: **188s** (well before stage 07 completion)
 - Watchdog timeout threshold: 10s
 - Margin: 18.8× idle time below watchdog trigger threshold
 - **Result**: ✅ No false watchdog trigger; idle activity timer reset correctly on each stage transition
 
 **Heartbeat Monitoring**:
+
 - Heartbeat refresh events detected and logged: ✅ Yes
 - Activity timer reset on heartbeat refresh: ✅ Yes
 - Stage transition detection working: ✅ Yes (7 transitions logged)
 - **Result**: ✅ Backend heartbeat system functioning correctly
 
 **New Feature Visibility**:
+
 - ✅ Run Diagnostics panel visible within 20s (subheader, metrics, heartbeat age)
 - ✅ Sidebar "Heartbeat age: Xs / timeout Ys" caption visible
 - ✅ Heartbeat Age metric displaying current age and timeout threshold
@@ -90,11 +94,13 @@ All three new observability features (heartbeat ticker, sidebar display, Run Dia
 ### Watchdog Validation Results
 
 **Idle Time at Failure**:
+
 - Idle time when FAILED state was detected: **2 seconds**
 - Watchdog timeout threshold: 10s
 - **Result**: ✅ No false watchdog trigger; failure was legitimate backend error, not stall detection
 
 **FAILED State Detection**:
+
 - Smoke test immediately detected FAILED state transition: ✅ Yes
 - Exited with appropriate error code: ✅ Yes
 - Run Diagnostics panel showed FAILED status: ✅ Visible
@@ -106,14 +112,16 @@ All three new observability features (heartbeat ticker, sidebar display, Run Dia
 **Observation**: Run 1 progressed past Stage 02 successfully (~67s to complete), but Run 2 failed at Stage 02.
 
 **Hypothesis**:
+
 - Transient issue (LLM timeout, rate limit, or provider availability)
 - Input-dependent behavior (same test fixtures used in both runs, so less likely)
 - Non-deterministic orchestration path (needs investigation)
 
 **Root Cause Unknown** — Requires:
+
 1. Backend log inspection to identify what caused Stage 02 FAILED transition
-2. Third autonomous run to confirm if Stage 02 failure is transient or deterministic
-3. If deterministic, create separate sprint issue (S11-XXX) for Stage 02 backend failure diagnosis
+1. Third autonomous run to confirm if Stage 02 failure is transient or deterministic
+1. If deterministic, create separate sprint issue (S11-XXX) for Stage 02 backend failure diagnosis
 
 **Impact**: Blocks validation of final stages (07-09) and full-pipeline completion metrics.
 **Watchdog Status**: Not implicated; error is legitimate backend failure, not stall-related.
@@ -129,6 +137,7 @@ All three new observability features (heartbeat ticker, sidebar display, Run Dia
 ### Key Finding: Stage 02 Was NOT Deterministic Failure
 
 **Run 3 Progression** (identical configuration to Runs 1 & 2):
+
 - ✅ Stage 01 · Input Normalizer: Completed successfully
 - ✅ Stage 02 · Context Builder: **Completed successfully** (confirms Run 2 failure was transient)
 - ✅ Stage 03 · Trust Boundary Validator: Completed successfully
@@ -140,12 +149,14 @@ All three new observability features (heartbeat ticker, sidebar display, Run Dia
 ### Root Cause: Stage 02 Failure in Run 2 Was TRANSIENT
 
 **Evidence:**
+
 - Run 1: Successfully transitioned through Stage 02 (~67s processing)
 - Run 2: Failed at Stage 02 with FAILED state (~116s elapsed)
 - Run 3: Successfully completed Stage 02 (~105-172s, consistent with Run 1 timing)
 - Configuration: All three runs used identical test fixtures (ICD avionics CSV + markdown)
 
 **Conclusion:**
+
 - Not a deterministic code-level bug
 - Likely transient condition: LLM rate-limit recovery, API availability variance, or timing window collision
 - **No watchdog involvement** (Run 2 idle time was only 2s; well below 10s threshold)
@@ -180,6 +191,7 @@ All three new observability features (heartbeat ticker, sidebar display, Run Dia
 ### Code Changes Applied
 
 **File**: `src/threat_modeler/backend/run_manager.py`
+
 - **Line 63**: `_HEARTBEAT_TIMEOUT_SECONDS_DEFAULT = 10.0` (changed from 35.0)
 - **Comment**: "Tuned from 35s based on observed max heartbeat age ~2s"
 - **Rationale**: Reduces watchdog trigger window from 35s→10s, allowing stall detection within 9-12s (3-4 missed heartbeat cycles at 3s interval) while maintaining 2+ second margin for normal heartbeat variability
@@ -190,19 +202,19 @@ All three new observability features (heartbeat ticker, sidebar display, Run Dia
    - Writes timestamp to registry every 3s while run active
    - Confirmed working: activity timer resets on heartbeat refresh
 
-2. **Heartbeat Watchdog** (`_run_heartbeat_watchdog` thread)
+1. **Heartbeat Watchdog** (`_run_heartbeat_watchdog` thread)
    - Monitors heartbeat age; fails run if exceeds 10s threshold
    - Confirmed working: no false triggers in 1227s+ test
 
-3. **Sidebar Heartbeat Display** (`execution.py`)
+1. **Sidebar Heartbeat Display** (`execution.py`)
    - Shows "Heartbeat age: Xs / timeout Ys" caption
    - Confirmed visible: caption present in both test runs
 
-4. **Run Diagnostics Panel** (`home.py`)
+1. **Run Diagnostics Panel** (`home.py`)
    - Displays status, elapsed, provider, run ID, stage, gate, heartbeat age
    - Confirmed visible: subheader and metrics present within 20s in both tests
 
-5. **Enhanced Error Display** (`home.py`, `stage_results.py`)
+1. **Enhanced Error Display** (`home.py`, `stage_results.py`)
    - Decodes HTML entities, extracts HTTP status codes
    - Confirmed working: FAILED state error readable in Run 2
 
@@ -224,6 +236,7 @@ All three new observability features (heartbeat ticker, sidebar display, Run Dia
 ### ✅ Watchdog Tuning: APPROVED FOR PRODUCTION
 
 **Rationale**:
+
 - Zero false-positive triggers across **2570 seconds** of combined test execution (Runs 1, 2, 3)
 - Idle time never approached threshold (max 188s, 18.8× above 10s safety margin)
 - Watchdog correctly identifies legitimate failures (Run 2 FAILED state)
@@ -235,22 +248,25 @@ All three new observability features (heartbeat ticker, sidebar display, Run Dia
 ### ✅ Stage 02 Backend Failure: RESOLVED (Transient Issue Confirmed)
 
 **Rationale**:
+
 - Run 1 progressed past Stage 02; Run 2 failed at Stage 02; Run 3 completed Stage 02
 - Failure was **NOT deterministic** (confirmed by Run 3 success with identical configuration)
 - Root cause: Environmental variance (LLM rate-limit, API availability, timing window)
 - Watchdog system is NOT implicated (failure was legitimate error, not stall)
 
 **Recommendations**:
+
 1. No separate investigation needed; issue resolved by Run 3 validation
-2. Document as known environmental variance in Phase 2 closure notes
-3. Transient failures are normal; watchdog continues to catch and report them immediately
+1. Document as known environmental variance in Phase 2 closure notes
+1. Transient failures are normal; watchdog continues to catch and report them immediately
 
 ### 📋 GitHub Issue Disposition: READY TO CLOSE
 
 **Issues S11-013, S11-014, S11-015, S11-016**: All marked "Validated" in sprint tracker with full evidence chain. Ready for:
+
 1. GitHub issue creation (#56-#59) with implementation pointers and Run 3 validation evidence
-2. Link to merged PR or commit when available
-3. Closure note referencing test evidence (`Lane C section of Test_Execution_Summary_Sprint_2026_11.md`)
+1. Link to merged PR or commit when available
+1. Closure note referencing test evidence (`Lane C section of Test_Execution_Summary_Sprint_2026_11.md`)
 
 ---
 
@@ -263,7 +279,8 @@ All three new observability features (heartbeat ticker, sidebar display, Run Dia
 **Documentation**: ✅ Test summary updated, issue tracker updated, session evidence recorded
 
 **Next Steps**:
+
 1. Create GitHub issues #56-#59 with full validation evidence chain
-2. Link to PR/commits when merged
-3. Close issues with references to Lane C validation evidence
-4. Proceed to manual validation phase or next sprint item
+1. Link to PR/commits when merged
+1. Close issues with references to Lane C validation evidence
+1. Proceed to manual validation phase or next sprint item

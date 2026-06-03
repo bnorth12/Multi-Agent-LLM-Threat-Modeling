@@ -100,4 +100,3 @@ Use the repository template when available:
 Release-candidate merge evidence remains repository-retained unless explicitly promoted.
 
 <!-- End of release process policy -->
-

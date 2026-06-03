@@ -35,20 +35,20 @@ The story map is the execution source of truth for the sprint. Strategic objecti
 
 1. **Test Environment Separation**: Refactor repository structure to isolate test infrastructure (pytest, test fixtures, test utilities) from production code. Enable independent deployment of the application without test dependencies.
 
-2. **Standalone GUI Implementation**: Create a production GUI that does not depend on Streamlit test-framework functionality. GUI shall be distributable and functional independent of test suite.
+1. **Standalone GUI Implementation**: Create a production GUI that does not depend on Streamlit test-framework functionality. GUI shall be distributable and functional independent of test suite.
 
-3. **Release Candidate Generation (RC1)**: Configure and build v1.0.0-rc1 as a formal release artifact with:
+1. **Release Candidate Generation (RC1)**: Configure and build v1.0.0-rc1 as a formal release artifact with:
    - Version tagging in git
    - Release notes documenting features, fixes, known issues
    - Build/distribution configuration
    - Deployment validation checklist
 
-4. **Release Configuration & Testing**: Set up release-specific testing policies:
+1. **Release Configuration & Testing**: Set up release-specific testing policies:
    - Define what "release testing" means (smoke tests, integration tests, NOT full dev test suite)
    - Configure GitHub release artifact generation
    - Validate RC1 can be deployed and run independently
 
-5. **Production Readiness Gate**: Establish HITL checklist for release promotion from RC1 to GA (v1.0.0):
+1. **Production Readiness Gate**: Establish HITL checklist for release promotion from RC1 to GA (v1.0.0):
    - Documentation completeness
    - No known critical/high defects
    - Deployment tested in staging-like environment
@@ -132,6 +132,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
   - Fix any violations (move to test-only modules or add lazy imports)
 
 **Phase 1 Exit Criteria**:
+
 - [ ] Dependency audit complete; no test imports in `src/` (except lazy imports or optional features)
 - [ ] requirements-prod.txt verified installable without pytest
 - [ ] Evidence: audit report + updated requirements files in git
@@ -173,6 +174,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
   - Can be run: `streamlit run src/threat_modeler/ui/app.py`
 
 **Phase 2 Exit Criteria**:
+
 - [ ] `src/` code has zero test-framework imports
 - [ ] `tests_only/` module created and test suite migrated
 - [ ] Streamlit GUI runs standalone without test infrastructure
@@ -219,6 +221,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
   - Push to origin
 
 **Phase 3 Exit Criteria**:
+
 - [ ] Versioning consistent across codebase
 - [ ] Release artifacts built and tested
 - [ ] Release notes published
@@ -266,6 +269,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
     - [ ] Security audit (if applicable) passed
 
 **Phase 4 Exit Criteria**:
+
 - [ ] Release smoke test suite passes
 - [ ] RC1 validation report complete; no blockers found
 - [ ] Release Promotion Checklist ready for next sprint
@@ -301,6 +305,7 @@ The story map is the execution source of truth for the sprint. Strategic objecti
   - Lessons learned
 
 **Phase 5 Exit Criteria**:
+
 - [ ] GitHub Release published and publicly visible
 - [ ] Installation via PyPI/artifact link works
 - [ ] Sprint closure docs complete
@@ -491,4 +496,3 @@ v1.0.0-rc1 Artifacts:
 **Document Version**: 1.0
 **Last Updated**: 2026-05-18
 **Next Review**: 2026-05-23 (Mid-sprint check-in)
-

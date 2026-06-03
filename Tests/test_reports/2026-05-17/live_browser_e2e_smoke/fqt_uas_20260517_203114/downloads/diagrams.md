@@ -1,6 +1,7 @@
 # Mermaid Diagrams
 
 ## level_1
+
 ```mermaid
 graph TD
   subgraph Ground_Trust_Boundary[Ground Trust Boundary]

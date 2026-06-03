@@ -8,6 +8,7 @@
 - Severity Policy File: config/independent_review_policy_profiles.json
 
 ## Executive Summary
+
 This independent review provides a governance-level assessment of repository health, source-to-evidence traceability completeness, and remediation readiness for sprint planning intake. For sprint 2026-01, the repository health score is 55.6%, compared against the active remediation floor of 85.0%, and the planning-readiness verdict is not yet ready.
 
 From a full-traceability perspective, this run evaluated each requirement across the full chain of source, architecture/design, implementation, and verification evidence. Current KPI levels are implementation coverage 38.1%, verification coverage 22.4%, architecture/design traceability 48.4%, full-chain completeness 19.7%, and issue-governance quality 100.0%. These values correspond to 44/223 requirements with complete end-to-end evidence chains.
@@ -23,6 +24,7 @@ The practical interpretation for this run is that remediation work should priori
 Open exception obligations for post-merge remediation are tracked in independent_reviews/latest/remediation_obligations_2026-01_pre-push.md.
 
 ## 0) Branch Awareness
+
 - Current branch: main
 - HEAD: 00ef08e
 - Merge-base with origin/main: 00ef08e8e3d477dc1f55c77a2d03ee8c51dc0dd7
@@ -32,9 +34,11 @@ Open exception obligations for post-merge remediation are tracked in independent
 - Merge risk reason: Branch is main and fully aligned with origin/main.
 
 ## 1) Structure Integrity
+
 - All expected top-level governance/runtime paths present.
 
 ## 1.5) Required Traceability Artifacts
+
 - Required artifacts:
   - docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md
   - docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md
@@ -42,6 +46,7 @@ Open exception obligations for post-merge remediation are tracked in independent
 - Enforcement mode for artifact findings: non-blocking
 
 ### Artifact Verification Status
+
 - docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md | exists=True | planning_refs=42 | status=present-and-referenced
   - referenced in: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/planning/issues/issue_2026_01_R01-001_C01_ORCH_002_Architecture_Traceability_Remediation.md
   - referenced in: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/planning/issues/issue_2026_01_R01-002_C01_ORCH_003_Architecture_Traceability_Remediation.md
@@ -62,18 +67,22 @@ Open exception obligations for post-merge remediation are tracked in independent
   - referenced in: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/planning/issues/issue_2026_01_R01-005_GUI_012A_Architecture_Traceability_Remediation.md
 
 ### Missing Required Artifacts
+
 - None
 
 ### Present But Unreferenced Artifacts
+
 - None
 
 ## 2) Requirement Coverage
+
 - Total requirement IDs discovered: 223
 - Requirement IDs with implementation evidence: 85
 - Requirement IDs with verification evidence: 50
 - Requirement IDs with architecture/design traceability: 108
 
 ### Requirements Missing Implementation Evidence
+
 - ADM-001: Project Management Process SHALL require each feature branch to reference a planning issue before development starts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-002: Pull Request Process SHALL require each feature pull request to reference at least one tracked issue and update issue status on merge. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-003: Release Process SHALL require a completed feature branch checklist before pull request approval. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
@@ -214,6 +223,7 @@ Open exception obligations for post-merge remediation are tracked in independent
 - VS-010: For runtime state transitions and HITL gate publication paths, Sprint Team SHALL execute a race-condition verification control that checks causal ordering invariants (for example, Gate 0 payload-ready-before-paused projection) using automated API tests and at least one timestamped polling probe, and SHALL record evidence in sprint governance artifacts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/05_Verification_Strategy.md | arch: none | impl: none | verify: none
 
 ### Requirements Missing Verification Evidence
+
 - ADM-001: Project Management Process SHALL require each feature branch to reference a planning issue before development starts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-002: Pull Request Process SHALL require each feature pull request to reference at least one tracked issue and update issue status on merge. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-003: Release Process SHALL require a completed feature branch checklist before pull request approval. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
@@ -389,6 +399,7 @@ Open exception obligations for post-merge remediation are tracked in independent
 - VS-010: For runtime state transitions and HITL gate publication paths, Sprint Team SHALL execute a race-condition verification control that checks causal ordering invariants (for example, Gate 0 payload-ready-before-paused projection) using automated API tests and at least one timestamped polling probe, and SHALL record evidence in sprint governance artifacts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/05_Verification_Strategy.md | arch: none | impl: none | verify: none
 
 ### Requirements Missing Architecture/Design Traceability
+
 - ADM-001: Project Management Process SHALL require each feature branch to reference a planning issue before development starts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-002: Pull Request Process SHALL require each feature pull request to reference at least one tracked issue and update issue status on merge. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-003: Release Process SHALL require a completed feature branch checklist before pull request approval. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
@@ -506,9 +517,12 @@ Open exception obligations for post-merge remediation are tracked in independent
 - VS-010: For runtime state transitions and HITL gate publication paths, Sprint Team SHALL execute a race-condition verification control that checks causal ordering invariants (for example, Gate 0 payload-ready-before-paused projection) using automated API tests and at least one timestamped polling probe, and SHALL record evidence in sprint governance artifacts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/05_Verification_Strategy.md | arch: none | impl: none | verify: none
 
 ## 2.6) Full Source-to-Evidence Chain Status
+
 - Complete chains (source + arch/design + implementation + verification): 44/223
 - Requirements with at least one missing chain leg: 179
+
 ### Missing-Leg Chain Findings
+
 - ADM-001: Project Management Process SHALL require each feature branch to reference a planning issue before development starts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-002: Pull Request Process SHALL require each feature pull request to reference at least one tracked issue and update issue status on merge. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-003: Release Process SHALL require a completed feature branch checklist before pull request approval. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
@@ -690,13 +704,17 @@ Open exception obligations for post-merge remediation are tracked in independent
 - VS-010: For runtime state transitions and HITL gate publication paths, Sprint Team SHALL execute a race-condition verification control that checks causal ordering invariants (for example, Gate 0 payload-ready-before-paused projection) using automated API tests and at least one timestamped polling probe, and SHALL record evidence in sprint governance artifacts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/05_Verification_Strategy.md | arch: none | impl: none | verify: none
 
 ## 2.5) Conceptual vs As-Built Gap Classification
+
 ### Conceptual Planned Items (Architecture/Design Traced, Not Yet As-Built)
+
 - None
 
 ### Planned Items Missing Architecture/Design Trace
+
 - None
 
 ### As-Built Items Missing Architecture/Design Trace
+
 - [implementation-ready] C01-ORCH-002 (LangGraph Orchestrator SHALL persist checkpoints after each stage transition.)
 - [implementation-ready] C01-ORCH-003 (Pipeline configuration SHALL support both `linear` and `langgraph-compatible` execution modes. Release and validation profiles SHALL use `langgraph-compatible`, while `linear` mode SHALL be treated as a compatibility mode for controlled scenarios.)
 - [implementation-ready] C10-A09-001 (Agent 9 SHALL generate a formal markdown report containing executive summary, scope, boundaries, findings, mitigations, and residual risk sections.)
@@ -722,18 +740,23 @@ Open exception obligations for post-merge remediation are tracked in independent
 - [implementation-ready] RHMI-017 (POST /runs (`initial_state.raw_text`, `initial_state.tables`))
 
 ## 3) Issue Governance Coverage
+
 - Tracker rows parsed: 0
 
 ### Issue Rows Missing Requirement Linkage
+
 - None
 
 ### Issue Rows Missing GitHub Reference
+
 - None
 
 ### Planned/Proposed Rows Missing Requirement IDs
+
 - None
 
 ## 3.5) Hierarchy Governance Coverage
+
 - Sprint issue files analyzed: 42
 - Issue files with complete hierarchy fields: 42
 - Hierarchy coverage ratio: 100.0%
@@ -742,13 +765,16 @@ Open exception obligations for post-merge remediation are tracked in independent
 - Unique child function IDs: 42
 
 ### Decomposition Level Counts
+
 - L2: 42
 
 ### Phase Counts
+
 - Phase 1: 30
 - Phase 2: 12
 
 ### Parent Capability Fan-Out
+
 - C01-ORCH-001: 3 child function(s)
 - C11-LLM-001: 1 child function(s)
 - C12-HITL-001: 1 child function(s)
@@ -759,10 +785,13 @@ Open exception obligations for post-merge remediation are tracked in independent
 - C17-SCR-001: 1 child function(s)
 
 ### Missing Hierarchy Fields
+
 - None
 
 ## 4) Severity Policy and Findings
+
 ### Active Thresholds
+
 - req_impl_threshold: 0.8
 - req_verify_threshold: 0.75
 - req_arch_threshold: 0.8
@@ -770,19 +799,24 @@ Open exception obligations for post-merge remediation are tracked in independent
 - max_planned_missing_requirement: 0
 
 ### Critical
+
 - Verification coverage ratio 0.22 is critically below threshold 0.75.
 - Implementation coverage ratio 0.38 is critically below threshold 0.80.
 
 ### Major
+
 - Architecture/design trace ratio 0.48 is below threshold 0.80.
 
 ### Minor
+
 - Working tree has local modifications; governance review may not represent committed state.
 
 ### Informational
+
 - Branch merge risk is LOW: Branch is main and fully aligned with origin/main.
 
 ## 5) Compact Trend Dashboard
+
 - Window: last 5 run(s)
 - Overall trend: improving
 - Recent runs:
@@ -793,6 +827,7 @@ Open exception obligations for post-merge remediation are tracked in independent
   - 2026-05-30T14:40:23 | score=55.6 | C/M/m/I=2/1/1/1 | improving
 
 ## 6) Trend Snapshot and Delta
+
 - Current snapshot timestamp: 2026-05-30T14:40:23
 - Current score: 55.6
 - Current severity counts: critical=2, major=1, minor=1, informational=1
@@ -801,6 +836,7 @@ Open exception obligations for post-merge remediation are tracked in independent
 - Severity deltas: critical=0, major=0, minor=0, informational=0
 
 ## 6.5) KPI Scorecard
+
 | KPI | Current | Delta vs Prior |
 |---|---:|---:|
 | Implementation coverage | 38.1% | +0.0 pts |
@@ -811,6 +847,7 @@ Open exception obligations for post-merge remediation are tracked in independent
 | Critical + major findings | 3 | +0 |
 
 ## 7) Optional GitHub Reconciliation (Opt-In)
+
 - Enabled: False
 - Checked issues: 0
 - Status matches: 0
@@ -820,6 +857,7 @@ Open exception obligations for post-merge remediation are tracked in independent
   - GitHub reconciliation disabled (opt-in mode).
 
 ## 8) Notes and Limits
+
 - Local-only review by default: no GitHub API calls unless --github-reconcile is explicitly provided.
 - Issue parsing is table-header aware and only applies requirement-link checks where a Related Requirements column exists.
 - Branch-awareness reports ahead/behind and merge-base risk against origin/main.
@@ -830,6 +868,7 @@ Open exception obligations for post-merge remediation are tracked in independent
 - Traceability artifact findings remain non-blocking until full remediation is marked complete in the latest disposition index.
 
 ## 9) Remediation Readiness Strategy
+
 - Health metric: health
 - Current health: 55.6%
 - Remediation health floor: 85.0%
@@ -845,6 +884,7 @@ Open exception obligations for post-merge remediation are tracked in independent
   - Detailed sprint planning can start once the remediation gate is no longer required and the remaining work is advisory.
 
 ### Close implementation evidence gaps
+
 - Priority: P0
 - Rationale: 138 requirement ID(s) still lack implementation evidence; implementation coverage is 85/223.
 - Dependency order: Implement first, then attach verification and traceability evidence.
@@ -868,6 +908,7 @@ Open exception obligations for post-merge remediation are tracked in independent
   - No new planned item is introduced without a requirement ID.
 
 ### Close verification evidence gaps
+
 - Priority: P0
 - Rationale: 173 requirement ID(s) still lack verification evidence; verification coverage is 50/223.
 - Dependency order: Verify after implementation exists; keep verification artifacts paired with the change.
@@ -891,6 +932,7 @@ Open exception obligations for post-merge remediation are tracked in independent
   - Blocking findings do not reappear in the next trend snapshot.
 
 ### Backfill architecture and design traceability
+
 - Priority: P1
 - Rationale: 115 requirement ID(s) still lack architecture/design trace; traceability coverage is 108/223.
 - Dependency order: Traceability can run in parallel with implementation once the target scope is stable.
@@ -914,6 +956,7 @@ Open exception obligations for post-merge remediation are tracked in independent
   - Planned items that are not ready are explicitly reclassified or deferred.
 
 ### Resolve conceptual versus as-built mismatches
+
 - Priority: P1
 - Rationale: The report distinguishes planned concepts from as-built items; unresolved mismatches will cause sprint plans to oversubscribe unfinished architecture work.
 - Dependency order: Confirm whether each item is concept, design-ready, or implementation-ready before committing sprint scope.
@@ -937,6 +980,7 @@ Open exception obligations for post-merge remediation are tracked in independent
   - The conceptual/as-built split is stable enough to seed sprint stories.
 
 ### Chain-Gap Intake Sample
+
 - ADM-001: Project Management Process SHALL require each feature branch to reference a planning issue before development starts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-002: Pull Request Process SHALL require each feature pull request to reference at least one tracked issue and update issue status on merge. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-003: Release Process SHALL require a completed feature branch checklist before pull request approval. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none

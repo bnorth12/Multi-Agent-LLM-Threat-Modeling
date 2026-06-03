@@ -13,8 +13,8 @@ Related Sprint: 2026-08 (post-fix backlog)
 Conditional HITL gates (Merge Conflict Resolution and Export Consistency) are triggered only when specific error/warning thresholds are met. When these thresholds are not met, the gates automatically close without analyst intervention. The dashboard must clearly report this distinction so analysts can understand whether a gate is:
 
 1. **Awaiting Review** (open, waiting for decision)
-2. **Not Triggered** (condition not met, auto-bypassed, no action needed)
-3. **Bypassed** (conditional gate skipped, recorded in audit trail)
+1. **Not Triggered** (condition not met, auto-bypassed, no action needed)
+1. **Bypassed** (conditional gate skipped, recorded in audit trail)
 
 Currently, both active and skipped conditional gates show as "Pending" in the Run Dashboard, creating ambiguity about whether the analyst should take action.
 

@@ -17,9 +17,9 @@ Medium - Release traceability and auditability requirement for RC and GA.
 ## Scope
 
 1. Define and generate a component semantic version manifest.
-2. Define and generate a component-file version inventory.
-3. Surface version inventories in Results Export and Snapshot Manager.
-4. Include both inventories in release evidence artifacts.
+1. Define and generate a component-file version inventory.
+1. Surface version inventories in Results Export and Snapshot Manager.
+1. Include both inventories in release evidence artifacts.
 
 ## Acceptance Criteria
 

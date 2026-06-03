@@ -13,21 +13,21 @@ Implement an append-only event store with a bus abstraction so producers and con
 ## Scope
 
 1. Create durable append-only event writer.
-2. Add ordered event read APIs by `run_id` and sequence.
-3. Define bus abstraction for publish/subscribe or poll semantics.
-4. Support replay for diagnostics and recovery.
+1. Add ordered event read APIs by `run_id` and sequence.
+1. Define bus abstraction for publish/subscribe or poll semantics.
+1. Support replay for diagnostics and recovery.
 
 ## Acceptance Criteria
 
 1. Events are durably written before downstream side effects are committed.
-2. Consumers can read all events for one `run_id` in deterministic order.
-3. Event replay can reconstruct run timeline end-to-end.
-4. Storage adapter is swappable without changing event producers.
+1. Consumers can read all events for one `run_id` in deterministic order.
+1. Event replay can reconstruct run timeline end-to-end.
+1. Storage adapter is swappable without changing event producers.
 
 ## Out of Scope
 
 1. Final cloud message bus selection.
-2. Long-term data retention policy automation.
+1. Long-term data retention policy automation.
 
 ## Dependencies
 

@@ -43,18 +43,18 @@ Initial full-9-stage live run result:
 Observed failures:
 
 1. STRIDE parse failure (`TypeError` in stage 4) when score fields were returned as nested objects instead of ints.
-2. Empty Mermaid artifact in stage 8 when output omitted `MERMAID_LEVEL` markers.
-3. Missing STIX bundle in stage 6 when response was non-JSON prose.
+1. Empty Mermaid artifact in stage 8 when output omitted `MERMAID_LEVEL` markers.
+1. Missing STIX bundle in stage 6 when response was non-JSON prose.
 
 Remediations implemented:
 
 1. Hardened canonical deserialization to coerce nested numeric score shapes in:
    - `src/threat_modeler/agents/deserialise.py`
-2. Added STIX stage fallback to canonical-graph export when live output is not parseable JSON in:
+1. Added STIX stage fallback to canonical-graph export when live output is not parseable JSON in:
    - `src/threat_modeler/agents/agent_06_stix_packager.py`
-3. Added Mermaid stage fallback to canonical-graph export when markers/blocks are missing in:
+1. Added Mermaid stage fallback to canonical-graph export when markers/blocks are missing in:
    - `src/threat_modeler/agents/agent_08_diagram_generator.py`
-4. Added regression coverage for these scenarios in:
+1. Added regression coverage for these scenarios in:
    - `Tests/integration/test_agent_pipeline_completeness.py`
 
 ## 4. Local Regression Confirmation

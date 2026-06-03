@@ -141,4 +141,3 @@ Verification for this design should include:
 - manifest verification for complete and degraded bundles
 - traceability checks from exported artifacts back to authoritative runtime state
 - release-candidate dry runs confirming the delivery package stands alone
-

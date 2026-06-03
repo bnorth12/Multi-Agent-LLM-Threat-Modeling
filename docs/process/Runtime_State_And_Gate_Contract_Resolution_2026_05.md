@@ -37,4 +37,3 @@ Capture the implemented resolution for Gate 0 readiness sequencing and cancelled
   - Prompt expected-output/schema drift detection
 
 No open blocker remains for this correction package.
-

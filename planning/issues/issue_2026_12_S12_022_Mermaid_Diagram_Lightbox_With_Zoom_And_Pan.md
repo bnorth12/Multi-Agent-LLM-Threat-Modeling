@@ -1,4 +1,5 @@
 ﻿# Issue S12-022: Mermaid Diagram Lightbox with Zoom and Pan
+
 Sprint: 2026-12
 Requirement ID: UNKNOWN-REQ
 Parent Capability ID: C16-PRJ-001
@@ -8,7 +9,6 @@ Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_022_Mermaid_Diagram_Lightbox_With_Zoom_And_Pan.md
 Verification Method: Sprint traceability verification
 Status: In Review
-
 
 Status: Proposed (Post-Run)
 Priority: P2
@@ -24,6 +24,7 @@ analyst to zoom in, pan, or scroll the rendered diagram.
 This issue delivers a click-to-expand lightbox/dialog for the Mermaid rendered preview.
 When the analyst clicks the diagram preview, a full-viewport dialog opens containing the
 rendered diagram with:
+
 - Mouse-wheel zoom in/out.
 - Keyboard `+` and `-` zoom in/out.
 - Clickable `+` and `-` zoom controls in the dialog.
@@ -140,7 +141,3 @@ acceptable for a primary review surface.
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
 - Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
-
-
-
-

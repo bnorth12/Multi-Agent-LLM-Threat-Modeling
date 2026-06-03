@@ -32,6 +32,7 @@ This matrix tracks bidirectional traceability between Requirements, Issues, Code
 ## Status Legend
 
 ### Issue Status
+
 - **Open**: Not started
 - **In Progress**: Development underway
 - **In Review**: PR created, awaiting approval
@@ -39,6 +40,7 @@ This matrix tracks bidirectional traceability between Requirements, Issues, Code
 - **Completed**: Issue closed with verification evidence
 
 ### Verification Status
+
 - **⏳ Pending Implementation**: Requirement not yet started
 - **🔄 In Development**: Code being written, tests being added
 - **🧪 Testing**: Tests written, running local validation
@@ -52,6 +54,7 @@ This matrix tracks bidirectional traceability between Requirements, Issues, Code
 ## Sprint Workstreams
 
 ### Workstream 1: [Feature Name]
+
 **Related Requirements**: [REQ IDs]
 
 | Requirement ID | Status | Owner | Notes |
@@ -59,6 +62,7 @@ This matrix tracks bidirectional traceability between Requirements, Issues, Code
 | | | | |
 
 ### Workstream 2: [Feature Name]
+
 **Related Requirements**: [REQ IDs]
 
 | Requirement ID | Status | Owner | Notes |
@@ -116,6 +120,7 @@ Requirements moved from this sprint to backlog:
 **Type**: Functional
 
 **Acceptance Criteria**:
+
 - [ ] HitlGateRecord has triggered (bool=False) field
 - [ ] HitlGateRecord has trigger_reason (str|None=None) field
 - [ ] to_dict() and from_dict() methods updated
@@ -125,6 +130,7 @@ Requirements moved from this sprint to backlog:
 **Test File**: Tests/unit/test_hitl_gate_trigger_state.py
 
 **Verification Evidence**:
+
 - [ ] Primary verification artifact identified
 - [ ] Screenshot: Test output showing all tests PASS
 - [ ] CI/CD run: Link to GitHub Actions workflow
@@ -140,6 +146,7 @@ Requirements moved from this sprint to backlog:
 **Type**: Functional
 
 **Acceptance Criteria**:
+
 - [ ] GateStatus enum has AUTO_BYPASSED value
 - [ ] Gate state logic correctly assigns status per gate type
 - [ ] Unit tests verify all gate states
@@ -148,6 +155,7 @@ Requirements moved from this sprint to backlog:
 **Test File**: Tests/unit/test_hitl_gate_trigger_state.py
 
 **Verification Evidence**:
+
 - [ ] Primary verification artifact identified
 - [ ] Test output showing GateStatus enum tests PASS
 - [ ] Code review approval
@@ -162,6 +170,7 @@ Requirements moved from this sprint to backlog:
 **Type**: Functional
 
 **Acceptance Criteria**:
+
 - [ ] Dashboard renders 🟢 Auto-Bypassed for status==AUTO_BYPASSED
 - [ ] Distinguishes from ❓ Open (awaiting review) and ✅ Accepted
 - [ ] Integration test verifies rendering
@@ -170,6 +179,7 @@ Requirements moved from this sprint to backlog:
 **Test File**: Tests/integration/test_hitl_dashboard_conditional_gates.py
 
 **Verification Evidence**:
+
 - [ ] Primary verification artifact identified
 - [ ] Screenshot: Dashboard showing auto-bypassed gates with emoji
 - [ ] Integration test log: All tests PASS
@@ -185,6 +195,7 @@ Requirements moved from this sprint to backlog:
 **Type**: Functional
 
 **Acceptance Criteria**:
+
 - [ ] trigger_condition_met field added to HitlGateRecord
 - [ ] trigger_reason field populated with condition description
 - [ ] Audit trail captures why gate was bypassed or opened
@@ -193,6 +204,7 @@ Requirements moved from this sprint to backlog:
 **Test File**: Tests/unit/test_hitl_gate_trigger_state.py
 
 **Verification Evidence**:
+
 - [ ] Primary verification artifact identified
 - [ ] Unit test confirms fields populated correctly
 - [ ] Audit log sample showing trigger_reason captured
@@ -251,10 +263,10 @@ Requirements moved from this sprint to backlog:
 **Verification Script**: `python scripts/verify_sprint_traceability.py --sprint [YYYY-MM]`
 
 Run this anytime to check compliance:
+
 - Mid-sprint: Identify gaps early
 - Pre-closure: Ensure 100% traceability before sign-off
 
 ---
 
 **This matrix is the single source of truth for sprint requirements-to-tests traceability.**
-

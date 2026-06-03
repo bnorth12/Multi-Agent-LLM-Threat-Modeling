@@ -10,6 +10,7 @@ Baseline commit: `5813ef4de2b506b2b8bcef3761d02065747ab88a`
 Recommendation: **GO**
 
 Rationale:
+
 - Backend clean-room validation is strong.
 - Dependency boundary validation is strong.
 - Frontend clean-room lint/build gate now passes (lint warnings only; build successful).
@@ -20,16 +21,19 @@ Rationale:
 Executed in clean-room worktree:
 
 1. Python unit + integration suite
+
 - Command: `PYTHONPATH=src python -m pytest Tests/unit Tests/integration -q`
 - Result: `500 passed in 64.92s`
 - Status: PASS
 
-2. Dependency boundary validation
+1. Dependency boundary validation
+
 - Command: `python scripts/verify_dependency_boundary.py`
 - Result: `DEPENDENCY_BOUNDARY_CHECK_PASSED`
 - Status: PASS
 
-3. Frontend lint/build
+1. Frontend lint/build
+
 - Bootstrap: PASS (`npm ci`, 427 packages added)
 - Lint: PASS with warnings (2 `react-hooks/exhaustive-deps` warnings)
 - Build: PASS (`tsc -b && vite build`)
@@ -68,6 +72,7 @@ Release documentation must include explicitly:
 - Any accepted residual risks with owner and target sprint
 
 Current open-issue set to disclose includes:
+
 - #65, #67, #72, #73, #74, #75, #76, #77, #78, #81, #82, #83, #84, #85, #87, #88
 
 ## 6. Final Gate Conditions Before Publish
@@ -75,15 +80,16 @@ Current open-issue set to disclose includes:
 Required before issuing the RC bundle:
 
 1. In clean-room worktree, frontend validation gate:
+
 - `npm ci` (completed)
 - `npm run lint` (completed, warnings only)
 - `npm run build` (completed, pass)
 
-2. Complete manual sign-off fields in Sprint closeout docs.
+1. Complete manual sign-off fields in Sprint closeout docs.
 
-3. Populate version-locked `Releases/v1.0.0` folders with production snapshot, updated docs, governance records, and evidence summaries.
+1. Populate version-locked `Releases/v1.0.0` folders with production snapshot, updated docs, governance records, and evidence summaries.
 
-4. Record final publication decision in governance decision log.
+1. Record final publication decision in governance decision log.
 
 ## 7. Publish Decision (Current)
 

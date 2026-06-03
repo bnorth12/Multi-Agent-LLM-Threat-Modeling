@@ -8,6 +8,7 @@
 - Severity Policy File: config/independent_review_policy_profiles.json
 
 ## Executive Summary
+
 This independent review provides a governance-level assessment of repository health, source-to-evidence traceability completeness, and remediation readiness for sprint planning intake. For sprint 2026-12, the repository health score is 54.3%, compared against the active remediation floor of 85.0%, and the planning-readiness verdict is not yet ready.
 
 From a full-traceability perspective, this run evaluated each requirement across the full chain of source, architecture/design, implementation, and verification evidence. Current KPI levels are implementation coverage 37.0%, verification coverage 21.9%, architecture/design traceability 45.2%, full-chain completeness 17.4%, and issue-governance quality 97.8%. These values correspond to 38/219 requirements with complete end-to-end evidence chains.
@@ -21,6 +22,7 @@ KPI tracking supports governance learning over time by making both positive reme
 The practical interpretation for this run is that remediation work should prioritize closure of missing chain legs that drive critical and major findings, while maintaining explicit KPI baselines for future comparison. As remediation sprints complete, this summary can be used to verify whether health and chain-completeness KPIs are improving at a sustainable rate, and whether delivery sprints introduce regressions that warrant process corrections.
 
 ## 0) Branch Awareness
+
 - Current branch: main
 - HEAD: a6170fb
 - Merge-base with origin/main: db077f04bfafa9a8e2b639b3bd90c371844a69a2
@@ -30,15 +32,18 @@ The practical interpretation for this run is that remediation work should priori
 - Merge risk reason: Branch is ahead of origin/main; integration impact must be reviewed.
 
 ## 1) Structure Integrity
+
 - All expected top-level governance/runtime paths present.
 
 ## 2) Requirement Coverage
+
 - Total requirement IDs discovered: 219
 - Requirement IDs with implementation evidence: 81
 - Requirement IDs with verification evidence: 48
 - Requirement IDs with architecture/design traceability: 99
 
 ### Requirements Missing Implementation Evidence
+
 - ADM-001: Project Management Process SHALL require each feature branch to reference a planning issue before development starts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-002: Pull Request Process SHALL require each feature pull request to reference at least one tracked issue and update issue status on merge. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-003: Release Process SHALL require a completed feature branch checklist before pull request approval. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
@@ -179,6 +184,7 @@ The practical interpretation for this run is that remediation work should priori
 - VS-010: For runtime state transitions and HITL gate publication paths, Sprint Team SHALL execute a race-condition verification control that checks causal ordering invariants (for example, Gate 0 payload-ready-before-paused projection) using automated API tests and at least one timestamped polling probe, and SHALL record evidence in sprint governance artifacts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/05_Verification_Strategy.md | arch: none | impl: none | verify: none
 
 ### Requirements Missing Verification Evidence
+
 - ADM-001: Project Management Process SHALL require each feature branch to reference a planning issue before development starts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-002: Pull Request Process SHALL require each feature pull request to reference at least one tracked issue and update issue status on merge. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-003: Release Process SHALL require a completed feature branch checklist before pull request approval. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
@@ -352,6 +358,7 @@ The practical interpretation for this run is that remediation work should priori
 - VS-010: For runtime state transitions and HITL gate publication paths, Sprint Team SHALL execute a race-condition verification control that checks causal ordering invariants (for example, Gate 0 payload-ready-before-paused projection) using automated API tests and at least one timestamped polling probe, and SHALL record evidence in sprint governance artifacts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/05_Verification_Strategy.md | arch: none | impl: none | verify: none
 
 ### Requirements Missing Architecture/Design Traceability
+
 - ADM-001: Project Management Process SHALL require each feature branch to reference a planning issue before development starts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-002: Pull Request Process SHALL require each feature pull request to reference at least one tracked issue and update issue status on merge. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-003: Release Process SHALL require a completed feature branch checklist before pull request approval. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
@@ -474,9 +481,12 @@ The practical interpretation for this run is that remediation work should priori
 - VS-010: For runtime state transitions and HITL gate publication paths, Sprint Team SHALL execute a race-condition verification control that checks causal ordering invariants (for example, Gate 0 payload-ready-before-paused projection) using automated API tests and at least one timestamped polling probe, and SHALL record evidence in sprint governance artifacts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/05_Verification_Strategy.md | arch: none | impl: none | verify: none
 
 ## 2.6) Full Source-to-Evidence Chain Status
+
 - Complete chains (source + arch/design + implementation + verification): 38/219
 - Requirements with at least one missing chain leg: 181
+
 ### Missing-Leg Chain Findings
+
 - ADM-001: Project Management Process SHALL require each feature branch to reference a planning issue before development starts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-002: Pull Request Process SHALL require each feature pull request to reference at least one tracked issue and update issue status on merge. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-003: Release Process SHALL require a completed feature branch checklist before pull request approval. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
@@ -660,10 +670,13 @@ The practical interpretation for this run is that remediation work should priori
 - VS-010: For runtime state transitions and HITL gate publication paths, Sprint Team SHALL execute a race-condition verification control that checks causal ordering invariants (for example, Gate 0 payload-ready-before-paused projection) using automated API tests and at least one timestamped polling probe, and SHALL record evidence in sprint governance artifacts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/05_Verification_Strategy.md | arch: none | impl: none | verify: none
 
 ## 2.5) Conceptual vs As-Built Gap Classification
+
 ### Conceptual Planned Items (Architecture/Design Traced, Not Yet As-Built)
+
 - None
 
 ### Planned Items Missing Architecture/Design Trace
+
 - [concept] S12-012: RHMI-005 (Component validation + UI functional verification)
 - [concept] S12-015: RHMI-010 (Component behavior validation + browser workflow test)
 - [concept] S12-016: GUI-037 (When a run is created through the setup wizard, the GUI SHALL auto-select that exact run ID, SHALL avoid auto-selecting an unrelated run during the initial refresh window, and SHALL display a temporary `Created by wizard` badge on the pinned run row for 30 seconds.)
@@ -685,6 +698,7 @@ The practical interpretation for this run is that remediation work should priori
 - [concept] S12-031: HITL-012 (Orchestrator SHALL track and record for each conditional gate (HITL-010, HITL-011) whether the trigger condition was met (triggered=true) or not met (triggered=false) at the point the gate evaluation occurs. This state SHALL be persisted in the run result record.)
 
 ### As-Built Items Missing Architecture/Design Trace
+
 - [implementation-ready] C01-ORCH-001 (LangGraph Orchestrator SHALL route execution through all enabled agents using explicit next-state transitions.)
 - [implementation-ready] C01-ORCH-002 (LangGraph Orchestrator SHALL persist checkpoints after each stage transition.)
 - [implementation-ready] C01-ORCH-003 (Pipeline configuration SHALL support both `linear` and `langgraph-compatible` execution modes. Release and validation profiles SHALL use `langgraph-compatible`, while `linear` mode SHALL be treated as a compatibility mode for controlled scenarios.)
@@ -712,19 +726,25 @@ The practical interpretation for this run is that remediation work should priori
 - [implementation-ready] VS-009 (Sprint Team SHALL maintain at least one automated visible-browser validation scenario that exercises UI file upload behavior with approved sprint fixtures (including markdown narratives) and records command + fixture evidence in sprint test documentation.)
 
 ## 3) Issue Governance Coverage
+
 - Tracker rows parsed: 23
 
 ### Issue Rows Missing Requirement Linkage
+
 - D-S12-011 (C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/planning/issues/Sprint_2026_12_Issue_Tracker.md)
 
 ### Issue Rows Missing GitHub Reference
+
 - None
 
 ### Planned/Proposed Rows Missing Requirement IDs
+
 - D-S12-011 [Proposed] (C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/planning/issues/Sprint_2026_12_Issue_Tracker.md)
 
 ## 4) Severity Policy and Findings
+
 ### Active Thresholds
+
 - req_impl_threshold: 0.8
 - req_verify_threshold: 0.75
 - req_arch_threshold: 0.8
@@ -732,21 +752,26 @@ The practical interpretation for this run is that remediation work should priori
 - max_planned_missing_requirement: 0
 
 ### Critical
+
 - Verification coverage ratio 0.22 is critically below threshold 0.75.
 - Implementation coverage ratio 0.37 is critically below threshold 0.80.
 
 ### Major
+
 - Architecture/design trace ratio 0.45 is below threshold 0.80.
 
 ### Minor
+
 - Planned/proposed issue rows exceed requirement-link policy threshold: 1 > 0.
 - Planned requirements missing architecture/design trace found: 19 item(s).
 - Working tree has local modifications; governance review may not represent committed state.
 
 ### Informational
+
 - Branch merge risk is MODERATE: Branch is ahead of origin/main; integration impact must be reviewed.
 
 ## 5) Compact Trend Dashboard
+
 - Window: last 5 run(s)
 - Overall trend: stable
 - Recent runs:
@@ -757,6 +782,7 @@ The practical interpretation for this run is that remediation work should priori
   - 2026-05-29T18:10:27 | score=54.3 | C/M/m/I=2/1/3/1 | stable
 
 ## 6) Trend Snapshot and Delta
+
 - Current snapshot timestamp: 2026-05-29T18:10:27
 - Current score: 54.3
 - Current severity counts: critical=2, major=1, minor=3, informational=1
@@ -765,6 +791,7 @@ The practical interpretation for this run is that remediation work should priori
 - Severity deltas: critical=0, major=0, minor=0, informational=0
 
 ## 6.5) KPI Scorecard
+
 | KPI | Current | Delta vs Prior |
 |---|---:|---:|
 | Implementation coverage | 37.0% | +0.0 pts |
@@ -775,6 +802,7 @@ The practical interpretation for this run is that remediation work should priori
 | Critical + major findings | 3 | +0 |
 
 ## 7) Optional GitHub Reconciliation (Opt-In)
+
 - Enabled: False
 - Checked issues: 0
 - Status matches: 0
@@ -784,6 +812,7 @@ The practical interpretation for this run is that remediation work should priori
   - GitHub reconciliation disabled (opt-in mode).
 
 ## 8) Notes and Limits
+
 - Local-only review by default: no GitHub API calls unless --github-reconcile is explicitly provided.
 - Issue parsing is table-header aware and only applies requirement-link checks where a Related Requirements column exists.
 - Branch-awareness reports ahead/behind and merge-base risk against origin/main.
@@ -791,6 +820,7 @@ The practical interpretation for this run is that remediation work should priori
 - Traceability checks use full source-to-evidence chain legs (source, architecture/design, implementation, verification).
 
 ## 9) Remediation Readiness Strategy
+
 - Health metric: health
 - Current health: 54.3%
 - Remediation health floor: 85.0%
@@ -807,6 +837,7 @@ The practical interpretation for this run is that remediation work should priori
   - Detailed sprint planning can start once the remediation gate is no longer required and the remaining work is advisory.
 
 ### Close implementation evidence gaps
+
 - Priority: P0
 - Rationale: 138 requirement ID(s) still lack implementation evidence; implementation coverage is 81/219.
 - Dependency order: Implement first, then attach verification and traceability evidence.
@@ -830,6 +861,7 @@ The practical interpretation for this run is that remediation work should priori
   - No new planned item is introduced without a requirement ID.
 
 ### Close verification evidence gaps
+
 - Priority: P0
 - Rationale: 171 requirement ID(s) still lack verification evidence; verification coverage is 48/219.
 - Dependency order: Verify after implementation exists; keep verification artifacts paired with the change.
@@ -853,6 +885,7 @@ The practical interpretation for this run is that remediation work should priori
   - Blocking findings do not reappear in the next trend snapshot.
 
 ### Backfill architecture and design traceability
+
 - Priority: P1
 - Rationale: 120 requirement ID(s) still lack architecture/design trace; traceability coverage is 99/219.
 - Dependency order: Traceability can run in parallel with implementation once the target scope is stable.
@@ -876,6 +909,7 @@ The practical interpretation for this run is that remediation work should priori
   - Planned items that are not ready are explicitly reclassified or deferred.
 
 ### Resolve conceptual versus as-built mismatches
+
 - Priority: P1
 - Rationale: The report distinguishes planned concepts from as-built items; unresolved mismatches will cause sprint plans to oversubscribe unfinished architecture work.
 - Dependency order: Confirm whether each item is concept, design-ready, or implementation-ready before committing sprint scope.
@@ -899,6 +933,7 @@ The practical interpretation for this run is that remediation work should priori
   - The conceptual/as-built split is stable enough to seed sprint stories.
 
 ### Fix issue tracker governance metadata
+
 - Priority: P1
 - Rationale: 2 issue row(s) are missing requirement linkage, which blocks dependable sprint decomposition.
 - Dependency order: Repair tracker metadata before converting findings into sprint stories.
@@ -915,6 +950,7 @@ The practical interpretation for this run is that remediation work should priori
   - Tracker rows can be converted into sprint stories without manual reconstruction.
 
 ### Chain-Gap Intake Sample
+
 - ADM-001: Project Management Process SHALL require each feature branch to reference a planning issue before development starts. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-002: Pull Request Process SHALL require each feature pull request to reference at least one tracked issue and update issue status on merge. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none
 - ADM-003: Release Process SHALL require a completed feature branch checklist before pull request approval. | missing: architecture/design, implementation, verification | source: C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md | arch: none | impl: none | verify: none

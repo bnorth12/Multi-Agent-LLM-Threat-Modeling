@@ -32,28 +32,33 @@ Implement requirement HITL-012-014 to track and display conditional gate trigger
 ### 1. Update `src/threat_modeler/hitl/models.py` â€” Add trigger state fields
 
 **Changes:**
+
 - Add `triggered: bool = False` field to `HitlGateRecord`
 - Add `trigger_reason: str | None = None` field to `HitlGateRecord`
 - Add `AUTO_BYPASSED = "auto_bypassed"` to `GateStatus` enum
 - Update `to_dict()` and `from_dict()` methods to handle new fields
 
 **Files:**
+
 - `src/threat_modeler/hitl/models.py` (HitlGateRecord, GateStatus)
 
 ### 2. Update `src/threat_modeler/hitl/gate_engine.py` â€” Track trigger state on bypass
 
 **Changes:**
+
 - Modify `bypass_gate(gate_id, trigger_reason=None)` method signature to accept optional trigger_reason
 - Set `record.status = GateStatus.AUTO_BYPASSED` when bypassing
 - Set `record.triggered = False` and `record.trigger_reason = trigger_reason`
 - Ensure bypassed gates have artifact_snapshot = None (no snapshot needed for non-triggered conditional gates)
 
 **Files:**
+
 - `src/threat_modeler/hitl/gate_engine.py` (GateEngine.bypass_gate method)
 
 ### 3. Update `src/threat_modeler/hitl/service.py` â€” Pass trigger reason on conditional gate bypass
 
 **Changes:**
+
 - Update `evaluate_and_open_merge_conflict_gate()` to pass trigger_reason on bypass:
   - Reason format: `f"merge_conflict_count ({count}) < threshold ({threshold})"`
 - Update `evaluate_and_open_export_consistency_gate()` to pass trigger_reason on bypass:
@@ -61,26 +66,31 @@ Implement requirement HITL-012-014 to track and display conditional gate trigger
 - Mark triggered gates: `record.triggered = True` before raising GatePausedError
 
 **Files:**
+
 - `src/threat_modeler/hitl/service.py` (evaluate_and_open_merge_conflict_gate, evaluate_and_open_export_consistency_gate)
 
 ### 4. Update `src/threat_modeler/ui/screens/home.py` â€” Render conditional gate state in dashboard
 
 **Changes:**
+
 - In HITL Gate States table rendering logic, check `gate.status == GateStatus.AUTO_BYPASSED`
 - Render with emoji "ðŸŸ¢" and label "Auto-Bypassed" instead of "â¬œ Pending"
 - For open gates (status == OPEN), render "â“ Open"
 - For resolved gates (ACCEPTED_AS_IS, ACCEPTED_CHANGES), render "âœ… Accepted" or "âŒ Rejected"
 
 **Files:**
+
 - `src/threat_modeler/ui/screens/home.py` (HITL Gate States table rendering)
 
 ### 5. Update Session State Schema â€” Capture trigger metadata
 
 **Changes:**
+
 - Ensure `session_state["hitl_gates"]` records include triggered and trigger_reason fields
 - Verify sync_execution_state_to_session() preserves these fields when copying from registry
 
 **Files:**
+
 - `src/threat_modeler/ui/session.py` (hitl_gates schema or initialization)
 
 ### 6. Add Unit Tests â€” Gate trigger state tracking
@@ -88,6 +98,7 @@ Implement requirement HITL-012-014 to track and display conditional gate trigger
 **File:** `Tests/unit/test_hitl_gate_trigger_state.py` (new)
 
 **Test cases:**
+
 - `test_conditional_gate_not_triggered_sets_auto_bypassed_status` â€” verify gate status = AUTO_BYPASSED when condition not met
 - `test_conditional_gate_not_triggered_sets_trigger_reason` â€” verify trigger_reason is populated with explanation
 - `test_conditional_gate_triggered_sets_open_status` â€” verify gate status = OPEN when condition is met
@@ -101,6 +112,7 @@ Implement requirement HITL-012-014 to track and display conditional gate trigger
 **File:** `Tests/integration/test_hitl_dashboard_conditional_gates.py` (new)
 
 **Test case:**
+
 - `test_dashboard_displays_auto_bypassed_for_non_triggered_conditional_gate` â€” run pipeline, verify dashboard shows "ðŸŸ¢ Auto-Bypassed" for gates where condition not met
 
 ## Code Locations Summary
@@ -132,6 +144,7 @@ Implement requirement HITL-012-014 to track and display conditional gate trigger
 **Assigned**: TBD
 **Blocked By**: None
 **Blocks**: None
+
 ## Closure Evidence Template
 
 Use this block for future closure updates.
@@ -142,4 +155,3 @@ Use this block for future closure updates.
 - Verification result summary (include pass counts):
 - Evidence artifact path(s):
 - Reviewer or approver initials:
-

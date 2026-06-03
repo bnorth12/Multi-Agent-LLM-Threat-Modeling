@@ -117,9 +117,9 @@ Steps:
 
 1. Open terminal and verify Python/runtime prerequisites.
 Expected: Prerequisite versions match deployment guide.
-2. Verify RC artifact files exist and checksums validate.
+1. Verify RC artifact files exist and checksums validate.
 Expected: All required files present and checksum verification passes.
-3. Open deployment guide and confirm applicable environment profile.
+1. Open deployment guide and confirm applicable environment profile.
 Expected: Target environment profile selected and logged.
 
 Record:
@@ -143,13 +143,13 @@ Steps:
 
 1. Launch operational runtime (`python -m threat_modeler`).
 Expected: API server starts without startup exceptions and responds on configured host/port.
-2. Install browser-test dependencies and launch Streamlit harness (`pip install -r Tests/requirements_e2e.txt` then `streamlit run src/threat_modeler/ui/app.py`).
+1. Install browser-test dependencies and launch Streamlit harness (`pip install -r Tests/requirements_e2e.txt` then `streamlit run src/threat_modeler/ui/app.py`).
 Expected: Streamlit harness starts for browser automation workflows.
-3. Navigate to configuration screen.
+1. Navigate to configuration screen.
 Expected: Configuration controls render correctly.
-4. Enter provider settings and click connection validation button.
+1. Enter provider settings and click connection validation button.
 Expected: Successful connection message for valid settings.
-5. Enter invalid credentials and click validation again.
+1. Enter invalid credentials and click validation again.
 Expected: Clear error message; run start remains blocked for invalid settings.
 
 Collect artifacts:
@@ -169,9 +169,9 @@ Steps:
 
 1. Navigate to input entry screen.
 Expected: Input form fields are visible and editable.
-2. Enter required system description and interface data.
+1. Enter required system description and interface data.
 Expected: Inputs accepted; no schema errors for valid data.
-3. Click run start/submit action.
+1. Click run start/submit action.
 Expected: Run is created; status transitions from queued to running.
 
 Collect artifacts:
@@ -191,13 +191,13 @@ Steps:
 
 1. Wait for HITL gate pause.
 Expected: Status shows paused with gate identifier.
-2. Open threat review/gate screen.
+1. Open threat review/gate screen.
 Expected: Gate context and payload summary are visible.
-3. Click approve decision control for first gate.
+1. Click approve decision control for first gate.
 Expected: Decision recorded and visible.
-4. Click resume action.
+1. Click resume action.
 Expected: Run status returns to running; no duplicate-resume behavior.
-5. Repeat for all mandatory gates.
+1. Repeat for all mandatory gates.
 Expected: Each gate transitions correctly; run eventually completes.
 
 Collect artifacts:
@@ -218,15 +218,15 @@ Steps:
 
 1. Open results export screen.
 Expected: Export controls are enabled for completed run.
-2. Download STIX bundle.
+1. Download STIX bundle.
 Expected: File downloads; content is non-empty JSON.
-3. Download canonical graph.
+1. Download canonical graph.
 Expected: File downloads; content includes expected graph nodes/edges.
-4. Download Mermaid output.
+1. Download Mermaid output.
 Expected: File downloads with diagram source.
-5. Download report and token usage artifacts.
+1. Download report and token usage artifacts.
 Expected: Files download and contain run data.
-6. Download STRIDE standalone export.
+1. Download STRIDE standalone export.
 Expected: STRIDE export file exists and matches viewer content.
 
 Collect artifacts:
@@ -246,11 +246,11 @@ Steps:
 
 1. Open STIX viewer section.
 Expected: Objects grouped and filter/search controls function.
-2. Open canonical graph viewer.
+1. Open canonical graph viewer.
 Expected: Hierarchical structures render and are navigable.
-3. Open Mermaid viewer and source toggle.
+1. Open Mermaid viewer and source toggle.
 Expected: Diagram renders; source view toggles correctly.
-4. Open STRIDE viewer.
+1. Open STRIDE viewer.
 Expected: STRIDE rows, scores, and justifications are visible and sortable.
 
 Collect artifacts:
@@ -270,9 +270,9 @@ Steps:
 
 1. Expand each quick preview panel.
 Expected: Correct preview content loads without error.
-2. Navigate away and return to results export.
+1. Navigate away and return to results export.
 Expected: Previews remain functional and data is current.
-3. Refresh browser and re-open preview panels.
+1. Refresh browser and re-open preview panels.
 Expected: Preview panels still load and are not stale.
 
 ### TC-RC-012: Visible Browser CAV Upload Validation
@@ -289,7 +289,7 @@ Steps:
 1. Launch visible-browser automation test:
    `pytest Tests/e2e/test_browser_cav_markdown_upload.py -v -m llm_live_browser -s`
    Expected: Chromium opens (headless disabled).
-2. Automation fills Input Entry system name and uploads:
+1. Automation fills Input Entry system name and uploads:
    - `icd_charlie_v1.xlsx`
    - `description_cav.md`
    - `description_avionics.md`
@@ -317,9 +317,9 @@ Steps:
 
 1. Open component semantic version manifest.
 Expected: Required components and semantic versions present.
-2. Open component-file version inventory.
+1. Open component-file version inventory.
 Expected: Deterministic identifiers listed for component-owned files.
-3. Compare mapping between component manifest and file inventory.
+1. Compare mapping between component manifest and file inventory.
 Expected: No orphan entries; mapping consistency confirmed.
 
 Collect artifacts:
@@ -339,11 +339,11 @@ Steps:
 
 1. Follow user manual steps for configuration and run initiation.
 Expected: Product behavior matches instructions.
-2. Follow manual steps for gate review and resume.
+1. Follow manual steps for gate review and resume.
 Expected: Workflow and labels match documented instructions.
-3. Follow manual steps for export and viewer usage.
+1. Follow manual steps for export and viewer usage.
 Expected: Documented outputs match actual outputs.
-4. Validate screenshots and links in manual.
+1. Validate screenshots and links in manual.
 Expected: Screenshots are current and links resolve.
 
 Collect artifacts:
@@ -363,9 +363,9 @@ Steps:
 
 1. Compare release notes claims to implemented features.
 Expected: Claims accurately reflect implemented S09 scope.
-2. Check requirements and traceability references for S09 entries.
+1. Check requirements and traceability references for S09 entries.
 Expected: IDs, issue links, and verification references are consistent.
-3. Check RC validation sequencing policy is consistent across release docs.
+1. Check RC validation sequencing policy is consistent across release docs.
 Expected: Manual RC campaign is documented as starting only after a clean automated pass.
 
 Collect artifacts:
@@ -385,11 +385,11 @@ Steps:
 
 1. Execute installation steps exactly as written.
 Expected: Installation completes successfully.
-2. Execute configuration and startup steps.
+1. Execute configuration and startup steps.
 Expected: Application starts and is reachable.
-3. Execute manual validation subset referenced by deployment guide.
+1. Execute manual validation subset referenced by deployment guide.
 Expected: Key operational checks pass.
-4. Execute rollback steps as dry run or controlled simulation.
+1. Execute rollback steps as dry run or controlled simulation.
 Expected: Rollback procedure is clear and operationally valid.
 
 Collect artifacts:

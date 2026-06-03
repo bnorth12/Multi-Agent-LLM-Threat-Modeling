@@ -19,16 +19,16 @@ Medium - does not always block control interaction, but reduces analyst ability 
 ## Reproduction
 
 1. Open `Threat Review`.
-2. Select a gate in HITL Gate Review.
-3. Open raw payload display control.
-4. Observe payload area shows empty/no useful content for the selected gate.
+1. Select a gate in HITL Gate Review.
+1. Open raw payload display control.
+1. Observe payload area shows empty/no useful content for the selected gate.
 
 ## Scope
 
 1. Diagnose payload source for gate raw artifact snapshots across run lifecycle.
-2. Ensure gate-specific raw payload controls render non-empty source data when available.
-3. Provide explicit user message for true empty-state vs. missing-state conditions.
-4. Add automated coverage for payload-present and payload-empty behaviors.
+1. Ensure gate-specific raw payload controls render non-empty source data when available.
+1. Provide explicit user message for true empty-state vs. missing-state conditions.
+1. Add automated coverage for payload-present and payload-empty behaviors.
 
 ## Acceptance Criteria
 

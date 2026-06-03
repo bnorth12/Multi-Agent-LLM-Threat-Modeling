@@ -135,32 +135,41 @@ Verification for this design should include:
 The following design extensions are now part of the runtime and orchestration baseline and are not trace-only placeholders:
 
 1. C01-ORCH-002 / F-C01_ORCH_002-L2
+
 - LangGraph-compatible mode SHALL preserve deterministic transition semantics equivalent to controlled linear mode for approved stage sets.
 - Stage transition event emission SHALL continue to satisfy INT-005 in both execution modes.
 
-2. C01-ORCH-003 / F-C01_ORCH_003-L2
+1. C01-ORCH-003 / F-C01_ORCH_003-L2
+
 - Checkpoints SHALL be persisted immediately after each approved stage transition and SHALL be recoverable for resume paths governed by INT-007.
 - Checkpoint continuity SHALL be treated as a runtime control-plane invariant.
 
-3. GUI-003A / F-GUI_003A-TRACE-L2
+1. GUI-003A / F-GUI_003A-TRACE-L2
+
 - Paused-by-gate runtime state SHALL be projected as paused with gate context and completed-stage context; it SHALL not be projected as failed absent a terminal failure condition.
 
-4. GUI-012A / F-GUI_012A-TRACE-L2
+1. GUI-012A / F-GUI_012A-TRACE-L2
+
 - Stage-selection configuration SHALL persist across sessions and enforce at-least-one-stage enabled before run initiation.
 
-5. GUI-029 / F-GUI_029-TRACE-L2
+1. GUI-029 / F-GUI_029-TRACE-L2
+
 - Prompt-response rendering SHALL be key-correlated by prompt record identifier; stale responses from prior attempts SHALL be suppressed from the active view.
 
-6. PRJ-024 / F-PRJ_024-TRACE-L2
+1. PRJ-024 / F-PRJ_024-TRACE-L2
+
 - Visible-browser validation scenarios SHALL be treated as governed verification flows for UI upload behavior and fixture compatibility.
 
-7. RHMI-016 / F-S12-017-RHMI_016-L2
+1. RHMI-016 / F-S12-017-RHMI_016-L2
+
 - Restart-safe completed-run artifact retrieval SHALL preserve run lineage context across restarts and SHALL reject retrieval of stale or mismatched run artifacts.
 
-8. RHMI-017 / F-S12-018-RHMI_017-L2
+1. RHMI-017 / F-S12-018-RHMI_017-L2
+
 - React input file parsing SHALL enforce binary-injection guard controls with deterministic validation failure surfaces before runtime execution.
 
-9. PRJ-001 / F-S12-033-ORCH_001-L2
+1. PRJ-001 / F-S12-033-ORCH_001-L2
+
 - Orchestration baseline controls mapped to PRJ-001 SHALL preserve deterministic run-state governance when architecture disposition updates are applied.
 
 ## 8. Governance and State Continuity Design Allocations
@@ -168,10 +177,13 @@ The following design extensions are now part of the runtime and orchestration ba
 The following requirement IDs are allocated to runtime governance control behavior and are part of the active architecture/design baseline:
 
 1. ADM-001, ADM-002, ADM-003, ADM-004, ADM-005, ADM-006
+
 - Governance workflow controls SHALL enforce issue-linked branch execution, pull-request linkage, checklist retention, release-readiness aggregation, and recurring cadence reviews through the orchestrated governance execution path.
 
-2. C01-ORCH-004, C01-ORCH-005
+1. C01-ORCH-004, C01-ORCH-005
+
 - Orchestrator control logic SHALL preserve gate-context persistence and approved handoff record continuity across every stage transition.
 
-3. C01-STATE-001, C01-STATE-002, C01-STATE-003
+1. C01-STATE-001, C01-STATE-002, C01-STATE-003
+
 - Runtime state authority SHALL version stage snapshots, preserve approved baselines as immutable history entries, and block handoff on schema-validation failure with structured error signaling.

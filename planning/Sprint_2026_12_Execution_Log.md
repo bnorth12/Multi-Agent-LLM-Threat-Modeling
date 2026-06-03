@@ -626,4 +626,3 @@ Sprint 2026-12 HTML frontend conversion to standalone React + MUI architecture i
   - `src/threat_modeler/hitl/service.py`
   - `frontend/src/components/HITLGateManager.tsx`
 - Run Phase 4 verification closure lanes and record evidence before closeout synchronization.
-

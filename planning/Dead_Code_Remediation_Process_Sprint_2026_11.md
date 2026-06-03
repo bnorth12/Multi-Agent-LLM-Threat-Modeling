@@ -38,9 +38,9 @@ Identified items:
 **Approach for each DCI item**:
 
 1. Wrap function/class definition with `# DEAD CODE MARKER: <ID> <reason>` and `# END DEAD CODE MARKER: <ID>` comments.
-2. Add a deprecation notice explaining when/why this will be removed.
-3. Ensure the code still runs (wrapped code is not deleted, only commented).
-4. Commit this change with message: `docs(dead-code): mark DCI-001 through DCI-004 with deprecation notices`.
+1. Add a deprecation notice explaining when/why this will be removed.
+1. Ensure the code still runs (wrapped code is not deleted, only commented).
+1. Commit this change with message: `docs(dead-code): mark DCI-001 through DCI-004 with deprecation notices`.
 
 ### Example Transformation
 
@@ -92,6 +92,7 @@ pytest Tests/e2e/test_browser_run_validation.py -v -m "not live_llm"
 **Goal**: Ensure all removed code paths have replacement tests using FrameworkOrchestrator and LangGraph-native architecture.
 
 **Current state**:
+
 - Legacy orchestrator tests in `Tests/unit/test_orchestrator.py` only cover StateGraph compatibility wrapper.
 - New FrameworkOrchestrator tests exist but are incomplete.
 
@@ -119,8 +120,8 @@ pytest Tests/e2e/test_browser_run_validation.py -v -m "not live_llm"
 **Approach**:
 
 1. Delete code between `# DEAD CODE MARKER` and `# END DEAD CODE MARKER` comments.
-2. Remove the marker comments themselves.
-3. Run full test suite to confirm no regressions.
+1. Remove the marker comments themselves.
+1. Run full test suite to confirm no regressions.
 
 ### Deletion Targets (in order)
 
@@ -129,13 +130,13 @@ pytest Tests/e2e/test_browser_run_validation.py -v -m "not live_llm"
    - Functions: `agent_01_input_normalizer`, `agent_02_context_builder`
    - Test after: Full Lane A pass required
 
-2. **Step 3.2**: Remove build_default_state_graph (DCI-002)
+1. **Step 3.2**: Remove build_default_state_graph (DCI-002)
    - File: `src/threat_modeler/orchestrator.py`
    - Function: `build_default_state_graph()`
    - Dependency: Must verify no other production code calls it
    - Test after: Full Lane A pass required
 
-3. **Step 3.3**: Remove StateGraph compatibility wrapper (DCI-001)
+1. **Step 3.3**: Remove StateGraph compatibility wrapper (DCI-001)
    - File: `src/threat_modeler/orchestrator.py`
    - Class: `StateGraph`
    - Dependency: Update/remove legacy orchestrator tests that reference it
@@ -179,8 +180,8 @@ pytest Tests/e2e/ -v -m "not live_llm" --tb=short
 **Activities**:
 
 1. Full Lane A re-run with coverage metrics.
-2. Full Lane C autonomous e2e re-run.
-3. Manual spot-check of critical paths (input normalization, agent execution, report generation).
+1. Full Lane C autonomous e2e re-run.
+1. Manual spot-check of critical paths (input normalization, agent execution, report generation).
 
 ### Commands
 
@@ -247,10 +248,10 @@ pytest Tests/e2e/test_browser_run_validation.py -v
 If issues are discovered during Phase 3 or 4:
 
 1. Revert deletion commit(s).
-2. Re-run Phase 1 code-to-comment conversion on the reverted code.
-3. Investigate root cause in Phase 2 coverage (missing test scenario).
-4. Fix test coverage gap.
-5. Retry Phase 3 deletion after re-validation.
+1. Re-run Phase 1 code-to-comment conversion on the reverted code.
+1. Investigate root cause in Phase 2 coverage (missing test scenario).
+1. Fix test coverage gap.
+1. Retry Phase 3 deletion after re-validation.
 
 ---
 
@@ -259,8 +260,8 @@ If issues are discovered during Phase 3 or 4:
 All phases produce evidence for Sprint 2026-11 closeout:
 
 1. **Phase 1 Commit**: Deprecation markers added.
-2. **Phase 2 Test Results**: Lane A + C pass logs; coverage report.
-3. **Phase 3 Deletion Commits**: Deletion steps 3.1, 3.2, 3.3 with test pass evidence after each.
-4. **Phase 4 Report**: Final coverage report, Lane A + C test results, regression assessment.
+1. **Phase 2 Test Results**: Lane A + C pass logs; coverage report.
+1. **Phase 3 Deletion Commits**: Deletion steps 3.1, 3.2, 3.3 with test pass evidence after each.
+1. **Phase 4 Report**: Final coverage report, Lane A + C test results, regression assessment.
 
 Record all in `planning/Test_Execution_Summary_Sprint_2026_11.md` under "Dead Code Remediation Evidence" section.

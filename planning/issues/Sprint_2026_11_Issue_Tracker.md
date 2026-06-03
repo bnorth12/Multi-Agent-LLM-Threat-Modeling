@@ -152,4 +152,3 @@ Planning linkage:
 - ✅ S11-016 (Enhanced Error Display): Execution errors rendered with decoded HTML entities; HTTP status code extraction working (verified on backend FAILED transitions).
 
 **Next Actions**: Keep the remaining open Sprint 11 backlog items moving through implementation and closure; treat D-S11-001 / issue #62 as completed and track live verify hardening as D-S11-002 / issue #87.
-

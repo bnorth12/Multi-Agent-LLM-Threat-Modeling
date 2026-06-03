@@ -90,6 +90,7 @@ Observed output:
 **Status**: Resolved
 **Assigned**: Engineering
 **Sprint**: 2026-08
+
 ## Closure Evidence Template
 
 Use this block for future closure updates.
@@ -100,4 +101,3 @@ Use this block for future closure updates.
 - Verification result summary (include pass counts):
 - Evidence artifact path(s):
 - Reviewer or approver initials:
-

@@ -20,12 +20,14 @@ While gates 0â€“5 were correctly transitioned to Accepted_As_Is or Bypassed
 ## Resolution
 
 **Root Cause:** Conditional gates (HITL-010, HITL-011) lack explicit state reporting to distinguish between:
+
 - **Open** â€” condition triggered, awaiting analyst decision
 - **Auto-Bypassed** â€” condition not met, gate automatically closed, no action needed
 
 **Disposition:** Working as designed. The gates function correctly. New requirement HITL-012-014 has been created to improve dashboard reporting of conditional gate state.
 
 **UX Improvement:**
+
 - Implement gate trigger state tracking (triggered: true/false)
 - Update dashboard to display "ðŸŸ¢ Auto-Bypassed" for conditional gates when not triggered
 - Add trigger_reason field to gate record for audit trail
@@ -48,15 +50,16 @@ While gates 0â€“5 were correctly transitioned to Accepted_As_Is or Bypassed
 ## Reproduction
 
 1. Configure xAI/Grok-4 provider in Streamlit Pipeline Configuration.
-2. Upload ICD file (`icd_avionics_v1.csv`) and system name in Input Entry.
-3. Click "â–¶ Start Threat Model Run".
-4. Approve and resume through gates 1â€“5 via Threat Review screen.
-5. Monitor Run Dashboard (Home screen) for completion.
-6. Observe: All 9 stages show âœ… Complete, pipeline status = "Pipeline completed successfully", but gate_6 and gate_7 still show â¬œ Pending in HITL Gate States table.
+1. Upload ICD file (`icd_avionics_v1.csv`) and system name in Input Entry.
+1. Click "â–¶ Start Threat Model Run".
+1. Approve and resume through gates 1â€“5 via Threat Review screen.
+1. Monitor Run Dashboard (Home screen) for completion.
+1. Observe: All 9 stages show âœ… Complete, pipeline status = "Pipeline completed successfully", but gate_6 and gate_7 still show â¬œ Pending in HITL Gate States table.
 
 ## Expected Behavior
 
 One of:
+
 - **Option A (Most likely)**: Gates 6 and 7 should auto-bypass or auto-approve during pipeline completion if they are not user-decision gates (similar to gate_0).
 - **Option B**: Pipeline should not transition to "completed successfully" until all gates are resolved.
 - **Option C**: Gates 6 and 7 should never appear in the pipeline flow for this fixture if they are not applicable to the scenario.
@@ -68,6 +71,7 @@ Gates 6 and 7 remain in Pending state indefinitely after run completion, creatin
 ## Root Cause Hypothesis
 
 The gate state persistence logic in `src/threat_modeler/ui/execution.py` or the orchestrator's gate transition logic may not be updating the final two gate states when the pipeline reaches completion. This could be:
+
 - Missing gate auto-bypass logic for non-interactive gates at end-of-pipeline.
 - Incomplete state sync between orchestrator completion event and UI gate state table.
 
@@ -104,6 +108,7 @@ The gate state persistence logic in `src/threat_modeler/ui/execution.py` or the 
 **Status**: Open
 **Assigned**: TBD
 **Sprint**: 2026-08 (post-sprint backlog or future refinement)
+
 ## Closure Evidence Template
 
 Use this block for future closure updates.
@@ -114,4 +119,3 @@ Use this block for future closure updates.
 - Verification result summary (include pass counts):
 - Evidence artifact path(s):
 - Reviewer or approver initials:
-

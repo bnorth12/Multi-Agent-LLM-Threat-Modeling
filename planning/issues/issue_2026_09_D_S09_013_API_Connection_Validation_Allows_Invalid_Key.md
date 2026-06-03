@@ -16,10 +16,10 @@ High - false-positive validation allows misconfigured credentials to proceed int
 ## Reproduction
 
 1. Open `Pipeline Configuration` screen.
-2. Select a live provider (xAI/Grok).
-3. Enter an invalid API key value.
-4. Click `Validate Connection`.
-5. Observe validation result incorrectly indicates success.
+1. Select a live provider (xAI/Grok).
+1. Enter an invalid API key value.
+1. Click `Validate Connection`.
+1. Observe validation result incorrectly indicates success.
 
 ## Expected Behavior
 
@@ -32,9 +32,9 @@ High - false-positive validation allows misconfigured credentials to proceed int
 ## Scope
 
 1. Implement an active provider ping/test request in connection validation path.
-2. Require provider-authenticated response for success.
-3. Return clear user-readable failure causes (invalid key, unreachable endpoint, timeout, provider error).
-4. Add automated test coverage for invalid-key failure path and valid-key success path.
+1. Require provider-authenticated response for success.
+1. Return clear user-readable failure causes (invalid key, unreachable endpoint, timeout, provider error).
+1. Add automated test coverage for invalid-key failure path and valid-key success path.
 
 ## Acceptance Criteria
 

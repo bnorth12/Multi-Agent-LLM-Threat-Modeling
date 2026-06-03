@@ -217,10 +217,10 @@ During a live web run initiated from Input Entry (observed active `run_id` prese
 **Reproduction**:
 
 1. Configure xAI/Grok and validate connection in SCR-003.
-2. Start run from SCR-004 with avionics fixtures.
-3. Observe active run warning / run_id in dashboard.
-4. Reload browser page.
-5. Observe run_id and gate state are absent.
+1. Start run from SCR-004 with avionics fixtures.
+1. Observe active run warning / run_id in dashboard.
+1. Reload browser page.
+1. Observe run_id and gate state are absent.
 
 **Fix Applied**:
 
@@ -244,8 +244,8 @@ Selecting sidebar navigation targets (for example Stage Results / Threat Review)
 **Reproduction**:
 
 1. Start live run and keep app active.
-2. Click alternate nav items in sidebar.
-3. Observe selected nav radio changes while old screen content persists transiently.
+1. Click alternate nav items in sidebar.
+1. Observe selected nav radio changes while old screen content persists transiently.
 
 **Fix Applied**:
 
@@ -393,6 +393,7 @@ All 9 stages displayed â¬œ Pending throughout a 70-second active run even aft
 1. Maintain regression test runs for ingestion and orchestration contracts.
 
 **Estimated Remaining Effort**: less than 1 hour for final evidence capture and issue closure
+
 ## Closure Evidence Template
 
 Use this block for future closure updates.
@@ -403,4 +404,3 @@ Use this block for future closure updates.
 - Verification result summary (include pass counts):
 - Evidence artifact path(s):
 - Reviewer or approver initials:
-

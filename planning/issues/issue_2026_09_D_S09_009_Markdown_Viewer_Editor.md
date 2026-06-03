@@ -16,10 +16,10 @@ Medium - Required for in-workflow documentation maintenance and reduced context 
 ## Scope
 
 1. Add markdown file selection/open action for tool-managed markdown files.
-2. Add markdown source editor with save/cancel behavior.
-3. Add rendered markdown preview mode.
-4. Add save-state and change-state feedback (saved/unsaved/error).
-5. Add basic safeguards (confirm before discard, block unsafe path writes if applicable).
+1. Add markdown source editor with save/cancel behavior.
+1. Add rendered markdown preview mode.
+1. Add save-state and change-state feedback (saved/unsaved/error).
+1. Add basic safeguards (confirm before discard, block unsafe path writes if applicable).
 
 ## Acceptance Criteria
 

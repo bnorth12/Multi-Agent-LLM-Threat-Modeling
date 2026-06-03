@@ -17,13 +17,13 @@ Medium - RC publication control and release evidence requirement.
 ## Scope
 
 1. Execute full manual end-to-end functional validation for RC1.
-2. Validate S09 UI feature set and export behavior.
-3. Validate documentation accuracy and operational usability:
+1. Validate S09 UI feature set and export behavior.
+1. Validate documentation accuracy and operational usability:
    - User manual markdown and HTML.
    - Product documentation set used for release operations.
    - Deployment guide walkthrough in clean environment.
-4. Produce release evidence bundle and decision record input.
-5. Apply bounded validation-loop policy (target <=2 loops).
+1. Produce release evidence bundle and decision record input.
+1. Apply bounded validation-loop policy (target <=2 loops).
 
 ## Acceptance Criteria
 

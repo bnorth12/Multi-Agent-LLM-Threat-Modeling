@@ -27,6 +27,7 @@
 ## 2. Test Execution Narrative
 
 ### 2.1 Test Configuration
+
 - **Environment:** Windows 10, Python 3.11.9, Streamlit + Playwright headful browser
 - **Browser:** Chromium (headless=False, --start-maximized, no_viewport=True)
 - **LLM Provider:** xAI/Grok (live API)

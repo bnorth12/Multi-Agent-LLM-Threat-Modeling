@@ -29,10 +29,10 @@ Baseline report: independent_reviews/latest/independent_review_2026-12_manual_20
 ## Round 006 Backlog (All Domains Included)
 
 1. Implementation evidence gaps (P0): still open at scale; no regression tolerated this round.
-2. Verification evidence gaps (P0): still open at scale; no regression tolerated this round.
-3. Architecture/design traceability (P1): close remaining as-built architecture/design missing list.
-4. Conceptual vs as-built governance (P1): convert unresolved implementation-ready gap list into architecture-linked state.
-5. Merge risk governance (informational): keep commit boundaries explicit for clean review and future push.
+1. Verification evidence gaps (P0): still open at scale; no regression tolerated this round.
+1. Architecture/design traceability (P1): close remaining as-built architecture/design missing list.
+1. Conceptual vs as-built governance (P1): convert unresolved implementation-ready gap list into architecture-linked state.
+1. Merge risk governance (informational): keep commit boundaries explicit for clean review and future push.
 
 ## Round 006 Selected Remediation Scope
 

@@ -1,6 +1,7 @@
 # S12 HMI Integration Completion Summary
 
 ## Overview
+
 This document details the completion of Sprint 12's full React HMI replacement for the threat modeling platform. The work includes backend API expansion, complete React component library, and integration into a unified control console.
 
 ## Completed Deliverables
@@ -8,6 +9,7 @@ This document details the completion of Sprint 12's full React HMI replacement f
 ### 1. Backend API Expansion ✅
 
 **File: `src/threat_modeler/server/hmi_data.py`**
+
 - **Purpose**: Helper module for extracting and serializing HMI data from framework state
 - **Key Functions**:
   - `serialize_threat()`: Converts threat objects to frontend-consumable dicts with mitigations and risk scores
@@ -17,6 +19,7 @@ This document details the completion of Sprint 12's full React HMI replacement f
   - `extract_llm_metrics()`: Aggregates LLM usage by stage with token breakdowns
 
 **File: `src/threat_modeler/server/api.py` (Expanded)**
+
 - **New REST Endpoints**:
   - `GET /runs/{run_id}/state/full` → Full execution state (threats, gates, stages, metrics)
   - `GET /runs/{run_id}/state/threats` → Extracted threats with mitigations
@@ -103,6 +106,7 @@ submitThreatDecision(runId: string, threatId: string, decision: ThreatDecisionPa
 ### 4. React HMI Components ✅
 
 #### ExecutionProgress Component
+
 - **File**: `frontend/src/components/ExecutionProgress.tsx`
 - **Functionality**:
   - Displays 9-stage execution progression
@@ -113,6 +117,7 @@ submitThreatDecision(runId: string, threatId: string, decision: ThreatDecisionPa
   - Real-time updates via polling
 
 #### HITLGateManager Component
+
 - **File**: `frontend/src/components/HITLGateManager.tsx`
 - **Functionality**:
   - Displays awaiting approval gates
@@ -124,6 +129,7 @@ submitThreatDecision(runId: string, threatId: string, decision: ThreatDecisionPa
   - Real-time status updates
 
 #### ThreatReview Component
+
 - **File**: `frontend/src/components/ThreatReview.tsx`
 - **Functionality**:
   - Sortable threat grid with pagination
@@ -136,6 +142,7 @@ submitThreatDecision(runId: string, threatId: string, decision: ThreatDecisionPa
   - Review notes field
 
 #### TokenUsageDashboard Component
+
 - **File**: `frontend/src/components/TokenUsageDashboard.tsx`
 - **Functionality**:
   - Total tokens display with breakdown
@@ -148,6 +155,7 @@ submitThreatDecision(runId: string, threatId: string, decision: ThreatDecisionPa
 ### 5. Main App Integration ✅
 
 **File: `frontend/src/App.tsx` (Complete Rebuild)**
+
 - **Architecture**: Unified threat modeling console with:
   - Persistent drawer for run selection
   - Tabbed interface (Execution, Threats, Gates, Token Usage, Artifacts)
@@ -173,6 +181,7 @@ submitThreatDecision(runId: string, threatId: string, decision: ThreatDecisionPa
 ## Type System Alignment
 
 ### Backend → Frontend Data Flow
+
 ```
 FrameworkState (backend dataclass)
   ↓
@@ -188,6 +197,7 @@ UI display
 ```
 
 ### Decision Recording Flow
+
 ```
 User clicks decision button
   ↓
@@ -208,6 +218,7 @@ UI reflects decision
 
 **File: `Tests/test_hmi_backend_api.py`**
 Comprehensive API endpoint validation:
+
 - Health check endpoint
 - Run creation and listing
 - Full state retrieval with structure validation
@@ -234,6 +245,7 @@ Test server uses ThreadingHTTPServer with automatic port detection.
 ## Usage Example
 
 ### Starting the Application
+
 ```bash
 # Terminal 1: Backend
 cd src
@@ -245,37 +257,39 @@ npm run dev
 ```
 
 ### Running Tests
+
 ```bash
 pytest Tests/test_hmi_backend_api.py -v
 ```
 
 ### Executing Threat Modeling Workflow
+
 1. Open browser at frontend dev server URL
-2. Backend must be running and healthy
-3. Click "New Run" to start execution
-4. Watch ExecutionProgress tab for 9-stage progression
-5. When gates appear, review and decide in Gates tab
-6. Review threats in Threats tab after threat generation stage
-7. Monitor token usage in Token Usage tab
-8. View LLM execution messages in Messages
-9. Final artifacts available in Artifacts tab
+1. Backend must be running and healthy
+1. Click "New Run" to start execution
+1. Watch ExecutionProgress tab for 9-stage progression
+1. When gates appear, review and decide in Gates tab
+1. Review threats in Threats tab after threat generation stage
+1. Monitor token usage in Token Usage tab
+1. View LLM execution messages in Messages
+1. Final artifacts available in Artifacts tab
 
 ## Architecture Benefits
 
 1. **Stateless Frontend**: Pure React/TypeScript, no backend dependencies
-2. **Real-time Updates**: Polling ensures fresh state without WebSocket complexity
-3. **Type Safety**: End-to-end TypeScript provides compile-time guarantees
-4. **HITL Integration**: Full gate and threat decision recording with audit trail
-5. **Scalability**: HTTP server handles multiple concurrent connections
-6. **Extensibility**: New endpoints easily added to API and frontend consumers
+1. **Real-time Updates**: Polling ensures fresh state without WebSocket complexity
+1. **Type Safety**: End-to-end TypeScript provides compile-time guarantees
+1. **HITL Integration**: Full gate and threat decision recording with audit trail
+1. **Scalability**: HTTP server handles multiple concurrent connections
+1. **Extensibility**: New endpoints easily added to API and frontend consumers
 
 ## Known Limitations & Future Work
 
 1. **Artifact Viewers**: Placeholder for STIX, Mermaid, Canonical Graph, STRIDE viewers
-2. **WebSocket Optimization**: Could replace polling for lower latency
-3. **Authentication UI**: Currently uses env vars, could add login form
-4. **Performance**: Large threat lists could benefit from virtualization
-5. **Mobile Responsiveness**: Currently desktop-optimized
+1. **WebSocket Optimization**: Could replace polling for lower latency
+1. **Authentication UI**: Currently uses env vars, could add login form
+1. **Performance**: Large threat lists could benefit from virtualization
+1. **Mobile Responsiveness**: Currently desktop-optimized
 
 ## Deployment Considerations
 

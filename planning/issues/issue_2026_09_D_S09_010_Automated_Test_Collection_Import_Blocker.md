@@ -5,7 +5,7 @@
 Automated non-manual RC gate sweep encountered blockers in two phases:
 
 1. Initial pytest collection blocked because `Tests/e2e/test_live_llm_validation.py` imported `threat_modeler.framework`, which does not exist in the current package layout.
-2. After import-path correction, execution blocked by `TypeError` in `Tests/e2e/test_browser_run_validation.py` where token-usage validation attempted `sum()` over mixed numeric/string values.
+1. After import-path correction, execution blocked by `TypeError` in `Tests/e2e/test_browser_run_validation.py` where token-usage validation attempted `sum()` over mixed numeric/string values.
 
 ## Related Requirements
 
@@ -23,7 +23,7 @@ Medium - blocks automated clean-pass gate needed before manual RC validation.
 .venv\Scripts\python.exe -m pytest Tests/unit Tests/integration Tests/e2e -m "not llm_live" -q --tb=short
 ```
 
-2. Observe collection error:
+1. Observe collection error:
 
 - `ModuleNotFoundError: No module named 'threat_modeler.framework'`
 

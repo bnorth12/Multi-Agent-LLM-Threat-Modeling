@@ -61,7 +61,7 @@ Traceability in this matrix is valid only when the upstream hierarchy artifacts 
 | C16-PRJ-001 | Product runtime header navigation and artifact icon governance | L2 | F-S12-030-GUI_003-L2 | S12-030 Requirement-Bound Decomposition | Header navigation and artifact icon presentation layer | Requirement-bound allocation for navigation consolidation and artifact icon migration consistency | GUI-003, GUI-005, GUI-006, GUI-041, GUI-042 | Focused remediation round closure for baseline guard coverage |
 | C01-ORCH-001 | Orchestration architecture disposition and baseline parity governance | L2 | F-S12-033-ORCH_001-L2 | S12-033 Requirement-Bound Decomposition | Orchestrator control plane and stage routing boundary | Requirement-bound allocation for langgraph orchestrator disposition and baseline parity controls | ORCH-001, INT-005, PRJ-001 | Focused remediation round closure for baseline guard coverage |
 | C01-ORCH-001 | Sprint governance baseline hierarchy alignment for orchestrator traceability | L2 | F-S13-001-ORCH_001-L2 | S13-001 Requirement-Bound Decomposition | Governance hierarchy baseline and orchestrator traceability boundary | Requirement-bound allocation for sprint 2026-013 hierarchy alignment controls | ORCH-001, INT-005 | Focused remediation round closure for baseline guard coverage |
-| C18-ADM-001 | Administration governance control enforcement for branch, PR, and release process integrity | L2 | F-ADM-GOV-CONTROLS-L2 | Administration Control Verification Slice | Governance control layer that enforces branch planning linkage, PR issue synchronization, checklist gating, checklist retention, release readiness review, and recurring cadence control checks. | Orchestrator governance and release process control boundary | Control verification pathways for sprint administration governance and release readiness safeguards | ADM-001, ADM-002, ADM-003, ADM-004, ADM-005, ADM-006 | Added for sprint 2026-013 remediation implementation and verification evidence closure |
+| C18-ADM-001 | Administration governance control enforcement for branch, PR, and release process integrity | L2 | F-ADM-GOV-CONTROLS-L2 | Administration Control Verification Slice | Governance control layer that enforces branch planning linkage, PR issue synchronization, checklist gating, checklist retention, release readiness review, and recurring cadence control checks. | Orchestrator governance and release process control boundary; control verification pathways for sprint administration governance and release readiness safeguards | ADM-001, ADM-002, ADM-003, ADM-004, ADM-005, ADM-006 | Added for sprint 2026-013 remediation implementation and verification evidence closure |
 
 ## Decomposition Guidance
 
@@ -252,3 +252,36 @@ Generated: 2026-05-31T23:39:05
 | VS-008 | docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md | docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | scripts/verify_sprint_traceability.py; scripts/independent_repo_review.py; scripts/run_traceability_verification_backfill.py | scripts/verify_sprint_traceability.py; Tests/Formal_Qualification_Test_Plan.md; Tests/integration/test_validation_gates.py |
 | VS-010 | docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md | docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | scripts/verify_sprint_traceability.py; scripts/independent_repo_review.py; scripts/run_traceability_verification_backfill.py | scripts/verify_sprint_traceability.py; Tests/Formal_Qualification_Test_Plan.md; Tests/integration/test_validation_gates.py |
 <!-- AUTO-VERIFY-BACKFILL:END -->
+
+## Reachable Implementation Module Backfill
+
+These rows capture the reachable implementation modules that already have requirement anchors and can now be related back to the existing architecture/function families and verification artifacts. They do not introduce new capabilities; they make the as-built implementation lineage explicit.
+
+| Code Module | Requirement ID(s) | Derived Capability / Function Family | Verification Artifact Anchors | Notes |
+|---|---|---|---|---|
+| src/threat_modeler/ui/connection_validator.py | SCR-013, SCR-014 | C17-SCR-001 / F-SCR-TRACEABILITY-L1 | Tests/integration/test_validation_gates.py; Tests/test_hmi_backend_api.py | Security and validation boundary for UI/runtime connection handling |
+| src/threat_modeler/ui/runtime_io.py | SCR-007 | C13-UI-001 / F-UI-TRACEABILITY-L1 | Tests/test_hmi_backend_api.py; Tests/e2e/test_frontend_react_mui_full_workflow.py | Runtime input/output bridge for governed UI execution |
+| src/threat_modeler/ui/screens/canonical_graph_viewer.py | GUI-019 | C16-PRJ-001 / F-PRJ-TRACEABILITY-L1 | Tests/integration/test_canonical_graph_viewer.py | Canonical graph rendering and inspection surface |
+| src/threat_modeler/ui/screens/config.py | SCR-003, SCR-012, SCR-013, SCR-014 | C13-UI-001 / F-UI-TRACEABILITY-L1 | Tests/test_hmi_backend_api.py; Tests/e2e/test_frontend_react_mui_full_workflow.py | Pipeline configuration and stage-selection control surface |
+| src/threat_modeler/ui/screens/last_prompt.py | SCR-015 | C13-UI-001 / F-UI-TRACEABILITY-L1 | Tests/test_hmi_backend_api.py | Prompt payload diagnostics and last-response selection surface |
+| src/threat_modeler/ui/screens/markdown_viewer.py | GUI-025 | C16-PRJ-001 / F-PRJ-TRACEABILITY-L1 | Tests/integration/test_markdown_viewer_editor.py | Markdown artifact viewing and editor parity surface |
+| src/threat_modeler/ui/screens/mermaid_viewer.py | GUI-020 | C16-PRJ-001 / F-S12-022-GUI_020-L2 | Tests/integration/test_mermaid_viewer_screen.py | Mermaid diagram viewing and lightbox interaction surface |
+| src/threat_modeler/ui/screens/results_export.py | SCR-007 | C16-PRJ-001 / F-PRJ-TRACEABILITY-L1 | Tests/integration/test_results_export_quick_preview.py | Artifact export and preview surface |
+| src/threat_modeler/ui/screens/role_select.py | SCR-002 | C13-UI-001 / F-UI-TRACEABILITY-L1 | Tests/test_hmi_backend_api.py; Tests/e2e/test_frontend_react_mui_full_workflow.py | Role selection and operator start-state surface |
+| src/threat_modeler/ui/screens/snapshot_manager.py | SCR-008 | C13-UI-001 / F-UI-TRACEABILITY-L1 | Tests/test_hmi_backend_api.py | Run snapshot save/restore surface |
+| src/threat_modeler/ui/screens/stix_viewer.py | GUI-018 | C16-PRJ-001 / F-PRJ-TRACEABILITY-L1 | Tests/integration/test_stix_viewer_screen.py | STIX bundle inspection surface |
+| src/threat_modeler/ui/screens/stride_viewer.py | GUI-021 | C16-PRJ-001 / F-PRJ-TRACEABILITY-L1 | Tests/integration/test_stride_viewer_screen.py; Tests/integration/test_stride_export_artifact.py | STRIDE analysis viewing and export coupling surface |
+| src/threat_modeler/ui/screens/threat_review.py | SCR-004 | C13-UI-001 / F-UI-TRACEABILITY-L1 | Tests/integration/test_hitl_gate_set_2.py; Tests/test_hmi_backend_api.py | Threat and mitigation review surface with HITL interaction |
+| src/threat_modeler/ui/screens/token_usage.py | SCR-014 | C17-SCR-001 / F-SCR-TRACEABILITY-L1 | Tests/unit/test_token_usage_runtime.py; Tests/integration/test_validation_gates.py | Token usage telemetry and runtime governance surface |
+| src/threat_modeler/ui/version_governance.py | GUI-024 | C16-PRJ-001 / F-PRJ-TRACEABILITY-L1 | Tests/integration/test_version_inventory_visibility.py | Version and governance presentation surface |
+| src/threat_modeler/ui/app.py | SCR-002, SCR-003, SCR-004, SCR-007, SCR-008, SCR-014 | C13-UI-001 / F-UI-TRACEABILITY-L1 | Tests/test_hmi_backend_api.py; Tests/e2e/test_frontend_react_mui_full_workflow.py | UI entrypoint shell routing, state synchronization, and execution-page orchestration |
+| src/threat_modeler/ui/execution.py | RHMI-016, GUI-031, GUI-032, SCR-007, SCR-014 | C13-UI-001 / F-UI-TRACEABILITY-L1 | Tests/test_hmi_backend_api.py; Tests/integration/test_hitl_gate_set_2.py | Execution lifecycle adapter for run continuity, gate projection, and status synchronization |
+
+## Reachable Module Trace Status (Superseded Snapshot)
+
+This section previously captured a temporary gap snapshot and is not authoritative for current trace status.
+Use the active authorities below for current architecture/design and verification lineage:
+
+- docs/architecture/Function_Hierarchy_Registry.md (Source-Derived L3/L4 Function Decomposition)
+- docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md (Source-Derived L3/L4 Data Flow Decomposition)
+- Tests/Function_Level_Verification_Matrix.md (persistent function-level verification anchors)

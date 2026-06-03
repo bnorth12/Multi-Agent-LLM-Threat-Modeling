@@ -1,4 +1,5 @@
 ﻿# Issue S12-027: Mitigations Artifact Has No Viewer and No Export Capability
+
 Sprint: 2026-12
 Requirement ID: UNKNOWN-REQ
 Parent Capability ID: C16-PRJ-001
@@ -8,7 +9,6 @@ Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_027_Mitigations_No_Viewer_No_Export.md
 Verification Method: Sprint traceability verification
 Status: In Review
-
 
 Status: Proposed (Post-Run)
 Priority: P1
@@ -23,6 +23,7 @@ records in isolation (distinct from the inline threat-linked view proposed in S1
 and there is no mechanism to download the raw mitigations artifact.
 
 This is a requirements gap as well as an implementation gap:
+
 - INT-008 requires visualization read access to mitigations but there is no viewer.
 - GUI-006 lists canonical, STIX, Mermaid, and report for export but does not explicitly
   include a mitigations artifact export — this gap must be closed in the requirement and
@@ -125,7 +126,3 @@ artifact (JSON or CSV).
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
 - Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
-
-
-
-

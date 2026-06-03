@@ -51,6 +51,7 @@
 ## 3. Test Execution Narrative
 
 ### 3.1 Pre-Test Setup
+
 - **Test Environment:** Windows 10, Python 3.11.9, Streamlit with Playwright headful browser
 - **Configuration:**
   - `RUN_VISIBLE_BROWSER_TESTS=1` (visible browser automation)
@@ -136,6 +137,7 @@
 ## 5. Findings & Observations
 
 ### 5.1 Passed Verifications
+
 - [ ] All 9 stages executed without crash
 - [ ] At least 3 HITL gates triggered and approved
 - [ ] Threat count extracted and ≥ 1 threat identified
@@ -146,14 +148,17 @@
 - [ ] Browser hold activated post-completion
 
 ### 5.2 Failed Verifications
+
 - [ ] {FAILURE_1}
 - [ ] {FAILURE_2}
 
 ### 5.3 Coverage Gaps
+
 - [ ] {GAP_1}
 - [ ] {GAP_2}
 
 ### 5.4 Performance Observations
+
 - **LLM Latency:** {AVG_LATENCY} seconds per stage
 - **Token Efficiency:** {TOKEN_COUNT} tokens for {THREAT_COUNT} threats
 - **Browser Responsiveness:** {RESPONSIVENESS_NOTES}
@@ -206,8 +211,8 @@ FQT/
 ## 8. Recommendations
 
 1. {RECOMMENDATION_1}
-2. {RECOMMENDATION_2}
-3. {RECOMMENDATION_3}
+1. {RECOMMENDATION_2}
+1. {RECOMMENDATION_3}
 
 ---
 

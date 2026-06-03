@@ -126,4 +126,3 @@ Verification for this design should include:
 - stage contract tests for required canonical fields
 - fallback-path tests that preserve prior authoritative state
 - evidence confirming exported artifacts derive from validated canonical content
-

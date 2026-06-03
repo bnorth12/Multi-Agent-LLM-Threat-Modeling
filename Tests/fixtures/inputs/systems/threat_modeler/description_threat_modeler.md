@@ -8,7 +8,7 @@ Users upload system architectures via two complementary input channels:
 
 1. **ICD Parser**: Accepts CSV/XLSX files in a flat entity-per-row format. Rows specify subsystems, components, and data flows (interfaces). The parser validates referential integrity (all parent IDs exist) and extracts hardware/software module affiliations, trust boundary crossings, and protocol details.
 
-2. **Narrative Loader**: Accepts markdown or plain text descriptions that provide system context, risk posture, regulatory constraints, and architectural rationale. These narratives are used by downstream agents to refine threat scoring and mitigation recommendations.
+1. **Narrative Loader**: Accepts markdown or plain text descriptions that provide system context, risk posture, regulatory constraints, and architectural rationale. These narratives are used by downstream agents to refine threat scoring and mitigation recommendations.
 
 ## Agent Orchestration Subsystem
 
@@ -55,13 +55,13 @@ The Export subsystem transforms the canonical threat model into four output form
 
 1. **Canonical Graph Exporter**: JSON representation conforming to canonical_json_schema.json. Includes all entities, interfaces, threats, mitigations, and provenance metadata.
 
-2. **STIX Exporter**: Generates STIX 2.1 (Structured Threat Information Expression) bundles compatible with threat intelligence platforms and SOCs. Encodes threat objects, attack patterns, and relationships.
+1. **STIX Exporter**: Generates STIX 2.1 (Structured Threat Information Expression) bundles compatible with threat intelligence platforms and SOCs. Encodes threat objects, attack patterns, and relationships.
 
-3. **Mermaid Diagram Generator**: Produces two complementary Mermaid diagrams:
+1. **Mermaid Diagram Generator**: Produces two complementary Mermaid diagrams:
    - System architecture diagram (components, subsystems, interfaces)
    - Threat flow diagram (STRIDE categories, vulnerable data flows, attacker paths)
 
-4. **Report Writer**: Generates executive-level markdown report with sections for system overview, threat summary, high-priority findings, mitigation roadmap, and compliance recommendations.
+1. **Report Writer**: Generates executive-level markdown report with sections for system overview, threat summary, high-priority findings, mitigation roadmap, and compliance recommendations.
 
 ## User Interface Subsystem
 
@@ -74,13 +74,13 @@ The UI is built with Streamlit and provides three primary screens:
    - Configure pipeline behavior (gate enforcement, output formats)
    - Set execution parameters (timeout, retry policy)
 
-2. **Execution Monitor (SCR-005/006)**:
+1. **Execution Monitor (SCR-005/006)**:
    - Real-time pipeline execution status (current stage, agent progress)
    - Gate notifications and approval workflows
    - Audit trail of user decisions and system actions
    - Logs and error messages for troubleshooting
 
-3. **Results Display (SCR-007/008/009/010)**:
+1. **Results Display (SCR-007/008/009/010)**:
    - Download canonical JSON graph
    - Download STIX intelligence bundle
    - Display embedded Mermaid diagrams
@@ -99,6 +99,7 @@ The boundary between the MTM service and external language model providers (Open
 ## Data Integrity & Provenance
 
 All data flowing through the pipeline is versioned and timestamped. The canonical graph includes:
+
 - Entity IDs and versions
 - Agent execution sequence and timestamps
 - User decisions at each HITL gate

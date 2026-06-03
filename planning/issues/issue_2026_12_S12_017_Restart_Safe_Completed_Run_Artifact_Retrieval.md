@@ -1,4 +1,5 @@
 ﻿# S12-017: Restart-Safe Completed-Run Artifact Retrieval
+
 Sprint: 2026-12
 Requirement ID: RHMI-016
 Parent Capability ID: C13-UI-001
@@ -8,7 +9,6 @@ Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_017_Restart_Safe_Completed_Run_Artifact_Retrieval.md
 Verification Method: Sprint traceability verification
 Status: In Review
-
 
 ## Issue Summary
 
@@ -61,5 +61,3 @@ In Review
 - If historical run records predate `persisted_state` checkpoints, rerun or regenerate artifacts once
   so future restarts have complete recovery state.
 - Keep issue open until a GitHub issue number is assigned and closure evidence is linked.
-
-

@@ -57,9 +57,9 @@ Every sprint task and code change must satisfy **ALL criteria** before marking c
 If a criterion cannot be satisfied:
 
 1. Document **why** in issue description
-2. Add **label** `dod-waiver:<criterion>` (e.g., `dod-waiver:requirement-identified`)
-3. Get **Technical Lead approval** before merge
-4. Add **waiver note** to Traceability Matrix in "Notes" column
+1. Add **label** `dod-waiver:<criterion>` (e.g., `dod-waiver:requirement-identified`)
+1. Get **Technical Lead approval** before merge
+1. Add **waiver note** to Traceability Matrix in "Notes" column
 
 Example: "⚠️ No new test (existing suite covers case); Technical Lead approved D-S08-019"
 
@@ -77,4 +77,3 @@ Example: "⚠️ No new test (existing suite covers case); Technical Lead approv
 - Pre-commit hook runs locally (optional but recommended):
   - Warns if commit message lacks issue reference
   - Blocks if branch has no issue tracking
-

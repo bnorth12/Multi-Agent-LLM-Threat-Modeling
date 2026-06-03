@@ -13,21 +13,21 @@ Instrument all LLM invocations so each call emits matched submit and response ev
 ## Scope
 
 1. Emit `llm_submitted` before outbound provider call.
-2. Emit `llm_response_received` after provider response or timeout/failure classification.
-3. Attach `llm_request_id`, `run_id`, `stage_id`, and `correlation_id` consistently.
-4. Capture provider metadata and timing fields in payload.
+1. Emit `llm_response_received` after provider response or timeout/failure classification.
+1. Attach `llm_request_id`, `run_id`, `stage_id`, and `correlation_id` consistently.
+1. Capture provider metadata and timing fields in payload.
 
 ## Acceptance Criteria
 
 1. For each outbound LLM request, exactly one `llm_submitted` event is emitted.
-2. For each completion path, a corresponding `llm_response_received` event is emitted.
-3. Submit and response events share `llm_request_id` and `correlation_id`.
-4. Timeout and provider error paths still emit response event with structured error payload.
+1. For each completion path, a corresponding `llm_response_received` event is emitted.
+1. Submit and response events share `llm_request_id` and `correlation_id`.
+1. Timeout and provider error paths still emit response event with structured error payload.
 
 ## Out of Scope
 
 1. UI event stream read model.
-2. Queue worker orchestration.
+1. Queue worker orchestration.
 
 ## Dependencies
 

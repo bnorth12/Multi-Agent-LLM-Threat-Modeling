@@ -1,4 +1,5 @@
 ﻿# Issue S12-023: Watchdog Timer Goes Stale While Execution Timeline Still Shows Stage Active
+
 Sprint: 2026-12
 Requirement ID: UNKNOWN-REQ
 Parent Capability ID: C16-PRJ-001
@@ -8,7 +9,6 @@ Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_023_Watchdog_Stale_While_Stage_Still_Active_In_Timeline.md
 Verification Method: Sprint traceability verification
 Status: In Review
-
 
 Status: Proposed (Post-Run)
 Priority: P1
@@ -23,12 +23,13 @@ Watchdog telemetry then remained stale against a stage that never received a ter
 completion transition.
 
 This represents two overlapping defects:
+
 1. The run transitioned to Completed before final workflow sequencing was satisfied
   (specifically before HITL Gate 9 decision flow in S12-024), creating a premature
   terminal run state.
-2. The report writer stage did not receive or emit a terminal completion trigger when the
+1. The report writer stage did not receive or emit a terminal completion trigger when the
   run terminalized, so stage state remained in-progress and the timeline stayed blue.
-3. Watchdog tracking remained bound to that non-terminal stage state, producing stale
+1. Watchdog tracking remained bound to that non-terminal stage state, producing stale
   telemetry symptoms that are secondary to the missing completion transition.
 
 ## Motivation
@@ -131,7 +132,3 @@ stage actually completed successfully or was abandoned mid-execution.
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
 - Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
-
-
-
-

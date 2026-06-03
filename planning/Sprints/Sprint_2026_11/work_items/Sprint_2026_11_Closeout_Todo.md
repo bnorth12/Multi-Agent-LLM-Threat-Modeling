@@ -53,9 +53,9 @@ Agent prompt loading (`_load_system_prompt()` and `_load_expected_output()`) sil
 ### **CRITICAL PATH**: S11-017 + S11-018 Must Be Done Together
 
 1. Implement S11-017 (UI → backend bridge).
-2. Implement S11-018 (exception handling + logging).
-3. Run full integration test suite to verify both work together.
-4. **Only then** continue to dead code remediation and other S11 work.
+1. Implement S11-018 (exception handling + logging).
+1. Run full integration test suite to verify both work together.
+1. **Only then** continue to dead code remediation and other S11 work.
 
 ---
 

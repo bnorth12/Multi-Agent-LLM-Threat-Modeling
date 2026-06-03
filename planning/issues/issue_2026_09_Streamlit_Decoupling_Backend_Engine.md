@@ -16,12 +16,12 @@ HITL gates, agent pipeline) to a web-UI framework, preventing:
 
 1. **CLI / headless execution** — running threat models from the command line
    or CI without a running Streamlit server.
-2. **Future LangGraph migration** — LangGraph's `StateGraph` execution engine
+1. **Future LangGraph migration** — LangGraph's `StateGraph` execution engine
    has no Streamlit concept; embedding `st.*` calls in the execution path
    blocks a clean migration.
-3. **Testability without mocking** — tests must patch `streamlit` at module
+1. **Testability without mocking** — tests must patch `streamlit` at module
    level before business logic can be exercised.
-4. **JSON-backed persistence** — the current in-memory-only `_RUN_REGISTRY`
+1. **JSON-backed persistence** — the current in-memory-only `_RUN_REGISTRY`
    is lost on process restart; run metadata is not checkpointed.
 
 **Design rule**: Streamlit is permitted only in the `ui/` layer (screens,

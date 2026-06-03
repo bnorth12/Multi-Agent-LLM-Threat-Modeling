@@ -13,36 +13,36 @@ Define and implement the canonical event envelope and identifier propagation rul
 ## Scope
 
 1. Create typed schema for event envelope.
-2. Define required vs optional fields and validation rules.
-3. Implement helper utilities for ID generation and propagation.
-4. Add schema validation tests.
+1. Define required vs optional fields and validation rules.
+1. Implement helper utilities for ID generation and propagation.
+1. Add schema validation tests.
 
 ## Required Envelope Fields
 
 1. `event_id`
-2. `event_type`
-3. `event_version`
-4. `occurred_at_utc`
-5. `session_id`
-6. `run_id`
-7. `stage_id`
-8. `llm_request_id`
-9. `correlation_id`
-10. `gate_id`
-11. `artifact_id`
-12. `payload`
+1. `event_type`
+1. `event_version`
+1. `occurred_at_utc`
+1. `session_id`
+1. `run_id`
+1. `stage_id`
+1. `llm_request_id`
+1. `correlation_id`
+1. `gate_id`
+1. `artifact_id`
+1. `payload`
 
 ## Acceptance Criteria
 
 1. Event schema is documented and validated at runtime boundaries.
-2. Every emitted event includes `run_id` and `correlation_id`.
-3. Schema rejects malformed identifiers and missing required fields.
-4. Contract examples exist for each event type in epic baseline.
+1. Every emitted event includes `run_id` and `correlation_id`.
+1. Schema rejects malformed identifiers and missing required fields.
+1. Contract examples exist for each event type in epic baseline.
 
 ## Out of Scope
 
 1. Worker queue implementation.
-2. UI rendering changes.
+1. UI rendering changes.
 
 ## Dependencies
 

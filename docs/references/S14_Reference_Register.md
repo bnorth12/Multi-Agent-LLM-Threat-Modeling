@@ -115,4 +115,3 @@ This table maps the requested aerospace-relevant source set to S14 reference ids
 1. Add the reference id field to S14 normalized dataset schema definitions.
 1. Create a `reference_coverage_status_s14.yaml` tracker with `Target`, `Ingesting`, `Validated`, `Deferred` states per reference id.
 1. Prioritize P0 references for first ingestion wave before index quality baseline sign-off.
-

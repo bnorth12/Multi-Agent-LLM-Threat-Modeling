@@ -37,10 +37,10 @@ Current fixtures:
 For lifecycle alignment, UAS program-level fixtures now support two modes:
 
 - **Early lifecycle top-level modeling:** use only
-   - `inputs/systems/uas_weapon_system/icd_uas_weapon_system_v1.csv`
-   - `inputs/systems/uas_weapon_system/description_uas_weapon_system.md`
+  - `inputs/systems/uas_weapon_system/icd_uas_weapon_system_v1.csv`
+  - `inputs/systems/uas_weapon_system/description_uas_weapon_system.md`
 - **Full UAS program modeling in one folder:** use
-   - `inputs/systems/uas_weapon_system/full_system_bundle/`
+  - `inputs/systems/uas_weapon_system/full_system_bundle/`
 
 The `full_system_bundle` folder contains top-level UAS files plus Alpha, Bravo, Charlie, and Ground Maintenance files so a single-folder upload can run the combined system threat model.
 

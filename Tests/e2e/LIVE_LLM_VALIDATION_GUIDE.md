@@ -7,8 +7,8 @@ This guide explains how to validate that the browser-based threat model run is e
 The validation framework has two components:
 
 1. **test_live_llm_validation.py** - Unit/integration tests that hook into the adapter to intercept LLM calls
-2. **test_browser_run_validation.py** - Browser-based validation with gate-by-gate token tracking
-3. **test_browser_cav_markdown_upload.py** - Visible-browser upload validation for CAV fixture + markdown files
+1. **test_browser_run_validation.py** - Browser-based validation with gate-by-gate token tracking
+1. **test_browser_cav_markdown_upload.py** - Visible-browser upload validation for CAV fixture + markdown files
 
 Governance note:
 
@@ -32,18 +32,18 @@ The browser will open to `http://localhost:8501` showing the UI live.
 ### Step 2: Navigate Through Input Entry
 
 1. Open **Input Entry** screen
-2. Enter system name: `Test System`
-3. Paste architecture text (or upload file)
-4. Provide validation - should show: `✅ xai / grok-4 — live LLM calls will be made`
-5. Click **▶ Start Threat Model Run**
+1. Enter system name: `Test System`
+1. Paste architecture text (or upload file)
+1. Provide validation - should show: `✅ xai / grok-4 — live LLM calls will be made`
+1. Click **▶ Start Threat Model Run**
 
 ### Step 3: Monitor Token Usage at Each Gate
 
 #### At Gate 1 (Scope Confirmation)
 
 1. **Home** screen shows: `Stage Progress` with stages 1-2 complete
-2. Navigate to **Last Prompt** to see the actual prompt sent to LLM
-3. Check for:
+1. Navigate to **Last Prompt** to see the actual prompt sent to LLM
+1. Check for:
    - ✅ Prompt contains actual system architecture
    - ✅ Model shows: `grok-4` or `grok-4-multi-agent`
    - ✅ Token usage shows non-zero values (e.g., `Prompt: 45 | Completion: 120`)
@@ -65,6 +65,7 @@ Total: 165
 ```
 
 **Expected token ranges per gate:**
+
 - Gate 1 (Scope): 50-300 tokens
 - Gate 2 (Boundary): 200-1000 tokens
 - Gate 3 (STRIDE): 500-2000 tokens
@@ -74,6 +75,7 @@ Total: 165
 ### Step 4: Identify Fixture Fallback (Negative Test)
 
 **If you see these indicators, fixture fallback occurred:**
+
 - Token Usage: `Prompt: 0 | Completion: 0`
 - Model shows: `fixture_grok_v1` or similar
 - Prompt contains pre-canned responses (not based on your system)
@@ -220,10 +222,10 @@ $env:THREAT_MODELER_LIVE_TEST_HEARTBEAT_SECONDS="15"
 Instead of env vars, use Pipeline Configuration screen in UI:
 
 1. Navigate to **Pipeline Configuration**
-2. Under "Live Request Reliability":
+1. Under "Live Request Reliability":
    - Request timeout per attempt: 300 seconds
    - Max retry attempts: 5
-3. Save (persisted to run registry)
+1. Save (persisted to run registry)
 
 ### Heartbeat During Long LLM Calls
 
@@ -238,6 +240,7 @@ This indicates the request is still in progress and has not silently fallen back
 ## Debugging: Token Usage Not Showing?
 
 ### Check 1: Provider Configured
+
 ```python
 # In app.py or test
 from threat_modeler.config import build_default_settings
@@ -246,6 +249,7 @@ assert settings.provider.provider_type == "live"  # Should be "live"
 ```
 
 ### Check 2: Adapter Created with Config
+
 ```python
 # Should show timeout/max_attempts from settings
 adapter = _build_live_adapter(settings.model)
@@ -254,6 +258,7 @@ print(f"Adapter retries: {adapter._max_attempts}")     # Should be 3
 ```
 
 ### Check 3: Monitor LLM Calls
+
 ```bash
 # Add debug logging
 streamlit run src/threat_modeler/ui/app.py --logger.level=debug 2>&1 | grep -E "grok|token|xai"
@@ -274,9 +279,9 @@ streamlit run src/threat_modeler/ui/app.py --logger.level=debug 2>&1 | grep -E "
 After validating:
 
 1. ✅ Gate 1-3 execute with live LLM (token > 0)
-2. ✅ Prompts vary by stage
-3. ✅ State stays aligned across Home/Stage Results/Threat Review
-4. ✅ No fixture fallback detected
+1. ✅ Prompts vary by stage
+1. ✅ State stays aligned across Home/Stage Results/Threat Review
+1. ✅ No fixture fallback detected
 
 You can be confident the system is working correctly against live LLM with proper timeout/retry configuration.
 

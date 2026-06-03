@@ -16,10 +16,10 @@ Critical - Blocks manual RC validation (D-S09-008) and prevents users from confi
 ## Scope
 
 1. Replace current multiselect dropdown with checkbox-based UI component.
-2. Display all 9 pipeline stages (agent_01 through agent_09) with human-readable labels.
-3. Each stage shall have a checkbox to enable/disable it.
-4. Persist stage selection changes to RuntimeSettings.pipeline.enabled_stage_ids.
-5. Require at least 1 stage to remain enabled (validation).
+1. Display all 9 pipeline stages (agent_01 through agent_09) with human-readable labels.
+1. Each stage shall have a checkbox to enable/disable it.
+1. Persist stage selection changes to RuntimeSettings.pipeline.enabled_stage_ids.
+1. Require at least 1 stage to remain enabled (validation).
 
 ## Root Cause
 
@@ -39,12 +39,12 @@ The current multiselect widget uses `st.multiselect()` which has rendering issue
 ### User Interaction Test
 
 1. Open Pipeline Configuration screen
-2. Verify all 9 stages visible with checkboxes and human-readable labels
-3. Disable a stage by unchecking its box
-4. Enable an additional stage
-5. Click "Apply Settings"
-6. Reload the page / navigate away and back
-7. Verify stage selection is persisted correctly
+1. Verify all 9 stages visible with checkboxes and human-readable labels
+1. Disable a stage by unchecking its box
+1. Enable an additional stage
+1. Click "Apply Settings"
+1. Reload the page / navigate away and back
+1. Verify stage selection is persisted correctly
 
 ### Manual Testing Complete
 
@@ -68,7 +68,7 @@ Resolved
    - Validation ensures at least 1 stage remains enabled
    - Stage selections properly mapped to `RuntimeSettings.pipeline.enabled_stage_ids`
 
-2. **File: `Requirements/10_GUI_Requirements.md`**
+1. **File: `Requirements/10_GUI_Requirements.md`**
    - Clarified GUI-012 acceptance criteria to explicitly include "pipeline stage selection via checkboxes"
    - Added new requirement GUI-012A for explicit stage selection functionality
 

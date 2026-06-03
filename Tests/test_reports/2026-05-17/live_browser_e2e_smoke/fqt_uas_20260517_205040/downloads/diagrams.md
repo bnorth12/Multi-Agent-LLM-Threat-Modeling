@@ -1,6 +1,7 @@
 # Mermaid Diagrams
 
 ## level_1
+
 ```mermaid
 graph TD
   subgraph AirVehicle["UAS Air Vehicle - Untrusted Boundary"]

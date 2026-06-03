@@ -140,4 +140,3 @@ Each Sprint 2026-12 issue is only closed when all are true:
 - The issue-scoped design disposition package for issue #67 is captured in `planning/issues/issue_2026_12_S12_013_Gate_0_Design_Disposition.md` and is the authoritative reconciliation-path artifact.
 - The audit-derived architecture/design backfill for `C01-ORCH-001` is captured in `planning/issues/issue_2026_12_S12_033_LangGraph_Orchestrator_Architecture_Disposition.md` and records the architecture-first reconciliation path.
 - Final issue closure remains a Sprint 2026-12 closeout activity after the implementation PR and closure evidence are finalized, including assignment of a GitHub issue number for S12-015.
-

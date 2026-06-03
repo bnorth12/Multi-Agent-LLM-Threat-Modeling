@@ -17,9 +17,9 @@ Medium - Blocks automated live validation coverage and prevents a clean end-to-e
 ## Scope
 
 1. Update live validation tests to use the current `FrameworkOrchestrator(settings=..., run_id=...)` API.
-2. Build explicit live-mode `RuntimeSettings` objects instead of assuming `build_default_settings()` returns live settings.
-3. Hook the live adapter from the current agent registry rather than a nonexistent top-level orchestrator adapter.
-4. Replace direct mutation of frozen dataclass fields with explicit construction or dataclass replacement.
+1. Build explicit live-mode `RuntimeSettings` objects instead of assuming `build_default_settings()` returns live settings.
+1. Hook the live adapter from the current agent registry rather than a nonexistent top-level orchestrator adapter.
+1. Replace direct mutation of frozen dataclass fields with explicit construction or dataclass replacement.
 
 ## Acceptance Criteria
 

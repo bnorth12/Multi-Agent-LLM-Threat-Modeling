@@ -17,16 +17,16 @@ Structural validation can report a false positive when the endpoint is reachable
 ## Required Behavior
 
 1. Verify SHALL perform a real prompt round-trip through the configured provider path.
-2. Verify SHALL use run-scoped key material from runtime settings (`model.api_key`) and SHALL NOT rely on process environment secrets.
-3. Verify SHALL fail with a clear message on auth failure, transport failure, timeout, provider error, or empty provider response.
-4. Verify SHALL pass only when provider responds successfully with non-empty output.
+1. Verify SHALL use run-scoped key material from runtime settings (`model.api_key`) and SHALL NOT rely on process environment secrets.
+1. Verify SHALL fail with a clear message on auth failure, transport failure, timeout, provider error, or empty provider response.
+1. Verify SHALL pass only when provider responds successfully with non-empty output.
 
 ## Scope
 
 1. Backend `/config/verify` uses runtime settings and runs a minimal prompt ping request.
-2. Frontend verification payload includes `model.api_key` in runtime settings.
-3. Runtime settings and API responses redact `model.api_key` from persisted/returned metadata.
-4. Streamlit and React verification semantics remain aligned.
+1. Frontend verification payload includes `model.api_key` in runtime settings.
+1. Runtime settings and API responses redact `model.api_key` from persisted/returned metadata.
+1. Streamlit and React verification semantics remain aligned.
 
 ## Acceptance Criteria
 

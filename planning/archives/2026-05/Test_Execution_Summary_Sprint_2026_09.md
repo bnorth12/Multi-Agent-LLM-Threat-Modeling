@@ -7,7 +7,7 @@ This summary records automated and manual test evidence for Sprint 2026-09.
 Validation sequencing policy:
 
 1. Clean automated pass across RC-included features.
-2. Manual RC campaign execution after automated gate passes.
+1. Manual RC campaign execution after automated gate passes.
 
 ## 2. Automated Gate Evidence
 

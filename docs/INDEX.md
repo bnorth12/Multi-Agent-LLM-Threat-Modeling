@@ -83,4 +83,3 @@
 ## Data Model Note
 
 Mitigations are defined at the threat object level in the canonical schema.
-

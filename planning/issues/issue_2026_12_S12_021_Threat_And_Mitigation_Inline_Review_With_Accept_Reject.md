@@ -1,4 +1,5 @@
 ﻿# Issue S12-021: Inline Threat and Mitigation Review with Per-Item Accept/Reject and Non-Blocking Default
+
 Sprint: 2026-12
 Requirement ID: UNKNOWN-REQ
 Parent Capability ID: C16-PRJ-001
@@ -8,7 +9,6 @@ Decomposition Level: L2
 Allocated Component/Module: planning/issues/issue_2026_12_S12_021_Threat_And_Mitigation_Inline_Review_With_Accept_Reject.md
 Verification Method: Sprint traceability verification
 Status: In Review
-
 
 Status: Proposed (Post-Run)
 Priority: P1
@@ -22,12 +22,13 @@ per-threat mitigations inline when they are generated, and does not provide per-
 accept/reject decisions for threats or mitigations.
 
 This issue delivers:
+
 1. Threat detail dialog on click, showing threat fields and — once the mitigation stage
    has run — the mitigations generated for that threat inline.
-2. Per-threat and per-mitigation accept/reject/pending decision controls.
-3. Non-blocking default: pending items are treated as accepted so that the diagram generator
+1. Per-threat and per-mitigation accept/reject/pending decision controls.
+1. Non-blocking default: pending items are treated as accepted so that the diagram generator
    and report generator always have a complete working set on first pass even with no user input.
-4. Downstream filtering: only accepted threats (and their accepted mitigations) are passed
+1. Downstream filtering: only accepted threats (and their accepted mitigations) are passed
    to the diagram and report generation stages.
 
 ## Motivation
@@ -161,7 +162,3 @@ This issue delivers:
 - Verification Impact: No Sprint 2026-12 blocking verification lane is invalidated by deferment.
 - Next Sprint Owner: bnorth12
 - Intake Linkage: planning/Sprint_2026_99_Parking_Lot_Skills_Layer_and_Avionics_Specialization.md
-
-
-
-

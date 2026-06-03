@@ -30,11 +30,11 @@ Baseline report: independent_reviews/latest/independent_review_2026-12_manual_20
 ### Cross-Domain Themes Lifted from Baseline
 
 1. Close implementation evidence gaps (P0)
-2. Close verification evidence gaps (P0)
-3. Backfill architecture/design traceability (P1)
-4. Enforce traceability artifact baseline (P1)
-5. Resolve conceptual vs as-built mismatches (P1)
-6. Fix issue tracker governance metadata (P1)
+1. Close verification evidence gaps (P0)
+1. Backfill architecture/design traceability (P1)
+1. Enforce traceability artifact baseline (P1)
+1. Resolve conceptual vs as-built mismatches (P1)
+1. Fix issue tracker governance metadata (P1)
 
 ## Round 005 Backlog (All Domains Included)
 

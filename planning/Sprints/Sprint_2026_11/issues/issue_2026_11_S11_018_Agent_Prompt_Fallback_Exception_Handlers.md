@@ -44,13 +44,13 @@ def _load_expected_output(self) -> str:
 ### Impact Chain
 
 1. **User edits prompt in UI** → Saves to backend store (after S11-017 fix)
-2. **Agent executes** → Calls `_load_system_prompt()`
-3. **If ANY error occurs** (store file missing, corrupted, import fails, etc.):
+1. **Agent executes** → Calls `_load_system_prompt()`
+1. **If ANY error occurs** (store file missing, corrupted, import fails, etc.):
    - Exception is silently caught
    - Fallback prompt is loaded from `docs/agents/*.txt` file
    - Agent uses default prompt, not user edits
    - No error logged, no state recorded, no UI notification
-4. **User has no idea their edits weren't used**
+1. **User has no idea their edits weren't used**
 
 ### Combined with S11-017
 
@@ -64,9 +64,9 @@ def _load_expected_output(self) -> str:
 ## Root Causes
 
 1. **Over-broad exception handling**: Used `except Exception` instead of specific exception types.
-2. **No explicit fallback policy**: Fallback mechanism is implicit and invisible.
-3. **No logging/observability**: No way to know if a fallback occurred.
-4. **No error state propagation**: Errors are swallowed instead of surfaced to the execution state.
+1. **No explicit fallback policy**: Fallback mechanism is implicit and invisible.
+1. **No logging/observability**: No way to know if a fallback occurred.
+1. **No error state propagation**: Errors are swallowed instead of surfaced to the execution state.
 
 ---
 
@@ -149,14 +149,14 @@ def _load_system_prompt(self) -> str:
 ## Acceptance Criteria
 
 1. Replace blanket `except Exception` handlers with specific exception types (ImportError, KeyError) and explicit catch-alls with logging.
-2. All fallback paths log at appropriate level (ERROR, WARNING, or DEBUG as applicable).
-3. A unit test verifies:
+1. All fallback paths log at appropriate level (ERROR, WARNING, or DEBUG as applicable).
+1. A unit test verifies:
    - When backend store is available, prompts are loaded from store (not file).
    - When backend store raises ImportError, error is logged and file fallback is used.
    - When backend store raises KeyError, error is logged and file fallback is used.
    - When backend store raises unexpected exception, error is logged at CRITICAL and file fallback is used.
-4. Integration test confirms that edited prompts reach agents without fallback when both S11-017 and S11-018 are fixed.
-5. No change to existing fallback behavior (still falls back to file); only adds visibility.
+1. Integration test confirms that edited prompts reach agents without fallback when both S11-017 and S11-018 are fixed.
+1. No change to existing fallback behavior (still falls back to file); only adds visibility.
 
 ---
 

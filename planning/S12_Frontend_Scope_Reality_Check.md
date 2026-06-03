@@ -23,6 +23,7 @@ The React+MUI HTML frontend built in S12 is **a basic navigation shell only**—
 ### 1. Full Threat Modeling Workflow (10-20 minute execution)
 
 **Execution Stages** (9 sequential agents):
+
 - Stage 01: Input Normalizer
 - Stage 02: Context Builder
 - Stage 03: Trust Boundary Validator
@@ -34,6 +35,7 @@ The React+MUI HTML frontend built in S12 is **a basic navigation shell only**—
 - Stage 09: Report Writer
 
 **Per-Stage Data Available in Streamlit:**
+
 - Execution messages and context
 - LLM prompts, attempts, token usage
 - Current stage status (running, complete, pending)
@@ -42,6 +44,7 @@ The React+MUI HTML frontend built in S12 is **a basic navigation shell only**—
 ### 2. HITL (Human-in-the-Loop) Gates
 
 **8 Gate Checkpoints** requiring operator approval:
+
 - Gate 0: Input Integrity
 - Gate 1: Scope Confirmation
 - Gate 2: Trust Boundary Approval
@@ -52,6 +55,7 @@ The React+MUI HTML frontend built in S12 is **a basic navigation shell only**—
 - Gate 7: Export Consistency
 
 **Per-Gate State Available in Streamlit:**
+
 - Gate status: open, draft, rejected, accepted_as_is, accepted_changes
 - Threat data for review
 - Mitigation coverage assessment
@@ -61,6 +65,7 @@ The React+MUI HTML frontend built in S12 is **a basic navigation shell only**—
 ### 3. Threat Review Screen
 
 **Threat Review Features** (Screen SCR-004):
+
 - Browse all threats detected by STRIDE agents
 - View threat descriptions and confidence scores
 - Review associated mitigations
@@ -69,6 +74,7 @@ The React+MUI HTML frontend built in S12 is **a basic navigation shell only**—
 - Merge conflict resolution for updated runs
 
 **Data Required for Threat Review:**
+
 - Threat ID, description, category
 - STRIDE classification
 - Affected components/data flows
@@ -89,6 +95,7 @@ The React+MUI HTML frontend built in S12 is **a basic navigation shell only**—
 ### 5. Session State Management
 
 **State Persistence Required:**
+
 - Active run ID and status across page navigation
 - Checkpoint restore after browser reload
 - Multi-gate workflow state (gate sequence, decisions)
@@ -148,8 +155,9 @@ The React+MUI HTML frontend built in S12 is **a basic navigation shell only**—
 ### Design Issue
 
 The REST API was designed for **operational run control only** (submit, cancel, resume), not for **HMI state display and interaction**. It assumes clients will either:
+
 1. Use Streamlit (direct Python access to framework state), or
-2. Implement their own WebSocket/polling layer for live updates
+1. Implement their own WebSocket/polling layer for live updates
 
 ---
 
@@ -173,6 +181,7 @@ GET  /runs/{run_id}/metrics            → LLM usage, timing, stage breakdown
 ### 2. Frontend Components (Major)
 
 **Core Pages:**
+
 - Execution Progress Display (stage list with real-time status)
 - HITL Gate Manager (gate queue, review/approve/reject UI)
 - Threat Review Console (threat grid, detail pane, decision recording)
@@ -181,6 +190,7 @@ GET  /runs/{run_id}/metrics            → LLM usage, timing, stage breakdown
 - Snapshot Manager (checkpoint list and restore)
 
 **Sub-Components:**
+
 - Stage status cards
 - Gate approval modal
 - Threat detail panel
@@ -280,11 +290,13 @@ The passing tests create false confidence:
 ## Conclusion
 
 **The current React+MUI frontend is a foundation, not a replacement.** It demonstrates:
+
 - ✅ Modern tooling setup (React 18, Vite 5, MUI 5)
 - ✅ REST API client architecture
 - ✅ Build/test infrastructure
 
 But it does NOT deliver:
+
 - ❌ Threat modeling HMI functionality
 - ❌ HITL gate workflow
 - ❌ Real-world operational capability
@@ -294,7 +306,7 @@ But it does NOT deliver:
 ---
 
 **Recommendation**: Clearly communicate this scope gap to stakeholders. Decide whether to:
-1. Complete the full implementation (2 more sprints), or
-2. Defer HTML frontend and improve operational Streamlit HMI, or
-3. Accept limited functionality in S12 and plan incremental completion in S13
 
+1. Complete the full implementation (2 more sprints), or
+1. Defer HTML frontend and improve operational Streamlit HMI, or
+1. Accept limited functionality in S12 and plan incremental completion in S13

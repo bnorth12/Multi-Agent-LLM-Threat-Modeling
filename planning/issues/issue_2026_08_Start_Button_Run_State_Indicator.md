@@ -24,9 +24,9 @@ Observed during S08 browser walkthrough (2026-05-06): after clicking Start, the 
 ## Acceptance Criteria
 
 1. Within one Streamlit render cycle of the run starting, the button area in `input_entry.py` changes to a disabled state with a label such as `â³ Running â€” see Run Dashboard` (or equivalent).
-2. The button remains disabled and shows the in-progress label for the entire duration of an active run (`run_id` present in session state and pipeline not yet completed or halted).
-3. When the run completes or is halted, the button reverts to the normal `â–¶ Start Threat Model Run` label and becomes enabled again (assuming a new run can be started).
-4. No second run can be triggered by a second click while a run is in progress.
+1. The button remains disabled and shows the in-progress label for the entire duration of an active run (`run_id` present in session state and pipeline not yet completed or halted).
+1. When the run completes or is halted, the button reverts to the normal `â–¶ Start Threat Model Run` label and becomes enabled again (assuming a new run can be started).
+1. No second run can be triggered by a second click while a run is in progress.
 
 ## Implementation Notes
 
@@ -51,9 +51,9 @@ Low â€” UX polish; does not block pipeline correctness.
 ## Disposition Notes
 
 - 2026-05-07 BN: **Partial fix implemented** in [src/threat_modeler/ui/screens/input_entry.py](../../src/threat_modeler/ui/screens/input_entry.py).
-	- Start action is disabled while a run is active (`is_execution_active()` gate).
-	- Active-run warning banner is shown with run identifier prefix.
-	- Second-run trigger during active execution is blocked.
+ 	- Start action is disabled while a run is active (`is_execution_active()` gate).
+ 	- Active-run warning banner is shown with run identifier prefix.
+ 	- Second-run trigger during active execution is blocked.
 - 2026-05-07 BN: **Remaining closure item**: add explicit in-button running label text (for example, `â³ Running â€” see Run Dashboard`) and re-verify all acceptance criteria.
 
 ## Verification Evidence
@@ -79,4 +79,3 @@ Use this block for future closure updates.
 - Verification result summary (include pass counts):
 - Evidence artifact path(s):
 - Reviewer or approver initials:
-

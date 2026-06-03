@@ -3,10 +3,12 @@
 This directory stores independent review outputs produced by local governance automation.
 
 Naming note:
+
 - The path remains `independent_reviews/` for compatibility with existing scripts and hooks.
 - The report program and documentation refer to these artifacts as Independent Reviews.
 
 Policy:
+
 - Reports are generated on demand and by local hooks.
 - Current operational snapshots in `independent_reviews/latest/` are tracked by Git via selective allowlist rules.
 - High-churn historical artifacts are compacted into `independent_reviews/history/` and remain ignored to prevent uncontrolled repository growth.
@@ -17,9 +19,11 @@ Policy:
 - Reconciliation outcomes are informational unless a separate explicit enforcement control is chosen.
 
 Primary generator:
+
 - `python scripts/independent_repo_review.py --sprint YYYY_MM --run-context manual --report-mode update`
 
 Expected output files:
+
 - `independent_reviews/latest/independent_review_<sprint>_manual.md`
 - `independent_reviews/latest/independent_review_<sprint>_manual.json`
 - `independent_reviews/latest/independent_review_<sprint>_pre-commit.md`
@@ -27,9 +31,11 @@ Expected output files:
 - `independent_reviews/latest/independent_review_<sprint>_pre-push.md`
 
 Optional archive mode:
+
 - `python scripts/independent_repo_review.py --sprint YYYY_MM --run-context manual --report-mode archive`
 - Writes timestamped report files under `independent_reviews/latest/` and compaction will move older timestamped files into `independent_reviews/history/reports/`.
 
 Report framing:
+
 - The report uses a health score for remediation readiness.
 - The final section provides remediation themes, trigger reasons, and sprint-intake guidance.

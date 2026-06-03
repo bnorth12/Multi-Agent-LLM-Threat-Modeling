@@ -82,6 +82,7 @@ Sprint 2026-07 introduced provider model catalogs, editable model override contr
 
 - Created to align local planning issue tracking 1:1 with GH #36.
 - Disposition from Sprint 2026-07 discovered issue log: deferred-to-sprint-2026-08 S08-1.
+
 ## Closure Evidence Template
 
 Use this block for future closure updates.
@@ -92,4 +93,3 @@ Use this block for future closure updates.
 - Verification result summary (include pass counts):
 - Evidence artifact path(s):
 - Reviewer or approver initials:
-

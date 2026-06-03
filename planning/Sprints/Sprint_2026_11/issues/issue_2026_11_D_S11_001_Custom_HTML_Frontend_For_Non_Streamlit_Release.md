@@ -14,9 +14,9 @@
 The current web UI is built with Streamlit, which is a development/prototyping framework. For a fielded release, we need:
 
 1. **No Streamlit dependency** in the production binary (reduces package size and complexity).
-2. **Custom UI** that maintains feature parity with the current Streamlit experience.
-3. **Decoupled frontend-backend** so the operational API in `src/threat_modeler/server/api.py` becomes the single source of truth for runtime control.
-4. **Automated test coverage** for the frontend-backend contract.
+1. **Custom UI** that maintains feature parity with the current Streamlit experience.
+1. **Decoupled frontend-backend** so the operational API in `src/threat_modeler/server/api.py` becomes the single source of truth for runtime control.
+1. **Automated test coverage** for the frontend-backend contract.
 
 ---
 
@@ -45,16 +45,19 @@ The current web UI is built with Streamlit, which is a development/prototyping f
 ### Frontend Technology Choices
 
 **Option A: Vanilla JavaScript + HTML/CSS**
+
 - **Pros**: Minimal dependencies, lightweight, no build step.
 - **Cons**: More boilerplate for state management and routing.
 - **Use case**: Simple dashboards, form-based UI.
 
 **Option B: React (via CDN or bundled)**
+
 - **Pros**: Component-based, familiar tooling, large ecosystem.
 - **Cons**: Larger bundle, build step required.
 - **Use case**: Complex workflows, real-time state updates.
 
 **Option C: Vue.js**
+
 - **Pros**: Simpler learning curve than React, good for incremental adoption.
 - **Cons**: Smaller community than React.
 - **Use case**: Middle ground between vanilla and React.
@@ -108,21 +111,21 @@ The current web UI is built with Streamlit, which is a development/prototyping f
 Migrate each Streamlit screen to HTML:
 
 1. **Home** — Dashboard, quick-start, status badge.
-2. **Role Selection** — Role picker.
-3. **Pipeline Configuration** — Model + stage selection UI.
-4. **Input Entry** — File upload, raw text, config display.
-5. **Stage Results** — Progress, stage output preview.
-6. **Threat Review** — Threats table, filtering, editing.
-7. **STIX Viewer** — STIX bundle JSON viewer.
-8. **Canonical Graph Viewer** — Graph visualization (use D3.js or similar).
-9. **Mermaid Viewer** — Diagram rendering.
-10. **STRIDE Viewer** — Threat scoring table.
-11. **Token Usage** — Token metrics table.
-12. **Last Prompt** — Prompt history and diff.
-13. **Results Export** — Download links, preview toggles.
-14. **Snapshot Manager** — Snapshot CRUD.
-15. **Markdown Viewer** — Markdown rendering.
-16. **Prompt Editor** — Per-agent prompt and expected output editing.
+1. **Role Selection** — Role picker.
+1. **Pipeline Configuration** — Model + stage selection UI.
+1. **Input Entry** — File upload, raw text, config display.
+1. **Stage Results** — Progress, stage output preview.
+1. **Threat Review** — Threats table, filtering, editing.
+1. **STIX Viewer** — STIX bundle JSON viewer.
+1. **Canonical Graph Viewer** — Graph visualization (use D3.js or similar).
+1. **Mermaid Viewer** — Diagram rendering.
+1. **STRIDE Viewer** — Threat scoring table.
+1. **Token Usage** — Token metrics table.
+1. **Last Prompt** — Prompt history and diff.
+1. **Results Export** — Download links, preview toggles.
+1. **Snapshot Manager** — Snapshot CRUD.
+1. **Markdown Viewer** — Markdown rendering.
+1. **Prompt Editor** — Per-agent prompt and expected output editing.
 
 ### Phase 4: Automated Test Suite (2–3 weeks)
 
@@ -220,9 +223,9 @@ GET    /runs/{run_id}/artifacts/canonical → (JSON)
 Yes, the deployed HTML frontend can be opened in the VS Code integrated browser:
 
 1. Start the backend server: `python -m threat_modeler --port 8600`
-2. Backend serves HTML from `src/threat_modeler/ui/frontend/index.html` at `http://localhost:8600/` or `/ui/`.
-3. VS Code browser tool opens `http://localhost:8600/` and interacts with the page.
-4. Agent can validate UI state, submit forms, verify error messages, etc.
+1. Backend serves HTML from `src/threat_modeler/ui/frontend/index.html` at `http://localhost:8600/` or `/ui/`.
+1. VS Code browser tool opens `http://localhost:8600/` and interacts with the page.
+1. Agent can validate UI state, submit forms, verify error messages, etc.
 
 ---
 
@@ -277,20 +280,20 @@ threat-modeler-1.0.0-py3-none-any.whl
 ## Acceptance Criteria
 
 1. Deployed release starts with `python -m threat_modeler` and serves HTML at `http://localhost:8600/`.
-2. All 16 UI screens render correctly without browser console errors.
-3. Full workflow (config → input → run → HITL gates → export) works end-to-end.
-4. Automated e2e tests validate at least 3 critical paths (quick run, HITL pause/resume, export).
-5. Documentation is updated; no references to Streamlit for operational deployment.
+1. All 16 UI screens render correctly without browser console errors.
+1. Full workflow (config → input → run → HITL gates → export) works end-to-end.
+1. Automated e2e tests validate at least 3 critical paths (quick run, HITL pause/resume, export).
+1. Documentation is updated; no references to Streamlit for operational deployment.
 
 ---
 
 ## Open Questions
 
 1. **Graph visualization library**: D3.js? Cytoscape? Sigma.js? (Depends on complexity of canonical graph rendering.)
-2. **State persistence**: Should frontend state persist to localStorage? Session storage? Backend?
-3. **Theme system**: Replicate Streamlit's dark/default themes, or simplify to CSS variables?
-4. **Real-time updates**: WebSocket or long-polling for run status? Or simple polling?
-5. **Browser support**: IE11+? Modern browsers only (Chrome, Firefox, Safari)?
+1. **State persistence**: Should frontend state persist to localStorage? Session storage? Backend?
+1. **Theme system**: Replicate Streamlit's dark/default themes, or simplify to CSS variables?
+1. **Real-time updates**: WebSocket or long-polling for run status? Or simple polling?
+1. **Browser support**: IE11+? Modern browsers only (Chrome, Firefox, Safari)?
 
 ---
 

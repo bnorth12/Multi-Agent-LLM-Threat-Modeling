@@ -83,5 +83,5 @@ Convert the highest-priority implementation evidence theme into a concrete sprin
 ## Execution Notes
 
 1. Assign an owner and split the work into the smallest cohesive implementation slices.
-2. Attach evidence targets for the missing implementation legs before closure.
-3. Re-run the review after the committed work item is updated to capture the concrete remediation delta.
+1. Attach evidence targets for the missing implementation legs before closure.
+1. Re-run the review after the committed work item is updated to capture the concrete remediation delta.

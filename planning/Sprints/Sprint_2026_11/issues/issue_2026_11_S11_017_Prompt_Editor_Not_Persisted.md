@@ -47,9 +47,9 @@ Edited prompt (with examples) is used
 ## Impact
 
 1. **Broken Feature**: GUI-009 (Agent Prompt Editor) appears functional but is non-operational.
-2. **Single/Multi-Shot Examples Lost**: Users edit prompts with examples to improve agent output quality, but these edits are never used.
-3. **User Trust**: Release documentation claims prompts are editable, but edits don't affect execution.
-4. **RC Sign-Off Risk**: This is a critical quality gap that must be resolved before RC1 release.
+1. **Single/Multi-Shot Examples Lost**: Users edit prompts with examples to improve agent output quality, but these edits are never used.
+1. **User Trust**: Release documentation claims prompts are editable, but edits don't affect execution.
+1. **RC Sign-Off Risk**: This is a critical quality gap that must be resolved before RC1 release.
 
 ---
 
@@ -91,11 +91,13 @@ def set_prompt(agent_id: str, text: str, actor: str = "user") -> None:
 ```
 
 **Pros**:
+
 - Simple, no new dependencies.
 - UI session state and backend file stay in sync.
 - No agent code changes needed.
 
 **Cons**:
+
 - Creates a cross-module dependency (UI → Backend).
 
 ### Option B: Load Backend Store at UI Session Init
@@ -103,9 +105,11 @@ def set_prompt(agent_id: str, text: str, actor: str = "user") -> None:
 Initialize `ui/prompt_store` by loading persisted prompts from backend on session start.
 
 **Pros**:
+
 - Cleaner separation of concerns.
 
 **Cons**:
+
 - Requires syncing session state back to backend on save, which is Option A anyway.
 
 ---
@@ -113,10 +117,10 @@ Initialize `ui/prompt_store` by loading persisted prompts from backend on sessio
 ## Acceptance Criteria
 
 1. When user edits a prompt in the UI and clicks "Save Changes", the edit is persisted to `~/.multi_agent_threat_modeler_prompts.json`.
-2. When an agent executes after the prompt edit, it loads and uses the edited prompt (not the original).
-3. Single/multi-shot examples in edited prompts are included in the system prompt sent to the LLM.
-4. A regression test confirms that prompt edits persist across UI sessions and are used by agent execution.
-5. Issue closure note references the test and commit.
+1. When an agent executes after the prompt edit, it loads and uses the edited prompt (not the original).
+1. Single/multi-shot examples in edited prompts are included in the system prompt sent to the LLM.
+1. A regression test confirms that prompt edits persist across UI sessions and are used by agent execution.
+1. Issue closure note references the test and commit.
 
 ---
 

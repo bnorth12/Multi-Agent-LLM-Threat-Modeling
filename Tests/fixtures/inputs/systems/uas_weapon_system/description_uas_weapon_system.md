@@ -30,11 +30,11 @@ Mission packages contain waypoints, flight plans, communication frequencies and 
 ## Key Mission Flow
 
 1. Charlie Mission Planning Computer ingests all-source intelligence and planning resources.
-2. Charlie sends generated mission plans to Bravo.
-3. Bravo validates, brokers, and approves mission packages.
-4. Approved mission packages are relayed to Alpha for execution.
-5. Alpha reports mission status and collection results back to Bravo.
-6. Delta feeds readiness and sustainment status into Bravo for subsequent mission cycles.
+1. Charlie sends generated mission plans to Bravo.
+1. Bravo validates, brokers, and approves mission packages.
+1. Approved mission packages are relayed to Alpha for execution.
+1. Alpha reports mission status and collection results back to Bravo.
+1. Delta feeds readiness and sustainment status into Bravo for subsequent mission cycles.
 
 ## Threat Modeling Context
 

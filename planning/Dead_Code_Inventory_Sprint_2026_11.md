@@ -32,10 +32,10 @@ These are not dead code, but they create unreachable or misleading governance re
 ## 4. Planned Removal and Deprecation Sequence
 
 1. Land new LangGraph-native orchestrator unit tests and delegation integration tests.
-2. Mark compatibility APIs as deprecated in orchestrator module notes.
-3. Remove compatibility stubs and legacy graph builder.
-4. Remove compatibility wrapper class after coverage parity and traceability update.
-5. Close DCI items with evidence in sprint execution summary.
+1. Mark compatibility APIs as deprecated in orchestrator module notes.
+1. Remove compatibility stubs and legacy graph builder.
+1. Remove compatibility wrapper class after coverage parity and traceability update.
+1. Close DCI items with evidence in sprint execution summary.
 
 ## 5. Required Evidence for Closure
 
