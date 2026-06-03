@@ -207,7 +207,7 @@ Ready-to-use documents for each sprint:
 
    **Usage**:
 
-   1. Copy template: `cp planning/Sprint_YYYY_MM_Closure_Checklist.md planning/Sprint_2026_09_Closure_Checklist.md`
+   1. Copy template: `cp planning/Sprint_YYYY_NN_Closure_Checklist.md planning/Sprint_2026_09_Closure_Checklist.md`
    1. Complete all sections during sprint end day
    1. Get Technical Lead signature (non-waivable)
    1. Archive final artifacts
@@ -480,7 +480,7 @@ After each sprint, update this framework:
 - [ ] Update templates if structure improved
 - [ ] Update verification script if checks changed
 - [ ] Update CI/CD workflow if new checks needed
-- [ ] Document changes in `planning/Sprint_YYYY_MM_Retrospective.md`
+- [ ] Document changes in `planning/Sprint_YYYY_NN_Retrospective.md`
 
 **Version Control**:
 

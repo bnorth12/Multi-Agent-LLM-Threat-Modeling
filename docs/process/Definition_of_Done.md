@@ -67,7 +67,7 @@ Example: "⚠️ No new test (existing suite covers case); Technical Lead approv
 
 ## Automated Enforcement
 
-- CI/CD pipeline runs `scripts/verify-sprint-traceability.py` on PR
+- CI/CD pipeline runs `scripts/verify_sprint_traceability.py` on PR
 - Rejects PR if:
   - Issue ID missing from commit message
   - Requirement link missing from issue

@@ -92,7 +92,7 @@ See `Requirements/` for:
 
 To start a new sprint:
 
-1. **Create directory**: `Sprints/Sprint_YYYY_MM/`
+1. **Create directory**: `Sprints/Sprint_YYYY_NN/`
 1. **Create subdirectories**: `issues/` and `work_items/`
 1. **Create README.md**: Use Sprint_Planning_Checklist_Template.md and Sprint_Traceability_Matrix_Template.md
 1. **Move issues**: Populate `issues/` with sprint-scoped items

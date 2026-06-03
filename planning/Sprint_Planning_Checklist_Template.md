@@ -15,9 +15,9 @@ Use this checklist at the start of **each sprint** to ensure traceability govern
 - [ ] **Backlog Prioritized**: PO has ranked backlog for sprint commitment
 - [ ] **Capacity Calculated**: Team estimated velocity for sprint
 - [ ] **Previous Sprint Archived**:
-  - [ ] `planning/Sprint_YYYY_MM_Closure_Checklist.md` completed and signed off
-  - [ ] `planning/Sprint_YYYY_MM_Traceability_Matrix.md` archived to `planning/archives/`
-  - [ ] Lessons documented: `planning/Sprint_YYYY_MM_Retrospective.md`
+  - [ ] `planning/Sprint_YYYY_NN_Closure_Checklist.md` completed and signed off
+  - [ ] `planning/Sprint_YYYY_NN_Traceability_Matrix.md` archived to `planning/archives/`
+  - [ ] Lessons documented: `planning/Sprint_YYYY_NN_Retrospective.md`
 
 ---
 
@@ -53,7 +53,7 @@ For **each accepted requirement**, create corresponding issue:
 ### Traceability Matrix Setup
 
 - [ ] **Matrix File Created**: Copy template to `planning/archives/2026-05/Sprint_2026_09_Traceability_Matrix.md`
-  - **Command**: `cp planning/Sprint_YYYY_MM_Traceability_Matrix_TEMPLATE.md planning/archives/2026-05/Sprint_2026_09_Traceability_Matrix.md`
+  - **Command**: `cp planning/Sprint_Traceability_Matrix_Template.md planning/archives/2026-05/Sprint_2026_09_Traceability_Matrix.md`
 - [ ] **Header Updated**: Change sprint year/month in matrix header
 - [ ] **Entries Added**: Every accepted requirement + issue added to matrix
   - **Format**:

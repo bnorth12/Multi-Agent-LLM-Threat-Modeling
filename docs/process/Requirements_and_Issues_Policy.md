@@ -165,7 +165,7 @@ Team agreement for maintaining strict traceability between requirements, issues,
 
 - **Workflow**: `.github/workflows/sprint-traceability.yml`
 - **Trigger**: On pull request, on push to main
-- **Check**: Runs `scripts/verify-sprint-traceability.py`
+- **Check**: Runs `scripts/verify_sprint_traceability.py`
 - **Action**:
   - ✅ PASS: Green check, PR allowed to merge
   - ❌ FAIL: Red check, PR blocked with detailed error message
@@ -183,8 +183,8 @@ Team agreement for maintaining strict traceability between requirements, issues,
 
 ### Sprint Verification Script
 
-- **Script**: `scripts/verify-sprint-traceability.py`
-- **Run**: `python scripts/verify-sprint-traceability.py --sprint 2026-08`
+- **Script**: `scripts/verify_sprint_traceability.py`
+- **Run**: `python scripts/verify_sprint_traceability.py --sprint 2026-08`
 - **Output**:
   - Requirement → Issue mapping report
   - Orphan issues (no requirement)
