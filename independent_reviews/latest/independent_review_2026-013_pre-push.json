@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-01T19:11:17",
+  "generated_at": "2026-06-03T05:27:01",
   "sprint": "2026-013",
   "run_context": "pre-push",
   "requirement_descriptions": {
@@ -124,16 +124,16 @@
     "GUI-003A": "When execution is paused by a HITL gate, the GUI SHALL display the gate identifier, gate status, and count of completed stages, and SHALL not present the paused state as a runtime failure.",
     "SCR-001": "\u2705 Delivered S12",
     "SCR-005": "\u2705 Delivered S12",
-    "SCR-002": "\u2705 Delivered S12",
-    "SCR-003": "\u2705 Delivered S12",
-    "SCR-004": "\u23f3 S07-05",
-    "SCR-007": "\u23f3 S07-06",
-    "SCR-008": "\u23f3 S07-06",
+    "SCR-002": "Requirements/04_Traceability_Matrix.md",
+    "SCR-003": "Requirements/04_Traceability_Matrix.md",
+    "SCR-004": "Requirements/04_Traceability_Matrix.md",
+    "SCR-007": "Requirements/04_Traceability_Matrix.md",
+    "SCR-008": "Requirements/04_Traceability_Matrix.md",
     "SCR-009": "\u23f3 S07-06",
-    "SCR-010": "\u23f3 S07-04",
-    "SCR-011": "\u23f3 S07-04",
-    "SCR-012": "\u23f3 Active",
-    "SCR-014": "\u23f3 Active",
+    "SCR-010": "Requirements/04_Traceability_Matrix.md",
+    "SCR-011": "Requirements/04_Traceability_Matrix.md",
+    "SCR-012": "Requirements/04_Traceability_Matrix.md",
+    "SCR-014": "Requirements/04_Traceability_Matrix.md",
     "SCR-014A": "\u2705 Delivered S08",
     "SCR-014B": "\ud83d\udd04 In Progress",
     "SCR-006": "\u2705 Delivered S12",
@@ -159,7 +159,7 @@
     "C10-A09-003": "Agent 9 SHALL produce report outputs suitable for downstream document conversion workflows.",
     "C12-HITL-005": "The system SHALL evaluate configured trigger rules for conditional Merge Conflict Resolution and Export Consistency gates.",
     "C12-HITL-006": "Audit Service SHALL capture analyst decision records for Gate 0 input integrity review before context merge.",
-    "C18-ADM-001": "> architecture: docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md ; design: docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md ; implementation: scripts/verify_administration_controls.py; src/threat_modeler/orchestrator.py; src/threat_modeler/backend/run_manager.py ; verification: Tests/Formal_Qualification_Test_Plan.md",
+    "C18-ADM-001": "Administration controls family (): governs automated policy checks for branch/PR/checklist/release governance.",
     "GUI-002A": "The GUI SHALL render gate-review artifacts in human-readable summaries in addition to raw structured payloads, including counts, labels, subsystem or interface names, and concise automated checks relevant to the gate under review.",
     "GUI-018": "The GUI SHALL provide a dedicated STIX viewer that renders the generated STIX 2.1 bundle with object grouping (attack-pattern, course-of-action, relationship) and basic search/filter controls for analyst review.",
     "GUI-019": "The GUI SHALL provide a dedicated canonical graph viewer that renders system, subsystem, component, function, and interface structures from the canonical graph artifact in a navigable hierarchical layout.",
@@ -177,7 +177,7 @@
     "GUI-038": "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
     "GUI-039": "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
     "GUI-040": "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
-    "HITL-00X": "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+    "HITL-00X": "Legacy placeholder HITL gate requirement identifier retained for tracker compatibility until normalized ID replacement is approved.",
     "HITL-013": "Conditional gate state in the run record SHALL have one of three explicit values: (1) \"Open\" when condition is triggered and gate is awaiting analyst decision, (2) \"Auto-Bypassed\" when condition is not met and gate automatically closes, (3) \"Rejected\" or \"Accepted\" after analyst decision. The dashboard SHALL NOT report \"Pending\" for gates that are auto-bypassed.",
     "HITL-014": "The Run Dashboard HITL Gate States table SHALL display conditional gates with status \"\ud83d\udfe2 Auto-Bypassed\" (distinct emoji) when the gate's trigger condition is not met, and SHALL display mandatory gates and triggered conditional gates with status \"\u2753 Open\" or \"\u2705 Accepted\" or \"\u274c Rejected\" as appropriate.",
     "HITL-015": "Conditional gate record in the run result SHALL include trigger_condition_met (boolean) and trigger_reason (string) fields documenting which specific threshold or condition was evaluated and whether it was satisfied.",
@@ -204,8 +204,8 @@
     "RHMI-012": "GET /runs/{run_id}/artifacts/canonical",
     "RHMI-013": "N/A (shell layout requirement)",
     "RHMI-014": "N/A (shell layout requirement)",
-    "RHMI-016": "docs/design/software/Runtime_And_Orchestration_Design_Specification.md",
-    "RHMI-017": "docs/design/software/Runtime_And_Orchestration_Design_Specification.md",
+    "RHMI-016": "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+    "RHMI-017": "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
     "RHMI-018": "Component behavior validation + API integration test",
     "RHMI-019": "Contract validation test + release checklist inspection",
     "RIC-001": "The orchestrator SHALL NOT open Gate 0 until preflight input integrity data is present and minimally complete for gate review payload construction. If readiness is not achieved within the configured wait window, execution SHALL fail with an explicit readiness timeout error.",
@@ -229,15 +229,18 @@
     "RHMI-005": "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
     "RHMI-015": "POST /runs, GET /runs",
     "C11-LLM-004": "The system SHALL apply a configurable timeout and retry budget to live LLM requests, and the default live profile SHALL use a 900 second timeout and 2 attempts unless a higher-level policy overrides those values.",
-    "C13-UI-001": "HITL-009",
-    "C16-PRJ-001": "HITL-00X"
+    "C13-UI-001": "RHMI-016",
+    "C15-INT-001": "Integration family (): governs interface and schema contracts between runtime/state and external/internal consumers.",
+    "C16-PRJ-001": "HITL-006",
+    "SCR-015": "Requirements/04_Traceability_Matrix.md"
   },
   "requirement_traceability": {
     "ADM-001": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/06_Project_Administration_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -260,7 +263,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/06_Project_Administration_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -283,7 +286,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/06_Project_Administration_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -306,7 +309,8 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/06_Project_Administration_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -329,7 +333,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/06_Project_Administration_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -352,7 +356,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/06_Project_Administration_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -374,7 +378,8 @@
     "ADM-GOV-CONTROLS-L2": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -397,7 +402,8 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Components/C01_Orchestrator_State_Requirements.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Components/C01_Orchestrator_State_Requirements.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -1251,7 +1257,8 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Components/C11_LLM_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Components/C11_Model_Adapter_Requirements.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Components/C11_Model_Adapter_Requirements.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -1324,13 +1331,16 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/14_Sprint_2026_12_Transitional_Requirement_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Components/C11_LLM_Requirements.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Components/C11_LLM_Requirements.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Hierarchy_Baseline.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md"
       ],
       "implementation_refs": [
         "Tests/e2e/test_live_llm_validation.py",
@@ -1351,7 +1361,8 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Components/C12_HITL_Audit_Service_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Components/C12_HITL_Requirements.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Components/C12_HITL_Requirements.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -1512,12 +1523,14 @@
     },
     "C13-UI-001": {
       "source_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Hierarchy_Baseline.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
       "implementation_refs": [
         "Tests/Formal_Qualification_Test_Plan.md",
@@ -1535,14 +1548,40 @@
         "test_last_prompt_runtime.py"
       ]
     },
-    "C16-PRJ-001": {
+    "C15-INT-001": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
       ],
       "architecture_refs": [
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Hierarchy_Baseline.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
+      ],
+      "implementation_refs": [
+        "Tests/integration/test_agent_pipeline_completeness.py",
+        "Tests/integration/test_validation_gates.py",
+        "Tests/unit/test_input_ingestion.py"
+      ],
+      "verification_refs": [
+        "Tests/",
+        "Tests/integration/test_agent_pipeline_completeness.py",
+        "Tests/integration/test_validation_gates.py",
+        "Tests/unit/test_input_ingestion.py",
+        "test_agent_pipeline_completeness.py",
+        "test_input_ingestion.py",
+        "test_validation_gates.py"
+      ]
+    },
+    "C16-PRJ-001": {
+      "source_refs": [
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
+      ],
+      "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Hierarchy_Baseline.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
       "implementation_refs": [
         "Tests/Formal_Qualification_Test_Plan.md",
@@ -1575,7 +1614,8 @@
     "C18-ADM-001": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -1656,7 +1696,9 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md"
       ],
       "architecture_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Interface_Control_Document.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Interface_Control_Document.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Reachable_Module_Design_Backfill.md"
       ],
       "implementation_refs": [
         "Tests/Formal_Qualification_Test_Plan.md"
@@ -1794,7 +1836,8 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/12_React_HMI_Traceability_To_Tests.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -1804,6 +1847,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Interface_Control_Document.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Logical_Decomposition.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "docs/architecture/HMI_Architecture_Blueprint.md"
       ],
       "implementation_refs": [
@@ -1857,7 +1901,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -1894,7 +1938,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -1922,7 +1966,8 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/12_React_HMI_Traceability_To_Tests.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -1952,7 +1997,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/12_React_HMI_Traceability_To_Tests.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -2168,7 +2213,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -2238,13 +2283,15 @@
     "GUI-018": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Interface_Control_Document.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -2292,11 +2339,13 @@
     "GUI-019": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -2345,7 +2394,9 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -2353,6 +2404,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Interface_Control_Document.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -2399,11 +2451,13 @@
     "GUI-021": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -2504,7 +2558,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -2559,7 +2613,8 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -2567,6 +2622,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Interface_Control_Document.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -2616,13 +2672,16 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Interface_Control_Document.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -2670,7 +2729,7 @@
     "GUI-026": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -2698,7 +2757,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -2832,7 +2891,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -2855,7 +2914,8 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -2863,6 +2923,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "docs/architecture/HMI_Architecture_Blueprint.md"
       ],
       "implementation_refs": [
@@ -2888,7 +2949,9 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/13_Runtime_State_And_Input_Contract_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -2897,6 +2960,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Interface_Control_Document.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "docs/architecture/HMI_Architecture_Blueprint.md"
       ],
       "implementation_refs": [
@@ -2938,7 +3002,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3110,7 +3174,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/14_Sprint_2026_12_Transitional_Requirement_Registry.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3162,7 +3226,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/14_Sprint_2026_12_Transitional_Requirement_Registry.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3216,7 +3280,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/14_Sprint_2026_12_Transitional_Requirement_Registry.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3269,7 +3333,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3295,7 +3359,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3410,7 +3474,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/03_HITL_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3440,7 +3504,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/03_HITL_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3470,7 +3534,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/03_HITL_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3499,7 +3563,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/03_HITL_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3529,7 +3593,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/03_HITL_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3561,13 +3625,15 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/03_HITL_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/13_Runtime_State_And_Input_Contract_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Hierarchy_Baseline.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -3591,8 +3657,7 @@
     "HITL-00X": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/14_Sprint_2026_12_Transitional_Requirement_Registry.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/14_Sprint_2026_12_Transitional_Requirement_Registry.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3620,8 +3685,8 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/03_HITL_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/HITL-012-014_Conditional_Gate_State_Reporting.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/HITL-012-014_Conditional_Gate_State_Reporting.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3786,7 +3851,8 @@
     "HITL-GATE-CONTROL": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3837,7 +3903,8 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/02_Interface_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3864,7 +3931,8 @@
     "INT-003": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/02_Interface_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3872,6 +3940,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Interface_Control_Document.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Multi_Agent_Logical_Decomposition.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/software/Agent_Subsystem_Design_Specification.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -3928,7 +3997,9 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/02_Interface_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -3943,6 +4014,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/software/Runtime_And_Orchestration_Design_Specification.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/External_Interface_And_Integration_Design_Package.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/System_Deployment_And_Operating_Modes_Design.md",
         "docs/architecture/Function_Hierarchy_Registry.md"
       ],
@@ -4036,7 +4108,8 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/02_Interface_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -4094,7 +4167,8 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/02_Interface_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -4131,7 +4205,8 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/02_Interface_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -4263,7 +4338,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/02_Interface_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -4353,7 +4428,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/01_Project_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -4453,7 +4528,9 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/01_Project_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -4464,6 +4541,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/software/Runtime_And_Orchestration_Design_Specification.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/External_Interface_And_Integration_Design_Package.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
@@ -4640,7 +4718,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/12_React_HMI_Traceability_To_Tests.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -4705,7 +4783,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/01_Project_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -4812,7 +4890,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/01_Project_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/10_GUI_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -5085,7 +5163,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/01_Project_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -5554,11 +5632,13 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/11_React_HMI_Refactor_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/12_React_HMI_Traceability_To_Tests.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/13_Runtime_State_And_Input_Contract_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md"
       ],
       "implementation_refs": [
         "frontend/src/App.test.tsx",
@@ -5698,7 +5778,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/11_React_HMI_Refactor_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/12_React_HMI_Traceability_To_Tests.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -5866,12 +5946,15 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/11_React_HMI_Refactor_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/12_React_HMI_Traceability_To_Tests.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/software/Runtime_And_Orchestration_Design_Specification.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -5899,7 +5982,7 @@
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/11_React_HMI_Refactor_Requirements.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/12_React_HMI_Traceability_To_Tests.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/13_Runtime_State_And_Input_Contract_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -5988,7 +6071,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/13_Runtime_State_And_Input_Contract_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -6085,7 +6168,7 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/13_Runtime_State_And_Input_Contract_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -6109,7 +6192,9 @@
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Reachable_Module_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -6123,11 +6208,15 @@
     },
     "SCR-002": {
       "source_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -6152,11 +6241,17 @@
     },
     "SCR-003": {
       "source_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Reachable_Module_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -6181,11 +6276,17 @@
     },
     "SCR-004": {
       "source_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Reachable_Module_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -6268,11 +6369,15 @@
     },
     "SCR-007": {
       "source_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -6297,11 +6402,15 @@
     },
     "SCR-008": {
       "source_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -6355,11 +6464,15 @@
     },
     "SCR-010": {
       "source_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Reachable_Module_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -6384,11 +6497,15 @@
     },
     "SCR-011": {
       "source_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Reachable_Module_Design_Backfill.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -6413,12 +6530,14 @@
     },
     "SCR-012": {
       "source_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/software/Model_Configuration_Design_Specification.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -6444,12 +6563,15 @@
     "SCR-013": {
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/02_Interface_Requirements.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/software/Model_Configuration_Design_Specification.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
         "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
       ],
@@ -6474,13 +6596,19 @@
     },
     "SCR-014": {
       "source_refs": [
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Partial_15_Wave_Requirements_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
       ],
       "architecture_refs": [
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Hierarchy_Baseline.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Function_Hierarchy_Registry.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/HMI_Architecture_Blueprint.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/software/Model_Configuration_Design_Specification.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/software/Model_Configuration_Design_Specification.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Partial_15_Wave_Design_Backfill.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Reachable_Module_Design_Backfill.md"
       ],
       "implementation_refs": [
         "Tests/unit/test_token_usage_runtime.py",
@@ -6546,6 +6674,24 @@
         "frontend/src/components/ExecutionProgress.test.tsx",
         "test_frontend_react_mui_full_workflow.py",
         "test_hmi_backend_api.py"
+      ]
+    },
+    "SCR-015": {
+      "source_refs": [
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/Reachable_Module_Requirements_Backfill.md"
+      ],
+      "architecture_refs": [
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
+      ],
+      "implementation_refs": [
+        "Tests/unit/test_last_prompt_runtime.py",
+        "src/threat_modeler/ui/screens/last_prompt.py"
+      ],
+      "verification_refs": [
+        "Tests/",
+        "Tests/unit/test_last_prompt_runtime.py",
+        "test_last_prompt_runtime.py"
       ]
     },
     "VS-001": {
@@ -6756,7 +6902,8 @@
       "source_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/04_Traceability_Matrix.md",
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/05_Verification_Strategy.md",
-        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
       ],
       "architecture_refs": [
         "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
@@ -6777,15 +6924,15 @@
       ]
     }
   },
-  "full_trace_chain_count": 228,
+  "full_trace_chain_count": 230,
   "full_trace_chain_gap_ids": [],
   "structure_missing": [],
-  "requirement_total": 228,
-  "req_with_impl": 228,
+  "requirement_total": 230,
+  "req_with_impl": 230,
   "req_without_impl": [],
-  "req_with_verification": 228,
+  "req_with_verification": 230,
   "req_without_verification": [],
-  "req_with_arch_design_trace": 228,
+  "req_with_arch_design_trace": 230,
   "req_without_arch_design_trace": [],
   "issue_rows_total": 4,
   "issue_rows_without_requirements": [],
@@ -6844,9 +6991,9 @@
   "full_remediation_complete": true,
   "branch_awareness": {
     "current_branch": "main",
-    "head_commit": "6def056",
-    "merge_base_with_origin_main": "10b9edabd21da55313e62e0e5e9608609cac1684",
-    "ahead_of_origin_main": 14,
+    "head_commit": "1bce584",
+    "merge_base_with_origin_main": "6def0565656061c971347458bbdd429d7c4565f6",
+    "ahead_of_origin_main": 7,
     "behind_origin_main": 0,
     "working_tree_dirty": false,
     "merge_risk": "MODERATE",
@@ -6906,7 +7053,7 @@
     ]
   },
   "trend_snapshot": {
-    "timestamp": "2026-06-01T19:11:17",
+    "timestamp": "2026-06-03T05:27:01",
     "sprint": "2026-013",
     "score": 96.2,
     "critical_count": 0,
@@ -6920,26 +7067,17 @@
     "issue_quality_ratio": 0.625
   },
   "trend_delta": {
-    "previous_timestamp": "2026-05-31T23:38:40",
-    "score_delta": -3.8,
+    "previous_timestamp": "2026-06-01T19:11:17",
+    "score_delta": 0.0,
     "critical_delta": 0,
-    "major_delta": 1,
-    "minor_delta": -1,
-    "informational_delta": -1
+    "major_delta": 0,
+    "minor_delta": 0,
+    "informational_delta": 0
   },
   "trend_dashboard": {
     "window": 5,
     "overall_trend": "regressing",
     "entries": [
-      {
-        "timestamp": "2026-05-31T23:23:58",
-        "score": 99.8,
-        "critical_count": 0,
-        "major_count": 0,
-        "minor_count": 1,
-        "informational_count": 1,
-        "direction": "baseline"
-      },
       {
         "timestamp": "2026-05-31T23:31:42",
         "score": 99.8,
@@ -6947,7 +7085,7 @@
         "major_count": 1,
         "minor_count": 1,
         "informational_count": 2,
-        "direction": "regressing"
+        "direction": "baseline"
       },
       {
         "timestamp": "2026-05-31T23:35:01",
@@ -6975,6 +7113,15 @@
         "minor_count": 0,
         "informational_count": 1,
         "direction": "regressing"
+      },
+      {
+        "timestamp": "2026-06-03T05:27:01",
+        "score": 96.2,
+        "critical_count": 0,
+        "major_count": 1,
+        "minor_count": 0,
+        "informational_count": 1,
+        "direction": "stable"
       }
     ]
   },
@@ -7006,8 +7153,8 @@
     "req_verify_pct_delta": 0.0,
     "req_arch_pct_delta": 0.0,
     "full_chain_pct_delta": 0.0,
-    "issue_quality_pct_delta": -37.5,
-    "critical_major_count_delta": 1.0
+    "issue_quality_pct_delta": 0.0,
+    "critical_major_count_delta": 0.0
   },
   "remediation_strategy": {
     "required": true,
