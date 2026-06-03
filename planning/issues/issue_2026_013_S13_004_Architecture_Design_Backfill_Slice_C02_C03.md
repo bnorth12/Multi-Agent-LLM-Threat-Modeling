@@ -8,7 +8,7 @@ Child Function ID: F-S13-001-ORCH_001-L2
 Decomposition Level: L2
 Allocated Component/Module: docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md
 Verification Method: Architecture/design disposition audit and traceability verification
-Status: Planned
+Status: Carryover
 
 ## Purpose
 

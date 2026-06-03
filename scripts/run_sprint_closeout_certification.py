@@ -143,12 +143,13 @@ def write_report(out_dir: Path, sprint: str, result: Dict[str, Any]) -> None:
         f"- Carryover Count: {payload.get('carryover_count', 0)}",
         "",
         "## Issue Counts",
+        "",
     ]
     for key, value in payload.get("issue_counts", {}).items():
         md_lines.append(f"- {key}: {value}")
-    md_lines.extend(["", "## Notes"])
+    md_lines.extend(["", "## Notes", ""])
     md_lines.extend([f"- {note}" for note in payload.get("notes", [])])
-    md_path.write_text("\n".join(md_lines), encoding="utf-8")
+    md_path.write_text("\n".join(md_lines) + "\n", encoding="utf-8")
 
     with history_path.open("a", encoding="utf-8") as history_file:
         history_file.write(json.dumps(payload))

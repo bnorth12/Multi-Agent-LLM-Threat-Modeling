@@ -8,7 +8,7 @@ Child Function ID: F-ADM-GOV-CONTROLS-L2
 Decomposition Level: L2
 Allocated Component/Module: Tests/unit/test_administration_controls.py
 Verification Method: Unit test and governance script execution
-Status: In Progress
+Status: Complete
 
 ## Purpose
 
