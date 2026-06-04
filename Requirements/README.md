@@ -57,6 +57,16 @@ Primary files:
 - 13_Runtime_State_And_Input_Contract_Requirements.md
 - 14_Prompt_Requirements_Baseline.md
 - 15_End_To_End_Traceability_Attributes_Registry.md
+- 16_Active_Sprint_Traceability_Matrix.md
+- 17_Implementation_Trace_Normalization.md
+- 18_Traceability_Governance_Operating_Model.md
+
+Traceability governance model:
+
+- 15_End_To_End_Traceability_Attributes_Registry.md is the durable release and audit baseline.
+- 16_Active_Sprint_Traceability_Matrix.md is sprint execution tracking and closure planning.
+- 17_Implementation_Trace_Normalization.md is implementation-normalization bridge content only and must promote into 15 for durable closure.
+- 18_Traceability_Governance_Operating_Model.md defines placement, promotion, and closeout policy for all traceability artifacts.
 
 Component files:
 

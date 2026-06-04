@@ -33,8 +33,8 @@ This document is the function-side root artifact that bridges capability hierarc
 | L2 | F-C01_ORCH_002-L2 | C01-ORCH-001 | F-ORCH-TRACEABILITY-L1 | LangGraph-Compatible Mode Routing | Preserve deterministic stage transitions under langgraph-compatible execution mode. | C01-ORCH-002, PRJ-023 | docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md; docs/design/software/Runtime_And_Orchestration_Design_Specification.md | src/threat_modeler/orchestrator.py | Tests/unit/test_framework_orchestrator_langgraph.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 | L2 | F-C01_ORCH_003-L2 | C01-ORCH-001 | F-ORCH-TRACEABILITY-L1 | Stage Checkpoint Persistence | Persist and recover stage checkpoints at every transition boundary. | C01-ORCH-003, INT-007 | docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md; docs/design/software/Runtime_And_Orchestration_Design_Specification.md | src/threat_modeler/backend/run_manager.py | Tests/integration/test_agent_pipeline_completeness.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 | L2 | F-GUI_003A-TRACE-L2 | C13-UI-001 | F-UI-TRACEABILITY-L1 | Paused-State Timeline Projection | Render paused gate state as paused with completed-stage context and without failure-state drift. | GUI-003A, GUI-031 | docs/architecture/HMI_Architecture_Blueprint.md; docs/design/software/Runtime_And_Orchestration_Design_Specification.md | frontend/src/components/ExecutionProgress.tsx | Tests/test_hmi_backend_api.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
-| L2 | F-GUI_012A-TRACE-L2 | C13-UI-001 | F-UI-TRACEABILITY-L1 | Stage Selection Guardrail Enforcement | Persist stage enablement settings and enforce at-least-one-stage enabled constraints. | GUI-012A, PRJ-003 | docs/architecture/HMI_Architecture_Blueprint.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | frontend/src/components/ModelConfiguration.tsx | Tests/test_hmi_backend_api.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
-| L2 | F-GUI_029-TRACE-L2 | C13-UI-001 | F-UI-TRACEABILITY-L1 | Prompt-Response Correlation Control | Correlate response payloads to selected prompt IDs and suppress stale results. | GUI-029, PRJ-018 | docs/architecture/HMI_Architecture_Blueprint.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | frontend/src/components/LastPromptView.tsx | Tests/test_hmi_backend_api.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
+| L2 | F-GUI_012A-TRACE-L2 | C13-UI-001 | F-UI-TRACEABILITY-L1 | Stage Selection Guardrail Enforcement | Persist stage enablement settings and enforce at-least-one-stage enabled constraints. | GUI-012A, PRJ-003 | docs/architecture/HMI_Architecture_Blueprint.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | frontend/src/components/PipelineConfig.tsx | Tests/test_hmi_backend_api.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
+| L2 | F-GUI_029-TRACE-L2 | C13-UI-001 | F-UI-TRACEABILITY-L1 | Prompt-Response Correlation Control | Correlate response payloads to selected prompt IDs and suppress stale results. | GUI-029, PRJ-018 | docs/architecture/HMI_Architecture_Blueprint.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | frontend/src/components/LastPromptViewer.tsx | Tests/test_hmi_backend_api.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 | L2 | F-PRJ_024-TRACE-L2 | C16-PRJ-001 | F-PRJ-TRACEABILITY-L1 | Visible Browser Upload Validation | Execute governed visible-browser upload validation flows with approved fixture sets. | PRJ-024, VS-009 | docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | scripts/live_browser_e2e_smoke_react.py | Tests/e2e/test_browser_run_validation.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 | L2 | F-ADM-GOV-CONTROLS-L2 | C18-ADM-001 | F-ADM-GOV-CONTROLS-L1 | Administration Control Verification | Validate required administration governance controls for planning linkage, PR issue synchronization, checklist gating/retention, release-readiness review, and governance cadence. | ADM-001, ADM-002, ADM-003, ADM-004, ADM-005, ADM-006 | docs/architecture/Capability_Hierarchy_Baseline.md; docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md; docs/design/software/Runtime_And_Orchestration_Design_Specification.md | scripts/verify_administration_controls.py | Tests/unit/test_administration_controls.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 
@@ -109,3 +109,27 @@ The rows below are derived from currently implemented callable symbols in reacha
 - Architecture allocation and requirement binding: `Capability_Function_Architecture_Traceability_Matrix.md`
 - Functional decomposition detail: `Multi_Agent_Functional_Decomposition.md`
 - End-to-end chain registry: `../../Requirements/15_End_To_End_Traceability_Attributes_Registry.md`
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+_None recorded._ <!-- [Req-ID] — rationale -->
+
+### Realizes
+
+_None recorded._ <!-- [Cap-ID] — rationale -->
+
+### Provides / Requires
+
+_None recorded._ <!-- Provides: [Interface-ID]; Requires: [Interface-ID] -->
+
+### Implemented By
+
+_None recorded._ <!-- [src/path/file.py] :: [ClassName.method] -->
+
+### Depends On
+
+_None recorded._ <!-- [element or artifact path] — dependency rationale -->

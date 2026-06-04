@@ -36,8 +36,8 @@ This document is the capability-side authority for:
 | L2 | C01-ORCH-002-CAP | C01-ORCH-001 | LangGraph-Compatible Execution Mode Capability | Preserve deterministic stage routing when orchestration runs in langgraph-compatible mode. | C01-ORCH-002, PRJ-023 | Requirements/04_Traceability_Matrix.md | docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md; docs/design/software/Runtime_And_Orchestration_Design_Specification.md | src/threat_modeler/orchestrator.py | Tests/unit/test_framework_orchestrator_langgraph.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 | L2 | C01-ORCH-003-CAP | C01-ORCH-001 | Stage Checkpoint Persistence Capability | Persist stage checkpoints after transitions and recover state continuity on resume paths. | C01-ORCH-003, INT-007 | Requirements/04_Traceability_Matrix.md | docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md; docs/design/software/Runtime_And_Orchestration_Design_Specification.md | src/threat_modeler/backend/run_manager.py | Tests/integration/test_agent_pipeline_completeness.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 | L2 | C13-UI-003A-CAP | C13-UI-001 | Paused-State Timeline Projection Capability | Render paused gate state with completed-stage context without failure-state ambiguity. | GUI-003A, GUI-031 | Requirements/10_GUI_Requirements.md | docs/architecture/HMI_Architecture_Blueprint.md; docs/design/software/Runtime_And_Orchestration_Design_Specification.md | frontend/src/components/ExecutionProgress.tsx | Tests/test_hmi_backend_api.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
-| L2 | C13-UI-012A-CAP | C13-UI-001 | Stage Selection Guardrail Capability | Persist stage enablement selections and enforce at-least-one-stage enabled policy. | GUI-012A, PRJ-003 | Requirements/10_GUI_Requirements.md | docs/architecture/HMI_Architecture_Blueprint.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | frontend/src/components/ModelConfiguration.tsx | Tests/test_hmi_backend_api.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
-| L2 | C13-UI-029-CAP | C13-UI-001 | Prompt Response Correlation Capability | Correlate prompt records to matching model responses and suppress stale response payloads. | GUI-029, PRJ-018 | Requirements/10_GUI_Requirements.md | docs/architecture/HMI_Architecture_Blueprint.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | frontend/src/components/LastPromptView.tsx | Tests/test_hmi_backend_api.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
+| L2 | C13-UI-012A-CAP | C13-UI-001 | Stage Selection Guardrail Capability | Persist stage enablement selections and enforce at-least-one-stage enabled policy. | GUI-012A, PRJ-003 | Requirements/10_GUI_Requirements.md | docs/architecture/HMI_Architecture_Blueprint.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | frontend/src/components/PipelineConfig.tsx | Tests/test_hmi_backend_api.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
+| L2 | C13-UI-029-CAP | C13-UI-001 | Prompt Response Correlation Capability | Correlate prompt records to matching model responses and suppress stale response payloads. | GUI-029, PRJ-018 | Requirements/10_GUI_Requirements.md | docs/architecture/HMI_Architecture_Blueprint.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | frontend/src/components/LastPromptViewer.tsx | Tests/test_hmi_backend_api.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 | L2 | C16-PRJ-024-CAP | C16-PRJ-001 | Visible Browser Upload Validation Capability | Validate end-to-end UI upload behavior with approved fixtures through visible-browser scenarios. | PRJ-024, VS-009 | Requirements/01_Project_Requirements.md; Requirements/05_Verification_Strategy.md | docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md | scripts/live_browser_e2e_smoke_react.py | Tests/e2e/test_browser_run_validation.py; Requirements/15_End_To_End_Traceability_Attributes_Registry.md |
 
 ## Traceability Entry Criteria
@@ -47,3 +47,27 @@ Before a new requirement can be declared traceable, confirm:
 - requirement ID maps to a capability row in this file
 - capability row links to at least one function in `Function_Hierarchy_Registry.md`
 - downstream architecture/design/implementation references are populated in `Requirements/15_End_To_End_Traceability_Attributes_Registry.md`
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+_None recorded._ <!-- [Req-ID] — rationale -->
+
+### Realizes
+
+_None recorded._ <!-- [Cap-ID] — rationale -->
+
+### Provides / Requires
+
+_None recorded._ <!-- Provides: [Interface-ID]; Requires: [Interface-ID] -->
+
+### Implemented By
+
+_None recorded._ <!-- [src/path/file.py] :: [ClassName.method] -->
+
+### Depends On
+
+_None recorded._ <!-- [element or artifact path] — dependency rationale -->

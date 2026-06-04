@@ -52,3 +52,31 @@ Define minimum prompt-governance requirements that preserve behavioral specifici
 
 - Tests/unit/test_prompt_requirements_baseline.py
 - Tests/unit/test_agent_prompt_contracts.py
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Derived From
+
+_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+
+### Allocated To
+
+_None recorded._ <!-- [Req-ID] in [artifact path] -->
+
+### Refines
+
+_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+
+### Satisfied By
+
+_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+
+### Verified By
+
+_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+
+### Depends On
+
+_None recorded._ <!-- [Req-ID] — dependency rationale -->

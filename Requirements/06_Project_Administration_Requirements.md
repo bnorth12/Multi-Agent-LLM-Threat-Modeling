@@ -8,3 +8,31 @@
 |ADM-004|Branch Completion Evidence|Feature Branch Workflow SHALL store completed checklist artifacts for each merged feature branch.|Stored evidence supports release audits and retrospectives.|Inspection|Verified by repository audit showing one completed checklist artifact per merged branch.|
 |ADM-005|Release Readiness Review|Release Management Process SHALL conduct release readiness review using aggregated branch checklist evidence.|Release review reduces unresolved integration risk.|Demonstration|Verified by release meeting record containing checklist evidence and sign-off decision.|
 |ADM-006|Change Control Cadence|Project Governance Process SHALL schedule recurring backlog, branch, and release sync reviews at defined cadence.|Regular governance cadence keeps plans and implementation aligned.|Inspection|Verified by calendar and meeting records demonstrating recurring sync execution.|
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Derived From
+
+_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+
+### Allocated To
+
+_None recorded._ <!-- [Req-ID] in [artifact path] -->
+
+### Refines
+
+_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+
+### Satisfied By
+
+_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+
+### Verified By
+
+_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+
+### Depends On
+
+_None recorded._ <!-- [Req-ID] — dependency rationale -->

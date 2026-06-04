@@ -85,7 +85,7 @@ Before implementation closeout for a slice, confirm:
 <!-- AUTO-VERIFY-BACKFILL:START -->
 ## Automated Verification Backfill Allocation (Governance Remediation)
 
-Generated: 2026-06-04T01:04:29
+Generated: 2026-06-04T09:44:55
 
 | Requirement ID | Architecture Anchor | Design Anchor | Implementation Anchor | Verification Evidence Anchors |
 |---|---|---|---|---|
@@ -285,3 +285,27 @@ Use the active authorities below for current architecture/design and verificatio
 - docs/architecture/Function_Hierarchy_Registry.md (Source-Derived L3/L4 Function Decomposition)
 - docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md (Source-Derived L3/L4 Data Flow Decomposition)
 - Tests/Function_Level_Verification_Matrix.md (persistent function-level verification anchors)
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+_None recorded._ <!-- [Req-ID] — rationale -->
+
+### Realizes
+
+_None recorded._ <!-- [Cap-ID] — rationale -->
+
+### Provides / Requires
+
+_None recorded._ <!-- Provides: [Interface-ID]; Requires: [Interface-ID] -->
+
+### Implemented By
+
+_None recorded._ <!-- [src/path/file.py] :: [ClassName.method] -->
+
+### Depends On
+
+_None recorded._ <!-- [element or artifact path] — dependency rationale -->

@@ -105,60 +105,55 @@ def load_latest_obligation_summary(
     sprint: str,
     run_context: str,
 ) -> Dict[str, Any]:
-    if run_context != "pre-push":
-        return {
-            "open_obligation_count": None,
-            "report_markdown": "",
-            "report_json": "",
-            "notes": "Obligation report is only generated for pre-push independent review runs.",
-        }
-
     sprint_dash = normalize_sprint_for_report_name(sprint)
     base_dir = repo_root / out_dir
-    md_path = base_dir / f"remediation_obligations_{sprint_dash}_{run_context}.md"
-    json_path = base_dir / f"remediation_obligations_{sprint_dash}_{run_context}.json"
+    md_path = base_dir / f"independent_review_{sprint_dash}_{run_context}.md"
+    json_path = base_dir / f"independent_review_{sprint_dash}_{run_context}.json"
 
     if not json_path.exists():
         return {
             "open_obligation_count": None,
             "report_markdown": md_path.as_posix(),
             "report_json": json_path.as_posix(),
-            "notes": "Expected obligation report was not found for this run context.",
+            "notes": "Expected independent review report was not found for this run context.",
         }
 
     try:
         payload = json.loads(json_path.read_text(encoding="utf-8"))
-        obligations = payload.get("open_exception_obligations", [])
+        obligations = payload.get("remediation_obligations", [])
         count = len(obligations) if isinstance(obligations, list) else 0
         return {
             "open_obligation_count": count,
             "report_markdown": md_path.as_posix(),
             "report_json": json_path.as_posix(),
-            "notes": "Count loaded from latest remediation obligation report.",
+            "notes": "Count loaded from embedded remediation obligations in the independent review report.",
         }
     except Exception:
         return {
             "open_obligation_count": None,
             "report_markdown": md_path.as_posix(),
             "report_json": json_path.as_posix(),
-            "notes": "Obligation report exists but could not be parsed.",
+            "notes": "Independent review report exists but could not be parsed.",
         }
 
 
 def append_execution_ledger(repo_root: Path, entry: Dict[str, Any]) -> None:
-    latest_dir = repo_root / "independent_reviews" / "latest"
     history_dir = repo_root / "independent_reviews" / "history"
-    latest_dir.mkdir(parents=True, exist_ok=True)
     history_dir.mkdir(parents=True, exist_ok=True)
 
-    latest_json = latest_dir / "governance_execution_ledger_latest.json"
-    latest_md = latest_dir / "governance_execution_ledger_latest.md"
     history_jsonl = history_dir / "governance_execution_ledger.jsonl"
+    with history_jsonl.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(entry))
+        f.write("\n")
 
-    latest_json.write_text(json.dumps(entry, indent=2), encoding="utf-8")
 
-    md_lines = [
-        "# Governance Execution Ledger (Latest)",
+def append_telemetry_appendix(review_md_path: Path, review_json_path: Path, entry: Dict[str, Any]) -> None:
+    if not review_md_path.exists() or not review_json_path.exists():
+        return
+
+    md_lines = review_md_path.read_text(encoding="utf-8").splitlines()
+    appendix = [
+        "## Appendix B) Governance Execution Telemetry",
         "",
         f"- Timestamp: {entry['timestamp']}",
         f"- Context: {entry['context']}",
@@ -169,60 +164,64 @@ def append_execution_ledger(repo_root: Path, entry: Dict[str, Any]) -> None:
         f"- Exit Code: {entry['exit_code']}",
         f"- Open Remediation Obligations: {entry.get('open_obligation_count', 'n/a')}",
         "",
-        "## Remediation Obligations",
+        "### Remediation Obligation Summary",
         f"- Open obligation count: {entry.get('open_obligation_count', 'n/a')}",
-        f"- Obligation report (Markdown): {entry.get('obligation_report_markdown', 'n/a') or 'n/a'}",
-        f"- Obligation report (JSON): {entry.get('obligation_report_json', 'n/a') or 'n/a'}",
-        f"- Notes: {entry.get('obligation_summary_notes', 'n/a')}",
+        f"- Obligation summary notes: {entry.get('obligation_summary_notes', 'n/a')}",
         "",
-        "## Agent Chain",
+        "### Agent Chain",
     ]
     if entry.get("agent_chain"):
-        md_lines.extend([f"- {item}" for item in entry["agent_chain"]])
+        appendix.extend([f"- {item}" for item in entry["agent_chain"]])
     else:
-        md_lines.append("- none")
-    md_lines.append("")
-    md_lines.append("## Skill Chain")
+        appendix.append("- none")
+    appendix.append("")
+    appendix.append("### Skill Chain")
     if entry.get("skill_chain"):
-        md_lines.extend([f"- {item}" for item in entry["skill_chain"]])
+        appendix.extend([f"- {item}" for item in entry["skill_chain"]])
     else:
-        md_lines.append("- none")
-    md_lines.append("")
-    md_lines.append("## Agent Stage Results")
+        appendix.append("- none")
+    appendix.append("")
+    appendix.append("### Agent Stage Results")
     if entry.get("agent_stage_results"):
         for stage in entry["agent_stage_results"]:
-            md_lines.append(
+            appendix.append(
                 f"- {stage['order']}. {stage['name']} | status={stage['status']} | mode={stage['execution_mode']} | duration={stage['duration_seconds']:.3f}s"
             )
             if stage.get("notes"):
-                md_lines.append(f"  note: {stage['notes']}")
+                appendix.append(f"  note: {stage['notes']}")
     else:
-        md_lines.append("- none")
-    md_lines.append("")
-    md_lines.append("## Skill Stage Results")
+        appendix.append("- none")
+    appendix.append("")
+    appendix.append("### Skill Stage Results")
     if entry.get("skill_stage_results"):
         for stage in entry["skill_stage_results"]:
-            md_lines.append(
+            appendix.append(
                 f"- {stage['order']}. {stage['name']} | status={stage['status']} | mode={stage['execution_mode']} | duration={stage['duration_seconds']:.3f}s"
             )
             if stage.get("notes"):
-                md_lines.append(f"  note: {stage['notes']}")
+                appendix.append(f"  note: {stage['notes']}")
     else:
-        md_lines.append("- none")
-    md_lines.append("")
-    md_lines.append("## Commands")
+        appendix.append("- none")
+    appendix.append("")
+    appendix.append("### Commands")
     for index, item in enumerate(entry.get("commands", []), start=1):
         stage_names = ", ".join(item.get("stage_labels", [])) if item.get("stage_labels") else ", ".join(item.get("stage_names", [])) if item.get("stage_names") else "none"
-        md_lines.append(
+        appendix.append(
             f"- [{index}] key={item.get('command_key', 'unknown')} status={item['status']} exit={item['exit_code']} duration={item['duration_seconds']:.3f}s stages={stage_names} :: {' '.join(item['command'])}"
         )
-    md_lines.append("")
+    appendix.append("")
 
-    latest_md.write_text("\n".join(md_lines), encoding="utf-8")
+    if md_lines and md_lines[-1].strip():
+        md_lines.append("")
+    md_lines.extend(appendix)
+    review_md_path.write_text("\n".join(md_lines), encoding="utf-8")
 
-    with history_jsonl.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(entry))
-        f.write("\n")
+    try:
+        review_json = json.loads(review_json_path.read_text(encoding="utf-8"))
+    except Exception:
+        review_json = {}
+    review_json["governance_execution_ledger"] = entry
+    review_json_path.write_text(json.dumps(review_json, indent=2), encoding="utf-8")
 
 
 def build_review_command(
@@ -267,6 +266,26 @@ def build_stage_command(
 ) -> Dict[str, Any] | None:
     if stage_name == "repo-governance-autoflow-orchestrator":
         return None
+
+    if stage_name in {"independent-review-history-rollup-orchestrator", "independent-review-history-rollup"}:
+        return {
+            "command_key": "independent-review-history-rollup",
+            "command": [
+                sys.executable,
+                str(repo_root / "scripts" / "independent_review_retention.py"),
+                "--repo-root",
+                str(repo_root),
+                "--sprint",
+                sprint,
+                "--run-context",
+                run_context,
+                "--out-dir",
+                out_dir,
+                "--retain-auto-batches",
+                "2",
+            ],
+            "notes": "Executed via routed independent review history rollup and latest-output retention.",
+        }
 
     if stage_name in {"independent-review-orchestrator", "independent-repo-review"}:
         return {
@@ -710,14 +729,6 @@ def main() -> int:
     print("[governance-autoflow] Agent chain:", ", ".join(agent_chain) if agent_chain else "none")
     print("[governance-autoflow] Skill chain:", ", ".join(skill_chain) if skill_chain else "none")
 
-    run_independent_review_retention(
-        repo_root=repo_root,
-        context=args.context,
-        sprint=args.sprint,
-        run_context=run_context,
-        out_dir=args.out_dir,
-    )
-
     agent_plans = plan_stage_invocations(
         names=agent_chain,
         kind="agent",
@@ -785,6 +796,10 @@ def main() -> int:
         "obligation_report_json": obligation_summary.get("report_json", ""),
         "obligation_summary_notes": obligation_summary.get("notes", ""),
     }
+    review_sprint_dash = normalize_sprint_for_report_name(args.sprint)
+    review_md_path = repo_root / args.out_dir / f"independent_review_{review_sprint_dash}_{run_context}.md"
+    review_json_path = repo_root / args.out_dir / f"independent_review_{review_sprint_dash}_{run_context}.json"
+    append_telemetry_appendix(review_md_path, review_json_path, ledger_entry)
     append_execution_ledger(repo_root, ledger_entry)
 
     return exit_code

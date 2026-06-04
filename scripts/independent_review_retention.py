@@ -29,14 +29,35 @@ def build_expected_latest_filenames(sprint: str, run_context: str) -> List[str]:
             [
                 f"remediation_obligations_{sprint}_{run_context}.md",
                 f"remediation_obligations_{sprint}_{run_context}.json",
+                "governance_execution_ledger_latest.md",
+                "governance_execution_ledger_latest.json",
                 "traceability_blocker_backlog_latest.md",
                 "traceability_blocker_backlog_latest.json",
                 "traceability_remediation_cycle_latest.md",
                 "traceability_remediation_cycle_latest.json",
+                "architecture_design_authoring_workpack_latest.md",
+                "architecture_design_authoring_workpack_latest.json",
+                "legacy_findings_latest.md",
+                "legacy_findings_latest.json",
+                "remediation_issue_drafts_latest.md",
+                "remediation_issue_drafts_latest.json",
+                "remediation_readiness_latest.md",
+                "remediation_readiness_latest.json",
             ]
         )
 
     return names
+
+
+def build_expected_latest_globs(sprint: str, run_context: str) -> List[str]:
+    if run_context != "pre-push":
+        return []
+    return [
+        f"traceability_remediation_plan_{sprint}_iter_*.md",
+        f"traceability_remediation_plan_{sprint}_iter_*.json",
+        "unimplemented_requirement_triage_*.md",
+        "unimplemented_requirement_triage_*.json",
+    ]
 
 
 def compact_context_history(history_context_dir: Path, retain_auto_batches: int) -> Dict[str, object]:
@@ -119,6 +140,13 @@ def main() -> int:
 
     expected = build_expected_latest_filenames(args.sprint, args.run_context)
     candidates = [path for path in (out_dir / name for name in expected) if path.exists() and path.is_file()]
+    for pattern in build_expected_latest_globs(args.sprint, args.run_context):
+        candidates.extend([path for path in out_dir.glob(pattern) if path.is_file()])
+
+    deduped: Dict[str, Path] = {}
+    for candidate in candidates:
+        deduped[candidate.name] = candidate
+    candidates = sorted(deduped.values(), key=lambda p: p.name)
 
     history_context_dir = repo_root / HISTORY_CONTEXT_ARCHIVE_DIR / args.run_context
     history_context_dir.mkdir(parents=True, exist_ok=True)

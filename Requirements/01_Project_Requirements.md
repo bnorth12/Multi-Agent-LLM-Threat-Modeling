@@ -32,3 +32,31 @@
 |PRJ-028|Orchestrator Gate Enforcement and Resume Control|Threat Modeler SHALL have the orchestrator pause execution at HITL gates, persist the gate decision state and rationale, block downstream processing until an approved decision is recorded, and resume from the correct checkpoint only after acceptance.|Gate enforcement is required so human approvals are authoritative and downstream execution cannot bypass governance decisions.|Test|Verified by gate pause/resume tests confirming paused state, recorded decision, checkpoint preservation, and controlled continuation after explicit approval.|
 |PRJ-029|Live Run Liveness Fail-Closed|Threat Modeler SHALL monitor live LLM execution for backend heartbeat staleness and SHALL halt the run in a failed state before the UI timeout elapses when liveness is lost, with an actionable error message.|Opaque stalls make live execution unreliable and conceal provider/runtime failures from analysts.|Test|Verified by inducing a stalled live run, confirming heartbeat expiry is detected, and confirming the run transitions to FAILED with a visible stall message.|
 |PRJ-030|Prompt Store Authority and Fail-Closed Loading|Threat Modeler SHALL treat the backend prompt store as the authoritative source for agent prompt configuration and SHALL not silently fall back to file defaults when prompt loading fails; prompt persistence and retrieval errors SHALL be surfaced explicitly.|Prompt edits are only trustworthy when they are written through the backend execution path and failures are visible to operators.|Test|Verified by editing prompts through the GUI, confirming backend persistence is used during execution, and confirming prompt-load failures produce explicit errors rather than silent defaults.|
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Derived From
+
+_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+
+### Allocated To
+
+_None recorded._ <!-- [Req-ID] in [artifact path] -->
+
+### Refines
+
+_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+
+### Satisfied By
+
+_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+
+### Verified By
+
+_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+
+### Depends On
+
+_None recorded._ <!-- [Req-ID] — dependency rationale -->

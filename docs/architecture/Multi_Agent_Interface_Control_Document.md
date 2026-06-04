@@ -76,3 +76,27 @@ Each interface should be verified for:
 - Integration tests for stage handoff continuity and gate sequencing
 - E2E tests for user workflows and export interoperability
 - Governance checks for traceability of decisions and artifact lineage
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+_None recorded._ <!-- [Req-ID] — rationale -->
+
+### Realizes
+
+_None recorded._ <!-- [Cap-ID] — rationale -->
+
+### Provides / Requires
+
+_None recorded._ <!-- Provides: [Interface-ID]; Requires: [Interface-ID] -->
+
+### Implemented By
+
+_None recorded._ <!-- [src/path/file.py] :: [ClassName.method] -->
+
+### Depends On
+
+_None recorded._ <!-- [element or artifact path] — dependency rationale -->

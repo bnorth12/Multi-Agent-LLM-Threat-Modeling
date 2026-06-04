@@ -17,3 +17,31 @@
 |INT-013|Authorization Contract|Security Interface SHALL enforce role-based authorization checks before any edit, approve, or release action.|Security governance requires strict pre-action authorization.|Test|Verified by role matrix tests for allowed and denied operations.|
 |INT-014|Audit Retrieval Contract|Audit Retrieval Interface SHALL return immutable change history for a selected run and artifact.|Immutable retrieval is required for compliance evidence.|Inspection|Verified by audit record review showing non-mutable chronological history.|
 |INT-015|Model Connection Contract|Model Connection Interface SHALL accept provider name, endpoint URL, API key, authentication method, model name, and deployment-specific parameters, and SHALL return a connection validation result indicating success, connectivity error, or authentication failure.|Structured model configuration enables dynamic provider switching and integration with diverse LLM instances without code changes.|Test|Verified by connection tests with valid and invalid endpoints, confirming successful connection, clear error messages, model availability checks, and SCR-013 API-key input handling for providers that require authentication.|
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Derived From
+
+_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+
+### Allocated To
+
+_None recorded._ <!-- [Req-ID] in [artifact path] -->
+
+### Refines
+
+_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+
+### Satisfied By
+
+_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+
+### Verified By
+
+_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+
+### Depends On
+
+_None recorded._ <!-- [Req-ID] — dependency rationale -->

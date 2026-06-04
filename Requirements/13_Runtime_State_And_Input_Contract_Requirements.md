@@ -31,3 +31,31 @@ Related requirements:
 
 - Issue: D-S13-022
 - Planned matrix row owner: Sprint governance lead
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Derived From
+
+_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+
+### Allocated To
+
+_None recorded._ <!-- [Req-ID] in [artifact path] -->
+
+### Refines
+
+_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+
+### Satisfied By
+
+_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+
+### Verified By
+
+_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+
+### Depends On
+
+_None recorded._ <!-- [Req-ID] — dependency rationale -->

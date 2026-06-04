@@ -72,6 +72,7 @@
       "trend_window": 5,
       "agent_chain": [
         "repo-governance-autoflow-orchestrator",
+        "independent-review-history-rollup-orchestrator",
         "requirements-baseline-steward",
         "architecture-design-change-author",
         "architecture-design-traceability-auditor",
@@ -81,6 +82,7 @@
         "architecture-contract-enforcer"
       ],
       "skill_chain": [
+        "independent-review-history-rollup",
         "requirements-baseline-steward",
         "architecture-design-change-author",
         "architecture-design-traceability-auditor",
@@ -96,6 +98,7 @@
       "trend_window": 5,
       "agent_chain": [
         "repo-governance-autoflow-orchestrator",
+        "independent-review-history-rollup-orchestrator",
         "architecture-contract-enforcer",
         "architecture-design-change-author",
         "architecture-design-traceability-auditor",
@@ -106,6 +109,7 @@
         "sprint-execution-compliance-monitor"
       ],
       "skill_chain": [
+        "independent-review-history-rollup",
         "architecture-contract-enforcer",
         "architecture-design-change-author",
         "architecture-design-traceability-auditor",
@@ -122,30 +126,12 @@
       "trend_window": 5,
       "agent_chain": [
         "repo-governance-autoflow-orchestrator",
-        "independent-review-orchestrator",
-        "traceability-remediation-cycle",
-        "architecture-design-change-author",
-        "architecture-design-traceability-auditor",
-        "architecture-document-surface-enforcer",
-        "implementation-architecture-alignment-auditor",
-        "requirements-implementation-auditor",
-        "source-to-evidence-traceability-auditor",
-        "traceability-blocker-planner",
-        "kpi-drift-analyst",
-        "artifact-lineage-auditor"
+        "independent-review-history-rollup-orchestrator",
+        "independent-review-orchestrator"
       ],
       "skill_chain": [
-        "independent-repo-review",
-        "traceability-remediation-cycle",
-        "architecture-design-change-author",
-        "architecture-design-traceability-auditor",
-        "architecture-document-surface-enforcer",
-        "implementation-architecture-alignment-auditor",
-        "requirements-implementation-auditor",
-        "source-to-evidence-traceability",
-        "traceability-blocker-planner",
-        "kpi-drift-analyst",
-        "artifact-lineage-auditor"
+        "independent-review-history-rollup",
+        "independent-repo-review"
       ]
     },
     "closeout": {
@@ -154,10 +140,12 @@
       "trend_window": 5,
       "agent_chain": [
         "repo-governance-autoflow-orchestrator",
+        "independent-review-history-rollup-orchestrator",
         "sprint-closeout-certifier",
         "remediation-readiness-strategist"
       ],
       "skill_chain": [
+        "independent-review-history-rollup",
         "sprint-closeout-certifier",
         "remediation-readiness"
       ]

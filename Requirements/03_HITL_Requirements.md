@@ -68,3 +68,31 @@ Minimal config example:
 |Gate 0 Readiness Guard (HITL-012)|preflight_snapshot_ready, preflight_required_sections_present, readiness_wait_elapsed_seconds|Allow Gate 0 trigger only when preflight_snapshot_ready is true AND required sections are present; fail if readiness wait exceeds configured timeout.|Prevent gate activation with incomplete data. Emit explicit readiness timeout failure and stop run progression.|
 |Conditional Merge Conflict Resolution (HITL-010)|merge_conflict_count, approved_artifact_conflict_count, critical_field_conflict_count, conflict_severity_max|Trigger if approved_artifact_conflict_count >= 1 OR critical_field_conflict_count >= 1 OR conflict_severity_max is high OR merge_conflict_count >= 5.|Pause immediately after context merge. Require conflict resolution with rationale. Allow save draft. Resume only after accept as is or accept changes. If not triggered, bypass gate and log decision.|
 |Conditional Export Consistency (HITL-011)|canonical_stix_error_count, canonical_report_error_count, diagram_reference_error_count, consistency_warning_count|Trigger if canonical_stix_error_count > 0 OR canonical_report_error_count > 0 OR diagram_reference_error_count > 0 OR consistency_warning_count > 10.|Pause before publication. Present consistency findings and diffs. Allow review, edit, save draft, accept as is, accept changes, reject. Resume publication only after accept as is or accept changes. If not triggered, bypass gate and log decision.|
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Derived From
+
+_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+
+### Allocated To
+
+_None recorded._ <!-- [Req-ID] in [artifact path] -->
+
+### Refines
+
+_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+
+### Satisfied By
+
+_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+
+### Verified By
+
+_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+
+### Depends On
+
+_None recorded._ <!-- [Req-ID] — dependency rationale -->

@@ -28,3 +28,31 @@ VS-008: For release-candidate sprints that intentionally exclude automation from
 VS-009: Sprint Team SHALL maintain at least one automated visible-browser validation scenario that exercises UI file upload behavior with approved sprint fixtures (including markdown narratives) and records command + fixture evidence in sprint test documentation.
 
 VS-010: For runtime state transitions and HITL gate publication paths, Sprint Team SHALL execute a race-condition verification control that checks causal ordering invariants (for example, Gate 0 payload-ready-before-paused projection) using automated API tests and at least one timestamped polling probe, and SHALL record evidence in sprint governance artifacts.
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Derived From
+
+_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+
+### Allocated To
+
+_None recorded._ <!-- [Req-ID] in [artifact path] -->
+
+### Refines
+
+_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+
+### Satisfied By
+
+_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+
+### Verified By
+
+_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+
+### Depends On
+
+_None recorded._ <!-- [Req-ID] — dependency rationale -->

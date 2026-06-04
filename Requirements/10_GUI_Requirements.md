@@ -68,3 +68,31 @@ Related requirements:
 |GUI-041|Header-Authoritative Artifact Domain Navigation|The GUI SHALL treat the header control rows as the authoritative artifact-domain navigation surface for Canonical Graph, Trust Boundaries, STRIDE Viewer, Threats, Mermaid Diagrams, STIX Bundle, and Report. The persistent left rail SHALL remain visible and SHALL be limited to global application and run/workspace controls rather than duplicate artifact-domain switching.|Single authority for artifact-domain navigation reduces operator ambiguity and prevents conflicting navigation paths while preserving persistent access to global controls.|Test|Verified by selecting an active run and confirming artifact-domain switching is available in header tabs while the left rail omits duplicate artifact selector controls and remains visible for setup, run actions, and operator views.|
 |GUI-042|Header Review and Export Icon Entry Points|The GUI SHALL provide explicit icon-labeled header navigation entries for Threat Review and Results Export within the main control strip. The Results Export action SHALL be reachable from both the header and the persistent left menu, and SHALL expose mitigations export actions through the export surface.|Threat review and export are core analyst workflows and must be directly reachable from always-visible navigation affordances in both the primary header path and the persistent left rail.|Test|Verified by selecting an active run and confirming icon-labeled `Threat Review` and `Results Export` header tabs are present, the left menu includes `Results Export`, and selecting either navigation path renders the export view including mitigations export controls.|
 |GUI-043|Timeline Parsing Segments and Readiness-Coupled Gate Visualization|The GUI SHALL render a narrow, unlabeled parsing segment immediately before every gate boundary in the execution timeline, including Gate 0. The segment SHALL display brown while parsing is in progress and green when parsing is complete. The visualization SHALL align with backend readiness-coupled gate opening behavior so operators can distinguish parse-in-progress from gate-ready states.|Operators need explicit pre-gate parse visibility to avoid race-condition ambiguity where a gate appears before reviewer payload context is available.|Test|Verified by exercising Gate 0 through Gate 4 transitions and confirming: (1) a narrow pre-gate segment exists before each gate boundary, (2) brown is shown during parse-in-progress windows, (3) green is shown when parse-complete state is reached, and (4) gate-open timing is consistent with backend readiness guard behavior.|
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Derived From
+
+_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+
+### Allocated To
+
+_None recorded._ <!-- [Req-ID] in [artifact path] -->
+
+### Refines
+
+_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+
+### Satisfied By
+
+_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+
+### Verified By
+
+_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+
+### Depends On
+
+_None recorded._ <!-- [Req-ID] — dependency rationale -->
