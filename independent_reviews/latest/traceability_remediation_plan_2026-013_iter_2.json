@@ -1,0 +1,232 @@
+{
+  "generated_at": "2026-06-04T01:03:55",
+  "sprint": "2026_013",
+  "iteration": 2,
+  "review_json": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/independent_reviews/latest/independent_review_2026-013_pre-push.json",
+  "backlog_input": {
+    "timestamp": "2026-06-04T01:03:31",
+    "sprint": "2026_013",
+    "verify_exit_code": 0,
+    "missing_requirement_docs": [],
+    "missing_test_evidence": [],
+    "missing_function_root_links": [],
+    "missing_registry_links": [
+      "S13-002:ADM-002",
+      "S13-002:ADM-003",
+      "S13-002:ADM-005",
+      "S13-002:ADM-006",
+      "S13-003:ADM-002",
+      "S13-003:ADM-003",
+      "S13-003:ADM-005",
+      "S13-003:ADM-006",
+      "S13-004:PRJ-026"
+    ],
+    "abstraction_level_mismatches": []
+  },
+  "live_verifier_blockers": {
+    "verifier_exit_code": 0,
+    "missing_test_issues": [],
+    "registry_link_requirements": [
+      "ADM-002",
+      "ADM-003",
+      "ADM-005",
+      "ADM-006",
+      "PRJ-026"
+    ],
+    "issue_requirement_map": {}
+  },
+  "candidate_count": 5,
+  "candidates": [
+    {
+      "requirement_id": "ADM-002",
+      "missing_legs": [
+        "registry-linkage"
+      ],
+      "linked_architecture_files": [
+        "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "docs/architecture/Capability_Hierarchy_Baseline.md",
+        "docs/architecture/Function_Hierarchy_Registry.md",
+        "docs/design/software/Runtime_And_Orchestration_Design_Specification.md",
+        "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
+      ],
+      "linked_implementation_files": [
+        "Tests/unit/test_administration_controls.py",
+        "scripts/verify_administration_controls.py"
+      ],
+      "linked_verification_files": [
+        "Tests/unit/test_administration_controls.py"
+      ],
+      "linked_source_files": [
+        "Requirements/04_Traceability_Matrix.md",
+        "Requirements/06_Project_Administration_Requirements.md",
+        "Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
+      ],
+      "planned_outputs": [
+        "Requirements/04_Traceability_Matrix.md",
+        "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+      ],
+      "analysis_summary": {
+        "architecture_links_found": 5,
+        "implementation_links_found": 2,
+        "verification_links_found": 1,
+        "source_links_found": 3
+      }
+    },
+    {
+      "requirement_id": "ADM-003",
+      "missing_legs": [
+        "registry-linkage"
+      ],
+      "linked_architecture_files": [
+        "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "docs/architecture/Capability_Hierarchy_Baseline.md",
+        "docs/architecture/Function_Hierarchy_Registry.md",
+        "docs/design/software/Runtime_And_Orchestration_Design_Specification.md",
+        "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
+      ],
+      "linked_implementation_files": [
+        "Tests/unit/test_administration_controls.py",
+        "scripts/verify_administration_controls.py"
+      ],
+      "linked_verification_files": [
+        "Tests/unit/test_administration_controls.py"
+      ],
+      "linked_source_files": [
+        "Requirements/04_Traceability_Matrix.md",
+        "Requirements/06_Project_Administration_Requirements.md",
+        "Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
+      ],
+      "planned_outputs": [
+        "Requirements/04_Traceability_Matrix.md",
+        "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+      ],
+      "analysis_summary": {
+        "architecture_links_found": 5,
+        "implementation_links_found": 2,
+        "verification_links_found": 1,
+        "source_links_found": 3
+      }
+    },
+    {
+      "requirement_id": "ADM-005",
+      "missing_legs": [
+        "registry-linkage"
+      ],
+      "linked_architecture_files": [
+        "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "docs/architecture/Capability_Hierarchy_Baseline.md",
+        "docs/architecture/Function_Hierarchy_Registry.md",
+        "docs/design/software/Runtime_And_Orchestration_Design_Specification.md",
+        "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
+      ],
+      "linked_implementation_files": [
+        "Tests/unit/test_administration_controls.py",
+        "scripts/verify_administration_controls.py"
+      ],
+      "linked_verification_files": [
+        "Tests/unit/test_administration_controls.py"
+      ],
+      "linked_source_files": [
+        "Requirements/04_Traceability_Matrix.md",
+        "Requirements/06_Project_Administration_Requirements.md",
+        "Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
+      ],
+      "planned_outputs": [
+        "Requirements/04_Traceability_Matrix.md",
+        "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+      ],
+      "analysis_summary": {
+        "architecture_links_found": 5,
+        "implementation_links_found": 2,
+        "verification_links_found": 1,
+        "source_links_found": 3
+      }
+    },
+    {
+      "requirement_id": "ADM-006",
+      "missing_legs": [
+        "registry-linkage"
+      ],
+      "linked_architecture_files": [
+        "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "docs/architecture/Capability_Hierarchy_Baseline.md",
+        "docs/architecture/Function_Hierarchy_Registry.md",
+        "docs/design/software/Runtime_And_Orchestration_Design_Specification.md",
+        "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
+      ],
+      "linked_implementation_files": [
+        "Tests/unit/test_administration_controls.py",
+        "scripts/verify_administration_controls.py"
+      ],
+      "linked_verification_files": [
+        "Tests/unit/test_administration_controls.py"
+      ],
+      "linked_source_files": [
+        "Requirements/04_Traceability_Matrix.md",
+        "Requirements/06_Project_Administration_Requirements.md",
+        "Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
+      ],
+      "planned_outputs": [
+        "Requirements/04_Traceability_Matrix.md",
+        "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+      ],
+      "analysis_summary": {
+        "architecture_links_found": 5,
+        "implementation_links_found": 2,
+        "verification_links_found": 1,
+        "source_links_found": 3
+      }
+    },
+    {
+      "requirement_id": "PRJ-026",
+      "missing_legs": [
+        "registry-linkage"
+      ],
+      "linked_architecture_files": [
+        "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md",
+        "docs/architecture/Multi_Agent_Functional_Decomposition.md",
+        "docs/architecture/Multi_Agent_Interface_Control_Document.md",
+        "docs/architecture/Multi_Agent_Logical_Decomposition.md",
+        "docs/architecture/Multi_Agent_Structural_Decomposition.md",
+        "docs/design/software/Agent_Subsystem_Design_Specification.md",
+        "docs/design/software/Canonical_Graph_Lifecycle_And_Validation_Design_Specification.md",
+        "docs/design/software/Runtime_And_Orchestration_Design_Specification.md",
+        "docs/design/system/External_Interface_And_Integration_Design_Package.md",
+        "docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"
+      ],
+      "linked_implementation_files": [
+        "Tests/Formal_Qualification_Test_Plan.md",
+        "Tests/e2e/test_browser_run_validation.py",
+        "Tests/integration/test_agent_pipeline_completeness.py",
+        "src/threat_modeler/backend/run_manager.py",
+        "src/threat_modeler/orchestrator.py",
+        "src/threat_modeler/server/api.py"
+      ],
+      "linked_verification_files": [
+        "Tests/e2e/test_browser_run_validation.py",
+        "Tests/integration/test_agent_pipeline_completeness.py"
+      ],
+      "linked_source_files": [
+        "Requirements/01_Project_Requirements.md",
+        "Requirements/04_Traceability_Matrix.md",
+        "Requirements/appendices/15_End_To_End_Traceability_Attributes_Registry_Historical_Remediation_Appendix.md"
+      ],
+      "planned_outputs": [
+        "Requirements/04_Traceability_Matrix.md",
+        "docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md",
+        "Requirements/15_End_To_End_Traceability_Attributes_Registry.md"
+      ],
+      "analysis_summary": {
+        "architecture_links_found": 11,
+        "implementation_links_found": 6,
+        "verification_links_found": 2,
+        "source_links_found": 3
+      }
+    }
+  ]
+}

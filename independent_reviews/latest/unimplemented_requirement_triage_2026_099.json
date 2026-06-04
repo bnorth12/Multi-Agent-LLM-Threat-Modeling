@@ -1,0 +1,17 @@
+{
+  "generated_at": "2026-06-04T01:04:03",
+  "source_sprint": "2026_013",
+  "target_sprint": "2026_099",
+  "review_source": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/independent_reviews/latest/independent_review_2026-013_pre-push.json",
+  "counts": {
+    "unimplemented_total": 0,
+    "triaged_total": 0,
+    "needed_unimplemented": 0,
+    "deletion_candidates": 0,
+    "backlog_entries_generated": 0,
+    "issue_drafts_generated": 0
+  },
+  "needed_unimplemented": [],
+  "deletion_candidates": [],
+  "backlog_entries": []
+}

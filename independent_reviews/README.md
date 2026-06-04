@@ -18,6 +18,9 @@ Policy:
 - For sprint-specific independent review pre-context outputs (`pre-commit`, `pre-merge-commit`, `pre-push`), keep one canonical latest set per run-context in `latest/` and archive older sprint-specific variants under `history/reports/`.
 - One-time KPI backfill outputs and superseded remediation planning artifacts (for example older sprint-specific remediation plans or issue design dispositions) should be archived to `history/reports/` once their guidance is absorbed into current `*_latest` artifacts.
 - Preserve `traceability_blocker_backlog_latest.{md,json}` and `legacy_findings_latest.{md,json}` in `latest/` as historical baseline anchors; archive only via explicit rollover manifests, not routine compaction sweeps.
+- Governance autoflow now runs `scripts/independent_review_retention.py` before `pre-commit`, `pre-merge-commit`, `pre-push`, and `closeout` contexts to auto-archive stale `latest/` markdown/json reports before generating new context outputs.
+- Retention is aggressive by design: `latest/` keeps only hook-generated commit/PR artifacts (current pre-push independent review pair, current pre-push remediation obligations pair, and hook `*_latest` operational snapshots), while manual and historical context reports are moved to `history/reports/`.
+- Auto-compaction history retention policy keeps the two most recent `history/reports/auto_compaction_*` batches and writes a rollup summary for older batches before removing those older auto batches.
 - `independent_reviews/history/` stores long-term trend snapshots and archived timestamped reports.
 - GitHub issue reconciliation is default-on in the review engine when `gh` is available (not opt-in).
 - Reconciliation outcomes are informational unless a separate explicit enforcement control is chosen.

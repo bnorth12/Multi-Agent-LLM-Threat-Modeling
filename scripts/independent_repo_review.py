@@ -78,6 +78,7 @@ REQUIRED_TRACEABILITY_ARTIFACTS = [
 TREND_HISTORY_FILE = Path("independent_reviews/history/snapshot_index.json")
 POLICY_PROFILES_FILE = Path("config/independent_review_policy_profiles.json")
 REPORT_ARCHIVE_DIR = Path("independent_reviews/history/reports")
+REPORT_CONTEXT_ARCHIVE_DIR = Path("independent_reviews/history/reports/by_context")
 EXCEPTION_REGISTRY_FILE = Path("config/independent_review_exception_registry.json")
 
 
@@ -279,6 +280,7 @@ class ReviewResult:
     notes: List[str]
     overall_score: float
     issue_quality_ratio: float
+    health_breakdown: Dict[str, Any] = field(default_factory=dict)
     kpi_delta: Dict[str, float] = field(default_factory=dict)
     remediation_strategy: RemediationStrategy = field(default_factory=RemediationStrategy)
 
@@ -1006,6 +1008,7 @@ def compute_score(
     req_verify_ratio: float,
     req_arch_ratio: float,
     issue_quality_ratio: float,
+    governance_penalty: float = 0.0,
 ) -> float:
     weighted = (
         0.2 * structure_ok_ratio
@@ -1014,7 +1017,57 @@ def compute_score(
         + 0.2 * req_arch_ratio
         + 0.1 * issue_quality_ratio
     )
-    return round(weighted * 100.0, 1)
+    score = (weighted * 100.0) - max(0.0, governance_penalty)
+    return round(max(0.0, min(100.0, score)), 1)
+
+
+def compute_governance_penalty(severity: "SeveritySummary", issue_rows_total: int) -> float:
+    penalty = 0.0
+    penalty += len(severity.critical) * 20.0
+    penalty += len(severity.major) * 10.0
+    penalty += len(severity.minor) * 2.0
+    penalty += len(severity.informational) * 0.5
+    if issue_rows_total == 0:
+        # No parsed tracker rows means issue-governance checks are effectively blind.
+        penalty += 5.0
+    return min(penalty, 40.0)
+
+
+def compute_health_breakdown(
+    structure_ok_ratio: float,
+    req_impl_ratio: float,
+    req_verify_ratio: float,
+    req_arch_ratio: float,
+    issue_quality_ratio: float,
+    severity: "SeveritySummary",
+    issue_rows_total: int,
+) -> Dict[str, Any]:
+    component_points = {
+        "structure_integrity": round(0.2 * structure_ok_ratio * 100.0, 2),
+        "implementation_coverage": round(0.3 * req_impl_ratio * 100.0, 2),
+        "verification_coverage": round(0.2 * req_verify_ratio * 100.0, 2),
+        "architecture_design_traceability": round(0.2 * req_arch_ratio * 100.0, 2),
+        "issue_governance_quality": round(0.1 * issue_quality_ratio * 100.0, 2),
+    }
+    base_score = round(sum(component_points.values()), 2)
+    penalty_components = {
+        "critical_findings": round(len(severity.critical) * 20.0, 2),
+        "major_findings": round(len(severity.major) * 10.0, 2),
+        "minor_findings": round(len(severity.minor) * 2.0, 2),
+        "informational_findings": round(len(severity.informational) * 0.5, 2),
+        "no_tracker_rows": 5.0 if issue_rows_total == 0 else 0.0,
+    }
+    raw_penalty = round(sum(penalty_components.values()), 2)
+    penalty_capped = round(min(raw_penalty, 40.0), 2)
+    final_score = round(max(0.0, min(100.0, base_score - penalty_capped)), 1)
+    return {
+        "component_points": component_points,
+        "base_score": base_score,
+        "penalty_components": penalty_components,
+        "penalty_raw": raw_penalty,
+        "penalty_capped": penalty_capped,
+        "final_score": final_score,
+    }
 
 
 def get_branch_awareness(root: Path) -> BranchAwareness:
@@ -2086,6 +2139,36 @@ def render_markdown(result: ReviewResult) -> str:
     lines.extend([f"- {item}" for item in result.severity_summary.informational] or ["- None"])
     lines.append("")
 
+    lines.append("## 4.5) Health Score Breakdown")
+    health = result.health_breakdown or {}
+    components = health.get("component_points", {}) if isinstance(health, dict) else {}
+    penalties = health.get("penalty_components", {}) if isinstance(health, dict) else {}
+    lines.append("### Weighted Base Components")
+    lines.append("| Component | Points |")
+    lines.append("|---|---:|")
+    lines.append(f"| Structure integrity (20%) | {components.get('structure_integrity', 0.0):.2f} |")
+    lines.append(f"| Implementation coverage (30%) | {components.get('implementation_coverage', 0.0):.2f} |")
+    lines.append(f"| Verification coverage (20%) | {components.get('verification_coverage', 0.0):.2f} |")
+    lines.append(f"| Architecture/design traceability (20%) | {components.get('architecture_design_traceability', 0.0):.2f} |")
+    lines.append(f"| Issue governance quality (10%) | {components.get('issue_governance_quality', 0.0):.2f} |")
+    lines.append(f"| Base score subtotal | {health.get('base_score', 0.0):.2f} |")
+    lines.append("")
+    lines.append("### Governance Penalty Components")
+    lines.append("| Penalty Source | Points |")
+    lines.append("|---|---:|")
+    lines.append(f"| Critical findings | {penalties.get('critical_findings', 0.0):.2f} |")
+    lines.append(f"| Major findings | {penalties.get('major_findings', 0.0):.2f} |")
+    lines.append(f"| Minor findings | {penalties.get('minor_findings', 0.0):.2f} |")
+    lines.append(f"| Informational findings | {penalties.get('informational_findings', 0.0):.2f} |")
+    lines.append(f"| No tracker rows safety penalty | {penalties.get('no_tracker_rows', 0.0):.2f} |")
+    lines.append(f"| Penalty subtotal (raw) | {health.get('penalty_raw', 0.0):.2f} |")
+    lines.append(f"| Penalty applied (capped at 40.0) | {health.get('penalty_capped', 0.0):.2f} |")
+    lines.append("")
+    lines.append(
+        f"- Final score formula: {health.get('base_score', 0.0):.2f} - {health.get('penalty_capped', 0.0):.2f} = {health.get('final_score', result.overall_score):.1f}"
+    )
+    lines.append("")
+
     lines.append("## 5) Compact Trend Dashboard")
     lines.append(f"- Window: last {result.trend_dashboard.window} run(s)")
     lines.append(f"- Overall trend: {result.trend_dashboard.overall_trend}")
@@ -2312,6 +2395,16 @@ def run_review(
         conceptual_gaps,
         hierarchy_summary,
     )
+    governance_penalty = compute_governance_penalty(severity=severity, issue_rows_total=len(rows))
+    health_breakdown = compute_health_breakdown(
+        structure_ok_ratio=structure_ok_ratio,
+        req_impl_ratio=req_impl_ratio,
+        req_verify_ratio=req_verify_ratio,
+        req_arch_ratio=req_arch_ratio,
+        issue_quality_ratio=issue_quality_ratio,
+        severity=severity,
+        issue_rows_total=len(rows),
+    )
 
     github_summary, github_rows = run_github_reconciliation(
         root=root,
@@ -2329,6 +2422,7 @@ def run_review(
         "Hierarchy governance checks enforce parent capability/function, decomposition level, and allocation/verification fields on sprint issue artifacts.",
         "Required traceability artifacts are validated for existence and planning/remediation references.",
         "Traceability artifact findings remain non-blocking until full remediation is marked complete in the latest disposition index.",
+        f"Health score includes governance penalties (current deduction: {governance_penalty:.1f} points).",
     ]
 
     result = ReviewResult(
@@ -2382,8 +2476,10 @@ def run_review(
             req_verify_ratio,
             req_arch_ratio,
             issue_quality_ratio,
+            governance_penalty,
         ),
         issue_quality_ratio=issue_quality_ratio,
+        health_breakdown=health_breakdown,
     )
     result.remediation_strategy = build_remediation_strategy(result)
 
@@ -2431,8 +2527,103 @@ def compact_latest_reports(root: Path, out_dir: Path, sprint: str) -> None:
         shutil.move(str(path), str(archive_path))
 
 
+def build_current_context_expected_filenames(sprint: str, run_context: str) -> List[str]:
+    names = [
+        f"independent_review_{sprint}_{run_context}.md",
+        f"independent_review_{sprint}_{run_context}.json",
+    ]
+    if run_context == "pre-push":
+        names.extend(
+            [
+                f"remediation_obligations_{sprint}_{run_context}.md",
+                f"remediation_obligations_{sprint}_{run_context}.json",
+            ]
+        )
+    return names
+
+
+def compact_context_archive(history_context_dir: Path, retain_batches: int = 2) -> None:
+    batch_dirs = sorted(
+        [p for p in history_context_dir.glob("auto_compaction_*") if p.is_dir()],
+        key=lambda p: p.name,
+        reverse=True,
+    )
+    stale = batch_dirs[max(0, retain_batches) :]
+    if not stale:
+        return
+
+    compacted_at = dt.datetime.now().isoformat(timespec="seconds")
+    compacted_entries: List[Dict[str, object]] = []
+    for path in stale:
+        removed = False
+        compacted_entries.append(
+            {
+                "batch": path.name,
+                "file_count": len([p for p in path.iterdir() if p.is_file()]),
+                "removed": removed,
+            }
+        )
+        try:
+            shutil.rmtree(path)
+            removed = True
+        except PermissionError:
+            removed = False
+        compacted_entries[-1]["removed"] = removed
+
+    summary_path = history_context_dir / "compaction_summary.json"
+    if summary_path.exists():
+        try:
+            summary_data = json.loads(summary_path.read_text(encoding="utf-8"))
+        except Exception:
+            summary_data = {}
+    else:
+        summary_data = {}
+
+    previous = summary_data.get("compacted_batches", [])
+    if not isinstance(previous, list):
+        previous = []
+
+    summary_data["last_compacted_at"] = compacted_at
+    summary_data["retained_batch_count"] = max(0, retain_batches)
+    summary_data["compacted_batches"] = previous + compacted_entries
+    summary_path.write_text(json.dumps(summary_data, indent=2), encoding="utf-8")
+
+
+def archive_previous_context_outputs(
+    root: Path,
+    out_dir: Path,
+    sprint: str,
+    run_context: str,
+    retain_batches: int = 2,
+) -> None:
+    expected_names = build_current_context_expected_filenames(sprint=sprint, run_context=run_context)
+    existing_paths = [p for p in (out_dir / name for name in expected_names) if p.exists() and p.is_file()]
+    if not existing_paths:
+        return
+
+    history_context_dir = root / REPORT_CONTEXT_ARCHIVE_DIR / run_context
+    history_context_dir.mkdir(parents=True, exist_ok=True)
+    batch = dt.datetime.now().strftime("auto_compaction_%Y%m%d_%H%M%S")
+    batch_dir = history_context_dir / batch
+    batch_dir.mkdir(parents=True, exist_ok=True)
+
+    for path in existing_paths:
+        shutil.move(str(path), str(batch_dir / path.name))
+
+    compact_context_archive(history_context_dir=history_context_dir, retain_batches=retain_batches)
+
+
 def write_reports(root: Path, result: ReviewResult, out_dir: Path, report_mode: str) -> Tuple[Path, Path]:
     out_dir.mkdir(parents=True, exist_ok=True)
+    if report_mode == "update":
+        archive_previous_context_outputs(
+            root=root,
+            out_dir=out_dir,
+            sprint=result.sprint,
+            run_context=result.run_context,
+            retain_batches=2,
+        )
+
     if report_mode == "archive":
         stamp = dt.datetime.now().strftime("%Y%m%d_%H%M%S")
         md_path = out_dir / f"independent_review_{result.sprint}_{result.run_context}_{stamp}.md"

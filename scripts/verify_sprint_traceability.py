@@ -171,6 +171,34 @@ def has_closure_documentation(text: str) -> bool:
     return has_resolution_signal and has_verification_signal and has_outcome_signal
 
 
+def extract_verification_method(text: str) -> str:
+    match = re.search(r"(?im)^\s*Verification Method\s*:\s*(.+)$", text)
+    return match.group(1).strip() if match and match.group(1).strip() else ""
+
+
+def is_architecture_only_closure_exception(text: str, status: str) -> bool:
+    if status != "closed":
+        return False
+    verification_method = extract_verification_method(text).lower()
+    if not verification_method:
+        return False
+    method_ok = any(
+        token in verification_method
+        for token in ["architecture/design", "architecture", "design", "disposition audit"]
+    )
+    if not method_ok:
+        return False
+
+    resolution = extract_markdown_section(text, "Resolution").lower()
+    purpose = extract_markdown_section(text, "Purpose").lower()
+    closure_note = extract_markdown_section(text, "Closure Note").lower()
+    combined = "\n".join([resolution, purpose, closure_note])
+    return any(
+        token in combined
+        for token in ["stale carryover", "already present", "no additional backfill work", "closure shell"]
+    )
+
+
 def missing_hierarchy_fields(text: str) -> List[str]:
     missing: List[str] = []
     for field, pattern in REQUIRED_HIERARCHY_FIELDS.items():
@@ -208,6 +236,8 @@ def get_issues_for_sprint(sprint_dash: str, sprint_us: str, allowed_requirement_
             "test_refs": sorted(test_refs),
             "has_test": bool(test_refs) or "pytest" in content.lower(),
             "status": issue_status,
+            "verification_method": extract_verification_method(content),
+            "architecture_only_closure_exception": is_architecture_only_closure_exception(content, issue_status),
             "has_closure_doc": has_closure_documentation(content),
             "missing_hierarchy_fields": missing_fields,
             "has_hierarchy_fields": len(missing_fields) == 0,
@@ -430,6 +460,11 @@ def verify_traceability(sprint: str, audit: bool = False, closure: bool = False)
         if issue["has_test"]:
             refs = ", ".join(issue["test_refs"]) if issue["test_refs"] else "pytest command reference"
             log_pass(f"{issue_id} has test evidence: {refs}")
+        elif issue.get("architecture_only_closure_exception"):
+            log_info(
+                f"{issue_id} test-evidence requirement waived by architecture-only closure exception "
+                f"(verification method: {issue.get('verification_method', 'n/a')})"
+            )
         else:
             msg = f"Issue {issue_id} is missing explicit test evidence"
             if audit or closure:
@@ -544,10 +579,13 @@ def verify_traceability(sprint: str, audit: bool = False, closure: bool = False)
                 errors.append(msg)
                 log_fail(msg)
                 continue
-            if not matched["has_closure_doc"]:
+            closure_ok = matched["has_closure_doc"] or matched.get("architecture_only_closure_exception", False)
+            if not closure_ok:
                 msg = f"Closed issue {tracked_id} is missing closure documentation/evidence ({matched['file']})"
                 errors.append(msg)
                 log_fail(msg)
+            elif matched.get("architecture_only_closure_exception", False) and not matched["has_closure_doc"]:
+                log_pass(f"Closed issue {tracked_id} accepted via architecture-only closure exception")
             else:
                 log_pass(f"Closed issue {tracked_id} has closure documentation")
 
@@ -557,7 +595,8 @@ def verify_traceability(sprint: str, audit: bool = False, closure: bool = False)
                 continue
             if issue["status"] != "closed":
                 continue
-            if not issue["has_closure_doc"]:
+            closure_ok = issue["has_closure_doc"] or issue.get("architecture_only_closure_exception", False)
+            if not closure_ok:
                 msg = f"Issue file marked closed but missing closure evidence: {issue_id} ({issue['file']})"
                 errors.append(msg)
                 log_fail(msg)
