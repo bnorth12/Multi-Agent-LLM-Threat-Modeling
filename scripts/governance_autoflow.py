@@ -425,6 +425,8 @@ def build_stage_command(
         }
 
     if stage_name == "architecture-design-change-author":
+        if context in {"pre-commit", "pre-merge-commit"}:
+            return None
         return {
             "command_key": "architecture-design-authoring",
             "command": [
