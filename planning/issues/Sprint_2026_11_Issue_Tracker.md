@@ -130,13 +130,13 @@ The following known items are intentionally not part of Sprint 2026-11 closeout 
 | Deferred ID | Title | Current Status | Next Target Sprint | Reason Deferred |
 |---|---|---|---|---|
 | D-S11-001 | Custom HTML Frontend for Non-Streamlit Release | Closed (completed via #62) | Sprint 2026-12 (completed) | Large architecture/program increment; completed as part of Sprint 2026-12 release-engineering separation work. |
-| D-S11-002 | Connection Verify Must Perform Live Prompt Ping | Proposed (#87) | Parking Lot 2026-99 (planning target) | Verify currently requires explicit live prompt round-trip hardening to prevent false-positive connectivity checks and post-verify run failures. |
+| D-S11-002 | Connection Verify Must Perform Live Prompt Ping | Closed (#87) | Sprint 2026-12 (completed) | Live prompt ping verification is implemented in `/config/verify` and covered by backend API tests, so the deferred gap is resolved and closed. |
 
 Planning linkage:
 
 - Source issue file (closed scope): `planning/issues/Sprint_2026_11_Issue_Tracker.md` row D-S11-001, GitHub issue #62 (closed)
-- Source issue file (active deferred scope): `planning/issues/issue_2026_05_D_S11_001_Live_Prompt_Verification_Ping.md`, GitHub issue #87 (open)
-- S11 closeout governance is preserved by keeping deferred follow-on scope explicitly tracked in GitHub and sprint planning artifacts.
+- Source issue file (resolved scope): `planning/issues/issue_2026_05_D_S11_001_Live_Prompt_Verification_Ping.md`, GitHub issue #87 (closed)
+- S11 closeout governance is preserved by keeping resolved evidence explicitly tracked in GitHub and sprint planning artifacts.
 
 ### Validation Evidence (S11-013 through S11-016)
 
@@ -151,4 +151,4 @@ Planning linkage:
 - ✅ S11-015 (Run Diagnostics Panel): "Run Diagnostics" subheader and all four metric rows visible within 20s of run start; assertion passed in both autonomous test runs.
 - ✅ S11-016 (Enhanced Error Display): Execution errors rendered with decoded HTML entities; HTTP status code extraction working (verified on backend FAILED transitions).
 
-**Next Actions**: Keep the remaining open Sprint 11 backlog items moving through implementation and closure; treat D-S11-001 / issue #62 as completed and track live verify hardening as D-S11-002 / issue #87.
+**Next Actions**: Keep the remaining open Sprint 11 backlog items moving through implementation and closure; treat D-S11-001 / issue #62 and D-S11-002 / issue #87 as completed.
