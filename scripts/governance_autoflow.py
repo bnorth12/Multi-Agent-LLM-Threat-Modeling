@@ -729,6 +729,14 @@ def main() -> int:
     print("[governance-autoflow] Agent chain:", ", ".join(agent_chain) if agent_chain else "none")
     print("[governance-autoflow] Skill chain:", ", ".join(skill_chain) if skill_chain else "none")
 
+    run_independent_review_retention(
+        repo_root=repo_root,
+        context=args.context,
+        sprint=args.sprint,
+        run_context=run_context,
+        out_dir=args.out_dir,
+    )
+
     agent_plans = plan_stage_invocations(
         names=agent_chain,
         kind="agent",

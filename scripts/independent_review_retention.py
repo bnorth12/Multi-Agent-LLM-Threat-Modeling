@@ -2,8 +2,9 @@
 """Retention maintenance for independent review latest outputs.
 
 This script archives current run-context outputs from independent_reviews/latest
-into per-context history batches before new files are generated. It then compacts
-older history batches at the same run-context level.
+into per-context history batches before new files are generated. It compacts
+older history batches for the same run-context before and after archival so the
+next governance cycle starts from a clean latest directory and bounded history.
 """
 
 from __future__ import annotations
@@ -58,6 +59,23 @@ def build_expected_latest_globs(sprint: str, run_context: str) -> List[str]:
         "unimplemented_requirement_triage_*.md",
         "unimplemented_requirement_triage_*.json",
     ]
+
+
+def build_retention_candidates(out_dir: Path, sprint: str, run_context: str) -> List[Path]:
+    if run_context == "pre-push":
+        # Pre-push should regenerate the full latest artifact surface for the
+        # active sprint/run. Archive every prior file so latest is rebuilt cleanly.
+        return sorted([path for path in out_dir.iterdir() if path.is_file()], key=lambda p: p.name)
+
+    expected = build_expected_latest_filenames(sprint, run_context)
+    candidates = [path for path in (out_dir / name for name in expected) if path.exists() and path.is_file()]
+    for pattern in build_expected_latest_globs(sprint, run_context):
+        candidates.extend([path for path in out_dir.glob(pattern) if path.is_file()])
+
+    deduped: Dict[str, Path] = {}
+    for candidate in candidates:
+        deduped[candidate.name] = candidate
+    return sorted(deduped.values(), key=lambda p: p.name)
 
 
 def compact_context_history(history_context_dir: Path, retain_auto_batches: int) -> Dict[str, object]:
@@ -138,18 +156,15 @@ def main() -> int:
         )
         return 0
 
-    expected = build_expected_latest_filenames(args.sprint, args.run_context)
-    candidates = [path for path in (out_dir / name for name in expected) if path.exists() and path.is_file()]
-    for pattern in build_expected_latest_globs(args.sprint, args.run_context):
-        candidates.extend([path for path in out_dir.glob(pattern) if path.is_file()])
-
-    deduped: Dict[str, Path] = {}
-    for candidate in candidates:
-        deduped[candidate.name] = candidate
-    candidates = sorted(deduped.values(), key=lambda p: p.name)
+    candidates = build_retention_candidates(out_dir=out_dir, sprint=args.sprint, run_context=args.run_context)
 
     history_context_dir = repo_root / HISTORY_CONTEXT_ARCHIVE_DIR / args.run_context
     history_context_dir.mkdir(parents=True, exist_ok=True)
+
+    pre_compact_summary = compact_context_history(
+        history_context_dir=history_context_dir,
+        retain_auto_batches=max(0, args.retain_auto_batches),
+    )
 
     moved: List[str] = []
     if candidates:
@@ -161,7 +176,7 @@ def main() -> int:
             shutil.move(str(file_path), str(destination))
             moved.append(destination.as_posix())
 
-    compact_summary = compact_context_history(
+    post_compact_summary = compact_context_history(
         history_context_dir=history_context_dir,
         retain_auto_batches=max(0, args.retain_auto_batches),
     )
@@ -174,8 +189,8 @@ def main() -> int:
                 "moved_from_latest": len(moved),
                 "moved_files": moved,
                 "history_context_dir": history_context_dir.as_posix(),
-                "retained_batches": compact_summary.get("retained_batches", 0),
-                "summarized_batches": compact_summary.get("summarized_batches", 0),
+                "pre_compaction": pre_compact_summary,
+                "post_compaction": post_compact_summary,
             },
             indent=2,
         )
