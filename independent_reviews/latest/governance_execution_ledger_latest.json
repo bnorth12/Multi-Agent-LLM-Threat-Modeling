@@ -1,37 +1,29 @@
 {
-  "timestamp": "2026-06-04T00:54:31",
-  "context": "pre-push",
+  "timestamp": "2026-06-04T01:05:37",
+  "context": "pre-commit",
   "branch": "main",
   "policy_profile": "strict",
   "enforcement_mode": "off",
-  "run_context": "pre-push",
+  "run_context": "pre-commit",
   "trend_window": 5,
   "agent_chain": [
     "repo-governance-autoflow-orchestrator",
-    "independent-review-orchestrator",
-    "traceability-remediation-cycle",
+    "requirements-baseline-steward",
     "architecture-design-change-author",
     "architecture-design-traceability-auditor",
     "architecture-document-surface-enforcer",
     "implementation-architecture-alignment-auditor",
     "requirements-implementation-auditor",
-    "source-to-evidence-traceability-auditor",
-    "traceability-blocker-planner",
-    "kpi-drift-analyst",
-    "artifact-lineage-auditor"
+    "architecture-contract-enforcer"
   ],
   "skill_chain": [
-    "independent-repo-review",
-    "traceability-remediation-cycle",
+    "requirements-baseline-steward",
     "architecture-design-change-author",
     "architecture-design-traceability-auditor",
     "architecture-document-surface-enforcer",
     "implementation-architecture-alignment-auditor",
     "requirements-implementation-auditor",
-    "source-to-evidence-traceability",
-    "traceability-blocker-planner",
-    "kpi-drift-analyst",
-    "artifact-lineage-auditor"
+    "architecture-contract-enforcer"
   ],
   "agent_stage_results": [
     {
@@ -40,8 +32,8 @@
       "kind": "agent",
       "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:31",
-      "ended_at": "2026-06-04T00:54:31",
+      "started_at": "2026-06-04T01:05:37",
+      "ended_at": "2026-06-04T01:05:37",
       "duration_seconds": 0.0,
       "command_ref": null,
       "command_key": null,
@@ -49,355 +41,212 @@
     },
     {
       "order": 2,
-      "name": "independent-review-orchestrator",
+      "name": "requirements-baseline-steward",
       "kind": "agent",
       "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:18",
-      "ended_at": "2026-06-04T00:54:21",
-      "duration_seconds": 3.276,
+      "started_at": "2026-06-04T01:05:34",
+      "ended_at": "2026-06-04T01:05:34",
+      "duration_seconds": 0.519,
       "command_ref": 1,
-      "command_key": "independent-review",
-      "notes": "Executed via the shared independent review engine."
+      "command_key": "traceability",
+      "notes": "Executed via sprint traceability verification."
     },
     {
       "order": 3,
-      "name": "traceability-remediation-cycle",
-      "kind": "agent",
-      "status": "success",
-      "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:21",
-      "ended_at": "2026-06-04T00:54:24",
-      "duration_seconds": 2.733,
-      "command_ref": 2,
-      "command_key": "traceability-remediation-cycle",
-      "notes": "Executed via explicit select-plan-remediate-review remediation cycle."
-    },
-    {
-      "order": 4,
       "name": "architecture-design-change-author",
       "kind": "agent",
-      "status": "success",
+      "status": "failed",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:24",
-      "ended_at": "2026-06-04T00:54:25",
-      "duration_seconds": 0.914,
-      "command_ref": 3,
+      "started_at": "2026-06-04T01:05:34",
+      "ended_at": "2026-06-04T01:05:35",
+      "duration_seconds": 0.986,
+      "command_ref": 2,
       "command_key": "architecture-design-authoring",
       "notes": "Executed via architecture/design authoring workpack generator."
     },
     {
-      "order": 5,
+      "order": 4,
       "name": "architecture-design-traceability-auditor",
       "kind": "agent",
       "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:25",
-      "ended_at": "2026-06-04T00:54:25",
-      "duration_seconds": 0.714,
-      "command_ref": 4,
+      "started_at": "2026-06-04T01:05:35",
+      "ended_at": "2026-06-04T01:05:36",
+      "duration_seconds": 0.428,
+      "command_ref": 3,
       "command_key": "architecture-design-baseline",
       "notes": "Executed via architecture/design baseline coverage verification."
     },
     {
-      "order": 6,
+      "order": 5,
       "name": "architecture-document-surface-enforcer",
       "kind": "agent",
-      "status": "success",
+      "status": "failed",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:25",
-      "ended_at": "2026-06-04T00:54:26",
-      "duration_seconds": 1.005,
-      "command_ref": 5,
+      "started_at": "2026-06-04T01:05:36",
+      "ended_at": "2026-06-04T01:05:36",
+      "duration_seconds": 0.572,
+      "command_ref": 4,
       "command_key": "architecture-design-surface",
       "notes": "Executed via architecture/design document-family surface coverage verification."
     },
     {
-      "order": 7,
+      "order": 6,
       "name": "implementation-architecture-alignment-auditor",
       "kind": "agent",
       "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:27",
-      "ended_at": "2026-06-04T00:54:28",
-      "duration_seconds": 1.039,
-      "command_ref": 6,
+      "started_at": "2026-06-04T01:05:36",
+      "ended_at": "2026-06-04T01:05:37",
+      "duration_seconds": 0.587,
+      "command_ref": 5,
       "command_key": "implementation-architecture-alignment",
       "notes": "Executed via implementation-to-architecture/design alignment verification."
     },
     {
-      "order": 8,
+      "order": 7,
       "name": "requirements-implementation-auditor",
       "kind": "agent",
-      "status": "failed",
+      "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:28",
-      "ended_at": "2026-06-04T00:54:28",
-      "duration_seconds": 0.526,
-      "command_ref": 7,
+      "started_at": "2026-06-04T01:05:34",
+      "ended_at": "2026-06-04T01:05:34",
+      "duration_seconds": 0.519,
+      "command_ref": 1,
       "command_key": "traceability",
       "notes": "Executed via sprint traceability verification."
     },
     {
-      "order": 9,
-      "name": "source-to-evidence-traceability-auditor",
-      "kind": "agent",
-      "status": "failed",
-      "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:28",
-      "ended_at": "2026-06-04T00:54:28",
-      "duration_seconds": 0.526,
-      "command_ref": 7,
-      "command_key": "traceability",
-      "notes": "Executed via sprint traceability verification."
-    },
-    {
-      "order": 10,
-      "name": "traceability-blocker-planner",
+      "order": 8,
+      "name": "architecture-contract-enforcer",
       "kind": "agent",
       "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:28",
-      "ended_at": "2026-06-04T00:54:29",
-      "duration_seconds": 0.854,
-      "command_ref": 8,
-      "command_key": "traceability-blocker-planning",
-      "notes": "Executed via optional planning-time traceability blocker backlog generator."
-    },
-    {
-      "order": 11,
-      "name": "kpi-drift-analyst",
-      "kind": "agent",
-      "status": "failed",
-      "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:29",
-      "ended_at": "2026-06-04T00:54:29",
-      "duration_seconds": 0.413,
-      "command_ref": 9,
-      "command_key": "kpi-drift-analysis",
-      "notes": "Executed via KPI drift analysis runner."
-    },
-    {
-      "order": 12,
-      "name": "artifact-lineage-auditor",
-      "kind": "agent",
-      "status": "success",
-      "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:29",
-      "ended_at": "2026-06-04T00:54:31",
-      "duration_seconds": 1.633,
-      "command_ref": 10,
-      "command_key": "artifact-hygiene",
-      "notes": "Executed via archive hygiene guard."
+      "started_at": "2026-06-04T01:05:37",
+      "ended_at": "2026-06-04T01:05:37",
+      "duration_seconds": 0.37,
+      "command_ref": 6,
+      "command_key": "dependency-boundary",
+      "notes": "Executed via dependency boundary guard."
     }
   ],
   "skill_stage_results": [
     {
       "order": 1,
-      "name": "independent-repo-review",
+      "name": "requirements-baseline-steward",
       "kind": "skill",
       "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:18",
-      "ended_at": "2026-06-04T00:54:21",
-      "duration_seconds": 3.276,
+      "started_at": "2026-06-04T01:05:34",
+      "ended_at": "2026-06-04T01:05:34",
+      "duration_seconds": 0.519,
       "command_ref": 1,
-      "command_key": "independent-review",
-      "notes": "Executed via the shared independent review engine."
+      "command_key": "traceability",
+      "notes": "Executed via sprint traceability verification."
     },
     {
       "order": 2,
-      "name": "traceability-remediation-cycle",
-      "kind": "skill",
-      "status": "success",
-      "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:21",
-      "ended_at": "2026-06-04T00:54:24",
-      "duration_seconds": 2.733,
-      "command_ref": 2,
-      "command_key": "traceability-remediation-cycle",
-      "notes": "Executed via explicit select-plan-remediate-review remediation cycle."
-    },
-    {
-      "order": 3,
       "name": "architecture-design-change-author",
       "kind": "skill",
-      "status": "success",
+      "status": "failed",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:24",
-      "ended_at": "2026-06-04T00:54:25",
-      "duration_seconds": 0.914,
-      "command_ref": 3,
+      "started_at": "2026-06-04T01:05:34",
+      "ended_at": "2026-06-04T01:05:35",
+      "duration_seconds": 0.986,
+      "command_ref": 2,
       "command_key": "architecture-design-authoring",
       "notes": "Executed via architecture/design authoring workpack generator."
     },
     {
-      "order": 4,
+      "order": 3,
       "name": "architecture-design-traceability-auditor",
       "kind": "skill",
       "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:25",
-      "ended_at": "2026-06-04T00:54:25",
-      "duration_seconds": 0.714,
-      "command_ref": 4,
+      "started_at": "2026-06-04T01:05:35",
+      "ended_at": "2026-06-04T01:05:36",
+      "duration_seconds": 0.428,
+      "command_ref": 3,
       "command_key": "architecture-design-baseline",
       "notes": "Executed via architecture/design baseline coverage verification."
     },
     {
-      "order": 5,
+      "order": 4,
       "name": "architecture-document-surface-enforcer",
       "kind": "skill",
-      "status": "success",
+      "status": "failed",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:25",
-      "ended_at": "2026-06-04T00:54:26",
-      "duration_seconds": 1.005,
-      "command_ref": 5,
+      "started_at": "2026-06-04T01:05:36",
+      "ended_at": "2026-06-04T01:05:36",
+      "duration_seconds": 0.572,
+      "command_ref": 4,
       "command_key": "architecture-design-surface",
       "notes": "Executed via architecture/design document-family surface coverage verification."
     },
     {
-      "order": 6,
+      "order": 5,
       "name": "implementation-architecture-alignment-auditor",
       "kind": "skill",
       "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:27",
-      "ended_at": "2026-06-04T00:54:28",
-      "duration_seconds": 1.039,
-      "command_ref": 6,
+      "started_at": "2026-06-04T01:05:36",
+      "ended_at": "2026-06-04T01:05:37",
+      "duration_seconds": 0.587,
+      "command_ref": 5,
       "command_key": "implementation-architecture-alignment",
       "notes": "Executed via implementation-to-architecture/design alignment verification."
     },
     {
-      "order": 7,
+      "order": 6,
       "name": "requirements-implementation-auditor",
       "kind": "skill",
-      "status": "failed",
+      "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:28",
-      "ended_at": "2026-06-04T00:54:28",
-      "duration_seconds": 0.526,
-      "command_ref": 7,
+      "started_at": "2026-06-04T01:05:34",
+      "ended_at": "2026-06-04T01:05:34",
+      "duration_seconds": 0.519,
+      "command_ref": 1,
       "command_key": "traceability",
       "notes": "Executed via sprint traceability verification."
     },
     {
-      "order": 8,
-      "name": "source-to-evidence-traceability",
-      "kind": "skill",
-      "status": "failed",
-      "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:28",
-      "ended_at": "2026-06-04T00:54:28",
-      "duration_seconds": 0.526,
-      "command_ref": 7,
-      "command_key": "traceability",
-      "notes": "Executed via sprint traceability verification."
-    },
-    {
-      "order": 9,
-      "name": "traceability-blocker-planner",
+      "order": 7,
+      "name": "architecture-contract-enforcer",
       "kind": "skill",
       "status": "success",
       "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:28",
-      "ended_at": "2026-06-04T00:54:29",
-      "duration_seconds": 0.854,
-      "command_ref": 8,
-      "command_key": "traceability-blocker-planning",
-      "notes": "Executed via optional planning-time traceability blocker backlog generator."
-    },
-    {
-      "order": 10,
-      "name": "kpi-drift-analyst",
-      "kind": "skill",
-      "status": "failed",
-      "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:29",
-      "ended_at": "2026-06-04T00:54:29",
-      "duration_seconds": 0.413,
-      "command_ref": 9,
-      "command_key": "kpi-drift-analysis",
-      "notes": "Executed via KPI drift analysis runner."
-    },
-    {
-      "order": 11,
-      "name": "artifact-lineage-auditor",
-      "kind": "skill",
-      "status": "success",
-      "execution_mode": "direct",
-      "started_at": "2026-06-04T00:54:29",
-      "ended_at": "2026-06-04T00:54:31",
-      "duration_seconds": 1.633,
-      "command_ref": 10,
-      "command_key": "artifact-hygiene",
-      "notes": "Executed via archive hygiene guard."
+      "started_at": "2026-06-04T01:05:37",
+      "ended_at": "2026-06-04T01:05:37",
+      "duration_seconds": 0.37,
+      "command_ref": 6,
+      "command_key": "dependency-boundary",
+      "notes": "Executed via dependency boundary guard."
     }
   ],
   "commands": [
     {
       "command": [
         "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Scripts\\python.exe",
-        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\independent_repo_review.py",
+        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\verify_sprint_traceability.py",
         "--sprint",
-        "2026_013",
-        "--run-context",
-        "pre-push",
-        "--report-mode",
-        "update",
-        "--policy-profile",
-        "strict",
-        "--enforcement-mode",
-        "off",
-        "--trend-window",
-        "5",
-        "--out-dir",
-        "independent_reviews/latest"
+        "2026_013"
       ],
-      "started_at": "2026-06-04T00:54:18",
-      "ended_at": "2026-06-04T00:54:21",
-      "duration_seconds": 3.276,
+      "started_at": "2026-06-04T01:05:34",
+      "ended_at": "2026-06-04T01:05:34",
+      "duration_seconds": 0.519,
       "exit_code": 0,
       "status": "success",
-      "command_key": "independent-review",
+      "command_key": "traceability",
       "stage_names": [
-        "independent-review-orchestrator",
-        "independent-repo-review"
+        "requirements-baseline-steward",
+        "requirements-implementation-auditor"
       ],
       "stage_labels": [
-        "agent:independent-review-orchestrator",
-        "skill:independent-repo-review"
-      ]
-    },
-    {
-      "command": [
-        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Scripts\\python.exe",
-        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\run_traceability_remediation_cycle.py",
-        "--sprint",
-        "2026_013",
-        "--policy-profile",
-        "strict",
-        "--enforcement-mode",
-        "off",
-        "--trend-window",
-        "5",
-        "--out-dir",
-        "independent_reviews/latest"
-      ],
-      "started_at": "2026-06-04T00:54:21",
-      "ended_at": "2026-06-04T00:54:24",
-      "duration_seconds": 2.733,
-      "exit_code": 0,
-      "status": "success",
-      "command_key": "traceability-remediation-cycle",
-      "stage_names": [
-        "traceability-remediation-cycle"
-      ],
-      "stage_labels": [
-        "agent:traceability-remediation-cycle",
-        "skill:traceability-remediation-cycle"
+        "agent:requirements-baseline-steward",
+        "agent:requirements-implementation-auditor",
+        "skill:requirements-baseline-steward",
+        "skill:requirements-implementation-auditor"
       ]
     },
     {
@@ -410,11 +259,11 @@
         "independent_reviews/latest",
         "--enforce"
       ],
-      "started_at": "2026-06-04T00:54:24",
-      "ended_at": "2026-06-04T00:54:25",
-      "duration_seconds": 0.914,
-      "exit_code": 0,
-      "status": "success",
+      "started_at": "2026-06-04T01:05:34",
+      "ended_at": "2026-06-04T01:05:35",
+      "duration_seconds": 0.986,
+      "exit_code": 1,
+      "status": "failed",
       "command_key": "architecture-design-authoring",
       "stage_names": [
         "architecture-design-change-author"
@@ -431,9 +280,9 @@
         "--sprint",
         "2026_013"
       ],
-      "started_at": "2026-06-04T00:54:25",
-      "ended_at": "2026-06-04T00:54:25",
-      "duration_seconds": 0.714,
+      "started_at": "2026-06-04T01:05:35",
+      "ended_at": "2026-06-04T01:05:36",
+      "duration_seconds": 0.428,
       "exit_code": 0,
       "status": "success",
       "command_key": "architecture-design-baseline",
@@ -452,11 +301,11 @@
         "--sprint",
         "2026_013"
       ],
-      "started_at": "2026-06-04T00:54:25",
-      "ended_at": "2026-06-04T00:54:26",
-      "duration_seconds": 1.005,
-      "exit_code": 0,
-      "status": "success",
+      "started_at": "2026-06-04T01:05:36",
+      "ended_at": "2026-06-04T01:05:36",
+      "duration_seconds": 0.572,
+      "exit_code": 1,
+      "status": "failed",
       "command_key": "architecture-design-surface",
       "stage_names": [
         "architecture-document-surface-enforcer"
@@ -473,9 +322,9 @@
         "--sprint",
         "2026_013"
       ],
-      "started_at": "2026-06-04T00:54:27",
-      "ended_at": "2026-06-04T00:54:28",
-      "duration_seconds": 1.039,
+      "started_at": "2026-06-04T01:05:36",
+      "ended_at": "2026-06-04T01:05:37",
+      "duration_seconds": 0.587,
       "exit_code": 0,
       "status": "success",
       "command_key": "implementation-architecture-alignment",
@@ -490,100 +339,27 @@
     {
       "command": [
         "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Scripts\\python.exe",
-        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\verify_sprint_traceability.py",
-        "--sprint",
-        "2026_013",
-        "--audit"
+        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\verify_dependency_boundary.py"
       ],
-      "started_at": "2026-06-04T00:54:28",
-      "ended_at": "2026-06-04T00:54:28",
-      "duration_seconds": 0.526,
-      "exit_code": 1,
-      "status": "failed",
-      "command_key": "traceability",
-      "stage_names": [
-        "requirements-implementation-auditor",
-        "source-to-evidence-traceability-auditor",
-        "source-to-evidence-traceability"
-      ],
-      "stage_labels": [
-        "agent:requirements-implementation-auditor",
-        "agent:source-to-evidence-traceability-auditor",
-        "skill:requirements-implementation-auditor",
-        "skill:source-to-evidence-traceability"
-      ]
-    },
-    {
-      "command": [
-        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Scripts\\python.exe",
-        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\run_traceability_blocker_planning.py",
-        "--sprint",
-        "2026_013",
-        "--out-dir",
-        "independent_reviews/latest"
-      ],
-      "started_at": "2026-06-04T00:54:28",
-      "ended_at": "2026-06-04T00:54:29",
-      "duration_seconds": 0.854,
+      "started_at": "2026-06-04T01:05:37",
+      "ended_at": "2026-06-04T01:05:37",
+      "duration_seconds": 0.37,
       "exit_code": 0,
       "status": "success",
-      "command_key": "traceability-blocker-planning",
+      "command_key": "dependency-boundary",
       "stage_names": [
-        "traceability-blocker-planner"
+        "architecture-contract-enforcer"
       ],
       "stage_labels": [
-        "agent:traceability-blocker-planner",
-        "skill:traceability-blocker-planner"
-      ]
-    },
-    {
-      "command": [
-        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Scripts\\python.exe",
-        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\run_kpi_drift_analysis.py",
-        "--sprint",
-        "2026_013"
-      ],
-      "started_at": "2026-06-04T00:54:29",
-      "ended_at": "2026-06-04T00:54:29",
-      "duration_seconds": 0.413,
-      "exit_code": 2,
-      "status": "failed",
-      "command_key": "kpi-drift-analysis",
-      "stage_names": [
-        "kpi-drift-analyst"
-      ],
-      "stage_labels": [
-        "agent:kpi-drift-analyst",
-        "skill:kpi-drift-analyst"
-      ]
-    },
-    {
-      "command": [
-        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\.venv\\Scripts\\python.exe",
-        "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\scripts\\archive_hygiene.py",
-        "check",
-        "--upstream",
-        "--enforce"
-      ],
-      "started_at": "2026-06-04T00:54:29",
-      "ended_at": "2026-06-04T00:54:31",
-      "duration_seconds": 1.633,
-      "exit_code": 0,
-      "status": "success",
-      "command_key": "artifact-hygiene",
-      "stage_names": [
-        "artifact-lineage-auditor"
-      ],
-      "stage_labels": [
-        "agent:artifact-lineage-auditor",
-        "skill:artifact-lineage-auditor"
+        "agent:architecture-contract-enforcer",
+        "skill:architecture-contract-enforcer"
       ]
     }
   ],
-  "outcome": "warning",
-  "exit_code": 0,
-  "open_obligation_count": 0,
-  "obligation_report_markdown": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/independent_reviews/latest/remediation_obligations_2026-013_pre-push.md",
-  "obligation_report_json": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/independent_reviews/latest/remediation_obligations_2026-013_pre-push.json",
-  "obligation_summary_notes": "Count loaded from latest remediation obligation report."
+  "outcome": "failed",
+  "exit_code": 1,
+  "open_obligation_count": null,
+  "obligation_report_markdown": "",
+  "obligation_report_json": "",
+  "obligation_summary_notes": "Obligation report is only generated for pre-push independent review runs."
 }
