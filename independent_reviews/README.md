@@ -14,6 +14,10 @@ Policy:
 - High-churn historical artifacts are compacted into `independent_reviews/history/` and remain ignored to prevent uncontrolled repository growth.
 - Runtime application implementation is not modified by review generation.
 - `independent_reviews/latest/` is intentionally compact and keeps current per-context reports.
+- High-churn iterative artifacts (for example `latest/round_runs/` and timestamped one-off planning snapshots) should be compacted into `independent_reviews/history/reports/` after active triage or closeout.
+- For sprint-specific independent review pre-context outputs (`pre-commit`, `pre-merge-commit`, `pre-push`), keep one canonical latest set per run-context in `latest/` and archive older sprint-specific variants under `history/reports/`.
+- One-time KPI backfill outputs and superseded remediation planning artifacts (for example older sprint-specific remediation plans or issue design dispositions) should be archived to `history/reports/` once their guidance is absorbed into current `*_latest` artifacts.
+- Preserve `traceability_blocker_backlog_latest.{md,json}` and `legacy_findings_latest.{md,json}` in `latest/` as historical baseline anchors; archive only via explicit rollover manifests, not routine compaction sweeps.
 - `independent_reviews/history/` stores long-term trend snapshots and archived timestamped reports.
 - GitHub issue reconciliation is default-on in the review engine when `gh` is available (not opt-in).
 - Reconciliation outcomes are informational unless a separate explicit enforcement control is chosen.

@@ -14,7 +14,7 @@ These rows capture the 15 currently reachable implementation modules that can be
 
 | Code Module | Requirement ID(s) | Code Implementation Evidence | Current Anchor Source |
 |---|---|---|---|
-| src/threat_modeler/ui/connection_validator.py | SCR-013, SCR-014 | src/threat_modeler/ui/connection_validator.py | Requirements/04_Traceability_Matrix.md; planning/issues/Sprint_2026_013_Issue_Tracker.md |
+| src/threat_modeler/ui/connection_validator.py | SCR-013, SCR-014 | src/threat_modeler/ui/connection_validator.py | Requirements/04_Traceability_Matrix.md; planning/archives/2026-06/issues/closed_trackers/Sprint_2026_013_Issue_Tracker.md |
 | src/threat_modeler/ui/runtime_io.py | SCR-007 | src/threat_modeler/ui/runtime_io.py | Requirements/04_Traceability_Matrix.md |
 | src/threat_modeler/ui/screens/canonical_graph_viewer.py | GUI-019 | src/threat_modeler/ui/screens/canonical_graph_viewer.py | Requirements/04_Traceability_Matrix.md |
 | src/threat_modeler/ui/screens/config.py | SCR-003, SCR-012, SCR-013, SCR-014 | src/threat_modeler/ui/screens/config.py | Requirements/04_Traceability_Matrix.md |

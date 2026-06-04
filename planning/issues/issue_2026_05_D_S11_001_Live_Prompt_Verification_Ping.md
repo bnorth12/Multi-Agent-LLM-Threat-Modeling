@@ -1,4 +1,4 @@
-# D-S11-001: Connection Verify Must Perform Live Prompt Ping
+# D-S11-001: Connection Verify Must Perform Live Prompt Ping (Closure Record)
 
 ## Issue Summary
 
@@ -43,9 +43,26 @@ Structural validation can report a false positive when the endpoint is reachable
 - UI functional test: verify gate before applying live settings.
 - Live smoke evidence: one successful verify + run start sequence.
 
+## Resolution
+
+The `/config/verify` path now performs a live prompt ping through the configured provider, rejects offline-only mode for live verification, and reports explicit empty-response and provider-failure messages.
+
+## Verification Evidence
+
+- `src/threat_modeler/server/api.py` implements live prompt ping verification and explicit failure messaging.
+- `Tests/test_hmi_backend_api.py` covers success, auth failure, empty-response failure, and offline-only rejection paths.
+
 ## Status
 
-Planned
+Closed
+
+## GitHub Tracking
+
+- Repository issue: #87 (closed)
+
+## Closure Note
+
+This item is resolved by the current backend verification implementation and the associated HMI backend API tests.
 
 ## Notes
 

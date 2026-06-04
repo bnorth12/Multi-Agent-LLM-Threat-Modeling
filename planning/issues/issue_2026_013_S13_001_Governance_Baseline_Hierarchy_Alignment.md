@@ -21,7 +21,7 @@ Establish Sprint 2026-013 governance execution scaffold and begin hierarchy alig
 
 ## Source References
 
-- planning/issues/Sprint_2026_013_Issue_Tracker.md
+- planning/archives/2026-06/issues/closed_trackers/Sprint_2026_013_Issue_Tracker.md
 - planning/Sprint_2026_013_Traceability_Matrix.md
 
 ## Remediation Targets

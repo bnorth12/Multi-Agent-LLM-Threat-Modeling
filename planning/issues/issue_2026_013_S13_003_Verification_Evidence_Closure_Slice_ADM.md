@@ -27,7 +27,7 @@ Close the first P0 verification evidence slice by attaching repeatable automated
 
 - independent_reviews/latest/independent_review_2026-013_pre-push.md
 - independent_reviews/latest/remediation_readiness_latest.md
-- planning/issues/Sprint_2026_013_Issue_Tracker.md
+- planning/archives/2026-06/issues/closed_trackers/Sprint_2026_013_Issue_Tracker.md
 
 ## Remediation Targets
 

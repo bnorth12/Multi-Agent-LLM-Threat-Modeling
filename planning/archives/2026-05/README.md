@@ -6,6 +6,7 @@ This batch archives low-risk historical planning evidence files and records the 
 
 ## Files in This Batch
 
+- `Sprint_2026_11/` (archived sprint folder; original path: `planning/Sprints/Sprint_2026_11/`)
 - `Test_Execution_Summary_Sprint_2026_06.md`
 - `Test_Execution_Summary_Sprint_2026_07.md`
 - `Test_Execution_Summary_Sprint_2026_08.md`
