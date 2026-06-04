@@ -42,6 +42,36 @@ TEST_FILE_PATH_PATTERN = re.compile(
 )
 ARCH_DESIGN_PATH_PATTERN = re.compile(r"\bdocs/(?:architecture|design)/[\w\-./]+")
 
+SOURCE_CODE_GLOBS = [
+    "src/**/*.py",
+    "scripts/**/*.py",
+    "frontend/src/**/*.ts",
+    "frontend/src/**/*.tsx",
+    "frontend/src/**/*.js",
+    "frontend/src/**/*.jsx",
+]
+
+TEST_CODE_GLOBS = [
+    "Tests/**/*.py",
+    "src/**/test_*.py",
+    "src/**/*.test.ts",
+    "src/**/*.spec.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.spec.tsx",
+    "src/**/*.test.js",
+    "src/**/*.spec.js",
+    "src/**/*.test.jsx",
+    "src/**/*.spec.jsx",
+    "frontend/src/**/*.test.ts",
+    "frontend/src/**/*.spec.ts",
+    "frontend/src/**/*.test.tsx",
+    "frontend/src/**/*.spec.tsx",
+    "frontend/src/**/*.test.js",
+    "frontend/src/**/*.spec.js",
+    "frontend/src/**/*.test.jsx",
+    "frontend/src/**/*.spec.jsx",
+]
+
 ALLOWED_REQ_PREFIXES = {
     "ADM",
     "GUI",
@@ -74,6 +104,23 @@ REQUIRED_TRACEABILITY_ARTIFACTS = [
     Path("docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md"),
     Path("Requirements/15_End_To_End_Traceability_Attributes_Registry.md"),
 ]
+
+MATRIX_TRACEABILITY_ARTIFACTS = [
+    Path("Requirements/04_Traceability_Matrix.md"),
+    Path("Requirements/16_Active_Sprint_Traceability_Matrix.md"),
+    Path("Requirements/17_Implementation_Trace_Normalization.md"),
+    Path("docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md"),
+]
+
+TRACEABILITY_BASELINE_ARTIFACTS = [
+    Path("Requirements/15_End_To_End_Traceability_Attributes_Registry.md"),
+    Path("Requirements/18_Traceability_Governance_Operating_Model.md"),
+]
+
+REVIEW_SCHEMA_VERSION = 2
+TRACEABILITY_BASELINE_MODE = "matrix-and-ground-truth-v2"
+RELATIONSHIP_DIRECTION_MODE = "documentation_vs_ground_truth"
+TREND_EPOCH = "taxonomy-direction-v2"
 
 TREND_HISTORY_FILE = Path("independent_reviews/history/snapshot_index.json")
 POLICY_PROFILES_FILE = Path("config/independent_review_policy_profiles.json")
@@ -165,6 +212,10 @@ class TrendSnapshot:
     req_arch_ratio: float = 0.0
     full_chain_ratio: float = 0.0
     issue_quality_ratio: float = 0.0
+    review_schema_version: int = 1
+    traceability_baseline_mode: str = "legacy-line-scan"
+    relationship_direction_mode: str = "none"
+    trend_epoch: str = "legacy"
 
 
 @dataclass
@@ -241,10 +292,48 @@ class RemediationStrategy:
 
 
 @dataclass
+class HumanQualityAssessment:
+    artifact_set_scores: Dict[str, float] = field(default_factory=dict)
+    artifact_set_linkage_notes: Dict[str, List[str]] = field(default_factory=dict)
+    onboarding_intuition_score: float = 0.0
+    findings: List[str] = field(default_factory=list)
+    additional_review_dimensions: List[str] = field(default_factory=list)
+
+
+@dataclass
+class MatrixTruthAlignmentSummary:
+    matrix_files: List[str] = field(default_factory=list)
+    baseline_truth_sources: List[str] = field(default_factory=list)
+    requirement_legs_evaluated: int = 0
+    leg_mismatch_count: int = 0
+    alignment_ratio: float = 0.0
+    declared_impl_without_truth: List[str] = field(default_factory=list)
+    declared_verify_without_truth: List[str] = field(default_factory=list)
+    declared_arch_without_truth: List[str] = field(default_factory=list)
+    truth_impl_missing_matrix: List[str] = field(default_factory=list)
+    truth_verify_missing_matrix: List[str] = field(default_factory=list)
+    truth_arch_missing_matrix: List[str] = field(default_factory=list)
+
+
+@dataclass
+class ExecutedTestSignal:
+    report_path: str = ""
+    status: str = "unknown"
+    passed: bool = False
+    observed_at: str = "unknown"
+    age_days: Optional[float] = None
+    details: List[str] = field(default_factory=list)
+
+
+@dataclass
 class ReviewResult:
     generated_at: str
     sprint: str
     run_context: str
+    review_schema_version: int
+    traceability_baseline_mode: str
+    relationship_direction_mode: str
+    trend_epoch: str
     requirement_descriptions: Dict[str, str]
     requirement_traceability: Dict[str, Dict[str, List[str]]]
     full_trace_chain_count: int
@@ -257,6 +346,8 @@ class ReviewResult:
     req_without_verification: List[str]
     req_with_arch_design_trace: int
     req_without_arch_design_trace: List[str]
+    req_with_aux_verification_only: int
+    req_aux_verification_only: List[str]
     issue_rows_total: int
     issue_rows_without_requirements: List[str]
     issue_rows_without_github_ref: List[str]
@@ -277,12 +368,17 @@ class ReviewResult:
     trend_dashboard: TrendDashboardSummary
     github_reconciliation_summary: GitHubReconciliationSummary
     github_reconciliation_rows: List[GitHubIssueReconciliation]
+    matrix_truth_alignment: MatrixTruthAlignmentSummary
     notes: List[str]
     overall_score: float
     issue_quality_ratio: float
+    confidence_caps_applied: List[str] = field(default_factory=list)
+    executed_test_signal: ExecutedTestSignal = field(default_factory=ExecutedTestSignal)
     health_breakdown: Dict[str, Any] = field(default_factory=dict)
     kpi_delta: Dict[str, float] = field(default_factory=dict)
     remediation_strategy: RemediationStrategy = field(default_factory=RemediationStrategy)
+    human_quality: HumanQualityAssessment = field(default_factory=HumanQualityAssessment)
+    remediation_obligations: List[RemediationObligationItem] = field(default_factory=list)
 
 
 @dataclass
@@ -790,11 +886,18 @@ def scan_requirement_corpus(root: Path) -> Dict[str, Set[str]]:
 def scan_evidence_files(root: Path) -> List[Path]:
     candidates = [
         root / "Requirements/04_Traceability_Matrix.md",
+        root / "Requirements/15_End_To_End_Traceability_Attributes_Registry.md",
+        root / "Requirements/16_Active_Sprint_Traceability_Matrix.md",
+        root / "Requirements/17_Implementation_Trace_Normalization.md",
         root / "planning/Traceability_Delta_Appendix_Sprint_2026_11.md",
     ]
     candidates.extend(sorted((root / "planning").glob("Traceability_Delta_Appendix_*.md")))
     candidates.extend(sorted((root / "planning/issues").glob("Sprint_*_Issue_Tracker.md")))
     return [p for p in candidates if p.exists()]
+
+
+def scan_matrix_traceability_files(root: Path) -> List[Path]:
+    return [root / path for path in MATRIX_TRACEABILITY_ARTIFACTS if (root / path).exists()]
 
 
 def build_requirement_traceability(
@@ -809,6 +912,10 @@ def build_requirement_traceability(
             "architecture_refs": [],
             "implementation_refs": [],
             "verification_refs": [],
+            "implementation_repo_refs": [],
+            "implementation_aux_refs": [],
+            "verification_executable_refs": [],
+            "verification_aux_refs": [],
         }
         for rid in sorted(requirements)
     }
@@ -849,10 +956,146 @@ def build_requirement_traceability(
             trace[rid]["architecture_refs"].append(path.as_posix())
 
     for rid in trace:
-        for key in ["source_refs", "architecture_refs", "implementation_refs", "verification_refs"]:
+        for key in [
+            "source_refs",
+            "architecture_refs",
+            "implementation_refs",
+            "verification_refs",
+            "implementation_repo_refs",
+            "implementation_aux_refs",
+            "verification_executable_refs",
+            "verification_aux_refs",
+        ]:
             trace[rid][key] = sorted(set(trace[rid][key]))
 
     return trace
+
+
+def evaluate_matrix_truth_alignment(
+    requirements: Set[str],
+    matrix_traceability: Dict[str, Dict[str, List[str]]],
+    ground_truth_traceability: Dict[str, Dict[str, List[str]]],
+    matrix_files: List[Path],
+) -> MatrixTruthAlignmentSummary:
+    declared_impl_without_truth: List[str] = []
+    declared_verify_without_truth: List[str] = []
+    declared_arch_without_truth: List[str] = []
+    truth_impl_missing_matrix: List[str] = []
+    truth_verify_missing_matrix: List[str] = []
+    truth_arch_missing_matrix: List[str] = []
+
+    mismatch_count = 0
+    evaluated_legs = len(requirements) * 3
+
+    for rid in sorted(requirements):
+        matrix_trace = matrix_traceability.get(rid, {})
+        truth_trace = ground_truth_traceability.get(rid, {})
+
+        declared_impl = bool(matrix_trace.get("implementation_refs"))
+        declared_verify = bool(matrix_trace.get("verification_refs"))
+        declared_arch = bool(matrix_trace.get("architecture_refs"))
+
+        truth_impl = bool(truth_trace.get("implementation_repo_refs"))
+        truth_verify = bool(truth_trace.get("verification_executable_refs"))
+        truth_arch = bool(truth_trace.get("architecture_refs"))
+
+        if declared_impl != truth_impl:
+            mismatch_count += 1
+            if declared_impl and not truth_impl:
+                declared_impl_without_truth.append(rid)
+            elif truth_impl and not declared_impl:
+                truth_impl_missing_matrix.append(rid)
+
+        if declared_verify != truth_verify:
+            mismatch_count += 1
+            if declared_verify and not truth_verify:
+                declared_verify_without_truth.append(rid)
+            elif truth_verify and not declared_verify:
+                truth_verify_missing_matrix.append(rid)
+
+        if declared_arch != truth_arch:
+            mismatch_count += 1
+            if declared_arch and not truth_arch:
+                declared_arch_without_truth.append(rid)
+            elif truth_arch and not declared_arch:
+                truth_arch_missing_matrix.append(rid)
+
+    ratio = 1.0
+    if evaluated_legs > 0:
+        ratio = max(0.0, 1.0 - (mismatch_count / evaluated_legs))
+
+    return MatrixTruthAlignmentSummary(
+        matrix_files=[path.as_posix() for path in matrix_files],
+        baseline_truth_sources=[item.as_posix() for item in TRACEABILITY_BASELINE_ARTIFACTS]
+        + [
+            "Requirements/**/*.md",
+            "docs/architecture/**/*.md",
+            "docs/design/**/*.md",
+            "src/**, scripts/**, frontend/src/**",
+            "Tests/** and executable test/spec files",
+        ],
+        requirement_legs_evaluated=evaluated_legs,
+        leg_mismatch_count=mismatch_count,
+        alignment_ratio=round(ratio, 4),
+        declared_impl_without_truth=sorted(declared_impl_without_truth),
+        declared_verify_without_truth=sorted(declared_verify_without_truth),
+        declared_arch_without_truth=sorted(declared_arch_without_truth),
+        truth_impl_missing_matrix=sorted(truth_impl_missing_matrix),
+        truth_verify_missing_matrix=sorted(truth_verify_missing_matrix),
+        truth_arch_missing_matrix=sorted(truth_arch_missing_matrix),
+    )
+
+
+def apply_matrix_truth_alignment_findings(
+    severity: SeveritySummary,
+    matrix_alignment: MatrixTruthAlignmentSummary,
+) -> None:
+    if matrix_alignment.declared_impl_without_truth:
+        severity.major.append(
+            "Matrix declares implementation links not backed by repository implementation artifacts: "
+            f"{len(matrix_alignment.declared_impl_without_truth)} requirement(s)."
+        )
+
+    if matrix_alignment.declared_verify_without_truth:
+        severity.major.append(
+            "Matrix declares verification links not backed by executable test artifacts: "
+            f"{len(matrix_alignment.declared_verify_without_truth)} requirement(s)."
+        )
+
+    if matrix_alignment.declared_arch_without_truth:
+        severity.minor.append(
+            "Matrix declares architecture/design links that are not found in scanned architecture/design evidence: "
+            f"{len(matrix_alignment.declared_arch_without_truth)} requirement(s)."
+        )
+
+    if matrix_alignment.truth_impl_missing_matrix:
+        severity.minor.append(
+            "Implementation ground truth exists but is missing from matrix declarations: "
+            f"{len(matrix_alignment.truth_impl_missing_matrix)} requirement(s)."
+        )
+
+    if matrix_alignment.truth_verify_missing_matrix:
+        severity.minor.append(
+            "Executable verification ground truth exists but is missing from matrix declarations: "
+            f"{len(matrix_alignment.truth_verify_missing_matrix)} requirement(s)."
+        )
+
+    if matrix_alignment.truth_arch_missing_matrix:
+        severity.informational.append(
+            "Architecture/design ground truth exists but is missing from matrix declarations: "
+            f"{len(matrix_alignment.truth_arch_missing_matrix)} requirement(s)."
+        )
+
+    if matrix_alignment.alignment_ratio < 0.90:
+        severity.major.append(
+            "Matrix-to-ground-truth alignment ratio is below 0.90: "
+            f"{matrix_alignment.alignment_ratio:.2f}."
+        )
+    elif matrix_alignment.alignment_ratio < 0.97:
+        severity.minor.append(
+            "Matrix-to-ground-truth alignment ratio is below 0.97: "
+            f"{matrix_alignment.alignment_ratio:.2f}."
+        )
 
 
 def format_requirement_chain_line(rid: str, result: "ReviewResult") -> str:
@@ -872,24 +1115,115 @@ def format_requirement_chain_line(rid: str, result: "ReviewResult") -> str:
         missing.append("source")
     if not trace.get("architecture_refs"):
         missing.append("architecture/design")
-    if not trace.get("implementation_refs"):
+    if not trace.get("implementation_repo_refs"):
         missing.append("implementation")
-    if not trace.get("verification_refs"):
+    if not trace.get("verification_executable_refs"):
         missing.append("verification")
 
     source_preview = ", ".join(trace.get("source_refs", [])[:1]) or "none"
     arch_preview = ", ".join(trace.get("architecture_refs", [])[:2]) or "none"
-    impl_preview = ", ".join(trace.get("implementation_refs", [])[:2]) or "none"
-    verify_preview = ", ".join(trace.get("verification_refs", [])[:2]) or "none"
+    impl_preview = ", ".join(trace.get("implementation_repo_refs", [])[:2]) or "none"
+    verify_preview = ", ".join(trace.get("verification_executable_refs", [])[:2]) or "none"
 
     head = f"{rid}: {desc}" if desc else rid
     return (
         f"{head} | missing: {', '.join(missing) if missing else 'none'}"
         f" | source: {source_preview}"
         f" | arch: {arch_preview}"
-        f" | impl: {impl_preview}"
-        f" | verify: {verify_preview}"
+        f" | impl(repo): {impl_preview}"
+        f" | verify(executable): {verify_preview}"
     )
+
+
+def classify_repo_evidence(
+    root: Path,
+    requirements: Set[str],
+    requirement_traceability: Dict[str, Dict[str, List[str]]],
+) -> Tuple[Set[str], Set[str], Set[str]]:
+    impl: Set[str] = set()
+    verify: Set[str] = set()
+    verify_aux_only: Set[str] = set()
+
+    root_abs = root.resolve()
+    for rid in sorted(requirements):
+        trace = requirement_traceability.get(rid, {})
+        impl_refs = trace.get("implementation_refs", [])
+        verify_refs = trace.get("verification_refs", [])
+
+        for ref in impl_refs:
+            candidate = ref.strip().lstrip("./")
+            full = (root / Path(candidate)).resolve()
+            if full.exists() and full.is_file() and str(full).startswith(str(root_abs)):
+                rel = full.relative_to(root_abs).as_posix()
+                if TEST_FILE_PATH_PATTERN.search(rel):
+                    trace.setdefault("verification_executable_refs", []).append(rel)
+                    verify.add(rid)
+                elif Path(rel).suffix.lower() in {".py", ".ts", ".tsx", ".js", ".jsx"} and (
+                    rel.startswith("src/")
+                    or rel.startswith("scripts/")
+                    or rel.startswith("frontend/src/")
+                ):
+                    trace.setdefault("implementation_repo_refs", []).append(rel)
+                    impl.add(rid)
+                else:
+                    trace.setdefault("implementation_aux_refs", []).append(ref)
+            else:
+                trace.setdefault("implementation_aux_refs", []).append(ref)
+
+        for ref in verify_refs:
+            candidate = ref.strip().lstrip("./")
+            full = (root / Path(candidate)).resolve()
+            if (
+                full.exists()
+                and full.is_file()
+                and str(full).startswith(str(root_abs))
+                and TEST_FILE_PATH_PATTERN.search(candidate)
+            ):
+                rel = full.relative_to(root_abs).as_posix()
+                trace.setdefault("verification_executable_refs", []).append(rel)
+                verify.add(rid)
+            else:
+                trace.setdefault("verification_aux_refs", []).append(ref)
+
+    for glob in SOURCE_CODE_GLOBS:
+        for path in sorted(root.glob(glob)):
+            if not path.is_file():
+                continue
+            text = read_text(path)
+            scoped = extract_requirement_ids(text).intersection(requirements)
+            if not scoped:
+                continue
+            rel = path.resolve().relative_to(root_abs).as_posix()
+            for rid in scoped:
+                requirement_traceability[rid].setdefault("implementation_repo_refs", []).append(rel)
+                impl.add(rid)
+
+    for glob in TEST_CODE_GLOBS:
+        for path in sorted(root.glob(glob)):
+            if not path.is_file():
+                continue
+            text = read_text(path)
+            scoped = extract_requirement_ids(text).intersection(requirements)
+            if not scoped:
+                continue
+            rel = path.resolve().relative_to(root_abs).as_posix()
+            for rid in scoped:
+                requirement_traceability[rid].setdefault("verification_executable_refs", []).append(rel)
+                verify.add(rid)
+
+    for rid in sorted(requirements):
+        trace = requirement_traceability.get(rid, {})
+        for key in [
+            "implementation_repo_refs",
+            "implementation_aux_refs",
+            "verification_executable_refs",
+            "verification_aux_refs",
+        ]:
+            trace[key] = sorted(set(trace.get(key, [])))
+        if trace.get("verification_aux_refs") and not trace.get("verification_executable_refs"):
+            verify_aux_only.add(rid)
+
+    return impl, verify, verify_aux_only
 
 
 def collect_requirement_evidence(root: Path, requirements: Set[str], files: Iterable[Path]) -> Tuple[Set[str], Set[str], Set[str]]:
@@ -1008,16 +1342,19 @@ def compute_score(
     req_verify_ratio: float,
     req_arch_ratio: float,
     issue_quality_ratio: float,
+    confidence_cap: Optional[float] = None,
     governance_penalty: float = 0.0,
 ) -> float:
     weighted = (
-        0.2 * structure_ok_ratio
+        0.1 * structure_ok_ratio
         + 0.3 * req_impl_ratio
-        + 0.2 * req_verify_ratio
-        + 0.2 * req_arch_ratio
+        + 0.35 * req_verify_ratio
+        + 0.15 * req_arch_ratio
         + 0.1 * issue_quality_ratio
     )
     score = (weighted * 100.0) - max(0.0, governance_penalty)
+    if confidence_cap is not None:
+        score = min(score, confidence_cap)
     return round(max(0.0, min(100.0, score)), 1)
 
 
@@ -1039,14 +1376,16 @@ def compute_health_breakdown(
     req_verify_ratio: float,
     req_arch_ratio: float,
     issue_quality_ratio: float,
+    confidence_cap: Optional[float],
+    confidence_caps_applied: List[str],
     severity: "SeveritySummary",
     issue_rows_total: int,
 ) -> Dict[str, Any]:
     component_points = {
-        "structure_integrity": round(0.2 * structure_ok_ratio * 100.0, 2),
+        "structure_integrity": round(0.1 * structure_ok_ratio * 100.0, 2),
         "implementation_coverage": round(0.3 * req_impl_ratio * 100.0, 2),
-        "verification_coverage": round(0.2 * req_verify_ratio * 100.0, 2),
-        "architecture_design_traceability": round(0.2 * req_arch_ratio * 100.0, 2),
+        "verification_executable_coverage": round(0.35 * req_verify_ratio * 100.0, 2),
+        "architecture_design_traceability": round(0.15 * req_arch_ratio * 100.0, 2),
         "issue_governance_quality": round(0.1 * issue_quality_ratio * 100.0, 2),
     }
     base_score = round(sum(component_points.values()), 2)
@@ -1059,15 +1398,249 @@ def compute_health_breakdown(
     }
     raw_penalty = round(sum(penalty_components.values()), 2)
     penalty_capped = round(min(raw_penalty, 40.0), 2)
-    final_score = round(max(0.0, min(100.0, base_score - penalty_capped)), 1)
+    final_uncapped = round(max(0.0, min(100.0, base_score - penalty_capped)), 1)
+    final_score = final_uncapped
+    if confidence_cap is not None:
+        final_score = round(min(final_uncapped, confidence_cap), 1)
     return {
         "component_points": component_points,
         "base_score": base_score,
         "penalty_components": penalty_components,
         "penalty_raw": raw_penalty,
         "penalty_capped": penalty_capped,
+        "confidence_cap": confidence_cap,
+        "confidence_caps_applied": confidence_caps_applied,
+        "final_uncapped": final_uncapped,
         "final_score": final_score,
     }
+
+
+def compute_confidence_caps(
+    requirement_total: int,
+    req_with_verification: int,
+    req_with_aux_verification_only: int,
+    executed_test_signal: ExecutedTestSignal,
+) -> Tuple[Optional[float], List[str]]:
+    total = max(requirement_total, 1)
+    caps: List[float] = []
+    reasons: List[str] = []
+
+    if req_with_verification == 0 and requirement_total > 0:
+        caps.append(79.0)
+        reasons.append(
+            "No executable verification evidence was discovered in repo test artifacts; score capped at 79.0."
+        )
+
+    aux_only_ratio = req_with_aux_verification_only / total
+    if aux_only_ratio > 0.20:
+        caps.append(89.0)
+        reasons.append(
+            "More than 20% of requirements have only auxiliary planning verification references; score capped at 89.0."
+        )
+
+    if executed_test_signal.status == "unknown":
+        caps.append(89.0)
+        reasons.append(
+            "No direct executed-test signal was found (missing structured test_report.json); score capped at 89.0."
+        )
+    elif not executed_test_signal.passed:
+        caps.append(79.0)
+        reasons.append(
+            "Latest structured executed-test signal is not passing; score capped at 79.0."
+        )
+    elif executed_test_signal.age_days is not None and executed_test_signal.age_days > 14.0:
+        caps.append(89.0)
+        reasons.append(
+            "Latest structured executed-test signal is older than 14 days; score capped at 89.0."
+        )
+
+    if not caps:
+        return None, []
+    return min(caps), reasons
+
+
+def evaluate_human_quality(
+    root: Path,
+    requirement_total: int,
+    req_with_impl: int,
+    req_with_verification: int,
+    req_with_arch_design_trace: int,
+    issue_quality_ratio: float,
+    hierarchy: HierarchyGovernanceSummary,
+    requirement_descriptions: Dict[str, str],
+) -> HumanQualityAssessment:
+    total = max(requirement_total, 1)
+    desc_coverage = min(1.0, len(requirement_descriptions) / total)
+    impl_ratio = req_with_impl / total
+    verify_ratio = req_with_verification / total
+    arch_ratio = req_with_arch_design_trace / total
+
+    docs_index_exists = (root / "docs/INDEX.md").exists()
+    readme_exists = (root / "README.md").exists()
+    trace_matrix_exists = (root / "Requirements/04_Traceability_Matrix.md").exists()
+    issue_tracker_dir_exists = (root / "planning/issues").exists()
+    nav_ratio = (
+        sum([docs_index_exists, readme_exists, trace_matrix_exists, issue_tracker_dir_exists]) / 4.0
+    )
+
+    onboarding_score = (
+        0.20 * nav_ratio
+        + 0.20 * desc_coverage
+        + 0.20 * arch_ratio
+        + 0.20 * impl_ratio
+        + 0.10 * verify_ratio
+        + 0.05 * issue_quality_ratio
+        + 0.05 * hierarchy.hierarchy_coverage_ratio
+    ) * 100.0
+    onboarding_score = round(max(0.0, min(100.0, onboarding_score)), 1)
+
+    artifact_set_scores = {
+        "requirements_source_quality": round((0.6 * desc_coverage + 0.4 * arch_ratio) * 100.0, 1),
+        "architecture_design_linkage_quality": round(arch_ratio * 100.0, 1),
+        "implementation_linkage_quality": round(impl_ratio * 100.0, 1),
+        "verification_linkage_quality": round(verify_ratio * 100.0, 1),
+        "planning_governance_quality": round(
+            (0.6 * issue_quality_ratio + 0.4 * hierarchy.hierarchy_coverage_ratio) * 100.0, 1
+        ),
+        "repo_onboarding_intuition": onboarding_score,
+    }
+
+    artifact_set_linkage_notes = {
+        "requirements": [
+            f"Requirement descriptions available for {len(requirement_descriptions)}/{requirement_total} IDs.",
+            f"Architecture/design-linked requirement ratio: {arch_ratio * 100:.1f}%.",
+        ],
+        "architecture_design": [
+            f"Requirements with architecture/design linkage: {req_with_arch_design_trace}/{requirement_total}.",
+        ],
+        "implementation": [
+            f"Requirements with implementation evidence linkage: {req_with_impl}/{requirement_total}.",
+        ],
+        "verification": [
+            f"Requirements with executable verification evidence linkage: {req_with_verification}/{requirement_total}.",
+        ],
+        "planning_governance": [
+            f"Issue quality ratio: {issue_quality_ratio * 100:.1f}%.",
+            "Hierarchy coverage ratio: "
+            f"{hierarchy.hierarchy_coverage_ratio * 100:.1f}% ({hierarchy.sprint_issue_files_with_complete_hierarchy}/{hierarchy.sprint_issue_files_total}).",
+        ],
+    }
+
+    findings: List[str] = []
+    if onboarding_score >= 85.0:
+        findings.append("Repository onboarding quality appears strong for new contributors.")
+    elif onboarding_score >= 70.0:
+        findings.append("Repository onboarding quality is acceptable but should be tightened for faster newcomer ramp-up.")
+    else:
+        findings.append("Repository onboarding quality is weak; documentation and trace navigation need immediate clarity improvements.")
+
+    if not docs_index_exists:
+        findings.append("Missing docs/INDEX.md weakens top-down navigation through architecture/design evidence.")
+    if desc_coverage < 0.75:
+        findings.append("Many requirement IDs lack clear human-readable descriptions in source artifacts.")
+    if issue_quality_ratio < 0.90:
+        findings.append("Issue metadata quality is below target, reducing intuitive story-to-requirement comprehension.")
+
+    additional_review_dimensions = [
+        "Evidence freshness and staleness windows (last verified timestamps per artifact family).",
+        "Owner clarity and bus-factor metadata for high-risk architecture/design artifacts.",
+        "Terminology consistency checks (glossary drift across requirements, architecture, and tests).",
+        "Reproducibility quality (single-command path from requirements to verification replay).",
+    ]
+
+    return HumanQualityAssessment(
+        artifact_set_scores=artifact_set_scores,
+        artifact_set_linkage_notes=artifact_set_linkage_notes,
+        onboarding_intuition_score=onboarding_score,
+        findings=findings,
+        additional_review_dimensions=additional_review_dimensions,
+    )
+
+
+def parse_porcelain_paths(status_output: str) -> List[str]:
+    paths: List[str] = []
+    for raw in status_output.splitlines():
+        line = raw.rstrip()
+        if len(line) < 4:
+            continue
+        payload = line[3:].strip()
+        if not payload:
+            continue
+        if " -> " in payload:
+            payload = payload.split(" -> ", 1)[1].strip()
+        payload = payload.strip('"').replace("\\", "/")
+        paths.append(payload)
+    return paths
+
+
+def is_allowed_generated_review_change(path: str) -> bool:
+    normalized = path.replace("\\", "/")
+    if not normalized.startswith("independent_reviews/latest/"):
+        return False
+    name = Path(normalized).name
+    if not name.startswith("independent_review_"):
+        return False
+    return name.endswith(".md") or name.endswith(".json")
+
+
+def load_latest_executed_test_signal(root: Path) -> ExecutedTestSignal:
+    candidates: List[Path] = []
+    for base in [root / "Tests/test_reports", root / "test_reports"]:
+        if base.exists():
+            candidates.extend(sorted(base.glob("**/test_report.json")))
+
+    if not candidates:
+        return ExecutedTestSignal(details=["No structured test_report.json found under Tests/test_reports or test_reports."])
+
+    latest = max(candidates, key=lambda p: p.stat().st_mtime)
+    try:
+        payload = json.loads(latest.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return ExecutedTestSignal(
+            report_path=latest.as_posix(),
+            status="parse-error",
+            passed=False,
+            details=[f"Unable to parse structured test report: {exc}"],
+        )
+
+    status = str(payload.get("status", "unknown"))
+    run_stamp = str(payload.get("run_stamp", "")).strip()
+    observed = "unknown"
+    age_days: Optional[float] = None
+
+    if run_stamp:
+        try:
+            observed_dt = dt.datetime.strptime(run_stamp, "%Y%m%d_%H%M%S")
+            observed = observed_dt.isoformat(timespec="seconds")
+            age_days = round((dt.datetime.now() - observed_dt).total_seconds() / 86400.0, 2)
+        except ValueError:
+            observed = "unknown"
+
+    if age_days is None:
+        observed_dt = dt.datetime.fromtimestamp(latest.stat().st_mtime)
+        observed = observed_dt.isoformat(timespec="seconds")
+        age_days = round((dt.datetime.now() - observed_dt).total_seconds() / 86400.0, 2)
+
+    normalized = status.upper()
+    passed = any(token in normalized for token in ["OK", "PASS", "SUCCESS"])
+
+    details = [
+        f"Latest structured test report: {latest.as_posix()}",
+        f"Status: {status}",
+        f"Observed timestamp: {observed}",
+        f"Age days: {age_days}",
+    ]
+    if "result_line" in payload:
+        details.append(f"Result line: {payload.get('result_line')}")
+
+    return ExecutedTestSignal(
+        report_path=latest.as_posix(),
+        status=status,
+        passed=passed,
+        observed_at=observed,
+        age_days=age_days,
+        details=details,
+    )
 
 
 def get_branch_awareness(root: Path) -> BranchAwareness:
@@ -1089,7 +1662,10 @@ def get_branch_awareness(root: Path) -> BranchAwareness:
             ahead = int(parts[0])
             behind = int(parts[1])
 
-    dirty = bool(status) if ok_status else True
+    dirty = True
+    if ok_status:
+        changed_paths = parse_porcelain_paths(status)
+        dirty = any(not is_allowed_generated_review_change(path) for path in changed_paths)
 
     if current_branch == "main" and ahead == 0 and behind == 0:
         risk = "LOW"
@@ -1204,7 +1780,7 @@ def evaluate_traceability_artifact_status(root: Path, sprint_dash: str, sprint_u
             "exists": exists,
             "planning_reference_count": planning_reference_count,
             "referenced_in": referenced_in,
-            "verification_status": "missing"
+            "planning_reference_status": "missing"
             if not exists
             else ("present-not-referenced" if planning_reference_count == 0 else "present-and-referenced"),
         }
@@ -1333,6 +1909,7 @@ def evaluate_severity(
     branch: BranchAwareness,
     conceptual_gaps: ConceptualAsBuiltGapSummary,
     hierarchy: HierarchyGovernanceSummary,
+    human_quality: HumanQualityAssessment,
 ) -> SeveritySummary:
     summary = SeveritySummary()
 
@@ -1341,11 +1918,11 @@ def evaluate_severity(
 
     if req_verify_ratio < max(policy.req_verify_threshold - 0.2, 0.0):
         summary.critical.append(
-            f"Verification coverage ratio {req_verify_ratio:.2f} is critically below threshold {policy.req_verify_threshold:.2f}."
+            f"Executable verification coverage ratio {req_verify_ratio:.2f} is critically below threshold {policy.req_verify_threshold:.2f}."
         )
     elif req_verify_ratio < policy.req_verify_threshold:
         summary.major.append(
-            f"Verification coverage ratio {req_verify_ratio:.2f} is below threshold {policy.req_verify_threshold:.2f}."
+            f"Executable verification coverage ratio {req_verify_ratio:.2f} is below threshold {policy.req_verify_threshold:.2f}."
         )
 
     if req_impl_ratio < max(policy.req_impl_threshold - 0.2, 0.0):
@@ -1423,6 +2000,15 @@ def evaluate_severity(
     if branch.working_tree_dirty:
         summary.minor.append("Working tree has local modifications; governance review may not represent committed state.")
 
+    if human_quality.onboarding_intuition_score < 70.0:
+        summary.major.append(
+            "Human-quality onboarding score is below 70.0; repository comprehension and navigation are likely too hard for new contributors."
+        )
+    elif human_quality.onboarding_intuition_score < 80.0:
+        summary.minor.append(
+            "Human-quality onboarding score is below 80.0; improve readability and navigability before closeout."
+        )
+
     return summary
 
 
@@ -1482,8 +2068,8 @@ def build_remediation_strategy(result: "ReviewResult") -> RemediationStrategy:
                 title="Close verification evidence gaps",
                 priority="P0",
                 rationale=(
-                    f"{len(result.req_without_verification)} requirement ID(s) still lack verification evidence; "
-                    f"verification coverage is {result.req_with_verification}/{result.requirement_total}."
+                    f"{len(result.req_without_verification)} requirement ID(s) still lack executable verification evidence; "
+                    f"executable verification coverage is {result.req_with_verification}/{result.requirement_total}."
                 ),
                 dependency_order="Verify after implementation exists; keep verification artifacts paired with the change.",
                 starter_actions=[
@@ -1631,6 +2217,10 @@ def build_trend_snapshot(result: "ReviewResult") -> TrendSnapshot:
         req_arch_ratio=result.req_with_arch_design_trace / total,
         full_chain_ratio=result.full_trace_chain_count / total,
         issue_quality_ratio=result.issue_quality_ratio,
+        review_schema_version=REVIEW_SCHEMA_VERSION,
+        traceability_baseline_mode=TRACEABILITY_BASELINE_MODE,
+        relationship_direction_mode=RELATIONSHIP_DIRECTION_MODE,
+        trend_epoch=TREND_EPOCH,
     )
 
 
@@ -1687,6 +2277,7 @@ def render_executive_summary(result: "ReviewResult") -> List[str]:
     arch_pct = (result.req_with_arch_design_trace / total) * 100.0
     full_chain_pct = (result.full_trace_chain_count / total) * 100.0
     issue_quality_pct = result.issue_quality_ratio * 100.0
+    matrix_alignment_pct = result.matrix_truth_alignment.alignment_ratio * 100.0
 
     top_themes = result.remediation_strategy.themes[:3]
     theme_sentence = "No remediation themes are currently open."
@@ -1717,8 +2308,9 @@ def render_executive_summary(result: "ReviewResult") -> List[str]:
     )
     lines.append("")
     lines.append(
-        "From a full-traceability perspective, this run evaluated each requirement across the full chain of source, architecture/design, implementation, and verification evidence. "
+        "From a full-traceability perspective, this run evaluated each requirement across source, architecture/design, implementation evidence grounded in repository artifacts, and executable verification evidence grounded in test artifacts. "
         f"Current KPI levels are implementation coverage {impl_pct:.1f}%, verification coverage {verify_pct:.1f}%, architecture/design traceability {arch_pct:.1f}%, full-chain completeness {full_chain_pct:.1f}%, and issue-governance quality {issue_quality_pct:.1f}%. "
+        f"Matrix-to-ground-truth alignment is {matrix_alignment_pct:.1f}% when matrix declarations are reconciled against baseline document-to-code-to-test evidence. "
         f"These values correspond to {result.full_trace_chain_count}/{result.requirement_total} requirements with complete end-to-end evidence chains."
     )
     lines.append("")
@@ -1746,8 +2338,7 @@ def render_executive_summary(result: "ReviewResult") -> List[str]:
     if result.run_context == "pre-push":
         lines.append("")
         lines.append(
-            "Open exception obligations for post-merge remediation are tracked in "
-            f"independent_reviews/latest/remediation_obligations_{result.sprint}_{result.run_context}.md."
+            "Open exception obligations for post-merge remediation are embedded in Appendix A of this independent review."
         )
     lines.append("")
     return lines
@@ -1915,6 +2506,10 @@ def render_markdown(result: ReviewResult) -> str:
     lines.append(f"- Generated: {result.generated_at}")
     lines.append(f"- Sprint Scope: {result.sprint}")
     lines.append(f"- Run Context: {result.run_context}")
+    lines.append(f"- Review Schema Version: {result.review_schema_version}")
+    lines.append(f"- Traceability Baseline Mode: {result.traceability_baseline_mode}")
+    lines.append(f"- Relationship Direction Mode: {result.relationship_direction_mode}")
+    lines.append(f"- Trend Epoch: {result.trend_epoch}")
     lines.append(f"- Overall Health Score: {result.overall_score}%")
     lines.append(f"- Severity Profile: {result.policy_profile.profile_name}")
     lines.append(f"- Severity Policy File: {result.policy_profile.policy_file}")
@@ -1952,11 +2547,11 @@ def render_markdown(result: ReviewResult) -> str:
     )
     lines.append("")
 
-    lines.append("### Artifact Verification Status")
+    lines.append("### Auxiliary Planning Reference Status (Not Scored as Verification)")
     for artifact in result.required_traceability_artifacts:
         artifact_status = result.traceability_artifact_status.get(artifact, {})
         lines.append(
-            f"- {artifact} | exists={artifact_status.get('exists', False)} | planning_refs={artifact_status.get('planning_reference_count', 0)} | status={artifact_status.get('verification_status', 'unknown')}"
+            f"- {artifact} | exists={artifact_status.get('exists', False)} | planning_refs={artifact_status.get('planning_reference_count', 0)} | status={artifact_status.get('planning_reference_status', 'unknown')}"
         )
         for ref in artifact_status.get("referenced_in", [])[:5]:
             lines.append(f"  - referenced in: {ref}")
@@ -1973,7 +2568,8 @@ def render_markdown(result: ReviewResult) -> str:
     lines.append("## 2) Requirement Coverage")
     lines.append(f"- Total requirement IDs discovered: {result.requirement_total}")
     lines.append(f"- Requirement IDs with implementation evidence: {result.req_with_impl}")
-    lines.append(f"- Requirement IDs with verification evidence: {result.req_with_verification}")
+    lines.append(f"- Requirement IDs with executable verification evidence: {result.req_with_verification}")
+    lines.append(f"- Requirement IDs with only auxiliary planning verification references: {result.req_with_aux_verification_only}")
     lines.append(f"- Requirement IDs with architecture/design traceability: {result.req_with_arch_design_trace}")
     lines.append("")
 
@@ -1984,7 +2580,7 @@ def render_markdown(result: ReviewResult) -> str:
         lines.append("- None")
     lines.append("")
 
-    lines.append("### Requirements Missing Verification Evidence")
+    lines.append("### Requirements Missing Executable Verification Evidence")
     if result.req_without_verification:
         lines.extend([f"- {format_requirement_chain_line(rid, result)}" for rid in result.req_without_verification])
     else:
@@ -2007,6 +2603,62 @@ def render_markdown(result: ReviewResult) -> str:
     if result.full_trace_chain_gap_ids:
         lines.extend([f"- {format_requirement_chain_line(rid, result)}" for rid in result.full_trace_chain_gap_ids])
     else:
+        lines.append("- None")
+    lines.append("")
+
+    lines.append("## 2.7) Matrix-to-Ground-Truth Alignment")
+    lines.append(
+        "- Matrix artifacts scanned: "
+        + (", ".join(result.matrix_truth_alignment.matrix_files) if result.matrix_truth_alignment.matrix_files else "none")
+    )
+    lines.append(f"- Requirement legs evaluated (implementation/verification/architecture): {result.matrix_truth_alignment.requirement_legs_evaluated}")
+    lines.append(f"- Leg mismatches: {result.matrix_truth_alignment.leg_mismatch_count}")
+    lines.append(f"- Alignment ratio: {result.matrix_truth_alignment.alignment_ratio * 100:.1f}%")
+    lines.append("")
+
+    lines.append("### Baseline Truth Sources")
+    lines.extend([f"- {item}" for item in result.matrix_truth_alignment.baseline_truth_sources] or ["- None"])
+    lines.append("")
+
+    lines.append("### Matrix Declared But Ground Truth Missing")
+    lines.append(f"- Implementation mismatches: {len(result.matrix_truth_alignment.declared_impl_without_truth)}")
+    lines.append(f"- Verification mismatches: {len(result.matrix_truth_alignment.declared_verify_without_truth)}")
+    lines.append(f"- Architecture/design mismatches: {len(result.matrix_truth_alignment.declared_arch_without_truth)}")
+    lines.extend(
+        [f"- impl-mismatch: {format_requirement_chain_line(rid, result)}" for rid in result.matrix_truth_alignment.declared_impl_without_truth[:50]]
+    )
+    lines.extend(
+        [f"- verify-mismatch: {format_requirement_chain_line(rid, result)}" for rid in result.matrix_truth_alignment.declared_verify_without_truth[:50]]
+    )
+    lines.extend(
+        [f"- arch-mismatch: {format_requirement_chain_line(rid, result)}" for rid in result.matrix_truth_alignment.declared_arch_without_truth[:50]]
+    )
+    if (
+        not result.matrix_truth_alignment.declared_impl_without_truth
+        and not result.matrix_truth_alignment.declared_verify_without_truth
+        and not result.matrix_truth_alignment.declared_arch_without_truth
+    ):
+        lines.append("- None")
+    lines.append("")
+
+    lines.append("### Ground Truth Present But Missing In Matrix")
+    lines.append(f"- Implementation under-documented: {len(result.matrix_truth_alignment.truth_impl_missing_matrix)}")
+    lines.append(f"- Verification under-documented: {len(result.matrix_truth_alignment.truth_verify_missing_matrix)}")
+    lines.append(f"- Architecture/design under-documented: {len(result.matrix_truth_alignment.truth_arch_missing_matrix)}")
+    lines.extend(
+        [f"- impl-doc-gap: {format_requirement_chain_line(rid, result)}" for rid in result.matrix_truth_alignment.truth_impl_missing_matrix[:50]]
+    )
+    lines.extend(
+        [f"- verify-doc-gap: {format_requirement_chain_line(rid, result)}" for rid in result.matrix_truth_alignment.truth_verify_missing_matrix[:50]]
+    )
+    lines.extend(
+        [f"- arch-doc-gap: {format_requirement_chain_line(rid, result)}" for rid in result.matrix_truth_alignment.truth_arch_missing_matrix[:50]]
+    )
+    if (
+        not result.matrix_truth_alignment.truth_impl_missing_matrix
+        and not result.matrix_truth_alignment.truth_verify_missing_matrix
+        and not result.matrix_truth_alignment.truth_arch_missing_matrix
+    ):
         lines.append("- None")
     lines.append("")
 
@@ -2034,6 +2686,10 @@ def render_markdown(result: ReviewResult) -> str:
 
     lines.append("## 3) Issue Governance Coverage")
     lines.append(f"- Tracker rows parsed: {result.issue_rows_total}")
+    if result.issue_rows_total == 0:
+        lines.append(
+            "- Safety penalty trigger: no parsable issue tracker rows found. Add rows to planning/issues/Sprint_<sprint>_Issue_Tracker.md using IDs like S13-001 or D-S13-001 with GitHub Issue and Status columns."
+        )
     lines.append("")
 
     lines.append("### Issue Rows Missing Requirement Linkage")
@@ -2146,10 +2802,10 @@ def render_markdown(result: ReviewResult) -> str:
     lines.append("### Weighted Base Components")
     lines.append("| Component | Points |")
     lines.append("|---|---:|")
-    lines.append(f"| Structure integrity (20%) | {components.get('structure_integrity', 0.0):.2f} |")
+    lines.append(f"| Structure integrity (10%) | {components.get('structure_integrity', 0.0):.2f} |")
     lines.append(f"| Implementation coverage (30%) | {components.get('implementation_coverage', 0.0):.2f} |")
-    lines.append(f"| Verification coverage (20%) | {components.get('verification_coverage', 0.0):.2f} |")
-    lines.append(f"| Architecture/design traceability (20%) | {components.get('architecture_design_traceability', 0.0):.2f} |")
+    lines.append(f"| Executable verification coverage (35%) | {components.get('verification_executable_coverage', 0.0):.2f} |")
+    lines.append(f"| Architecture/design traceability (15%) | {components.get('architecture_design_traceability', 0.0):.2f} |")
     lines.append(f"| Issue governance quality (10%) | {components.get('issue_governance_quality', 0.0):.2f} |")
     lines.append(f"| Base score subtotal | {health.get('base_score', 0.0):.2f} |")
     lines.append("")
@@ -2164,8 +2820,27 @@ def render_markdown(result: ReviewResult) -> str:
     lines.append(f"| Penalty subtotal (raw) | {health.get('penalty_raw', 0.0):.2f} |")
     lines.append(f"| Penalty applied (capped at 40.0) | {health.get('penalty_capped', 0.0):.2f} |")
     lines.append("")
+    lines.append("### Confidence Gates")
+    lines.append(f"- Uncapped score after penalties: {health.get('final_uncapped', result.overall_score):.1f}")
+    lines.append(f"- Confidence cap applied: {health.get('confidence_cap', 'none')}")
+    for cap_note in health.get("confidence_caps_applied", []):
+        lines.append(f"  - {cap_note}")
+    if not health.get("confidence_caps_applied", []):
+        lines.append("  - None")
+    lines.append("")
+    lines.append("### Executed Test Signal")
+    lines.append(f"- Structured report path: {result.executed_test_signal.report_path or 'none'}")
+    lines.append(f"- Status: {result.executed_test_signal.status}")
+    lines.append(f"- Passing signal: {result.executed_test_signal.passed}")
+    lines.append(f"- Observed at: {result.executed_test_signal.observed_at}")
+    lines.append(f"- Age days: {result.executed_test_signal.age_days}")
+    for detail in result.executed_test_signal.details:
+        lines.append(f"  - {detail}")
+    if not result.executed_test_signal.details:
+        lines.append("  - None")
+    lines.append("")
     lines.append(
-        f"- Final score formula: {health.get('base_score', 0.0):.2f} - {health.get('penalty_capped', 0.0):.2f} = {health.get('final_score', result.overall_score):.1f}"
+        f"- Final score formula: min({health.get('base_score', 0.0):.2f} - {health.get('penalty_capped', 0.0):.2f}, cap={health.get('confidence_cap', 'none')}) = {health.get('final_score', result.overall_score):.1f}"
     )
     lines.append("")
 
@@ -2213,7 +2888,7 @@ def render_markdown(result: ReviewResult) -> str:
         f"| Implementation coverage | {result.trend_snapshot.req_impl_ratio * 100:.1f}% | {result.kpi_delta.get('req_impl_pct_delta', 0.0):+.1f} pts |"
     )
     lines.append(
-        f"| Verification coverage | {result.trend_snapshot.req_verify_ratio * 100:.1f}% | {result.kpi_delta.get('req_verify_pct_delta', 0.0):+.1f} pts |"
+        f"| Executable verification coverage | {result.trend_snapshot.req_verify_ratio * 100:.1f}% | {result.kpi_delta.get('req_verify_pct_delta', 0.0):+.1f} pts |"
     )
     lines.append(
         f"| Architecture/design traceability | {result.trend_snapshot.req_arch_ratio * 100:.1f}% | {result.kpi_delta.get('req_arch_pct_delta', 0.0):+.1f} pts |"
@@ -2254,6 +2929,39 @@ def render_markdown(result: ReviewResult) -> str:
         lines.append(f"- {note}")
     lines.append("")
 
+    lines.append("## 8.5) Human Quality and Onboarding Assessment")
+    lines.append(
+        f"- Onboarding intuition score: {result.human_quality.onboarding_intuition_score:.1f}%"
+    )
+    lines.append("### Artifact Set Quality Scores")
+    lines.append("| Artifact Set | Score |")
+    lines.append("|---|---:|")
+    for key, value in sorted(result.human_quality.artifact_set_scores.items()):
+        label = key.replace("_", " ").title()
+        lines.append(f"| {label} | {value:.1f}% |")
+    lines.append("")
+
+    lines.append("### Artifact Linkage Notes")
+    if result.human_quality.artifact_set_linkage_notes:
+        for set_name, linkage_notes in sorted(result.human_quality.artifact_set_linkage_notes.items()):
+            lines.append(f"- {set_name}:")
+            for item in linkage_notes:
+                lines.append(f"  - {item}")
+    else:
+        lines.append("- None")
+    lines.append("")
+
+    lines.append("### Human Quality Findings")
+    lines.extend([f"- {item}" for item in result.human_quality.findings] or ["- None"])
+    lines.append("")
+
+    lines.append("### Additional Recommended Review Dimensions")
+    lines.extend(
+        [f"- {item}" for item in result.human_quality.additional_review_dimensions]
+        or ["- None"]
+    )
+    lines.append("")
+
     lines.append("## 9) Remediation Readiness Strategy")
     lines.append(f"- Health metric: health")
     lines.append(f"- Current health: {result.overall_score}%")
@@ -2268,6 +2976,22 @@ def render_markdown(result: ReviewResult) -> str:
     if result.remediation_strategy.summary_notes:
         lines.append("- Strategy notes:")
         lines.extend([f"  - {item}" for item in result.remediation_strategy.summary_notes])
+    lines.append("")
+
+    lines.append("### Consolidated Remediation Intake Plan")
+    lines.append("| Priority | Workstream | Rationale | First Starter Action |")
+    lines.append("|---|---|---|---|")
+    if result.remediation_strategy.themes:
+        for theme in result.remediation_strategy.themes:
+            first_action = theme.starter_actions[0] if theme.starter_actions else "Define starter actions"
+            safe_rationale = theme.rationale.replace("|", "\\|")
+            safe_first_action = first_action.replace("|", "\\|")
+            lines.append(
+                "| "
+                + f"{theme.priority} | {theme.title} | {safe_rationale} | {safe_first_action} |"
+            )
+    else:
+        lines.append("| n/a | No open remediation themes | No blocking gaps remain. | Maintain monitoring cadence. |")
     lines.append("")
 
     for theme in result.remediation_strategy.themes:
@@ -2294,6 +3018,23 @@ def render_markdown(result: ReviewResult) -> str:
     for rid in result.full_trace_chain_gap_ids[:20]:
         lines.append(f"- {format_requirement_chain_line(rid, result)}")
     if not result.full_trace_chain_gap_ids:
+        lines.append("- None")
+    lines.append("")
+
+    lines.append("## Appendix A) Remediation Obligations")
+    lines.append("- Embedded obligations are derived from the active exception registry for this run context.")
+    lines.append("")
+    if result.remediation_obligations:
+        lines.append("| Rule ID | Severity | Due Sprint | Owning Plan | Finding | Rationale |")
+        lines.append("|---|---|---|---|---|---|")
+        for item in result.remediation_obligations:
+            finding = item.finding.replace("|", "\\|")
+            owning_plan = item.owning_plan.replace("|", "\\|")
+            rationale = item.rationale.replace("|", "\\|")
+            lines.append(
+                f"| {item.rule_id} | {item.level} | {item.due_sprint} | {owning_plan} | {finding} | {rationale} |"
+            )
+    else:
         lines.append("- None")
     lines.append("")
 
@@ -2325,15 +3066,31 @@ def run_review(
         requirement_index=req_index,
         files=evidence_files,
     )
-    impl = {rid for rid, refs in requirement_traceability.items() if refs.get("implementation_refs")}
-    verify = {rid for rid, refs in requirement_traceability.items() if refs.get("verification_refs")}
+    matrix_files = scan_matrix_traceability_files(root)
+    matrix_traceability = build_requirement_traceability(
+        root=root,
+        requirements=req_ids,
+        requirement_index=req_index,
+        files=matrix_files,
+    )
+    impl, verify, verify_aux_only = classify_repo_evidence(
+        root=root,
+        requirements=req_ids,
+        requirement_traceability=requirement_traceability,
+    )
     arch_design = {rid for rid, refs in requirement_traceability.items() if refs.get("architecture_refs")}
     full_trace_chain = {
         rid
         for rid, refs in requirement_traceability.items()
-        if refs.get("source_refs") and refs.get("architecture_refs") and refs.get("implementation_refs") and refs.get("verification_refs")
+        if refs.get("source_refs") and refs.get("architecture_refs") and refs.get("implementation_repo_refs") and refs.get("verification_executable_refs")
     }
     full_trace_chain_gap_ids = sorted(req_ids - full_trace_chain)
+    matrix_truth_alignment = evaluate_matrix_truth_alignment(
+        requirements=req_ids,
+        matrix_traceability=matrix_traceability,
+        ground_truth_traceability=requirement_traceability,
+        matrix_files=matrix_files,
+    )
 
     trackers = [
         root / f"planning/issues/Sprint_{sprint_us}_Issue_Tracker.md",
@@ -2362,6 +3119,13 @@ def run_review(
     req_impl_ratio = len(impl) / total
     req_verify_ratio = len(verify) / total
     req_arch_ratio = len(arch_design) / total
+    executed_test_signal = load_latest_executed_test_signal(root)
+    confidence_cap, confidence_caps_applied = compute_confidence_caps(
+        requirement_total=len(req_ids),
+        req_with_verification=len(verify),
+        req_with_aux_verification_only=len(verify_aux_only),
+        executed_test_signal=executed_test_signal,
+    )
 
     issue_quality_ratio = 1.0
     if rows:
@@ -2373,6 +3137,16 @@ def run_review(
     branch = get_branch_awareness(root)
     conceptual_gaps = classify_conceptual_vs_as_built(rows, impl, arch_design)
     hierarchy_summary = evaluate_hierarchy_governance(root, sprint_dash, sprint_us)
+    human_quality = evaluate_human_quality(
+        root=root,
+        requirement_total=len(req_ids),
+        req_with_impl=len(impl),
+        req_with_verification=len(verify),
+        req_with_arch_design_trace=len(arch_design),
+        issue_quality_ratio=issue_quality_ratio,
+        hierarchy=hierarchy_summary,
+        requirement_descriptions=requirement_descriptions,
+    )
     artifact_status, traceability_artifacts_missing, traceability_artifacts_unreferenced = evaluate_traceability_artifact_status(
         root,
         sprint_dash,
@@ -2394,7 +3168,9 @@ def run_review(
         branch,
         conceptual_gaps,
         hierarchy_summary,
+        human_quality,
     )
+    apply_matrix_truth_alignment_findings(severity, matrix_truth_alignment)
     governance_penalty = compute_governance_penalty(severity=severity, issue_rows_total=len(rows))
     health_breakdown = compute_health_breakdown(
         structure_ok_ratio=structure_ok_ratio,
@@ -2402,6 +3178,8 @@ def run_review(
         req_verify_ratio=req_verify_ratio,
         req_arch_ratio=req_arch_ratio,
         issue_quality_ratio=issue_quality_ratio,
+        confidence_cap=confidence_cap,
+        confidence_caps_applied=confidence_caps_applied,
         severity=severity,
         issue_rows_total=len(rows),
     )
@@ -2418,7 +3196,10 @@ def run_review(
         "Issue parsing is table-header aware and only applies requirement-link checks where a Related Requirements column exists.",
         "Branch-awareness reports ahead/behind and merge-base risk against origin/main.",
         "Trend history is stored locally under independent_reviews/history/ and is ignored by git.",
-        "Traceability checks use full source-to-evidence chain legs (source, architecture/design, implementation, verification).",
+        "Traceability checks use full source-to-evidence chain legs (source, architecture/design, implementation, executable verification).",
+        "Traceability checks include matrix-to-ground-truth validation: documentation matrices are reconciled against baseline and executable evidence.",
+        "Planning/remediation references are reported as auxiliary linkage and are not treated as executable verification evidence.",
+        "Confidence gating includes direct structured executed-test signals from latest test_report.json artifacts.",
         "Hierarchy governance checks enforce parent capability/function, decomposition level, and allocation/verification fields on sprint issue artifacts.",
         "Required traceability artifacts are validated for existence and planning/remediation references.",
         "Traceability artifact findings remain non-blocking until full remediation is marked complete in the latest disposition index.",
@@ -2429,6 +3210,10 @@ def run_review(
         generated_at=dt.datetime.now().isoformat(timespec="seconds"),
         sprint=sprint_dash,
         run_context=run_context,
+        review_schema_version=REVIEW_SCHEMA_VERSION,
+        traceability_baseline_mode=TRACEABILITY_BASELINE_MODE,
+        relationship_direction_mode=RELATIONSHIP_DIRECTION_MODE,
+        trend_epoch=TREND_EPOCH,
         requirement_descriptions=requirement_descriptions,
         requirement_traceability=requirement_traceability,
         full_trace_chain_count=len(full_trace_chain),
@@ -2441,6 +3226,8 @@ def run_review(
         req_without_verification=sorted(req_ids - verify),
         req_with_arch_design_trace=len(arch_design),
         req_without_arch_design_trace=sorted(req_ids - arch_design),
+        req_with_aux_verification_only=len(verify_aux_only),
+        req_aux_verification_only=sorted(verify_aux_only),
         issue_rows_total=len(rows),
         issue_rows_without_requirements=rows_without_reqs,
         issue_rows_without_github_ref=rows_without_gh,
@@ -2469,6 +3256,7 @@ def run_review(
         trend_dashboard=TrendDashboardSummary(window=trend_window, overall_trend="baseline", entries=[]),
         github_reconciliation_summary=github_summary,
         github_reconciliation_rows=github_rows,
+        matrix_truth_alignment=matrix_truth_alignment,
         notes=notes,
         overall_score=compute_score(
             structure_ok_ratio,
@@ -2476,10 +3264,14 @@ def run_review(
             req_verify_ratio,
             req_arch_ratio,
             issue_quality_ratio,
-            governance_penalty,
+            confidence_cap=confidence_cap,
+            governance_penalty=governance_penalty,
         ),
         issue_quality_ratio=issue_quality_ratio,
+        confidence_caps_applied=confidence_caps_applied,
+        executed_test_signal=executed_test_signal,
         health_breakdown=health_breakdown,
+        human_quality=human_quality,
     )
     result.remediation_strategy = build_remediation_strategy(result)
 
@@ -2487,13 +3279,18 @@ def run_review(
     result.trend_snapshot = snapshot
 
     history = load_trend_history(root)
-    if history:
-        result.trend_delta = compute_trend_delta(history[-1], snapshot)
-        result.kpi_delta = compute_kpi_delta(history[-1], snapshot)
+    same_epoch_history = [item for item in history if item.trend_epoch == TREND_EPOCH]
+    if same_epoch_history:
+        result.trend_delta = compute_trend_delta(same_epoch_history[-1], snapshot)
+        result.kpi_delta = compute_kpi_delta(same_epoch_history[-1], snapshot)
+    elif history:
+        result.notes.append(
+            "Trend delta reset for this run because prior snapshots belong to a different traceability epoch/baseline mode."
+        )
 
     history.append(snapshot)
     save_trend_history(root, history)
-    result.trend_dashboard = build_trend_dashboard(history, trend_window)
+    result.trend_dashboard = build_trend_dashboard(same_epoch_history + [snapshot], trend_window)
 
     return result
 
@@ -2716,6 +3513,16 @@ def main() -> int:
         print(f"ERROR: {exc}")
         return 2
 
+    exception_registry = load_exception_registry(repo_root, args.exception_registry)
+    active_levels = enforcement_levels_from_mode(args.enforcement_mode, result.policy_profile, args.enforce_on)
+    if result.run_context == "pre-push":
+        result.remediation_obligations = collect_open_exception_obligations(
+            result.severity_summary,
+            exception_registry,
+            result.sprint,
+            result.run_context,
+        )
+
     md_path, json_path = write_reports(repo_root, result, repo_root / args.out_dir, args.report_mode)
 
     print("[independent-review] Complete")
@@ -2723,7 +3530,6 @@ def main() -> int:
     print(f"[independent-review] Run context: {result.run_context}")
     print(f"[independent-review] Report mode: {args.report_mode}")
     print(f"[independent-review] Policy profile: {result.policy_profile.profile_name}")
-    active_levels = enforcement_levels_from_mode(args.enforcement_mode, result.policy_profile, args.enforce_on)
     print(f"[independent-review] Enforcement mode: {args.enforcement_mode} ({','.join(active_levels) if active_levels else 'no blocking levels'})")
     print(f"[independent-review] Merge risk: {result.branch_awareness.merge_risk}")
     print(
@@ -2734,7 +3540,6 @@ def main() -> int:
     print(f"[independent-review] Markdown report: {md_path.as_posix()}")
     print(f"[independent-review] JSON report: {json_path.as_posix()}")
 
-    exception_registry = load_exception_registry(repo_root, args.exception_registry)
     violation_count, obligations = evaluate_enforcement_with_exceptions(
         result.severity_summary,
         active_levels,
@@ -2743,24 +3548,6 @@ def main() -> int:
         result.run_context,
     )
     excepted_count = len(obligations)
-
-    if result.run_context == "pre-push":
-        obligations_for_report = collect_open_exception_obligations(
-            result.severity_summary,
-            exception_registry,
-            result.sprint,
-            result.run_context,
-        )
-        obligation_md, obligation_json = write_remediation_obligation_report(
-            out_dir=repo_root / args.out_dir,
-            result=result,
-            obligations=obligations_for_report,
-            review_md_path=md_path,
-            review_json_path=json_path,
-            report_mode=args.report_mode,
-        )
-        print(f"[independent-review] Remediation obligation report (Markdown): {obligation_md.as_posix()}")
-        print(f"[independent-review] Remediation obligation report (JSON): {obligation_json.as_posix()}")
 
     if excepted_count > 0:
         print(

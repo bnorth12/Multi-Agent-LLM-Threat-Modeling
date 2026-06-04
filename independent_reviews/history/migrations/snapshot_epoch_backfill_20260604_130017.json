@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-06-04T13:00:17",
+  "history_file": "C:/Users/brian/OneDrive/Documents/GitHubRepos/Multi Agent Threat Modeler/independent_reviews/history/snapshot_index.json",
+  "write_applied": true,
+  "summary": {
+    "total_entries": 234,
+    "legacy_tagged": 233,
+    "current_tagged": 1,
+    "unchanged": 234,
+    "changed": 0
+  },
+  "legacy_tags": {
+    "review_schema_version": 1,
+    "traceability_baseline_mode": "legacy-line-scan",
+    "relationship_direction_mode": "none",
+    "trend_epoch": "legacy"
+  },
+  "current_tags": {
+    "review_schema_version": 2,
+    "traceability_baseline_mode": "matrix-and-ground-truth-v2",
+    "relationship_direction_mode": "documentation_vs_ground_truth",
+    "trend_epoch": "taxonomy-direction-v2"
+  }
+}
