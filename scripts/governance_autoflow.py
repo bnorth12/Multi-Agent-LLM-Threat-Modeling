@@ -31,6 +31,34 @@ def run_command(cwd: Path, args: List[str], label: str) -> Dict[str, Any]:
     }
 
 
+def run_independent_review_retention(repo_root: Path, context: str, sprint: str, run_context: str, out_dir: str) -> None:
+    if context not in {"pre-commit", "pre-merge-commit", "pre-push", "closeout"}:
+        return
+
+    print("[governance-autoflow] Retention: compacting independent_reviews/latest before stage execution")
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(repo_root / "scripts" / "independent_review_retention.py"),
+            "--repo-root",
+            str(repo_root),
+            "--sprint",
+            sprint.replace("_", "-"),
+            "--run-context",
+            run_context,
+            "--out-dir",
+            out_dir,
+            "--retain-auto-batches",
+            "2",
+        ],
+        cwd=str(repo_root),
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        print("[governance-autoflow] WARNING: retention maintenance failed; continuing execution")
+
+
 def current_branch(repo_root: Path) -> str:
     proc = subprocess.run(
         ["git", "rev-parse", "--abbrev-ref", "HEAD"],
@@ -681,6 +709,14 @@ def main() -> int:
     print("[governance-autoflow] Enforcement mode:", enforcement_mode)
     print("[governance-autoflow] Agent chain:", ", ".join(agent_chain) if agent_chain else "none")
     print("[governance-autoflow] Skill chain:", ", ".join(skill_chain) if skill_chain else "none")
+
+    run_independent_review_retention(
+        repo_root=repo_root,
+        context=args.context,
+        sprint=args.sprint,
+        run_context=run_context,
+        out_dir=args.out_dir,
+    )
 
     agent_plans = plan_stage_invocations(
         names=agent_chain,

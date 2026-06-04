@@ -207,6 +207,73 @@ def summarize(lines: List[str]) -> Dict[str, List[str]]:
     }
 
 
+def split_markdown_row(line: str) -> List[str]:
+    raw = line.strip()
+    if raw.startswith("|"):
+        raw = raw[1:]
+    if raw.endswith("|"):
+        raw = raw[:-1]
+    return [cell.strip() for cell in raw.split("|")]
+
+
+def build_requirement_descriptions(repo_root: Path) -> Dict[str, str]:
+    descriptions: Dict[str, str] = {}
+    req_dir = repo_root / "Requirements"
+    if not req_dir.exists():
+        return descriptions
+
+    for path in sorted(req_dir.glob("*.md")):
+        for line in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+            ids = [rid for rid in re.findall(r"\b[A-Z][A-Z0-9]+-\d+[A-Z]?\b", line) if REQ_ID_RE.match(rid)]
+            if not ids:
+                continue
+            candidate = line.strip()
+            if candidate.startswith("|") and candidate.endswith("|"):
+                cells = split_markdown_row(candidate)
+                for rid in ids:
+                    if rid in cells:
+                        idx = cells.index(rid)
+                        if idx + 1 < len(cells):
+                            text = cells[idx + 1].strip(" :-")
+                            if text and len(text) > 10:
+                                descriptions[rid] = text
+            else:
+                lowered = candidate.lower()
+                if "shall" not in lowered:
+                    continue
+                for rid in ids:
+                    if rid in descriptions:
+                        continue
+                    desc = re.sub(rf"\b{re.escape(rid)}\b", "", candidate).strip(" :-")
+                    if len(desc) > 10:
+                        descriptions[rid] = desc
+    return descriptions
+
+
+def build_issue_titles(repo_root: Path, sprint: str) -> Dict[str, str]:
+    titles: Dict[str, str] = {}
+    sprint_us = sprint.replace("-", "_")
+    issues_dir = repo_root / "planning" / "issues"
+    if not issues_dir.exists():
+        return titles
+    for path in sorted(issues_dir.glob(f"issue_{sprint_us}_*.md")):
+        text = path.read_text(encoding="utf-8", errors="ignore")
+        issue_match = re.search(r"\b(S\d{2,3}-\d+|R\d{2}-\d{3}|D-S\d{2,3}-\d{3})\b", path.stem.replace("_", "-"))
+        if not issue_match:
+            issue_match = re.search(r"\b(S\d{2,3}-\d+|R\d{2}-\d{3}|D-S\d{2,3}-\d{3})\b", text)
+        if not issue_match:
+            continue
+        title_match = re.search(r"(?m)^#\s+(.+)$", text)
+        if title_match:
+            titles[issue_match.group(1)] = title_match.group(1).strip()
+    return titles
+
+
+def describe_requirement(req_id: str, descriptions: Dict[str, str]) -> str:
+    desc = descriptions.get(req_id, "").strip()
+    return f"{req_id}: {desc}" if desc else req_id
+
+
 def write_outputs(
     repo_root: Path,
     out_dir: str,
@@ -230,6 +297,9 @@ def write_outputs(
         "abstraction_level_mismatches": abstraction_mismatches,
     }
 
+    req_descriptions = build_requirement_descriptions(repo_root)
+    issue_titles = build_issue_titles(repo_root, sprint)
+
     (out_root / "traceability_blocker_backlog_latest.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
 
     lines: List[str] = [
@@ -244,7 +314,7 @@ def write_outputs(
 
     reqs = summary["missing_requirement_docs"]
     if reqs:
-        lines.extend([f"- {item}" for item in reqs])
+        lines.extend([f"- {describe_requirement(item, req_descriptions)}" for item in reqs])
     else:
         lines.append("- none")
 
@@ -255,7 +325,9 @@ def write_outputs(
 
     issues = summary["missing_test_evidence"]
     if issues:
-        lines.extend([f"- {item}" for item in issues])
+        for item in issues:
+            title = issue_titles.get(item, "")
+            lines.append(f"- {item}: {title}" if title else f"- {item}")
     else:
         lines.append("- none")
 
@@ -277,7 +349,14 @@ def write_outputs(
 
     registry_links = summary["missing_registry_links"]
     if registry_links:
-        lines.extend([f"- {item}" for item in registry_links])
+        for item in registry_links:
+            issue_id, req_id = item.split(":", 1) if ":" in item else (item, "")
+            issue_part = issue_id
+            title = issue_titles.get(issue_id, "")
+            if title:
+                issue_part = f"{issue_id} ({title})"
+            req_part = describe_requirement(req_id, req_descriptions) if req_id else ""
+            lines.append(f"- {issue_part}: {req_part}" if req_part else f"- {issue_part}")
     else:
         lines.append("- none")
 

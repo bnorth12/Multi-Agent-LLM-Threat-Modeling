@@ -85,7 +85,7 @@ Before implementation closeout for a slice, confirm:
 <!-- AUTO-VERIFY-BACKFILL:START -->
 ## Automated Verification Backfill Allocation (Governance Remediation)
 
-Generated: 2026-05-31T23:39:05
+Generated: 2026-06-04T01:04:29
 
 | Requirement ID | Architecture Anchor | Design Anchor | Implementation Anchor | Verification Evidence Anchors |
 |---|---|---|---|---|

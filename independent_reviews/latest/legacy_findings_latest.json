@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-31T23:39:03",
-  "sprint": "2026_102",
-  "review_artifact": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\independent_reviews\\latest\\independent_review_2026-102_pre-push.md",
+  "generated_at": "2026-06-04T01:04:27",
+  "sprint": "2026_013",
+  "review_artifact": "C:\\Users\\brian\\OneDrive\\Documents\\GitHubRepos\\Multi Agent Threat Modeler\\independent_reviews\\latest\\independent_review_2026-013_pre-push.md",
   "verdict": "ready-for-intake",
   "readiness": "ready",
-  "overall_health": 100.0,
+  "overall_health": 92.5,
   "remediation_floor": 85.0,
   "legacy_backlog": [
     {

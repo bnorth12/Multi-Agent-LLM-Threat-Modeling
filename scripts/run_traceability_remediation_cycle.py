@@ -22,12 +22,125 @@ from typing import Any, Dict, List, Tuple
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT_DIR = REPO_ROOT / "independent_reviews" / "latest"
+MISSING_TEST_RE = re.compile(r"Issue\s+((?:S\d{2}-\d+)|(?:R\d{2}-\d{3}))\s+is missing explicit test evidence", re.IGNORECASE)
+MISSING_REGISTRY_LINK_RE = re.compile(
+    r"Issue\s+((?:S\d{2}-\d+)|(?:R\d{2}-\d{3}))\s+requirement\s+([A-Z]+-\d+[A-Z]?)\s+has no aligned row in\s+Requirements/15_End_To_End_Traceability_Attributes_Registry\.md",
+    re.IGNORECASE,
+)
 
 
 def sprint_tokens(sprint: str) -> Tuple[str, str]:
     dash = sprint.replace("_", "-")
     underscore = sprint.replace("-", "_")
     return dash, underscore
+
+
+def issue_id_pattern_for_filename(issue_id: str) -> re.Pattern[str]:
+    token = issue_id.replace("-", "[_-]")
+    return re.compile(rf"_{token}(?:_|\.)", re.IGNORECASE)
+
+
+def is_requirement_id(token: str) -> bool:
+    upper = token.upper()
+    if re.fullmatch(r"S\d{2,3}-\d+", upper):
+        return False
+    if re.fullmatch(r"D-S\d{2,3}-\d{3}", upper):
+        return False
+    return "-" in upper
+
+
+def load_blocker_backlog(repo_root: Path, out_dir: Path, sprint: str) -> Dict[str, Any]:
+    backlog_path = out_dir / "traceability_blocker_backlog_latest.json"
+    if not backlog_path.exists():
+        return {}
+    try:
+        payload = load_json(backlog_path)
+    except Exception:
+        return {}
+    if str(payload.get("sprint", "")).replace("-", "_") != sprint.replace("-", "_"):
+        return {}
+    return payload
+
+
+def issue_requirements_from_files(repo_root: Path, sprint: str, issue_ids: List[str]) -> Dict[str, List[str]]:
+    _, sprint_us = sprint_tokens(sprint)
+    issue_dir = repo_root / "planning" / "issues"
+    if not issue_dir.exists() or not issue_ids:
+        return {}
+
+    issue_files = sorted(issue_dir.glob(f"issue_{sprint_us}_*.md"))
+    mapping: Dict[str, List[str]] = {}
+    for issue_id in issue_ids:
+        pattern = issue_id_pattern_for_filename(issue_id)
+        matched = next((path for path in issue_files if pattern.search(path.name)), None)
+        if matched is None:
+            continue
+        text = matched.read_text(encoding="utf-8", errors="ignore")
+        reqs = sorted({rid for rid in REQ_ID_RE.findall(text) if is_requirement_id(rid)})
+        if reqs:
+            mapping[issue_id] = reqs
+    return mapping
+
+
+def backlog_requirement_sets(
+    repo_root: Path,
+    sprint: str,
+    backlog_payload: Dict[str, Any],
+) -> Tuple[set[str], set[str]]:
+    registry_reqs: set[str] = set()
+    for item in backlog_payload.get("missing_registry_links", []) if isinstance(backlog_payload.get("missing_registry_links"), list) else []:
+        parts = str(item).split(":", 1)
+        if len(parts) == 2 and is_requirement_id(parts[1].strip()):
+            registry_reqs.add(parts[1].strip())
+
+    missing_test_issues = [str(v).strip() for v in backlog_payload.get("missing_test_evidence", []) if str(v).strip()]
+    issue_req_map = issue_requirements_from_files(repo_root=repo_root, sprint=sprint, issue_ids=missing_test_issues)
+    missing_test_reqs: set[str] = set()
+    for reqs in issue_req_map.values():
+        missing_test_reqs.update(reqs)
+
+    return registry_reqs, missing_test_reqs
+
+
+def live_blocker_requirement_sets(repo_root: Path, sprint: str) -> Tuple[set[str], set[str], Dict[str, Any]]:
+    verify_script = repo_root / "scripts" / "verify_sprint_traceability.py"
+    proc = subprocess.run(
+        [sys.executable, str(verify_script), "--sprint", sprint],
+        cwd=str(repo_root),
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    lines: List[str] = []
+    if proc.stdout:
+        lines.extend(proc.stdout.splitlines())
+    if proc.stderr:
+        lines.extend(proc.stderr.splitlines())
+
+    registry_reqs: set[str] = set()
+    missing_test_issues: List[str] = []
+    for line in lines:
+        registry_match = MISSING_REGISTRY_LINK_RE.search(line)
+        if registry_match:
+            req_id = registry_match.group(2).strip()
+            if is_requirement_id(req_id):
+                registry_reqs.add(req_id)
+        test_match = MISSING_TEST_RE.search(line)
+        if test_match:
+            missing_test_issues.append(test_match.group(1).strip())
+
+    issue_req_map = issue_requirements_from_files(repo_root=repo_root, sprint=sprint, issue_ids=missing_test_issues)
+    missing_test_reqs: set[str] = set()
+    for reqs in issue_req_map.values():
+        missing_test_reqs.update(reqs)
+
+    diagnostics = {
+        "verifier_exit_code": proc.returncode,
+        "missing_test_issues": sorted(set(missing_test_issues)),
+        "registry_link_requirements": sorted(registry_reqs),
+        "issue_requirement_map": issue_req_map,
+    }
+    return registry_reqs, missing_test_reqs, diagnostics
 
 
 def review_json_path(repo_root: Path, sprint: str, explicit: str | None) -> Path:
@@ -117,12 +230,30 @@ def summarize_counts(review_payload: Dict[str, Any]) -> Dict[str, int]:
     }
 
 
-def select_candidates(review_payload: Dict[str, Any], max_items: int) -> List[str]:
+def requirement_description_map(review_payload: Dict[str, Any]) -> Dict[str, str]:
+    raw = review_payload.get("requirement_descriptions", {})
+    if not isinstance(raw, dict):
+        return {}
+    return {str(k): str(v).strip() for k, v in raw.items() if str(v).strip()}
+
+
+def select_candidates(
+    review_payload: Dict[str, Any],
+    max_items: int,
+    backlog_registry_reqs: set[str],
+    backlog_missing_test_reqs: set[str],
+) -> List[str]:
     missing_impl = review_payload.get("req_without_impl", []) if isinstance(review_payload.get("req_without_impl", []), list) else []
     missing_verify = review_payload.get("req_without_verification", []) if isinstance(review_payload.get("req_without_verification", []), list) else []
     missing_arch = review_payload.get("req_without_arch_design_trace", []) if isinstance(review_payload.get("req_without_arch_design_trace", []), list) else []
 
     ranked = priority_candidates(missing_impl, missing_verify, missing_arch)
+    ranked_set = set(ranked)
+    backlog_union = sorted(backlog_registry_reqs | backlog_missing_test_reqs)
+    for req_id in backlog_union:
+        if req_id not in ranked_set:
+            ranked.append(req_id)
+            ranked_set.add(req_id)
     return ranked[: max(0, max_items)]
 
 
@@ -130,6 +261,8 @@ def requirement_plan(
     req_id: str,
     review_payload: Dict[str, Any],
     repo_root: Path,
+    backlog_registry_reqs: set[str],
+    backlog_missing_test_reqs: set[str],
 ) -> Dict[str, Any]:
     traceability = review_payload.get("requirement_traceability", {})
     req_trace = traceability.get(req_id, {}) if isinstance(traceability, dict) else {}
@@ -152,6 +285,10 @@ def requirement_plan(
         missing_legs.append("verification")
     if missing_arch:
         missing_legs.append("architecture/design")
+    if req_id in backlog_registry_reqs:
+        missing_legs.append("registry-linkage")
+    if req_id in backlog_missing_test_reqs:
+        missing_legs.append("test-evidence")
 
     planned_outputs = [
         "Requirements/04_Traceability_Matrix.md",
@@ -232,12 +369,15 @@ def render_cycle_markdown(report: Dict[str, Any]) -> str:
     lines.append("## Candidate Analysis (Last Iteration)")
     lines.append("")
     last_iteration = report.get("iterations", [])[-1] if report.get("iterations") else None
+    requirement_descriptions = report.get("requirement_descriptions", {})
     if last_iteration and last_iteration.get("candidate_analysis"):
-        lines.append("| Requirement ID | Missing Legs | Arch Links | Impl Links | Verify Links |")
-        lines.append("|---|---|---:|---:|---:|")
+        lines.append("| Requirement ID | Description | Missing Legs | Arch Links | Impl Links | Verify Links |")
+        lines.append("|---|---|---|---:|---:|---:|")
         for row in last_iteration["candidate_analysis"]:
+            req_id = row["requirement_id"]
+            desc = str(requirement_descriptions.get(req_id, "")).replace("|", "\\|") or "n/a"
             lines.append(
-                f"| {row['requirement_id']} | {', '.join(row['missing_legs']) or 'none'} | "
+                f"| {req_id} | {desc} | {', '.join(row['missing_legs']) or 'none'} | "
                 f"{row['analysis_summary']['architecture_links_found']} | "
                 f"{row['analysis_summary']['implementation_links_found']} | "
                 f"{row['analysis_summary']['verification_links_found']} |"
@@ -302,15 +442,38 @@ def main() -> int:
     current_review_json = baseline_review_json
     before_payload = load_json(current_review_json)
     before_counts = summarize_counts(before_payload)
+    backlog_payload = load_blocker_backlog(REPO_ROOT, out_dir, args.sprint)
+    backlog_registry_reqs, backlog_missing_test_reqs = backlog_requirement_sets(
+        repo_root=REPO_ROOT,
+        sprint=args.sprint,
+        backlog_payload=backlog_payload,
+    )
+    live_registry_reqs, live_missing_test_reqs, live_diagnostics = live_blocker_requirement_sets(
+        repo_root=REPO_ROOT,
+        sprint=args.sprint,
+    )
+    effective_registry_reqs = live_registry_reqs or backlog_registry_reqs
+    effective_missing_test_reqs = live_missing_test_reqs or backlog_missing_test_reqs
 
     iterations: List[Dict[str, Any]] = []
 
     for index in range(1, max(1, args.max_iterations) + 1):
         current_payload = load_json(current_review_json)
-        candidates = select_candidates(current_payload, max_items=max(1, args.max_items))
+        candidates = select_candidates(
+            current_payload,
+            max_items=max(1, args.max_items),
+            backlog_registry_reqs=effective_registry_reqs,
+            backlog_missing_test_reqs=effective_missing_test_reqs,
+        )
 
         candidate_analysis = [
-            requirement_plan(req_id=req_id, review_payload=current_payload, repo_root=REPO_ROOT)
+            requirement_plan(
+                req_id=req_id,
+                review_payload=current_payload,
+                repo_root=REPO_ROOT,
+                backlog_registry_reqs=effective_registry_reqs,
+                backlog_missing_test_reqs=effective_missing_test_reqs,
+            )
             for req_id in candidates
         ]
 
@@ -322,6 +485,8 @@ def main() -> int:
             "sprint": args.sprint,
             "iteration": index,
             "review_json": current_review_json.as_posix(),
+            "backlog_input": backlog_payload if backlog_payload else {},
+            "live_verifier_blockers": live_diagnostics,
             "candidate_count": len(candidates),
             "candidates": candidate_analysis,
         }
@@ -332,22 +497,28 @@ def main() -> int:
             "",
             f"- Sprint: {args.sprint}",
             f"- Review input: {current_review_json.as_posix()}",
+            f"- Blocker backlog linked: {'yes' if backlog_payload else 'no'}",
+            f"- Live verifier blockers: registry={len(effective_registry_reqs)}, test={len(effective_missing_test_reqs)}",
             f"- Candidate count: {len(candidates)}",
             "",
             "## Candidates",
             "",
-            "| Requirement ID | Missing Legs | Arch Links | Impl Links | Verify Links |",
-            "|---|---|---:|---:|---:|",
+            "| Requirement ID | Description | Missing Legs | Arch Links | Impl Links | Verify Links |",
+            "|---|---|---|---:|---:|---:|",
         ]
+        description_map = requirement_description_map(current_payload)
         for row in candidate_analysis:
+            req_id = row["requirement_id"]
+            desc = description_map.get(req_id, "")
+            safe_desc = desc.replace("|", "\\|") if desc else "n/a"
             plan_lines.append(
-                f"| {row['requirement_id']} | {', '.join(row['missing_legs']) or 'none'} | "
+                f"| {req_id} | {safe_desc} | {', '.join(row['missing_legs']) or 'none'} | "
                 f"{row['analysis_summary']['architecture_links_found']} | "
                 f"{row['analysis_summary']['implementation_links_found']} | "
                 f"{row['analysis_summary']['verification_links_found']} |"
             )
         if not candidate_analysis:
-            plan_lines.append("| n/a | none | 0 | 0 | 0 |")
+            plan_lines.append("| n/a | n/a | none | 0 | 0 | 0 |")
 
         plan_md_path.write_text("\n".join(plan_lines) + "\n", encoding="utf-8")
 
@@ -453,6 +624,7 @@ def main() -> int:
         "after_review_json": final_review_json.as_posix(),
         "before_counts": before_counts,
         "after_counts": after_counts,
+        "requirement_descriptions": after_payload.get("requirement_descriptions", {}),
         "iterations": iterations,
     }
 
