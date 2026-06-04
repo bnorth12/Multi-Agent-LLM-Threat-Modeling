@@ -96,7 +96,7 @@ Testers SHALL collect artifacts while executing each case, not afterward.
 ### 5.3 Storage Locations
 
 - Screenshots: `docs/user_manual/screenshots/` or sprint evidence folder
-- Execution summary: `planning/Test_Execution_Summary_Sprint_2026_09.md`
+- Execution summary: `docs/verification/sprint_test_execution/Test_Execution_Summary_Sprint_<YYYY_NN>.md`
 - Release artifacts/evidence: `Releases/` bundle for RC
 
 ## 6. Manual RC Test Cases
@@ -407,5 +407,5 @@ Collect artifacts:
 ## 8. Traceability
 
 - Each manual RC test case SHALL reference requirement IDs in the execution summary.
-- Results SHALL be recorded in `planning/Test_Execution_Summary_Sprint_2026_09.md`.
+- Results SHALL be recorded in `docs/verification/sprint_test_execution/Test_Execution_Summary_Sprint_<YYYY_NN>.md`.
 - Evidence links SHALL be included for every failed or blocked step and every release-gating pass claim.

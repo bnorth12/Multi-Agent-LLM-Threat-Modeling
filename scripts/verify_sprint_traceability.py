@@ -275,6 +275,12 @@ def build_requirement_index() -> Dict[str, Set[str]]:
 
 
 def find_matrix_file(sprint_dash: str, sprint_us: str) -> Path | None:
+    active_matrix = Path("Requirements/16_Active_Sprint_Traceability_Matrix.md")
+    if active_matrix.exists():
+        active_text = active_matrix.read_text(encoding="utf-8", errors="ignore")
+        if sprint_us in active_text or sprint_dash in active_text:
+            return active_matrix
+
     candidates = [
         Path(f"planning/Sprint_{sprint_us}_Traceability_Matrix.md"),
         Path(f"planning/Sprint_{sprint_dash}_Traceability_Matrix.md"),
@@ -350,6 +356,8 @@ def parse_sprint_tracker_entries(sprint_us: str, sprint_dash: str) -> Dict[str, 
 def verify_regression_evidence(sprint_us: str, sprint_dash: str) -> Tuple[bool, str]:
     """Verify sprint-level full regression evidence file and contents."""
     candidates = [
+        Path(f"docs/verification/sprint_test_execution/Test_Execution_Summary_Sprint_{sprint_us}.md"),
+        Path(f"docs/verification/sprint_test_execution/Test_Execution_Summary_Sprint_{sprint_dash}.md"),
         Path(f"planning/Test_Execution_Summary_Sprint_{sprint_us}.md"),
         Path(f"planning/Test_Execution_Summary_Sprint_{sprint_dash}.md"),
     ]
