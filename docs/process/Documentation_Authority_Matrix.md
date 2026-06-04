@@ -4,6 +4,8 @@
 
 Define the authoritative documentation path for each systems-engineering domain and identify non-authoritative references that should be treated as supporting context.
 
+Primary ownership policy note: `docs/process/Artifact_Ownership_And_Evidence_Authority.md`.
+
 ## Scope
 
 - Architecture

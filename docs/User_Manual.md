@@ -538,7 +538,7 @@ Use this workflow whenever user-facing behavior changes to keep markdown and HTM
 1. Update source content in `docs/User_Manual.md`.
 1. Regenerate or manually apply equivalent content updates in `docs/user_manual/index.html`.
 1. Verify both manuals contain updated canonical tokens and policy text. Command: `rg "execution_mode|Run Diagnostics|Last Prompt|Heartbeat" docs/User_Manual.md docs/user_manual/index.html`
-1. Run markdown quality checks and document evidence in sprint closeout artifacts. Command: `npx --yes markdownlint-cli docs/User_Manual.md planning/Test_Execution_Summary_Sprint_2026_11.md`
+1. Run markdown quality checks and document evidence in sprint closeout artifacts. Command: `npx --yes markdownlint-cli docs/User_Manual.md docs/verification/sprint_test_execution/Test_Execution_Summary_Sprint_2026_11.md`
 1. During review, treat `docs/user_manual/index.html` as release-facing presentation and `docs/User_Manual.md` as change-tracking source; no intentional drift is allowed without a documented waiver.
 
 ---

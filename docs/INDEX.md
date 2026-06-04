@@ -71,13 +71,12 @@
 
 ## Planning and Requirements Cross-References
 
-- [../planning/Sectioned_Implementation_Plan.md](../planning/Sectioned_Implementation_Plan.md)
-- [../planning/Requirements_Baseline_v0.1.md](../planning/Requirements_Baseline_v0.1.md)
 - [../Requirements/README.md](../Requirements/README.md)
+- [../Requirements/01_Project_Requirements.md](../Requirements/01_Project_Requirements.md)
+- [../Requirements/16_Active_Sprint_Traceability_Matrix.md](../Requirements/16_Active_Sprint_Traceability_Matrix.md)
 - [../Requirements/03_HITL_Requirements.md](../Requirements/03_HITL_Requirements.md)
 - [../Requirements/09_HITL_Framework_Options.md](../Requirements/09_HITL_Framework_Options.md)
 - [../Requirements/13_Runtime_State_And_Input_Contract_Requirements.md](../Requirements/13_Runtime_State_And_Input_Contract_Requirements.md)
-- [../planning/issues/issue_2026_99_D_S13_022_Run_State_And_Gate_Contract_Corrections.md](../planning/issues/issue_2026_99_D_S13_022_Run_State_And_Gate_Contract_Corrections.md)
 - [process/Runtime_State_And_Gate_Contract_Resolution_2026_05.md](process/Runtime_State_And_Gate_Contract_Resolution_2026_05.md)
 
 ## Data Model Note

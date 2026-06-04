@@ -256,6 +256,17 @@ Runtime and test dependencies are version-pinned and actively maintained.
 - Test/developer manifest: Tests/requirements_e2e.txt
 - Governance strategy and boundary rules: Python_Dependency_Strategy.md
 
+## Documentation Ownership
+
+To prevent planning drift from becoming system authority, use these ownership boundaries:
+
+- `Requirements/` is the authoritative source for requirement and active requirement-to-test reconciliation artifacts.
+- `docs/` is the authoritative source for architecture, design, process policy, and systems-engineering evidence references.
+- `Tests/`, `test_reports/`, and `Releases/` are authoritative for test execution evidence and release evidence bundles.
+- `planning/` is limited to sprint execution workflows, intake, trackers, and historical operational records.
+
+See `docs/process/Artifact_Ownership_And_Evidence_Authority.md` for detailed policy.
+
 ## Governance Agent and Skill Structure
 
 The repository now treats governance behavior as a first-class agent/skill system.
@@ -277,7 +288,7 @@ Validation for this structure is expected to cover both direct runner behavior a
 | Family | Purpose | Example agents / skills | Test command | Evidence artifact |
 |---|---|---|---|---|
 | Repo governance automation | Validate repository health, route phases, and produce remediation guidance | `independent-review-orchestrator`, `repo-governance-autoflow-orchestrator`, `remediation-readiness`, `multi-sprint-portfolio-planner`, `kpi-drift-analyst` | `python scripts/governance_autoflow.py --context <context> --sprint <SPRINT>` plus direct runner checks such as `python scripts/run_remediation_readiness.py --sprint <SPRINT>` | `independent_reviews/latest/governance_execution_ledger_latest.md`, `independent_reviews/latest/remediation_readiness_latest.md`, `independent_reviews/latest/legacy_findings_latest.md`, `independent_reviews/latest/remediation_issue_drafts_latest.md` |
-| Multi Agent Threat Modeler runtime | Analyze input artifacts and produce threat-model outputs | `A1` through `A9` pipeline stages in the runtime architecture | `pytest Tests/` and the relevant runtime/e2e command for the feature under test | `Releases/v1.0.0/`, `exports_for_manual/`, `planning/Test_Execution_Summary_*.md`, `local runtime outputs` |
+| Multi Agent Threat Modeler runtime | Analyze input artifacts and produce threat-model outputs | `A1` through `A9` pipeline stages in the runtime architecture | `pytest Tests/` and the relevant runtime/e2e command for the feature under test | `Releases/v1.0.0/`, `exports_for_manual/`, `docs/verification/sprint_test_execution/`, `local runtime outputs` |
 
 - Direct checks: run the relevant Python runner scripts for the governance stage being changed.
 - Routed checks: run `python scripts/governance_autoflow.py --context <context> --sprint <SPRINT>` for the affected phase.

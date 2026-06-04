@@ -1,8 +1,8 @@
 # Traceability Matrix
 
 > Historical freeze notice: this matrix is retained as a sprint-era traceability snapshot.
-> For active requirement/issue/test reconciliation, use `planning/Sprint_2026_12_Traceability_Matrix.md`
-> and current sprint issue trackers under `planning/issues/`.
+> For active requirement/issue/test reconciliation, use `Requirements/16_Active_Sprint_Traceability_Matrix.md`.
+> Planning artifacts are execution records and are not the system-of-record authority.
 
 **Last Updated:** Sprint 2026-12 HMI/HITL workflow refinement and header navigation consolidation
 **Status:** Historical snapshot (not the active reconciliation source)
