@@ -1,21 +1,4 @@
-# Sprint 2026-11: Archived Sprint Folder
-
-Historical freeze notice: the Sprint 2026-11 working folder has been archived.
-
-Archived location:
-
-- `planning/archives/2026-05/Sprint_2026_11/`
-
-Continuity documents that remain at the repo planning level:
-
-- [Sprint issue tracker](../../issues/Sprint_2026_11_Issue_Tracker.md)
-- [Test execution summary](../../Test_Execution_Summary_Sprint_2026_11.md)
-- [Traceability delta appendix](../../Traceability_Delta_Appendix_Sprint_2026_11.md)
-- [Lint normalization plan](../../Lint_Normalization_Sprint_2026_11.md)
-- [Dead code inventory](../../Dead_Code_Inventory_Sprint_2026_11.md)
-- [Dead code remediation process](../../Dead_Code_Remediation_Process_Sprint_2026_11.md)
-
-The full historical work items, issues, and closeout notes are preserved in the archived folder above.# Sprint 2026-11: Work Plan and Artifacts
+# Sprint 2026-11: Work Plan and Artifacts
 
 > Historical freeze notice: this sprint README is preserved as a time-of-execution record.
 > Do not treat status placeholders here as current runtime/project status.
