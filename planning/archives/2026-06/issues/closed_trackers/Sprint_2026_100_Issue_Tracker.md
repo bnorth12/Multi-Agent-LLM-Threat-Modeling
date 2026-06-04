@@ -1,8 +1,8 @@
-# Sprint 2026_101 Issue Tracker
+# Sprint 2026_100 Issue Tracker
 
 Date: 2026-05-31
-Status: Open
-Sprint Goal: Close needed unimplemented requirements and triage deletion candidates.
+Status: Closed
+Sprint Goal: Historical triage tracker archived after BL-099 stale-shell closure pass.
 
 ## Active Issues
 
@@ -18,8 +18,8 @@ A sprint issue may be closed only when implementation, verification, and traceab
 
 | ID | GitHub Issue | Type | Priority | Status | Summary | Related Requirements | Primary Files |
 |---|---|---|---|---|---|---|---|
-| BL-099-003 | #102 | Remediation / Implementation | P0 | GitHub Created | Agent 1: mark unknown trust-boundary status explicitly when source data is insufficient | C02-A01-003 | planning/issues/issue_2026_101_BL_099_003_C02_A01_003.md |
-| BL-099-004 | #103 | Remediation / Implementation | P0 | GitHub Created | Agent 1: preserve source provenance for ICD spreadsheet rows and narrative documents and SHALL emi... | C02-A01-004 | planning/issues/issue_2026_101_BL_099_004_C02_A01_004.md |
+| BL-099-001 | #100 | Remediation / Implementation | P0 | Closed (Archived) | Stale shell closed after traceability backfill; archived during planning cleanup tranche. | C02-A01-001 | planning/archives/2026-06/issues/bl099_stale_closed/issue_2026_100_BL_099_001_C02_A01_001.md |
+| BL-099-002 | #101 | Remediation / Implementation | P0 | Closed (Archived) | Stale shell closed after traceability backfill; archived during planning cleanup tranche. | C02-A01-002 | planning/archives/2026-06/issues/bl099_stale_closed/issue_2026_100_BL_099_002_C02_A01_002.md |
 
 ## Automated Deletion Candidates
 

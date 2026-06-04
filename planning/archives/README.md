@@ -108,6 +108,18 @@ This folder stores completed planning, sprint closeout, and historical governanc
   Reason: Historical Sprint 2026-11 closeout verification evidence retained for provenance.
   Replacement artifact: compatibility pointer file retained at original path
   Regenerable: no
+- Original paths: `planning/issues/issue_2026_100_BL_099_001_C02_A01_001.md` through `planning/issues/issue_2026_102_BL_099_067_VS_010.md` (excluding retained active closure records BL-099-033 through BL-099-037)
+  Archived path: `planning/archives/2026-06/issues/bl099_stale_closed/`
+  Archive date: 2026-06-03
+  Reason: Closed stale BL-099 shell issue specs moved out of active planning/issues working set after traceability cleanup.
+  Replacement artifact: `planning/archives/2026-06/bl099_stale_issue_archive_2026_06_03.md`
+  Regenerable: no
+- Original paths: `planning/issues/Sprint_2026_013_Issue_Tracker.md`, `planning/issues/Sprint_2026_100_Issue_Tracker.md`, `planning/issues/Sprint_2026_101_Issue_Tracker.md`
+  Archived path: `planning/archives/2026-06/issues/closed_trackers/`
+  Archive date: 2026-06-03
+  Reason: Closed sprint trackers moved out of active planning/issues workspace during cleanup pass.
+  Replacement artifact: `planning/archives/2026-06/closed_trackers_archive_2026_06_03.md`
+  Regenerable: no
 
 ## Sweep Notes
 
@@ -116,4 +128,6 @@ This folder stores completed planning, sprint closeout, and historical governanc
 - 2026-05-24 tranche note recorded at `planning/archives/2026-05/s05_branch_metadata_cleanup_tranche_2026_05_24.md`.
 - 2026-05-24 tranche note recorded at `planning/archives/2026-05/s08_s10_planning_evidence_tranche_2026_05_24.md`.
 - 2026-05-24 tranche note recorded at `planning/archives/2026-05/t_doc_01_screenshot_evidence_reference_tranche_2026_05_24.md`.
+- 2026-06-03 stale BL-099 issue archive note recorded at `planning/archives/2026-06/bl099_stale_issue_archive_2026_06_03.md`.
+- 2026-06-03 closed tracker archive note recorded at `planning/archives/2026-06/closed_trackers_archive_2026_06_03.md`.
 - Adjacent docs/process and docs/architecture governance surfaces were reviewed and retained in place when they remained active guidance or policy artifacts.
