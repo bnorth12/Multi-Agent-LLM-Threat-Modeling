@@ -1,6 +1,6 @@
 # Traceability Blocker Backlog (Latest)
 
-- Timestamp: 2026-06-03T05:34:33
+- Timestamp: 2026-06-03T23:08:16
 - Sprint: 2026_013
 - Source verifier exit code: 0
 
@@ -8,7 +8,7 @@
 - none
 
 ## Issues Missing Explicit Test Evidence
-- none
+- S13-004
 
 ## Missing Function Root Links (Issue:Function)
 - none
@@ -36,7 +36,6 @@
 6. Re-run sprint traceability validation and capture post-remediation output.
 
 ## Raw Verification Output (Tail)
-- [92m[PASS] ADM-001 documented in: Requirements\04_Traceability_Matrix.md, Requirements\06_Project_Administration_Requirements.md, Requirements\15_End_To_End_Traceability_Attributes_Registry.md[0m
 - [92m[PASS] ADM-002 documented in: Requirements\04_Traceability_Matrix.md, Requirements\06_Project_Administration_Requirements.md[0m
 - [92m[PASS] ADM-003 documented in: Requirements\04_Traceability_Matrix.md, Requirements\06_Project_Administration_Requirements.md[0m
 - [92m[PASS] ADM-004 documented in: Requirements\04_Traceability_Matrix.md, Requirements\06_Project_Administration_Requirements.md, Requirements\15_End_To_End_Traceability_Attributes_Registry.md[0m
@@ -49,7 +48,7 @@
 - [92m[PASS] GUI-024 documented in: Requirements\04_Traceability_Matrix.md, Requirements\10_GUI_Requirements.md, Requirements\Reachable_Module_Requirements_Backfill.md[0m
 - [92m[PASS] GUI-025 documented in: Requirements\04_Traceability_Matrix.md, Requirements\10_GUI_Requirements.md, Requirements\Reachable_Module_Requirements_Backfill.md[0m
 - [92m[PASS] INT-005 documented in: Requirements\02_Interface_Requirements.md, Requirements\04_Traceability_Matrix.md, Requirements\15_End_To_End_Traceability_Attributes_Registry.md, Requirements\Partial_15_Wave_Requirements_Backfill.md[0m
-- [92m[PASS] ORCH-001 documented in: Requirements\04_Traceability_Matrix.md, Requirements\15_End_To_End_Traceability_Attributes_Registry.md, Requirements\Partial_15_Wave_Requirements_Backfill.md[0m
+- [92m[PASS] ORCH-001 documented in: Requirements\04_Traceability_Matrix.md, Requirements\15_End_To_End_Traceability_Attributes_Registry.md, Requirements\16_Active_Sprint_Traceability_Matrix.md, Requirements\Partial_15_Wave_Requirements_Backfill.md[0m
 - [92m[PASS] PRJ-005 documented in: Requirements\01_Project_Requirements.md, Requirements\04_Traceability_Matrix.md, Requirements\15_End_To_End_Traceability_Attributes_Registry.md, Requirements\Partial_15_Wave_Requirements_Backfill.md[0m
 - [92m[PASS] PRJ-026 documented in: Requirements\01_Project_Requirements.md, Requirements\04_Traceability_Matrix.md[0m
 - [92m[PASS] SCR-002 documented in: Requirements\04_Traceability_Matrix.md, Requirements\Partial_15_Wave_Requirements_Backfill.md, Requirements\Reachable_Module_Requirements_Backfill.md[0m
@@ -67,7 +66,7 @@
 - [92m[PASS] S13-001 has test evidence: Tests/unit/test_framework_orchestrator_langgraph.py[0m
 - [92m[PASS] S13-002 has test evidence: Tests/unit/test_administration_controls.py[0m
 - [92m[PASS] S13-003 has test evidence: Tests/unit/test_administration_controls.py[0m
-- [92m[PASS] S13-004 has test evidence: Tests/integration/test_agent_pipeline_completeness.py[0m
+- [93m[WARN] Issue S13-004 is missing explicit test evidence[0m
 - 
 - [1m--- Hierarchy Field Coverage ---[0m
 - 
@@ -94,11 +93,12 @@
 - [93m[WARN] Issue S13-003 requirement ADM-006 has no aligned row in Requirements/15_End_To_End_Traceability_Attributes_Registry.md for parent capability/function linkage[0m
 - [93m[WARN] Requirement PRJ-005 row exists in registry but is missing root hierarchy references (Capability_Hierarchy_Baseline.md and Function_Hierarchy_Registry.md)[0m
 - [93m[WARN] Issue S13-004 requirement PRJ-026 has no aligned row in Requirements/15_End_To_End_Traceability_Attributes_Registry.md for parent capability/function linkage[0m
-- [96m[INFO] Parsed 4 issue status entrie(s) from sprint tracker[0m
+- [93m[WARN] No sprint tracker entries parsed; closure checks will rely on issue files[0m
 - 
 - [1m--- Summary ---[0m
 - 
-- [93m16 warning(s)[0m
+- [93m17 warning(s)[0m
+-   - Issue S13-004 is missing explicit test evidence
 -   - Requirement INT-005 row exists in registry but is missing root hierarchy references (Capability_Hierarchy_Baseline.md and Function_Hierarchy_Registry.md)
 -   - Requirement ORCH-001 row exists in registry but is missing root hierarchy references (Capability_Hierarchy_Baseline.md and Function_Hierarchy_Registry.md)
 -   - Requirement ADM-001 row exists in registry but is missing root hierarchy references (Capability_Hierarchy_Baseline.md and Function_Hierarchy_Registry.md)
