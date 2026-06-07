@@ -44,6 +44,11 @@ Project to component and interface mapping:
 - PRJ-026 -> C01-ORCH-005, C02-A01-004, C03-A02-003, INT-005
 - PRJ-027 -> C02-A01-004, C03-A02-003, GUI-001A, GUI-003B, GUI-014
 - PRJ-028 -> C01-ORCH-004, C01-ORCH-005, HITL-001 to HITL-008, GUI-002, GUI-003A
+- PRJ-029 -> C16-PRJ-001, GUI-005, INT-008, GUI-040 | Added from IER gap action
+- PRJ-030 -> C16-PRJ-001, C01-ORCH-001, prompt store authority | Added from IER gap action
+- C11-LLM-001 -> C11-LLM-001, C11-LLM-004 | Added from IER gap action
+- C14-VER-001 -> C14-VER-001, VS-009 | Added from IER gap action
+- C15-INT-001 -> C15-INT-001, INT-001 to INT-009 | Added from IER gap action
 
 ---
 
@@ -77,6 +82,12 @@ Project to component and interface mapping:
 | GUI-033 | Post-Stage-1 Normalization Review Gate | SCR-005 post-stage governance | S12 | ✅ Delivered S12 | New normalization review gate blocks Stage 2 until analyst approval of Stage 1 normalized artifact summary |
 | GUI-041 | Header-Authoritative Artifact Domain Navigation | SCR-003 / header control rows | S12 | ✅ Delivered S12 | Artifact-domain switching moved to header tabs; left rail retained as persistent global navigation without duplicate artifact selector controls |
 | GUI-042 | Header Review and Export Icon Entry Points | SCR-003 / SCR-006 | S12 | ✅ Delivered S12 | Header now exposes icon-labeled Threat Review and Results Export tabs; export surface includes mitigations export control |
+| GUI-026 | Watchdog Stale-State Governance | SCR-014B | S12/013 | ✅ Delivered (IER action) | Execution timeline and watchdog state monitor; added from IER gap closure |
+| GUI-029 | Split Viewer for Threat Evidence | SCR-004 | S12/013 | ✅ Delivered (IER action) | Threat artifact viewer and mitigation review viewer surfaces |
+| GUI-037 | Wizard Run Auto-Select and Badge | SCR-002 | S12/013 | ✅ Delivered (IER action) | Wizard run continuity; auto-select and temporary badge |
+| GUI-043 | Parsing Segment Before Gates | SCR-001 / SCR-005 | S12/013 | ✅ Delivered (IER action) | Narrow unlabeled parsing segment before gates |
+| RHMI-005 | Persistent Timeline Status | SCR-002 / SCR-005 | S12/013 | ✅ Delivered (IER action) | Persistent timeline status and gate-centric monitoring |
+| RHMI-015 | Restart-Safe Execution Artifact Retrieval | SCR-008 | S12/013 | ✅ Delivered (IER action) | Restart-safe completed-run artifact retrieval |
 
 ---
 
