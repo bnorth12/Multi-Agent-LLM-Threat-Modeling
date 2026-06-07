@@ -54,20 +54,60 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 
 ### Satisfies
 
-_None recorded._ <!-- [Req-ID] — rationale -->
+- CAP-L0-THREAT-MODELER satisfies PRJ-001, PRJ-003, PRJ-005 (mission-level threat model production governed pipeline)
+- C01-ORCH-001 satisfies C01-ORCH-001, ORCH-001, ORCH-002, ORCH-003 (deterministic stage advancement, state continuity, checkpoint persistence, LangGraph compatibility)
+- C11-LLM-001 satisfies C11-LLM-004, LLM-004 (live-model request budget, timeout, retry, fail-closed safeguards)
+- C12-HITL-001 satisfies HITL-001, HITL-009, HITL-012, GUI-032 (HITL gate intervention, pause/resume/reject accountability)
+- C13-UI-001 satisfies GUI-002, GUI-003, GUI-012, GUI-032 (UI control surface, paused-state projection, stage selection guardrails)
+- C14-VER-001 satisfies VS-009, SCR-014 (verification evidence, execution records, qualification trace continuity)
+- C15-INT-001 satisfies INT-001, INT-002, INT-005, INT-009 (interface contracts, boundary validation, integration consistency)
+- C16-PRJ-001 satisfies PRJ-001, PRJ-002, PRJ-011, PRJ-023, PRJ-030 (delivery reliability, runtime integrity, release readiness)
+- C17-SCR-001 satisfies SCR-014 (security and compliance runtime/evidence controls)
+- C18-ADM-001 satisfies ADM-001, ADM-002, ADM-003, ADM-004, ADM-005, ADM-006 (administration governance control plane for branch/PR/checklist/release/cadence)
+- C01-ORCH-002-CAP satisfies C01-ORCH-002, PRJ-023 (LangGraph-compatible execution mode)
+- C01-ORCH-003-CAP satisfies C01-ORCH-003, INT-007 (stage checkpoint persistence and recovery)
 
 ### Realizes
 
-_None recorded._ <!-- [Cap-ID] — rationale -->
+- CAP-L0-THREAT-MODELER realized by docs/architecture/Multi_Agent_Threat_Modeler_Architecture_Baseline.md (mission context, structural/logical/functional views) and the full agent pipeline implementation
+- C01-ORCH-001 realized by docs/architecture/Multi_Agent_Logical_Decomposition.md ; docs/design/software/Runtime_And_Orchestration_Design_Specification.md
+- C11-LLM-001 realized by docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md ; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md
+- C12-HITL-001 realized by docs/architecture/HMI_Architecture_Blueprint.md ; docs/design/software/Runtime_And_Orchestration_Design_Specification.md
+- C13-UI-001 realized by docs/architecture/HMI_Architecture_Blueprint.md ; docs/design/software/Agent_Subsystem_Design_Specification.md
+- C14-VER-001 realized by docs/architecture/Multi_Agent_Function_And_Interface_Requirements_Matrix.md ; docs/design/software/Export_And_Evidence_Packaging_Design_Specification.md
+- C15-INT-001 realized by docs/architecture/Multi_Agent_Interface_Control_Document.md ; docs/design/system/External_Interface_And_Integration_Design_Package.md
+- C16-PRJ-001 realized by docs/architecture/Multi_Agent_Threat_Modeler_Architecture_Baseline.md ; docs/design/software/Runtime_And_Orchestration_Design_Specification.md
+- C17-SCR-001 realized by docs/architecture/Multi_Agent_Threat_Modeler_Architecture_Baseline.md ; docs/design/system/System_Deployment_And_Operating_Modes_Design.md
+- C18-ADM-001 realized by docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md ; docs/design/system/Functional_Data_Flow_Design_Traceability_Package.md ; docs/design/software/Runtime_And_Orchestration_Design_Specification.md
+- C01-ORCH-002-CAP realized by docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md ; docs/design/software/Runtime_And_Orchestration_Design_Specification.md (LangGraph mode)
+- C01-ORCH-003-CAP realized by docs/architecture/Capability_Function_Architecture_Traceability_Matrix.md ; docs/design/software/Runtime_And_Orchestration_Design_Specification.md (checkpoint persistence)
 
 ### Provides / Requires
 
-_None recorded._ <!-- Provides: [Interface-ID]; Requires: [Interface-ID] -->
+- C01-ORCH-001 Provides: stage transition events (INT-005); Requires: runtime state contract (FrameworkState / run_manager)
+- C12-HITL-001 Provides: gate decision ledger and resume context; Requires: preflight snapshot readiness and canonical validation results
+- C13-UI-001 Provides: operator action surfaces and status projection; Requires: backend run state snapshots and artifact references
+- C15-INT-001 Provides: ICD and canonical payload contracts; Requires: schema-compliant inputs at every boundary
+- C18-ADM-001 Provides: governance execution ledger and exception policy signals; Requires: sprint defaults, issue tracker state, and checklist artifacts
 
 ### Implemented By
 
-_None recorded._ <!-- [src/path/file.py] :: [ClassName.method] -->
+- CAP-L0-THREAT-MODELER : src/threat_modeler/orchestrator.py (FrameworkOrchestrator) ; full agent set under src/threat_modeler/agents/ ; frontend/src/ for UI surfaces
+- C01-ORCH-001 : src/threat_modeler/orchestrator.py :: FrameworkOrchestrator ; src/threat_modeler/backend/run_manager.py
+- C11-LLM-001 : src/threat_modeler/llm/openai_compatible_adapter.py :: OpenAICompatibleAdapter
+- C12-HITL-001 : src/threat_modeler/hitl/service.py :: HitlService
+- C13-UI-001 : frontend/src/components/HITLGateManager.tsx ; frontend/src/components/ExecutionProgress.tsx ; frontend/src/components/PipelineConfig.tsx
+- C14-VER-001 : scripts/verify_sprint_traceability.py ; scripts/verify_architecture_design_surface_coverage.py
+- C15-INT-001 : src/threat_modeler/config.py ; src/threat_modeler/validation.py :: CanonicalGraphValidator
+- C16-PRJ-001 : scripts/governance_autoflow.py ; src/threat_modeler/backend/run_manager.py
+- C17-SCR-001 : src/threat_modeler/backend/run_manager.py
+- C18-ADM-001 : scripts/verify_administration_controls.py :: verify_administration_controls.evaluate_controls
+- C01-ORCH-002-CAP, C01-ORCH-003-CAP : src/threat_modeler/orchestrator.py and backend/run_manager.py (checkpoint + langgraph paths)
 
 ### Depends On
 
-_None recorded._ <!-- [element or artifact path] — dependency rationale -->
+- C14-VER-001 Depends On: Requirements/05_Verification_Strategy.md and executable test anchors in Tests/ (unit/integration/e2e) plus FQT plan
+- C18-ADM-001 Depends On: config/governance_autoflow_routing.json ; config/independent_review_policy_profiles.json ; planning/ issue artifacts and sprint defaults
+- C01-ORCH-001 Depends On: src/threat_modeler/state.py (FrameworkState) and validation gates before stage handoff
+- C12-HITL-001 Depends On: canonical graph validity and preflight snapshot production before gate activation
+- All L1/L2 capabilities Depend On: stable parent capability row in this document and corresponding function row in Function_Hierarchy_Registry.md before promotion to 15_End_To_End_Traceability_Attributes_Registry.md

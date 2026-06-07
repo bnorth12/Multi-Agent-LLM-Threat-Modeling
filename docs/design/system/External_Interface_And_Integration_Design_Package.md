@@ -111,3 +111,40 @@ Verification for this package should include:
 - provider integration dry runs across supported modes
 - export delivery checks for complete and degraded bundles
 - release-candidate review confirming the external interfaces are documented for standalone use
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+- External_Interface_And_Integration_Design_Package satisfies INT-001 through INT-015 family (parser request contract, ICD/narrative source compliance, stage event contract, re-run contract, HITL decision contract, STIX/report contracts, model connection contract, etc.), PRJ-001/027 (input ingestion and ICD compliance), PRJ-011/022 (export completeness and provenance), PRJ-026 (inter-agent/external handoff), and supporting PRJ-016/021 (evidence and version authority) plus GUI/SCR surfaces that cross external boundaries
+- Cross-boundary control rules, artifact delivery domain, and integration assumptions support C15-INT-001 (interface contract integrity), C16-PRJ-001 (delivery/runtime), C11-LLM (provider boundaries), C17-SCR, and C18-ADM governance
+
+### Realizes
+
+- This package realizes the external interface and integration segment of the architecture baseline plus the interface functions within M1 (Source Ingestion), M4 (Artifact Packaging/Export), and M5 (Governance)
+- Realizes L2/L3 interface and boundary functions (F210 validation, F240 trust boundary, F280/F290/F300 packaging, F310+ governance at boundaries) and supports C15-INT capability slices plus external consumer domains for C14 verification evidence
+
+### Provides / Requires
+
+- Provides: documented external boundaries with admission/validation control points, trust-boundary reflection in runtime/canonical records, export consumers receiving only authoritative validated artifacts, mode-aware provider and artifact delivery contracts, standalone-usable release-candidate external interface documentation
+- Requires: internal service contracts (runtime, agents, validation), canonical schema compliance at crossings, approved gate decisions before export, and explicit handling of external failure/slow/malformed responses
+- Artifact delivery domain Provides completeness vs. degraded disclosure for JSON/STIX/diagrams/reports/snapshots; Requires consumers to treat packages as potentially partial
+
+### Implemented By
+
+- External provider integration and model connection: src/threat_modeler/llm/openai_compatible_adapter.py + server/api.py verification endpoint + config
+- UI/external consumer screens and HMI data: src/threat_modeler/ui/screens/* (home, input_entry, results, export, stix/stride/mermaid viewers, token_usage, snapshot, prompt, etc.) and src/threat_modeler/server/hmi_data.py
+- Ingestion/parsing boundaries and server-side integration: src/threat_modeler/parsing/*, src/threat_modeler/server/api.py
+- Export and evidence handoff: export modules + run_manager packaging + the classes in this package's artifact delivery section
+- 15_End_To_End / backfill citations: server/hmi_data.py cited in Partial_15_Wave for SCR/GUI/RHMI; multiple UI screens in Reachable_Module and S13-005 rows; provider boundaries in R01-003 and S13-005D (model connection verification)
+- Cross-ref to Functional_Data_Flow_Design_Traceability_Package.md for data-flow responsibilities at external boundaries
+
+### Depends On
+
+- Architecture baseline, ICD (Multi_Agent_Interface_Control_Document.md), and functional decomposition for boundary definitions
+- Runtime_And_Orchestration, Canonical_Graph_Lifecycle, Agent_Subsystem, Export_And_Evidence_Packaging, Model_Configuration, Prompt_Store, and System_Deployment designs (all internal producers/consumers at the boundaries this package governs)
+- 15_End_To_End_Traceability_Attributes_Registry.md rows citing external/integration design surfaces (INT family, provider, HMI data, export delivery)
+- Verification: interface admission/validation, provider dry-runs, export bundle checks, and FQT cases that cross external boundaries (FQT-002 provider, FQT-008 exports, FQT-010 documentation review) plus Tests/integration/test_validation_gates.py and e2e flows
+- Release artifacts (Releases/Deployment_Guide, docs/User_Manual.md, user_manual/) for standalone external interface documentation consequences

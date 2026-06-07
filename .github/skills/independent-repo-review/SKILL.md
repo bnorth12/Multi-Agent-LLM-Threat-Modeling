@@ -5,7 +5,11 @@ description: "Run a full-scope local independent repository review with speciali
 # Independent Repo Review Skill
 
 ## Purpose
-Run an independent, local-first review that is separate from GitHub-hosted compliance pipelines.
+Run a holistic Independent Engineering Review (per docs/process/Independent_Engineering_Review_Model.md) that assesses maturity, health, and quality of each engineering artifact class (Capability Hierarchy, Functional Decomposition, Architecture, Design, Requirements, Interfaces/ICDs, Implementation, Verification & Evidence, Configuration). 
+
+It evaluates actual documentation relationships (INCOSE annexes), implementation fidelity, verification substantiation, interface-to-functional-decomposition (L0–L4) mappings, and audits traceability matrices for correctness/completeness against the underlying engineering reality (or gaps in the docs/impl/tests themselves). 
+
+This is a comprehensive, content-based review of the Multi-Agent Threat Modeler engineering, not just repo hygiene or basic traceability accounting.
 
 ## Inputs
 - Sprint ID (YYYY-MM or YYYY_MM)
@@ -45,22 +49,15 @@ python scripts/independent_repo_review.py \
 	--max-planned-missing-requirement 0
 ```
 5. Read generated markdown/json in independent_reviews/latest/.
-6. Report prioritized gaps:
-- requirements without implementation evidence
-- requirements without verification evidence
-- requirements without architecture/design traceability
-- requirements with incomplete source-to-evidence chain (source, architecture/design, implementation, verification)
-- requirements with incomplete decomposition metadata (parent capability, child function, decomposition level, allocated component/module, verification method)
-- conceptual planned items with architecture/design trace but no as-built implementation, with maturity tags
-- as-built implementation items lacking architecture/design trace
-- issue rows missing requirement IDs
-- planned rows lacking requirement linkage
-- branch merge risk (current branch, ahead/behind vs origin/main, merge-base risk)
-- severity findings against active threshold policy
-- trend deltas from prior snapshots (score + severity count deltas)
-- compact trend dashboard summary (last N runs)
-- remediation readiness summary using a health-based floor
-- final remediation strategy section with theme-based sprint intake guidance
+6. Report using the Independent Engineering Review Model structure:
+- Per-class maturity/health/quality scorecards (Capability Hierarchy, Functional Decomposition, Architecture, Design, Requirements, Interfaces & ICDs, Implementation, Verification & Evidence, Configuration).
+- Documentation relationship health (INCOSE annex fidelity: Satisfies, Realizes, Provides/Requires, Implemented By, Verified By, etc.).
+- Interface-to-Functional-Decomposition mapping (explicit L0–L4 abstraction linkages from ICD / data-flow package / annexes).
+- Cross-cutting fidelity of implementation and verification.
+- Traceability Matrix Audit: correctness and completeness vs. actual annex content, implementation, tests, and test artifacts (gaps in matrices *or* in the engineering artifacts themselves).
+- Overall Engineering Health Score + trends.
+- Consolidated findings distinguishing matrix issues from engineering documentation/impl/verification gaps.
+- Actionable recommendations for engineering improvement.
 
 7. Treat architecture/design, requirements, implementation, and verification as a single governed chain for the Multi-Agent Threat Modeler application, and note when any of those concepts appear in data-flow modeling or interface boundaries.
 

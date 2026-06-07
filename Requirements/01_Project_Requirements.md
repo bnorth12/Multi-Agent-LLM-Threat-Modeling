@@ -39,24 +39,51 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 
 ### Derived From
 
-_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+- PRJ-001, PRJ-003, PRJ-005 derived from CAP-L0-THREAT-MODELER (Multi-Agent Threat Modeling Mission) in docs/architecture/Capability_Hierarchy_Baseline.md
+- PRJ-006, PRJ-014, PRJ-015, PRJ-019, PRJ-020, PRJ-023, PRJ-028, PRJ-029, PRJ-030 derived from C01-ORCH-001 / C12-HITL-001 / C16-PRJ-001 / C17-SCR-001 governance and runtime capabilities
+- PRJ-008, PRJ-016 derived from C11-LLM-001 and C13-UI-001 (model configuration and analyst interface capabilities)
+- Many PRJ-* allocated from or refined by component requirements in Requirements/Components/ (C01_Orchestrator_State_Requirements.md, C02_Agent_01_..., etc.)
 
 ### Allocated To
 
-_None recorded._ <!-- [Req-ID] in [artifact path] -->
+- PRJ-001, PRJ-002, PRJ-003, PRJ-005 allocated to C01-ORCH-001, C15-INT-001, C16-PRJ-001 and their L2 functions (F-ORCH-STATE-TRANSITIONS, canonical initialization/enrichment/validation) in Function_Hierarchy_Registry.md and Capability_Function_Architecture_Traceability_Matrix.md
+- PRJ-006, PRJ-014, PRJ-028 allocated to C12-HITL-001 / F-HITL-GATE-CONTROL and L3 gate functions
+- PRJ-008, INT-012/015, GUI-012/013/014 allocated to C11-LLM-001 / C13-UI-001 and Model_Configuration_Design_Specification.md + PipelineConfig surfaces
+- PRJ-011, PRJ-021, PRJ-022 allocated to C16-PRJ-001 and Export_And_Evidence_Packaging_Design_Specification.md + packaging flows
+- PRJ-019, PRJ-023 allocated to C01-ORCH-001 and Runtime_And_Orchestration_Design_Specification.md + run_manager / orchestrator
+- PRJ-024, PRJ-025, PRJ-027 allocated to C13-UI-001 / C16-PRJ-001 and visible-browser / input validation paths
+- All major PRJ-* allocated to one or more design specs under docs/design/ (see 15_End_To_End_Traceability_Attributes_Registry.md Design Artifact column for exact mappings)
 
 ### Refines
 
-_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+- Lower-level component requirements (C01_*, C02_*, etc.) and sprint-specific slices (S12-*, S13-*) refine the project-level PRJ-* statements without changing mission scope
+- PRJ-023 (LangGraph) and PRJ-025 (non-Streamlit runtime) refine earlier orchestration and UI coupling requirements
 
 ### Satisfied By
 
-_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+- PRJ-001/002/003/005/026/027 satisfied by Agent_Subsystem_Design_Specification.md + Canonical_Graph_Lifecycle_And_Validation_Design_Specification.md + orchestrator + agents + validation (src/threat_modeler/orchestrator.py, agents/*, validation.py, models/canonical.py)
+- PRJ-006/014/028/029 satisfied by Runtime_And_Orchestration_Design_Specification.md + hitl/service.py + run_manager (gate enforcement, resume, liveness fail-closed)
+- PRJ-008/012/015 satisfied by Model_Configuration_Design_Specification.md + openai_compatible_adapter.py + config.py + PipelineConfig.tsx (provider selection, connection validation, live-mode integrity)
+- PRJ-011/021/022 satisfied by Export_And_Evidence_Packaging_Design_Specification.md + packaging flows + component version manifest logic
+- PRJ-007/019/020/023/030 satisfied by Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md + run_manager + prompt_store.py (persistence, checkpoint, prompt authority, async backend state)
+- PRJ-024/ visible-browser and input flows satisfied by live_browser_e2e_smoke_react.py + frontend input components + FQT cases
+- Cross-refs: 15_End_To_End rows (S12-033, R01-003, S12-034, S13-00x, S13-005*) list the exact design + implementation + verification for each PRJ-*
 
 ### Verified By
 
-_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+- Unit/integration/e2e tests under Tests/ (test_framework_orchestrator_langgraph.py, test_agent_pipeline_completeness.py, test_hitl_gate_set_2.py, test_validation_gates.py, test_live_llm_validation.py, test_ui_app_shell.py, test_results_export_quick_preview.py, test_hmi_backend_api.py, etc.)
+- Visible-browser and FQT plans (Tests/Formal_Qualification_Test_Plan.md FQT-00x cases, docs/verification/sprint_test_execution/Test_Execution_Summary_*.md)
+- Governance/release checks: scripts/verify_sprint_traceability.py, verify_architecture_design_surface_coverage.py, verify_administration_controls.py, governance_autoflow, and C18-ADM controls
+- 15_End_To_End Test Artifact ID and Verification Artifact columns + Evidence Timestamp provide the executable substantiation
 
 ### Depends On
 
-_None recorded._ <!-- [Req-ID] — dependency rationale -->
+- Capability_Hierarchy_Baseline.md and Function_Hierarchy_Registry.md for parent capability/function allocation of all PRJ-*
+- Interface (02_), HITL (03_), GUI (10_), Admin (06_), and component (Components/Cxx_*) requirements for elaboration
+- All design specs (docs/design/software/* and system/*) for Satisfied By realization
+- 15_End_To_End_Traceability_Attributes_Registry.md as the durable governed chain record (this document feeds the registry)
+- Verification Strategy (05_) and 18_Traceability_Governance_Operating_Model.md for process and relationship rules
+- Prompt, state, and export persistence designs for PRJ-007/017/018/019/021/022/030 durability and provenance
+- Release process (07_) and administration (06_) for PRJ-021/022/024/025 release-candidate and delivery controls
+
+To strengthen traceability further, note that many PRJ-* also refine or are refined by specific sprint remediation items (e.g., S12-033 for orchestration, S13-005 series for UI/state, R01-003 for LLM) documented in planning/ and the historical appendix of 15_End_To_End. These refinements are captured in the 15_ registry rows and the design annexes rather than duplicated here.

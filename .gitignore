@@ -45,19 +45,24 @@ Thumbs.db
 test_reports/*
 !test_reports/README.md
 # Independent review artifacts:
-# - Track current lane-operational snapshots in independent_reviews/latest
-# - Keep high-churn historical archives under independent_reviews/history ignored
+# - Track ONLY the single canonical pair in independent_reviews/latest/
+#   (independent_review_<sprint>_<context>.md + .json). This pair is the live
+#   independent review and is the KNOWN EXCEPTION that will always dirty the tree
+#   after pre-push/push (governance autoflow intentionally regenerates it; we know why).
+# - Retention + is_allowed_generated_review_change enforce the single-file rule.
+# - Everything else under independent_reviews/ (history, old sidecars, batches) is ignored.
 independent_reviews/**
 !independent_reviews/README.md
 !independent_reviews/latest/
-!independent_reviews/latest/*.md
-!independent_reviews/latest/*.json
+!independent_reviews/latest/independent_review_*.md
+!independent_reviews/latest/independent_review_*.json
 !independent_reviews/history/
 !independent_reviews/history/reports/
 !independent_reviews/history/reports/auto_compaction_*/
 independent_reviews/history/reports/auto_compaction_*/**
 !independent_reviews/history/reports/auto_compaction_*/manifest.md
 !independent_reviews/history/reports/auto_compaction_*/manifest.json
+!independent_reviews/history/reports/auto_compaction_*/ier_mitigation_snapshot.json
 !independent_reviews/history/reports/auto_compaction_rollup_summary.md
 !independent_reviews/history/reports/auto_compaction_rollup_summary.json
 

@@ -481,3 +481,32 @@ This matrix is the minimum requirement linkage for the formal qualification exec
 
 This plan is complete only when every executed qualification case has a recorded verdict, evidence artifacts, and requirement traceability entries in the qualification execution summary.
 Document control: keep execution records aligned to this plan and the traceability matrix for every qualification run.
+
+## Traceability Annex (Verification Artifact)
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Verifies
+
+- FQT-001 verifies PRJ-016, PRJ-019, PRJ-021, PRJ-023, GUI-003B, GUI-003C (environment readiness, evidence packaging, traceability review, runtime state projection)
+- FQT-002 verifies PRJ-008, PRJ-016, PRJ-021, PRJ-023, GUI-012, GUI-012A, GUI-013, GUI-014, GUI-016, GUI-017 (provider configuration, stage selection guardrails, connection validation)
+- FQT-003 verifies PRJ-001, PRJ-002, PRJ-003, PRJ-016, GUI-001A, GUI-003, GUI-003A, GUI-016 (input entry, upload, automatic pipeline start, initial state)
+- FQT-004 verifies PRJ-006, PRJ-007, PRJ-016, HITL-001 through HITL-009, GUI-002, GUI-003A, GUI-004, GUI-005, GUI-016 (mandatory gate pause/approve/rationale/resume)
+- FQT-005 verifies PRJ-006, PRJ-007, HITL-001 through HITL-009, GUI-002, GUI-003A, GUI-005, GUI-017 (reject, draft, edit, accept, recovery paths)
+- FQT-006 verifies PRJ-013, PRJ-015, HITL-010, HITL-011, HITL-012, GUI-003A, GUI-003C, GUI-006, GUI-007, GUI-008 (conditional gates, publication block/resume)
+- FQT-007 verifies PRJ-016, PRJ-019, GUI-003B, GUI-003C, GUI-004, GUI-005, GUI-016 (stage results, threat review, cross-screen coherence)
+- FQT-008 verifies PRJ-011, PRJ-016, PRJ-017, PRJ-021, GUI-006, GUI-007, GUI-008, GUI-015, GUI-016 (exports, token telemetry, snapshots)
+- FQT-009 verifies PRJ-018, PRJ-016 (prompt edit, version history, revert)
+- FQT-010 verifies PRJ-016, PRJ-021, PRJ-023, PRJ-026, PRJ-027, PRJ-028, GUI-003, GUI-006, HITL-008, HITL-009, HITL-010, HITL-011 (end-to-end documentation and traceability review, full chain closure)
+
+### Produces Evidence
+
+- Each FQT-<ID> case produces: terminal/browser logs, screenshots (per step), exported STIX/Mermaid/JSON/Markdown/snapshot artifacts, qualification execution summary entries, and FQT evidence folder (archive under FQT/ or test_reports/)
+- Evidence is captured at step execution time per "Artifact Collection Standard" and named FQT-<ID>_STEP-<N>_...
+- Test Execution Summaries under docs/verification/sprint_test_execution/ (e.g. Test_Execution_Summary_Sprint_*.md) and independent review outputs reference these as substantiation for the verified requirements
+
+### Substantiates
+
+- FQT plan + execution substantiates release readiness claims for the full set of PRJ/INT/GUI/HITL/ADM requirements exercised by the 10 cases
+- Substantiates end-to-end chain closure (source -> architecture/design -> implementation -> verification) for the functions and capabilities allocated to the qualified behaviors
+- Complements (does not replace) unit/integration/e2e tests listed in 15_End_To_End_Traceability_Attributes_Registry.md and the per-sprint traceability matrices; FQT is the formal qualification layer exercising the integrated system under governed conditions

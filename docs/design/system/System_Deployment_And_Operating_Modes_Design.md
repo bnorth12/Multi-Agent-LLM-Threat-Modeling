@@ -118,3 +118,38 @@ Verification evidence for this design should include:
 - operating-mode validation records
 - release-candidate packaging review
 - user-manual and deployment-guide cross-check against the delivered build
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+- System_Deployment_And_Operating_Modes_Design satisfies operating mode selection, release-candidate packaging defaults, standalone release constraints (no dev fixtures/test harnesses), provider validation gating for live connections, and evidence packaging recording the mode used for each delivered artifact set
+- Supports C16-PRJ-001 (product delivery and runtime reliability), C17-SCR-001 (security/compliance runtime controls), C14-VER-001 (verification evidence and qualification trace), C18-ADM (release-readiness review), and PRJ-011/021/022 export/evidence/version requirements under governed release conditions
+
+### Realizes
+
+- This design realizes the release-candidate and operating-mode aspects of M5 (Governance and Runtime Integrity) and C16-PRJ / C17-SCR / C14-VER / C18-ADM capabilities in the hierarchy
+- Provides the deployment and packaging rules that the Export_And_Evidence_Packaging_Design_Specification.md and External_Interface_And_Integration_Design_Package.md depend on for standalone deliverables
+
+### Provides / Requires
+
+- Provides: explicit mode selection in configuration (visible to operator), release-candidate packaging limited to documented supported modes, standalone release assumptions (no dev/test automation paths), provider validation as gate for live runs, evidence packaging that records the mode per artifact set
+- Requires: coordination with Releases/Deployment_Guide, docs/User_Manual.md, and docs/user_manual/ for release-candidate documentation; authoritative state and export content from the runtime/canonical/export designs; governance cadence and release-readiness controls (C18-ADM)
+- Standalone releases Provide self-describing deliverables; Require the deployment guide to be the release-controlled authority for install/startup/upgrade/rollback/troubleshooting
+
+### Implemented By
+
+- Mode and packaging rules are realized in runtime packaging paths (run_manager export/snapshot), config for provider/mode selection, and release assembly processes
+- Cross-referenced by Export_And_Evidence_Packaging_Design_Specification.md (standalone deliverables), External_Interface_And_Integration_Design_Package.md (external consumer domain for release-candidates), and System_Deployment_And_Operating_Modes_Design.md itself for the consequences section
+- 15_End_To_End and capability citations for C16-PRJ and C17-SCR rows that depend on deployment/runtime reliability and compliance evidence (e.g. SCR-014, PRJ delivery slices)
+- Verification and release artifacts: deployment dry-runs, operating-mode records, Releases/Deployment_Guide_<version>.md, docs/User_Manual.md, user_manual/index.html, FQT release-candidate cases, and C18-ADM release-readiness checks (scripts/verify_administration_controls.py, governance_autoflow)
+
+### Depends On
+
+- Architecture baseline and all software/system design specs for the content that must be packaged under the governed modes
+- 15_End_To_End_Traceability_Attributes_Registry.md (delivery, evidence, and compliance legs)
+- Capability_Hierarchy_Baseline.md (C16-PRJ-001, C17-SCR-001, C14-VER-001, C18-ADM-001)
+- Release process (07_Release_Process.md) and administration requirements (06_Project_Administration_Requirements.md)
+- Executable governance/release checks and FQT evidence that the delivered artifacts match the documented modes and standalone expectations

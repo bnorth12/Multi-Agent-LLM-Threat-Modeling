@@ -59,24 +59,37 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 
 ### Derived From
 
-_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+- Prompt requirements (PRM-*, SCR-010/011, PRJ-018, PRJ-030) derived from C13-UI-001 (prompt response correlation, prompt editor surfaces) and C01-ORCH-001 / C16-PRJ-001 (prompt configuration management within governance and runtime integrity) plus C18-ADM for auditability of prompt changes
+- Strong linkage to F-UI-TRACEABILITY-L1 and F-PRJ-TRACEABILITY-L1 / prompt configuration L3 functions (F330/F331/F332)
 
 ### Allocated To
 
-_None recorded._ <!-- [Req-ID] in [artifact path] -->
+- Prompt baseline and versioned edit/revert/audit requirements allocated to C13-UI-001 and the prompt editor + version history UI surfaces, plus backend prompt store authority (Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md)
 
 ### Refines
 
-_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+- PRJ-018 (Agent Prompt Configurability) and PRJ-030 (Prompt Store Authority and Fail-Closed Loading) from 01_Project_Requirements.md are elaborated here with version history, GUI edit/revert, and authoritative backend loading rules
+- SCR-010/011 (prompt temperature and related) refine the prompt store for governance-controlled tuning
 
 ### Satisfied By
 
-_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+- Prompt store structure, version retention, authoritative backend loading (no silent file fallback), GUI edit/save/revert with history, and recovery of prompt state satisfied by src/threat_modeler/backend/prompt_store.py, src/threat_modeler/ui/screens/prompt_editor.py, frontend prompt-related components, and Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md
+- 15_End_To_End and S13-005* rows (GUI-010 prompt version history, GUI-017 live-to-fixture, RIC prompt-related state) cite the prompt store + editor + Runtime_And_Orchestration design as the anchors
+- Cross-ref to Agent_Subsystem_Design_Specification.md (agents consume versioned prompts from the authoritative store)
 
 ### Verified By
 
-_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+- Prompt edit/version/revert tests in UI shell and integration suites (Tests/unit/test_ui_app_shell.py, Tests/test_hmi_backend_api.py, Tests/integration/test_results_export_quick_preview.py)
+- FQT-009 (prompt edit, save, version history, revert)
+- Governance audit and independent review checks for prompt provenance in evidence packages (PRJ-007/021, C18-ADM)
+- 15_End_To_End verification artifacts for prompt-related rows
 
 ### Depends On
 
-_None recorded._ <!-- [Req-ID] — dependency rationale -->
+- 01_Project_Requirements.md (PRJ-018, PRJ-007, PRJ-021, PRJ-030), 10_GUI_Requirements.md (GUI prompt surfaces), 13_Runtime_State (state + prompt persistence linkage)
+- Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md (primary design authority) and Runtime_And_Orchestration_Design_Specification.md
+- Agent_Subsystem_Design_Specification.md (consumption of versioned prompts)
+- 15_End_To_End_Traceability_Attributes_Registry.md (prompt legs)
+- 05_Verification_Strategy.md and FQT for demonstration of prompt configurability and auditability
+- 18_Traceability_Governance_Operating_Model.md (prompt requirements illustrate "Implementation" from design to requirement and "Evidence production" for version history in release artifacts)
+- C13-UI-001 and supporting governance capabilities for the UI + audit surfaces

@@ -84,6 +84,8 @@ Project to component and interface mapping:
 | GUI-042 | Header Review and Export Icon Entry Points | SCR-003 / SCR-006 | S12 | ✅ Delivered S12 | Header now exposes icon-labeled Threat Review and Results Export tabs; export surface includes mitigations export control |
 | GUI-026 | Watchdog Stale-State Governance | SCR-014B | S12/013 | ✅ Delivered (IER action) | Execution timeline and watchdog state monitor; added from IER gap closure |
 | GUI-029 | Split Viewer for Threat Evidence | SCR-004 | S12/013 | ✅ Delivered (IER action) | Threat artifact viewer and mitigation review viewer surfaces |
+| GUI-026 | Watchdog Stale-State Governance (residual) | SCR-014B | S12/013 | ✅ Delivered (IER continued action 2026-06-07) | Execution timeline + heartbeat/stall; ground truth in 10_GUI + ExecutionProgress + e2e |
+| PRJ-011 | Exportable outputs (JSON/STIX/Mermaid/MD) | SCR-00x | S12/013 | ✅ Delivered (IER continued action) | App + api/client impl + pipeline tests; closes residual under-doc |
 | GUI-037 | Wizard Run Auto-Select and Badge | SCR-002 | S12/013 | ✅ Delivered (IER action) | Wizard run continuity; auto-select and temporary badge |
 | GUI-043 | Parsing Segment Before Gates | SCR-001 / SCR-005 | S12/013 | ✅ Delivered (IER action) | Narrow unlabeled parsing segment before gates |
 | RHMI-005 | Persistent Timeline Status | SCR-002 / SCR-005 | S12/013 | ✅ Delivered (IER action) | Persistent timeline status and gate-centric monitoring |

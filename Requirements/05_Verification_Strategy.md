@@ -35,24 +35,41 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 
 ### Derived From
 
-_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+- VS-00x family derived from C14-VER-001 (Verification and Validation Governance) in Capability_Hierarchy_Baseline.md and the verification coverage control function F-VER-TRACEABILITY-L1
+- Overall strategy supports CAP-L0-THREAT-MODELER mission verification and all L1 capabilities (especially C01-ORCH, C12-HITL, C13-UI, C14-VER, C16-PRJ, C18-ADM)
 
 ### Allocated To
 
-_None recorded._ <!-- [Req-ID] in [artifact path] -->
+- VS-001 through VS-010 allocated to C14-VER-001 and the verification/qualification artifacts (FQT plan, sprint test execution summaries, 15_End_To_End verification columns, independent review outputs)
+- Sprint-specific verification (visible-browser, race-condition, release-candidate manual campaigns) allocated to C16-PRJ-001 and C18-ADM release-readiness controls
 
 ### Refines
 
-_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+- Detailed test plans (FQT, unit/integration/e2e suites) and per-sprint execution summaries refine the high-level VS-* strategy statements
+- Component and sprint remediation verification obligations refine the base strategy
 
 ### Satisfied By
 
-_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+- VS-001 (unit/integration) satisfied by Tests/unit/, Tests/integration/, src/ test files, and the test anchors in 15_End_To_End_Traceability_Attributes_Registry.md
+- VS-002/003 (FQT and sprint test execution summaries) satisfied by Tests/Formal_Qualification_Test_Plan.md + docs/verification/sprint_test_execution/Test_Execution_Summary_*.md + FQT/ archive evidence
+- VS-004/005/006/007/008 (demonstration, screenshots, release-candidate validation) satisfied by FQT cases, e2e browser flows (live_browser_e2e_smoke_react.py), and release artifacts under Releases/ + docs/
+- VS-009 (visible-browser CAV upload) satisfied by scripts/live_browser_e2e_smoke_react.py + FQT-002/003 input/upload cases + frontend input components
+- VS-010 (race-condition / causal ordering for gates) satisfied by Tests/integration/test_validation_gates.py + timestamped polling + FQT gate cases
+- All VS-* satisfied by the verification legs in 15_End_To_End (Test Level, Test Artifact ID, Evidence Timestamp) and by governance verifiers (verify_sprint_traceability.py, verify_architecture_design_surface_coverage.py, independent_repo_review.py)
 
 ### Verified By
 
-_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+- The artifacts listed above (FQT plan/execution, sprint summaries, browser automation, integration gate tests, independent reviews) are themselves the verification evidence for the VS-* requirements
+- 15_End_To_End and Capability_Function_Architecture_Traceability_Matrix.md rows that cite verification artifacts close the "Verified By" direction for the requirements they cover
+- C14-VER-001 governance (scripts/verify_*, governance_autoflow, sprint closeout certifiers) provides meta-verification that the strategy is being followed
 
 ### Depends On
 
-_None recorded._ <!-- [Req-ID] — dependency rationale -->
+- 01_Project_Requirements.md, 03_HITL_Requirements.md, 10_GUI_Requirements.md, 06_Project_Administration_Requirements.md, and all component reqs for the behaviors being verified
+- All design specs (especially Runtime_And_Orchestration, Agent_Subsystem, Export_And_Evidence, External_Interface) for the "Satisfied By" implementations that must be verified
+- 15_End_To_End_Traceability_Attributes_Registry.md as the single source for executable verification anchors
+- FQT plan, sprint test execution summaries, and independent review outputs as the primary evidence consumers/producers
+- 18_Traceability_Governance_Operating_Model.md (this strategy document operationalizes the "Verification" and "Evidence production / substantiation" relationships)
+- C14-VER-001 / C18-ADM capabilities and their implementation anchors (scripts/verify_*, governance_autoflow, sprint-closeout-certifier) for ongoing enforcement
+
+The VS-* strategy is refined by detailed executable artifacts (FQT plan cases, specific unit/integration/e2e test modules, sprint test execution summaries, and independent review outputs). These refinements live in the 15_End_To_End verification columns, the FQT document itself, and the design annexes (especially Runtime_And_Orchestration, Export_And_Evidence, etc.) that list the exact test anchors. No further top-level refinement list is needed here beyond the explicit mappings already provided in the Satisfied By / Verified By sections above.

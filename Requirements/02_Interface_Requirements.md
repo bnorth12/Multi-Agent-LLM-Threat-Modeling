@@ -24,24 +24,50 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 
 ### Derived From
 
-_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+- INT-00x family primarily derived from C15-INT-001 (Integration and Interface Integrity) and supporting C01-ORCH / C13-UI / C16-PRJ capabilities in Capability_Hierarchy_Baseline.md
+- INT-001/002/003/005/006/007/010/011/015 derived from or allocated under the interface and handoff portions of CAP-L0-THREAT-MODELER and M1/M2/M4/M5 mission functions
+- INT-012/013/014/015 also support C11-LLM-001 (provider config), C17-SCR (authorization/audit), and C18-ADM (governance audit retrieval)
 
 ### Allocated To
 
-_None recorded._ <!-- [Req-ID] in [artifact path] -->
+- INT-001/002/003/004/005 allocated to C15-INT-001 / F-INT-TRACEABILITY-L1 and L3/L4 canonical validation + stage event services (Function_Hierarchy_Registry.md)
+- INT-005/006/007 allocated to C01-ORCH-001 and C12-HITL-001 (stage events, HITL decision, re-run contracts) realized in Runtime_And_Orchestration_Design_Specification.md + orchestrator + hitl/service.py
+- INT-008/009 allocated to C13-UI-001 visualization surfaces (visualization read/edit contracts)
+- INT-010/011 allocated to C07/C08/C09/C10 packaging agents and Export_And_Evidence_Packaging_Design_Specification.md
+- INT-012/015 allocated to C11-LLM-001 and Model_Configuration_Design_Specification.md + openai_compatible_adapter + config + PipelineConfig
+- INT-013/014 allocated to C17-SCR-001 and administration/security controls (C18-ADM)
+- Most INT-* allocated to External_Interface_And_Integration_Design_Package.md and Multi_Agent_Interface_Control_Document.md for boundary definitions
 
 ### Refines
 
-_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+- Component-level interface details in C01_Orchestrator_State_Requirements.md, C02_Agent_01_..., C11_LLM_Requirements.md, C12_HITL_*, etc. refine the project interface contracts
+- Sprint remediation slices (S12/S13) add concrete handoff, projection, and connection behaviors that refine the base INT-* statements
 
 ### Satisfied By
 
-_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+- INT-001/002/003/004 satisfied by src/threat_modeler/parsing/*, agents (input normalizer, context builder, trust boundary, etc.), validation.py (CanonicalGraphValidator), and Agent_Subsystem_Design_Specification.md + Canonical_Graph_Lifecycle_And_Validation_Design_Specification.md
+- INT-005/006/007 satisfied by src/threat_modeler/orchestrator.py (FrameworkOrchestrator, stage events, handoff), backend/run_manager.py, hitl/service.py (HitlService, decision recording, resume), and Runtime_And_Orchestration_Design_Specification.md
+- INT-008/009 satisfied by frontend visualization components (stix_viewer, stride_viewer, mermaid_viewer, artifacts/threat review viewers) + backend data services (server/hmi_data.py, ui/screens/*)
+- INT-010/011 satisfied by agent_06_stix_packager.py, agent_08_diagram_generator.py, agent_09_human_report_writer.py + Export_And_Evidence_Packaging_Design_Specification.md + test export paths
+- INT-012/015 satisfied by Model_Configuration_Design_Specification.md, src/threat_modeler/config.py, llm/openai_compatible_adapter.py, frontend/src/components/PipelineConfig.tsx, server/api.py (model connection verification)
+- INT-013/014 satisfied by authorization and audit paths in runtime + governance (C17-SCR / C18-ADM controls)
+- 15_End_To_End rows (R01-003, S12-033, S12-034, S13-005*, many INT-005/010/011/015 legs) list the exact design + source + verification for each
 
 ### Verified By
 
-_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+- Contract/schema tests in Tests/unit and integration (test_input_ingestion.py, test_validation_gates.py, test_agent_pipeline_completeness.py, test_results_export_quick_preview.py, test_stride_export_artifact.py, test_stix_viewer_screen.py, etc.)
+- Live provider/connection tests (Tests/e2e/test_live_llm_validation.py, Tests/test_hmi_backend_api.py)
+- UI/API walkthroughs and FQT cases that exercise the full set of INT contracts (FQT-002 provider, FQT-003 input, FQT-007/008 results/export, FQT-010 documentation review)
+- Governance verifiers and 15_End_To_End Test Artifact IDs / Verification Artifacts
 
 ### Depends On
 
-_None recorded._ <!-- [Req-ID] — dependency rationale -->
+- Capability_Hierarchy_Baseline.md and Function_Hierarchy_Registry.md for C15-INT-001 and related allocations
+- 01_Project_Requirements.md (many PRJ-* depend on or elaborate the INT contracts)
+- Agent_Subsystem, Canonical_Graph_Lifecycle, Runtime_And_Orchestration, Export_And_Evidence, Model_Configuration, External_Interface_And_Integration_Design_Package.md, and Multi_Agent_Interface_Control_Document.md for realization
+- 15_End_To_End_Traceability_Attributes_Registry.md (the durable record of INT legs)
+- Verification Strategy (05_) for contract vs. demonstration vs. inspection methods
+- C11_LLM_Requirements.md, C12_HITL_*, GUI requirements, and Components/ for detailed elaboration
+- 18_Traceability_Governance_Operating_Model.md for the relationship taxonomy itself (this document is a primary example of the "Interface provision and consumption" and "Requirement allocation" rules)
+
+Many INT-* are further refined by component-level contracts in the Cxx_ files (e.g., C01-ORCH-005 for handoff, C02-A01-00x for input normalization, C11-LLM-004 for timeout budgets) and by sprint-specific UI/integration slices (S12-0xx, S13-005x). These refinements are tracked in the 15_End_To_End_Traceability_Attributes_Registry.md rows and the corresponding design annexes (External_Interface_And_Integration_Design_Package.md, Agent_Subsystem_Design_Specification.md, etc.) rather than duplicated at this level.

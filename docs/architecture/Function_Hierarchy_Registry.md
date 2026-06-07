@@ -116,20 +116,65 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 
 ### Satisfies
 
-_None recorded._ <!-- [Req-ID] — rationale -->
+- F-L0-MISSION-001 satisfies PRJ-001, PRJ-003, PRJ-005 (governed threat model production from validated inputs)
+- F-ORCH-TRACEABILITY-L1 satisfies C01-ORCH-001, ORCH-001, ORCH-002, ORCH-003 (orchestration traceability control for stage transitions and checkpoints)
+- F-LLM-TRACEABILITY-L1 satisfies C11-LLM-004, LLM-004 (LLM runtime traceability for invocation budgets and fail-closed)
+- F-HITL-TRACEABILITY-L1 satisfies HITL-001, HITL-009, HITL-012, GUI-032 (HITL decision traceability and evidence preservation)
+- F-UI-TRACEABILITY-L1 satisfies GUI-002, GUI-003, GUI-012, GUI-032 (UI interaction traceability for surfaces and state visibility)
+- F-VER-TRACEABILITY-L1 satisfies VS-009, SCR-014 (verification coverage control from requirement to test artifacts)
+- F-INT-TRACEABILITY-L1 satisfies INT-001, INT-002, INT-005, INT-009 (interface contract traceability and boundary auditability)
+- F-PRJ-TRACEABILITY-L1 satisfies PRJ-001, PRJ-002, PRJ-011, PRJ-023, PRJ-030 (delivery and runtime traceability control)
+- F-SCR-TRACEABILITY-L1 satisfies SCR-014 (security runtime traceability)
+- F-ADM-GOV-CONTROLS-L1 satisfies ADM-001..ADM-006 (administration governance control traceability)
+- F-ORCH-STATE-TRANSITIONS satisfies C01-ORCH-001, INT-005 (stage transition enforcement)
+- Multiple L2 functions (F-GUI_*, F-S12-*) satisfy their bound requirement slices (GUI-*, RHMI-*, INT-*, PRJ-*) per active remediation and 15_End_To_End rows
 
 ### Realizes
 
-_None recorded._ <!-- [Cap-ID] — rationale -->
+- F-L0-MISSION-001 realizes CAP-L0-THREAT-MODELER
+- F-ORCH-TRACEABILITY-L1 realizes C01-ORCH-001
+- F-LLM-TRACEABILITY-L1 realizes C11-LLM-001
+- F-HITL-TRACEABILITY-L1 realizes C12-HITL-001
+- F-UI-TRACEABILITY-L1 realizes C13-UI-001
+- F-VER-TRACEABILITY-L1 realizes C14-VER-001
+- F-INT-TRACEABILITY-L1 realizes C15-INT-001
+- F-PRJ-TRACEABILITY-L1 realizes C16-PRJ-001
+- F-SCR-TRACEABILITY-L1 realizes C17-SCR-001
+- F-ADM-GOV-CONTROLS-L1 realizes C18-ADM-001
+- F-C11_LLM_004-TRACE-L2 realizes C11-LLM-001 (via C11-LLM-004-CAP)
+- F-ORCH-STATE-TRANSITIONS realizes C01-ORCH-001
+- F-HITL-GATE-CONTROL realizes C12-HITL-001
+- F-GUI_003A-TRACE-L2, F-GUI_012A-TRACE-L2, F-GUI_029-TRACE-L2 realize C13-UI-001 (paused projection, selection guard, prompt correlation)
+- F-PRJ_024-TRACE-L2 realizes C16-PRJ-001
+- F-ADM-GOV-CONTROLS-L2 realizes C18-ADM-001
+- All S12-/S13- requirement-bound L2 functions realize their parent C13-UI-001 or C01-ORCH-001 or C16-PRJ-001 per the Function Hierarchy table
 
 ### Provides / Requires
 
-_None recorded._ <!-- Provides: [Interface-ID]; Requires: [Interface-ID] -->
+- F-ORCH-STATE-TRANSITIONS Provides: deterministic next-state and checkpoint handoff; Requires: validated canonical state from prior stage
+- F-HITL-GATE-CONTROL Provides: pause/resume decision record with rationale; Requires: pre-gate snapshot + canonical validation
+- L3 agent functions (F221 etc.) Provide: stage-specific canonical mutations; Require: upstream normalized/validated payload
+- F-INT-CANONICAL-VALIDATION-SERVICES Provides: schema/range validation results; Requires: inbound payload at every boundary
 
 ### Implemented By
 
-_None recorded._ <!-- [src/path/file.py] :: [ClassName.method] -->
+- F-L0-MISSION-001 : src/threat_modeler/orchestrator.py (FrameworkOrchestrator) + agent pipeline
+- F-ORCH-TRACEABILITY-L1, F-ORCH-STATE-TRANSITIONS : src/threat_modeler/orchestrator.py :: FrameworkOrchestrator ; src/threat_modeler/backend/run_manager.py
+- F-LLM-TRACEABILITY-L1, F-C11_LLM_004-TRACE-L2 : src/threat_modeler/llm/openai_compatible_adapter.py
+- F-HITL-TRACEABILITY-L1, F-HITL-GATE-CONTROL : src/threat_modeler/hitl/service.py
+- F-UI-TRACEABILITY-L1 and GUI L2s : frontend/src/components/* (HITLGateManager.tsx, ExecutionProgress.tsx, PipelineConfig.tsx, etc.)
+- F-VER-TRACEABILITY-L1 : scripts/verify_sprint_traceability.py and related verify_*.py
+- F-INT-TRACEABILITY-L1 and validation L3/L4 : src/threat_modeler/validation.py :: CanonicalGraphValidator ; src/threat_modeler/config.py
+- F-PRJ-TRACEABILITY-L1 : scripts/governance_autoflow.py ; src/threat_modeler/backend/run_manager.py
+- F-SCR-TRACEABILITY-L1 : src/threat_modeler/backend/run_manager.py
+- F-ADM-GOV-CONTROLS-L1, F-ADM-GOV-CONTROLS-L2 : scripts/verify_administration_controls.py
+- L3 agent mappings: F221 -> src/threat_modeler/agents/agent_01_input_normalizer.py ; F231 -> agent_02_context_builder.py ; ... F301 -> agent_09_human_report_writer.py
+- L4 operational activities implemented in the same agent/orchestrator/validation modules plus Tests/ exercising the contracts
 
 ### Depends On
 
-_None recorded._ <!-- [element or artifact path] — dependency rationale -->
+- All function rows Depend On: parent capability ID present and current in Capability_Hierarchy_Baseline.md
+- L2+ functions Depend On: at least one row in Requirements/15_End_To_End_Traceability_Attributes_Registry.md with matching implementation + verification anchors before sprint closeout
+- Verification L1 Depends On: 05_Verification_Strategy.md and presence of executable Tests/ (not just planning docs)
+- Administration functions Depend On: config/ governance json files and live issue/planning artifacts for policy evaluation
+- Interface and canonical validation functions Depend On: schema definitions in docs/schemas/ and models/canonical.py

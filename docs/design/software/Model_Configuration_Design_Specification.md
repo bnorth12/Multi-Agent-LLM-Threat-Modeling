@@ -398,3 +398,40 @@ Extend HITL approval to allow model re-configuration before rerun:
 - GUI-012, GUI-013, GUI-014: Model configuration GUI requirements (Requirements/10_GUI_Requirements.md)
 - config.py: RuntimeSettings and ModelSelection dataclasses
 - Python keyring documentation: <https://keyring.readthedocs.io/>
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+- Model_Configuration_Design_Specification satisfies PRJ-008 (Configurable Model Selection), INT-012 and INT-015 (Provider configuration contracts, Model Connection Contract with name/endpoint/URL/key/auth/model/deployment params, validation result), GUI-012/013/014 (model configuration GUI surfaces for provider/stage selection, connection validation, credentials)
+- Security, credential, and connection validation rules support C11-LLM-001 / C11-LLM-004-CAP (live model integration governance, timeout/retry budget, fail-closed), C17-SCR (security/compliance runtime controls), and C16-PRJ runtime reliability
+
+### Realizes
+
+- This design realizes the model provider / LLM adapter configuration and connection governance portion of C11-LLM-001 and the live-mode aspects of M5 governance/runtime integrity
+- Supports realization of C01-ORCH (orchestrator model usage), C15-INT (interface contracts for providers), and UI control surfaces (C13-UI) that surface configuration
+
+### Provides / Requires
+
+- Provides: structured model configuration enabling dynamic provider switching without code changes; encrypted credential storage (keyring) with no plaintext in logs/config; per-provider connection validation (success / connectivity error / auth failure); explicit provider validation gating run start for live connections
+- Requires: operator-visible mode selection and configuration (GUI-012+), provider endpoint/auth details per INT-015, and runtime enforcement in the LLM adapter (src/threat_modeler/llm/openai_compatible_adapter.py)
+- Future enhancements (auto-discovery, pooling, failover, rate limiting, cost tracking, per-provider tuning, proxy) are noted as post-sprint but would extend the same traceability surface
+
+### Implemented By
+
+- Core configuration and RuntimeSettings/ModelSelection: src/threat_modeler/config.py (and server/api.py model connection verification endpoint)
+- LLM adapter runtime usage and connection handling: src/threat_modeler/llm/openai_compatible_adapter.py (OpenAICompatibleAdapter)
+- UI configuration surfaces: frontend/src/components/PipelineConfig.tsx (provider/stage selection, model connection credential form, nine-stage controls, test-connection behavior)
+- 15_End_To_End citations: R01-003 (C11-LLM-004 via openai_compatible_adapter + e2e live LLM validation), multiple S13-005* rows for GUI-012/013/014 (PipelineConfig model connection), S13-005D GUI-014 (server/api.py model connection verification), S13-005D RIC/GUI projection rows that depend on configured providers
+- Security tests (credentials never in logs, keyring backend, no cross-contamination) implemented in the config + adapter layers
+
+### Depends On
+
+- Project/Interface/GUI requirements: 01_Project_Requirements.md (PRJ-008), 02_Interface_Requirements.md (INT-012/015), 10_GUI_Requirements.md (GUI-012/013/014)
+- LLM capability and adapter design: cross-refs to C11-LLM in Capability_Hierarchy_Baseline.md / Function_Hierarchy_Registry.md and the adapter implementation
+- Runtime orchestration: Runtime_And_Orchestration_Design_Specification.md (uses configured models at stage boundaries)
+- 15_End_To_End_Traceability_Attributes_Registry.md (R01-003 and S13-005 configuration/projection rows)
+- Verification: live LLM validation (Tests/e2e/test_live_llm_validation.py), backend API integration (Tests/test_hmi_backend_api.py), UI shell tests for config surfaces (Tests/unit/test_ui_app_shell.py), unit adapter tests, and FQT-002 provider select / connection validation cases
+- Security/credential expectations also tie into C17-SCR and administration governance controls (C18-ADM) for release-time configuration review

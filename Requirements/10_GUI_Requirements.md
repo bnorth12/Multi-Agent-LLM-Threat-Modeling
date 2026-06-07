@@ -75,24 +75,38 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 
 ### Derived From
 
-_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+- GUI-00x family (including GUI-001A, 002, 003/003A/003B/003C, 005, 006, 007, 012/012A, 013/014, 016/017, 020, 024, 030/031/032, 037, etc.) derived from C13-UI-001 (User Interface Control Surface) in Capability_Hierarchy_Baseline.md and the UI interaction traceability control function F-UI-TRACEABILITY-L1 plus many L2 requirement-bound decompositions (F-GUI_*, F-S12-*, F-S13-*)
+- Many GUI-* also support or are allocated under C16-PRJ-001 and C12-HITL-001 for operator-facing governance surfaces
 
 ### Allocated To
 
-_None recorded._ <!-- [Req-ID] in [artifact path] -->
+- GUI-001A/002/003/003A/003C/005/006/007/012/012A/013/014/016/017/020/024/030/031/032/037 allocated to C13-UI-001 and the React HMI components (HITLGateManager, ExecutionProgress, PipelineConfig, ArtifactsViewer, TokenUsageView, prompt editor, snapshot manager, stage results, input entry, home, etc.) plus src/threat_modeler/ui/screens/* and frontend/src/components/*
+- Specific allocations appear in Function_Hierarchy_Registry.md L2 rows (F-GUI_003A-TRACE-L2, F-GUI_012A-TRACE-L2, F-GUI_029-TRACE-L2, F-S12-*, F-S13-005* GUI rows) and 15_End_To_End (S12-013, S12-017, S12-020, S12-022, S12-025..S12-030, S13-005* series)
 
 ### Refines
 
-_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+- React HMI Refactor requirements (11_React_HMI_Refactor_Requirements.md) and sprint-specific HMI slices (S12-011 through S12-030, S13-005*) refine the base GUI statements with concrete screen, state, and interaction behaviors
+- Runtime state and input contract requirements (13_) refine the GUI projection and input surfaces
 
 ### Satisfied By
 
-_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+- GUI-001A/003/003A/003C/005/006/007/016/017/020/024/030/031/032 satisfied by frontend/src/components/* (HITLGateManager.tsx, ExecutionProgress.tsx, PipelineConfig.tsx, ArtifactsViewer.tsx, TokenUsageView.tsx, etc.) + src/threat_modeler/ui/screens/* (input_entry.py, prompt_editor.py, stage_results.py, snapshot_manager.py, home.py, etc.) + Runtime_And_Orchestration_Design_Specification.md and Agent_Subsystem_Design_Specification.md for backend state and agent output surfaces
+- GUI-012/013/014 satisfied by Model_Configuration_Design_Specification.md + PipelineConfig.tsx + server/api.py model connection verification
+- GUI-037 (run selection continuity) and related satisfied by HMI run selection shell and restart-safe artifact retrieval paths
+- 15_End_To_End rows (S12-013 GUI-032, S12-017 RHMI-016, S12-020 INT-005, S12-022 GUI-020, S12-025 INT-011, S12-026 INT-010, S12-027..S12-030, S13-005* GUI-00x) list the exact frontend + design + verification for each
 
 ### Verified By
 
-_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+- UI shell tests (Tests/unit/test_ui_app_shell.py), HMI backend API tests (Tests/test_hmi_backend_api.py), integration preview/export tests (Tests/integration/test_results_export_quick_preview.py, test_canonical_graph_viewer.py, etc.), e2e browser flows (Tests/e2e/test_frontend_react_mui_full_workflow.py, live_browser_e2e_smoke_react.py)
+- FQT cases that exercise input, gates, stage results, export, prompt, snapshot, and configuration (FQT-002/003/004/007/008/009/010)
+- 15_End_To_End Verification Artifact columns and Test Artifact IDs for the GUI/RHMI rows
+- Independent review and sprint execution compliance outputs that evaluate UI surface coverage
 
 ### Depends On
 
-_None recorded._ <!-- [Req-ID] — dependency rationale -->
+- Capability_Hierarchy_Baseline.md and Function_Hierarchy_Registry.md for C13-UI-001 and the many L2 GUI function rows
+- 01_Project_Requirements.md (PRJ delivery and state), 03_HITL_Requirements.md (gate surfaces), 13_Runtime_State_And_Input_Contract_Requirements.md (state contract and projections), 11_React_HMI_Refactor_Requirements.md, and 12_React_HMI_Traceability_To_Tests.md
+- Runtime_And_Orchestration_Design_Specification.md, Agent_Subsystem_Design_Specification.md, Model_Configuration_Design_Specification.md, Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md, and External_Interface_And_Integration_Design_Package.md for the backend services the GUI consumes/projects
+- 15_End_To_End_Traceability_Attributes_Registry.md (the primary governed record of GUI legs)
+- 05_Verification_Strategy.md (demonstration and visible-browser methods for GUI) and FQT plan
+- 18_Traceability_Governance_Operating_Model.md (GUI requirements are a major consumer of "Architecture satisfaction" and "Implementation" relationships)

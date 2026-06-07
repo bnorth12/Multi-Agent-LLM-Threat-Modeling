@@ -122,3 +122,45 @@ When adding or refactoring architecture segments:
 1. Update requirements matrix mappings.
 1. Add or update requirement records under `Requirements/` if scope changes.
 1. Add verification evidence in sprint traceability artifacts.
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+- Architecture baseline (mission + viewpoints + canonical data-centric + runtime integrity loops) satisfies PRJ-001 through PRJ-030 (project requirements for ingestion, canonical, pipeline, HITL, export, governance, liveness, prompt authority) and INT-001 through INT-015 (interface contracts)
+- Structural, logical, and functional views satisfy the decomposition and allocation expectations in C01-ORCH-001, C12-HITL-001, C13-UI-001, C15-INT-001, C16-PRJ-001 and component families
+- Canonical Graph Data-Centric Architecture satisfies PRJ-002 (canonical authority), INT-002 (parser contracts), INT-005 (stage events), PRJ-026 (handoff integrity)
+- Runtime Integrity Loop and interface domains satisfy PRJ-019, PRJ-020, PRJ-023, PRJ-028, PRJ-029 (async state, live-mode, langgraph, gate/resume, liveness) plus SCR-014 and ADM controls for security/governance surfaces
+
+### Realizes
+
+- Multi-Agent Threat Modeler Architecture Baseline (this document) realizes CAP-L0-THREAT-MODELER and all L1 capabilities (C01-ORCH-001 through C18-ADM-001) via the defined segments, loops, and domains
+- Analyst interaction segment + UI control surfaces realize C13-UI-001 and C12-HITL-001
+- Runtime orchestration segment + run control domain realize C01-ORCH-001 and C16-PRJ-001
+- Agent execution segment realizes C02-A01 through C10-A09 agent capability slices (M3/M4 analysis and packaging)
+- Validation and governance segment + persistence/evidence realize C14-VER-001, C15-INT-001, C17-SCR-001, C18-ADM-001
+- The architecture as a whole (with its three viewpoints and canonical data model) realizes the mission function M0-M5 decomposition
+
+### Provides / Requires
+
+- Architecture Provides: authoritative decomposition (structural/logical/functional), interface domain catalog, canonical data model, runtime integrity contracts
+- Requires (from requirements layer): named PRJ/INT/GUI/HITL/ADM requirements as allocation sources; stable capability and function hierarchies
+- Internal service interfaces Provide: stage handoff, state snapshot, validation result, gate decision payloads; Require: schema compliance and approved context at boundaries
+- User interfaces Provide: observable state and actionable controls; Require: backend snapshot and artifact lineage for projection accuracy
+
+### Implemented By
+
+- Architecture concepts (orchestrator runtime control plane, agent execution segment, validation/governance) Implemented By: src/threat_modeler/orchestrator.py (FrameworkOrchestrator + LangGraphStateGraph wiring) ; src/threat_modeler/agents/*.py (all 9) ; src/threat_modeler/validation.py ; src/threat_modeler/hitl/service.py ; src/threat_modeler/backend/run_manager.py ; src/threat_modeler/state.py ; frontend/src/ (React components for HMI, gates, viewers)
+- Canonical graph lifecycle Implemented By: src/threat_modeler/models/canonical.py and supporting parsers/normalizers
+- Evidence/persistence Implemented By: export paths, snapshot logic in run_manager, prompt store, and FQT/test evidence capture under Tests/
+- Specific runtime integrity and interface behaviors cross-referenced in 15_End_To_End_Traceability_Attributes_Registry.md implementation columns
+
+### Depends On
+
+- This architecture baseline Depends On: Capability_Hierarchy_Baseline.md and Function_Hierarchy_Registry.md for ID stability and parent/child linkage
+- Depends On: Requirements/ (project, interface, HITL, GUI, admin reqs) for allocation sources and 15_End_To_End_Traceability_Attributes_Registry.md for full chain closure
+- Depends On: docs/design/* specifications for refinement of the logical/functional allocations into concrete design
+- Change control Depends On: governance_autoflow, verify_architecture_design_surface_coverage.py, and independent review outputs to detect drift
+- All segments and domains Depend On: executable verification (Tests/unit, integration, e2e, FQT) that exercises the described interfaces, state transitions, and integrity loops

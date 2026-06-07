@@ -124,3 +124,40 @@ Verification for this design should include:
 - prompt-version retention checks
 - checkpoint integrity tests for halt and recovery scenarios
 - evidence checks confirming persisted state aligns with resumed execution behavior
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+- Prompt_Store_And_Runtime_State_Persistence_Design_Specification satisfies PRJ-007 (Immutable Auditability of persisted prompts and run history), PRJ-019 (Asynchronous Backend State Authority for runtime continuity/resume), PRJ-020 (Live-Mode Integrity Halt on Provider Degradation - must capture rather than mask), PRJ-021 (Component Semantic Version Authority in persisted state/evidence), PRJ-023 (LangGraph Native Orchestration - checkpoints must support orchestrated path), INT-005 (Stage Event Contract - retain transition and checkpoint info in recoverable form)
+- Persistence, checkpoint, prompt-version, and recovery rules support C01-ORCH-001/002/003 (orchestration state, langgraph mode, checkpoint persistence), C12-HITL (gate decision durability), C13-UI (runtime state visibility), C16-PRJ (delivery/runtime reliability), and C17-SCR (security-sensitive runtime evidence)
+
+### Realizes
+
+- This design realizes portions of M5 (Governance and Runtime Integrity) and supporting canonical state preservation for M2/M4 in the functional decomposition
+- Realizes L2/L3 functions for run state management (F320/F321/F322), prompt configuration management (F330/F331/F332), and snapshot/evidence management (F340/F341/F342) plus their children
+- Supports realization of C01-ORCH checkpoint/LangGraph capabilities and C18-ADM governance execution that depends on durable audit and recovery state
+
+### Provides / Requires
+
+- Provides: durable persisted run-state storage with boundaries, prompt store with version history and rollback, checkpoint data for resume after interruption, explicit recovery defect surfacing, preserved still-valid evidence/prompt history, prevention of silent continuation from unverified checkpoints
+- Requires: authoritative runtime control flow and canonical mutation rules (Runtime_And_Orchestration_Design_Specification.md and Canonical_Graph_Lifecycle...), stage events (INT-005), approved gate context for persisted decisions, and component version references (PRJ-021)
+- Recovery behavior Provides explicit operator action requirement when continuity cannot be proven; Requires backend-owned authoritative state (PRJ-019)
+
+### Implemented By
+
+- Persisted run-state and checkpoint logic: src/threat_modeler/backend/run_manager.py
+- Prompt store structure, version retention, and API surfaces: src/threat_modeler/backend/prompt_store.py (and related prompt config surfaces)
+- Recovery and state-inspection operations: API surfaces in backend + UI components that expose persisted state (cross-ref frontend prompt editor, snapshot manager, execution screens)
+- 15_End_To_End and backfill citations: multiple S13-005 rows cite Runtime_And_Orchestration (which depends on this) for snapshot restore, prompt version history, async runtime-state projection; also appears in reachable module backfills for ui/prompt_store.py, ui/screens/prompt_editor.py, snapshot_manager.py, stage_results.py, etc.
+- Snapshot/evidence persistence cross-refs Export_And_Evidence_Packaging_Design_Specification.md and FQT snapshot cases
+
+### Depends On
+
+- Governing architecture: Multi_Agent_Threat_Modeler_Architecture_Baseline.md, Multi_Agent_Logical_Decomposition.md, Multi_Agent_Interface_Control_Document.md
+- Runtime orchestration and canonical lifecycle designs (primary consumers/producers of the persisted state this design makes durable)
+- Agent subsystem and export designs for prompt-version linkage in generated content
+- 15_End_To_End_Traceability_Attributes_Registry.md rows for state projection, snapshot, prompt, and resume legs (S12/S13 UI and orchestration remediation slices)
+- Verification: restart/resume, prompt version, checkpoint integrity, and state alignment tests (Tests/integration/test_agent_pipeline_completeness.py, Tests/test_hmi_backend_api.py, Tests/unit/test_ui_app_shell.py, FQT-009 prompt cases, FQT-008 snapshot/export cases) plus governance execution ledger checks for persisted auditability (C18-ADM controls)

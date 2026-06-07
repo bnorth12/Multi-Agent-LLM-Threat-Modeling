@@ -26,6 +26,15 @@
       "max_planned_missing_requirement": 5,
       "enforce_on": [],
       "remediation_health_floor": 85.0
+    },
+    "mature": {
+      "req_impl_threshold": 0.92,
+      "req_verify_threshold": 0.90,
+      "req_arch_threshold": 0.95,
+      "issue_quality_threshold": 0.98,
+      "max_planned_missing_requirement": 3,
+      "enforce_on": ["critical"],
+      "remediation_health_floor": 80.0
     }
   }
 }

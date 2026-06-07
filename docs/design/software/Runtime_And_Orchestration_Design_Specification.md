@@ -187,3 +187,45 @@ The following requirement IDs are allocated to runtime governance control behavi
 1. C01-STATE-001, C01-STATE-002, C01-STATE-003
 
 - Runtime state authority SHALL version stage snapshots, preserve approved baselines as immutable history entries, and block handoff on schema-validation failure with structured error signaling.
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+- Runtime and Orchestration Design Specification satisfies PRJ-005 (core pipeline orchestration), PRJ-006 (HITL governance), PRJ-011 (export), PRJ-021 (component versions), PRJ-023 (LangGraph), PRJ-026 (handoff), INT-005 (stage events), INT-007 (re-run), INT-010/INT-011 (STIX/report contracts), C01-ORCH-00x, C01-STATE-00x, ADM-00x governance controls
+- Orchestrator control logic, state machine, checkpointing, and gate integration satisfy the C01-ORCH-001 / C12-HITL-001 / C16-PRJ-001 family and their L2 refinements
+- Governance and state continuity allocations (ADM, C01-ORCH-004/5, C01-STATE) satisfy ADM-001..006 and C01-ORCH/C01-STATE requirements per the allocations table in this document
+
+### Realizes
+
+- Runtime_And_Orchestration_Design_Specification (this document) realizes C01-ORCH-001, C12-HITL-001, C16-PRJ-001, C01-ORCH-002-CAP, C01-ORCH-003-CAP, C18-ADM-001 (via governance allocations) and supporting C15-INT slices for contract surfaces
+- LangGraph-compatible execution, checkpoint persistence, and stage control design elements realize the corresponding L2 capability refinements (C01-ORCH-00x-CAP)
+- HITL gate integration and resume paths in the design realize C12-HITL-001
+- Export completion, snapshot, and evidence packaging in orchestration realize packaging/export and verification governance (M4/M5, C14-VER-001)
+
+### Provides / Requires
+
+- Design Provides: orchestrator state machine definition, checkpoint contract, gate integration points, run manager responsibilities, prompt/snapshot authority boundaries, export handoff contract
+- Requires: stable canonical graph schema, ICD contracts (INT-00x), approved gate decisions (HITL), and upstream normalized input
+- Stage transition and handoff Provide: ExecutionEdge / ExecutionNode plan and immutable snapshot handoff; Require: prior stage result + validation pass + gate approval
+- Governance allocations Provide: executable policy linkage for branch/PR/checklist/release; Require: config/ json policies, planning artifacts, and issue state
+
+### Implemented By
+
+- Core orchestrator and graph execution : src/threat_modeler/orchestrator.py (FrameworkOrchestrator, LangGraphStateGraph, stage wiring, _MANDATORY_POST_STAGE_GATES, build_execution_plan, etc.)
+- Run management, state, checkpoints, resume : src/threat_modeler/backend/run_manager.py
+- HITL integration : src/threat_modeler/hitl/service.py (HitlService, gate lifecycle, decision recording)
+- Validation at boundaries : src/threat_modeler/validation.py
+- Prompt and snapshot persistence (design authority) : prompt store backend + snapshot logic in run_manager + evidence packaging (cross-ref Export_And_Evidence_Packaging_Design_Specification.md)
+- Governance execution (ADM controls) : scripts/governance_autoflow.py ; scripts/verify_administration_controls.py ; scripts/run_governance_*.ps1
+- UI-facing orchestration state projection : frontend/src/components/ (ExecutionProgress, HITLGateManager, run dashboard wiring)
+
+### Depends On
+
+- This design Depends On: governing architecture docs (Multi_Agent_Threat_Modeler_Architecture_Baseline.md and related decompositions) and the requirement sources listed in "Related Requirements" and "Governance and State Continuity Design Allocations"
+- Depends On: 15_End_To_End_Traceability_Attributes_Registry.md rows that cite this document as Design Artifact with matching Source File Path and Verification Artifact
+- Stage and gate contracts Depend On: canonical schema, state schema (docs/schemas/), and FrameworkState definition
+- Governance allocations Depend On: config/governance_autoflow_routing.json , independent_review_* policy/exception files, and sprint planning artifacts
+- All implementation claims Depend On: executable tests (Tests/unit/test_framework_orchestrator_langgraph.py, Tests/integration/test_agent_pipeline_completeness.py, Tests/integration/test_hitl_gate_set_2.py, etc.) and FQT evidence that the designed behaviors are present and verified

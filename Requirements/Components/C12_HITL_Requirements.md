@@ -17,3 +17,25 @@ Unless policy configuration overrides these values, the following defaults apply
 |Input Integrity Gate (Gate 0)|parse_error_count, required_field_missing_count, schema_validation_pass_rate, source_provenance_complete|Trigger if parse_error_count > 0 OR required_field_missing_count > 0 OR schema_validation_pass_rate < 1.00 OR source_provenance_complete is false.|Pause before context merge and require explicit analyst decision before continuing.|
 |Conditional Merge Conflict Resolution Gate|merge_conflict_count, approved_artifact_conflict_count, critical_field_conflict_count, conflict_severity_max|Trigger if approved_artifact_conflict_count >= 1 OR critical_field_conflict_count >= 1 OR conflict_severity_max is high OR merge_conflict_count >= 5.|Pause after context merge, require resolution and rationale, and block advancement until accepted.|
 |Conditional Export Consistency Gate|canonical_stix_error_count, canonical_report_error_count, diagram_reference_error_count, consistency_warning_count|Trigger if canonical_stix_error_count > 0 OR canonical_report_error_count > 0 OR diagram_reference_error_count > 0 OR consistency_warning_count > 10.|Pause before publication and block release until accepted decision is recorded.|
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Derived From
+- C12-HITL-00x and the conditional gate defaults derived from C12-HITL-001 (Human-in-the-Loop Governance) in Capability_Hierarchy_Baseline.md and F-HITL-TRACEABILITY-L1 / F-HITL-GATE-CONTROL
+
+### Allocated To
+- Allocated to C12-HITL-001 and the HITL gate service + orchestrator integration in Runtime_And_Orchestration_Design_Specification.md + src/threat_modeler/hitl/service.py + hitl/models.py
+
+### Refines
+- HITL-001/009/012 from 03_HITL_Requirements.md, PRJ-006/014/028 from project requirements, and GUI gate surfaces (GUI-032 etc.)
+
+### Satisfied By
+- Gate decision enforcement, pause/resume/reject with rationale, conditional trigger defaults (input integrity, merge conflict, export consistency), and persisted decision state satisfied by src/threat_modeler/hitl/service.py (HitlService), src/threat_modeler/hitl/models.py, orchestrator gate integration, and Runtime_And_Orchestration_Design_Specification.md (see 15_End_To_End S12-034, S13-005D, and multiple gate-related rows; also Partial_15_Wave hitl/models.py backfill)
+
+### Verified By
+- Tests/integration/test_hitl_gate_set_2.py, Tests/test_hmi_backend_api.py, Tests/integration/test_validation_gates.py (gate ordering, decision recording, conditional triggers), FQT-004/005/006 gate cases, 15_End_To_End verification artifacts for C12-HITL rows
+
+### Depends On
+- 03_HITL_Requirements.md, 01_Project_Requirements.md (PRJ-006/014/028), 10_GUI_Requirements.md (gate UI), Runtime_And_Orchestration_Design_Specification.md, 15_End_To_End_Traceability_Attributes_Registry.md, Capability_Hierarchy_Baseline.md (C12-HITL-001), and C18-ADM for governance of gate decisions in release evidence

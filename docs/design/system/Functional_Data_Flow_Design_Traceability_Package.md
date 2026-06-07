@@ -130,3 +130,39 @@ These implementation modules are reachable in the running application and alread
 | Code Module | Status |
 |---|---|
 | src/threat_modeler/ui/session.py | Reachable from runtime entrypoints and now anchored via source-derived L3/L4 function and data-flow decomposition entries |
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+- Functional_Data_Flow_Design_Traceability_Package satisfies PRJ-005 (full threat workflow orchestration), INT-005 (stage event contracts), PRJ-026 (handoff), and the data-flow legs of C01-ORCH, C02-A01 through C10-A09, C12-HITL, C13-UI, C15-INT, C16-PRJ families
+- The code-to-screen and code-to-function tables satisfy the "Architecture Element(s)" and "Interface / Data-Flow Responsibility" columns of Capability_Function_Architecture_Traceability_Matrix.md and the design artifact column of 15_End_To_End_Traceability_Attributes_Registry.md
+- Reachable module backfill (including ui/session.py) closes surface gaps for runtime state and UI projection requirements (GUI-003B, GUI-003C, etc.)
+
+### Realizes
+
+- This design traceability package realizes the detailed data-flow refinement of the architecture baseline (Multi_Agent_Threat_Modeler_Architecture_Baseline.md) and the L2/L3/L4 functions in Multi_Agent_Functional_Decomposition.md and Function_Hierarchy_Registry.md
+- Specific flow families (orchestration, agent pipeline, HITL gates, artifact viewers, export, telemetry) realize the corresponding Cxx capability slices and M1-M5 mission subfunctions
+- The "Additional Reachable Module" closure realizes completeness for source-to-architecture surface coverage (PRJ-005, PRJ-026, architecture-design surface coverage checks)
+
+### Provides / Requires
+
+- Package Provides: explicit source file -> screen/function -> requirement -> test mapping for data flows; canonical list of design-level data-flow IDs (DF-*)
+- Requires: matching rows in Capability_Function_Architecture_Traceability_Matrix.md , 15_End_To_End..., and executable tests that cover the listed modules and behaviors
+- Flow families Provide: traceability anchors for governance review of UI-to-backend coupling; Require: stable implementation paths and test evidence
+
+### Implemented By
+
+- Orchestrator / backend flows : src/threat_modeler/orchestrator.py ; src/threat_modeler/backend/run_manager.py ; src/threat_modeler/hitl/service.py (as listed in the package tables)
+- Agent pipeline flows : src/threat_modeler/agents/agent_0*.py and parsing modules
+- UI screen flows : frontend/src/components/* and src/threat_modeler/ui/screens/*.py (the tables enumerate the concrete modules)
+- Telemetry / version / snapshot : the specific ui/ modules listed (token_usage, version_governance, snapshot_manager, etc.)
+- Verification of the flows : the Test Evidence column entries (Tests/integration/* , Tests/e2e/* , Tests/unit/* )
+
+### Depends On
+
+- This package Depends On: the architecture and functional decomposition docs for the function IDs and allocation targets it traces
+- Depends On: 15_End_To_End_Traceability_Attributes_Registry.md and the capability matrix for cross-layer ID consistency
+- All listed implementation paths Depend On: the Tests/ entries remaining executable and covering the described data-flow responsibilities (no orphan code paths)

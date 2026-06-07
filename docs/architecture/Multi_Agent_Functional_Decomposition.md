@@ -105,3 +105,65 @@ Primary requirement anchors for functional coverage:
 Detailed mapping is maintained in:
 
 - `Multi_Agent_Function_And_Interface_Requirements_Matrix.md`
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+- M0 (Threat Model Production Mission) satisfies PRJ-001, PRJ-003, PRJ-005 (core mission to produce governed canonical threat model artifacts)
+- M1 (Source Ingestion and Normalization) satisfies PRJ-001, PRJ-027, INT-002 (unified input ingestion, ICD/narrative compliance)
+- M2 (Canonical Graph Lifecycle Management) satisfies PRJ-002, PRJ-003, INT-005, PRJ-026 (canonical authority, deterministic pipeline, handoff integrity, stage events)
+- M3 (Threat Analysis and Synthesis) satisfies PRJ-005 (full threat workflow including STRIDE, threat gen, mitigations)
+- M4 (Artifact Packaging and Export) satisfies PRJ-011, INT-010, INT-011 (export bundle, STIX/report contracts)
+- M5 (Governance and Runtime Integrity) satisfies PRJ-006, PRJ-014, PRJ-015, PRJ-019, PRJ-020, PRJ-023, PRJ-028, PRJ-029, PRJ-030 (HITL, re-run, fail-safe, async state, live-mode, langgraph, gate/resume, liveness, prompt authority)
+- L2 functions F210-F340 satisfy the L1 mission subfunctions and allocated component requirements (see Function_Hierarchy_Registry.md for ID bindings)
+- L3 stage/agent functions (F221-F301) satisfy stage-specific requirements exercised by the 9-agent pipeline (C02-A01-* through C10-A09-*)
+- L3 governance functions (F311-F342) satisfy HITL, orchestration, and snapshot requirements (HITL-*, C01-ORCH-*, PRJ-*)
+- L4 operational activities satisfy verification strategy (VS-009) and schema/contract assertions at boundaries
+
+### Realizes
+
+- M0 realizes CAP-L0-THREAT-MODELER
+- M1 realizes functions allocated under C02 (input), C15 (interfaces) and supporting C16 delivery
+- M2 realizes C01-ORCH-001 (orchestration) and C15-INT-001 (interface/canonical)
+- M3 realizes C04/C05/C06 (STRIDE, threat, mitigation) capability slices
+- M4 realizes C07/C08/C09/C10 packaging and reporting capability slices plus C14 verification evidence
+- M5 realizes C01-ORCH, C12-HITL, C13-UI, C16-PRJ, C17-SCR, C18-ADM governance and control capabilities
+- F220 (Canonical Initialization) realizes core of M2 / C01 and C15
+- F240 (Trust Boundary Validation), F250 (STRIDE Scoring) realize M3 analysis slices
+- F310 (Gate Decision Enforcement), F320 (Run State Management) realize M5 / C12 and C01
+- L3 agent functions realize the L2 data-interaction functions (F220-F300 groups)
+- All L3/L4 realize their parent L2 function in the decomposition
+
+### Provides / Requires
+
+- M1 Provides: normalized payload (narrative + ICD); Requires: well-formed source per 02_Interface_Requirements and schemas
+- M2 Provides: versioned canonical graph state at each stage boundary; Requires: valid input from M1 and approved gate decisions from M5
+- M3 Provides: scored STRIDE entities, concrete threats, mitigations; Requires: enriched canonical context from M2
+- M4 Provides: STIX bundle, Mermaid diagrams, human report, JSON exports; Requires: approved final canonical + artifact references from prior stages
+- M5 Provides: gate records, run snapshots, evidence ledger, prompt versions; Requires: runtime state, canonical validation, and operator decisions
+- Graph construction (F220-F230) Provide: initial + context-enriched canonical; Require: validated ingestion
+- Graph governance (F310+) Provide: pause/resume checkpoints and audit records; Require: stage results + HITL policy
+
+### Implemented By
+
+- M0, M5 (governance) : src/threat_modeler/orchestrator.py (FrameworkOrchestrator, stage graph) ; src/threat_modeler/backend/run_manager.py ; src/threat_modeler/hitl/service.py
+- M1 (ingestion) : src/threat_modeler/agents/agent_01_input_normalizer.py ; src/threat_modeler/parsing/icd_parser.py ; src/threat_modeler/parsing/narrative_parser.py
+- M2 (canonical lifecycle) : src/threat_modeler/models/canonical.py ; src/threat_modeler/agents/agent_02_context_builder.py ; src/threat_modeler/validation.py
+- M3 (analysis) : src/threat_modeler/agents/agent_03_trust_boundary_validator.py ; agent_04_stride_scorer.py ; agent_05_threat_generator.py ; agent_07_mitigation_generator.py
+- M4 (packaging/export) : src/threat_modeler/agents/agent_06_stix_packager.py ; agent_08_diagram_generator.py ; agent_09_human_report_writer.py ; export paths in orchestrator/run_manager
+- L3 agent functions : one-to-one with agent_0N_*.py under src/threat_modeler/agents/ (F221=agent_01, F231=agent_02, ..., F301=agent_09)
+- L3 governance : src/threat_modeler/hitl/ ; backend/run_manager ; prompt store backend (src/threat_modeler/ ? or frontend+backend prompt config)
+- Snapshot functions F341/F342 : snapshot manager in backend/run_manager and evidence packaging design
+- UI-mapped L3 (gate, progress) : frontend/src/components/HITLGateManager.tsx , ExecutionProgress.tsx and related React components
+- L4 activities exercised by unit/integration tests under Tests/ and FQT plan execution
+
+### Depends On
+
+- Functional decomposition Depends On: stable L0-L2 IDs and parent capability references in Capability_Hierarchy_Baseline.md and Function_Hierarchy_Registry.md
+- All M* and F* Depend On: corresponding requirement IDs allocated in 15_End_To_End_Traceability_Attributes_Registry.md with architecture/design + implementation + verification legs
+- M2/M3/M4 data flow Depends On: canonical schema (docs/schemas/canonical_graph.schema.json) and ICD contracts
+- Governance functions (M5) Depend On: 03_HITL_Requirements.md , 05_Verification_Strategy.md , and live governance config + planning artifacts
+- L4 operational activities Depend On: executable verification (Tests/) that assert the described behaviors at stage boundaries and gates

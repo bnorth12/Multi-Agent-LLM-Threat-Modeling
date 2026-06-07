@@ -126,3 +126,42 @@ Verification for this design should include:
 - stage contract tests for required canonical fields
 - fallback-path tests that preserve prior authoritative state
 - evidence confirming exported artifacts derive from validated canonical content
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+- Canonical_Graph_Lifecycle_And_Validation_Design_Specification satisfies PRJ-006 (HITL Governance via pause/review/continuation points on canonical state), PRJ-013 (Incremental Enrichment without destructive overwrite), PRJ-015 (Fail-Safe Halting on validation failure), PRJ-021 (Component Semantic Version Authority in state evidence), PRJ-023 (LangGraph Native Orchestration compatibility for handoff rules), PRJ-026 (Inter-Agent Handoff Integrity with controlled/traceable updates), INT-005 (Stage Event Contract for observable/auditable transitions), INT-006 (HITL Decision Contract for reviewed canonical changes)
+- Canonical creation, mutation boundaries, validation gates, and degraded/fallback rules satisfy core elements of C01-ORCH-001 (orchestration), C15-INT-001 (interface/canonical contracts), and multiple C13-UI / C16-PRJ delivery slices that consume authoritative state
+
+### Realizes
+
+- This design realizes the canonical graph lifecycle domain of the architecture baseline and the M2 (Canonical Graph Lifecycle Management) mission subfunction plus supporting portions of M1, M3, M4, and M5
+- Realizes L2 functions around canonical initialization, context enrichment, validation services, and handoff (F220, F230, F240 groups and their L3/L4 children) per Functional Decomposition and Function_Hierarchy_Registry.md
+- Supports realization of C01-ORCH, C15-INT, and governance capabilities that depend on stable authoritative canonical state (multiple S13 and S12 rows in 15_End_To_End cite this doc for telemetry, state projection, and handoff paths)
+
+### Provides / Requires
+
+- Provides: single authoritative canonical representation, stage-by-stage mutation boundaries with contract enforcement, validation findings tied to stage/contract breach, preserved prior validated graph on non-conformance, version-aware state for release governance
+- Requires: controlled input from ingestion or prior stage, approved human decisions at governance gates (INT-006), schema definitions (docs/schemas/canonical_graph.schema.json), and handoff rules that remain valid under LangGraph orchestration (PRJ-023)
+- Degraded-mode handling Provides explicit record of validation failure + last authoritative state; Requires downstream consumers (export, UI, evidence) to respect degraded markers
+
+### Implemented By
+
+- Canonical model and core lifecycle: src/threat_modeler/models/canonical.py
+- Validation gates and contract enforcement: src/threat_modeler/validation.py (CanonicalGraphValidator and related)
+- Orchestrator integration for state handoff, enrichment, and degraded handling: src/threat_modeler/orchestrator.py
+- Runtime consumption and projection: src/threat_modeler/backend/run_manager.py and related runtime_state modules
+- 15_End_To_End citations: docs/design/software/Canonical_Graph_Lifecycle_And_Validation_Design_Specification.md is listed as Design Artifact for S12-020 (INT-005 telemetry), S13-001 (INT-005 orchestration alignment), and multiple S13-005* UI/state projection rows (e.g. TokenUsageView, ExecutionProgress, ArtifactsViewer, run_manager async projection)
+- Backfill support: src/threat_modeler/agents/deserialise.py, src/threat_modeler/models/canonical.py (Partial_15_Wave_Design_Backfill)
+
+### Depends On
+
+- Governing architecture: Multi_Agent_Threat_Modeler_Architecture_Baseline.md, Multi_Agent_Functional_Decomposition.md, Multi_Agent_Logical_Decomposition.md, Multi_Agent_Interface_Control_Document.md, and the canonical schema
+- Runtime and orchestration ownership: Runtime_And_Orchestration_Design_Specification.md (this spec owns canonical rules; runtime owns lifecycle control, checkpoints, and gate ownership)
+- Agent subsystem for stage-specific mutations that must stay within assigned canonical boundaries (cross-ref Agent_Subsystem_Design_Specification.md)
+- 15_End_To_End_Traceability_Attributes_Registry.md rows citing this document (multiple orchestration, telemetry, UI state projection, and remediation slices)
+- Export/evidence packaging and UI consumers that must only derive from validated canonical content (Export_And_Evidence_Packaging_Design_Specification.md, various frontend components)
+- Executable tests exercising schema compliance, stage contracts, fallback preservation, and integration pipeline completeness (Tests/integration/test_validation_gates.py, Tests/integration/test_agent_pipeline_completeness.py, etc.) plus FQT cases that traverse full canonical lifecycle under governance

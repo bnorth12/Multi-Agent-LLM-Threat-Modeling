@@ -141,3 +141,41 @@ Verification for this design should include:
 - manifest verification for complete and degraded bundles
 - traceability checks from exported artifacts back to authoritative runtime state
 - release-candidate dry runs confirming the delivery package stands alone
+
+## Traceability Annex
+
+Relationship definitions and placement policy: Requirements/18_Traceability_Governance_Operating_Model.md.
+
+### Satisfies
+
+- Export_And_Evidence_Packaging_Design_Specification satisfies PRJ-011 (Export Completeness from authoritative sources), PRJ-021 (Component Semantic Version Authority in release-ready bundles), PRJ-022 (Component File Version Traceability in evidence packages), INT-006 (HITL Decision Contract traceability in the evidence set), INT-007 (Re-Run Contract consistency on regeneration from approved restart), INT-010 (STIX Bundle Contract), INT-011 (Human Report Contract)
+- Packaging, evidence capture, provenance retention, and degraded disclosure rules support C14-VER-001 (verification/evidence governance), C16-PRJ-001 delivery/runtime reliability, C17-SCR (security/compliance evidence), and C18-ADM (release-readiness review) capabilities
+
+### Realizes
+
+- This design realizes the artifact packaging and export portion of M4 (Artifact Packaging and Export) and M5 (Governance and Runtime Integrity) in the functional decomposition
+- Realizes packaging/export responsibilities allocated under C07 (STIX), C08 (Diagram), C09 (Report), C10 (human report writer), and supporting C14/C16 slices
+- Supports realization of release and evidence authority in the architecture baseline (standalone deliverables, versioned provenance, degraded disclosure)
+
+### Provides / Requires
+
+- Provides: user-facing and machine-readable artifacts (STIX, Mermaid, report, canonical JSON, snapshots) assembled only from authoritative validated runtime/canonical state; explicit degraded packaging records when any artifact cannot be produced; component-version and file-provenance metadata in bundles; standalone-usable release-candidate deliverables
+- Requires: authoritative validated runtime state and canonical graph (from Runtime_And_Orchestration and Canonical_Graph_Lifecycle designs), approved HITL decisions (INT-006), run context/prompt-version for provenance (INT-007), and mode-aware packaging rules from system deployment design
+- Degraded outcomes Provide clear disclosure + partial bundle; Require consumers and release processes to handle incomplete evidence sets without assuming completeness
+
+### Implemented By
+
+- Export modules, runtime packaging, snapshot services, report/diagram/STIX generation: src/threat_modeler/ (export paths), src/threat_modeler/backend/run_manager.py (packaging and snapshot), agent_06/08/09 and supporting components
+- Release and evidence assembly: scripts and Releases/ coordination points; cross-ref with docs/User_Manual.md and user_manual/ for standalone deliverable expectations
+- 15_End_To_End citations: multiple S12 rows list this or related packaging design for export paths (S12-025 INT-011 report, S12-026 INT-010, S12-027 INT-008 mitigation export, S12-022 GUI-020 diagram viewer, S12-029/030 GUI export surfaces); also cited via Functional_Data_Flow_Design_Traceability_Package.md flows
+- Backfill and reachable module support for UI/export screens that drive packaging actions
+
+### Depends On
+
+- Architecture baseline and interface control for export contracts and artifact classes
+- Runtime_And_Orchestration_Design_Specification.md and Canonical_Graph_Lifecycle_And_Validation_Design_Specification.md (authoritative state sources)
+- System_Deployment_And_Operating_Modes_Design.md for mode-aware and release-candidate packaging rules
+- Agent_Subsystem_Design_Specification.md for agent-produced content that feeds packaging (STIX, diagrams, reports)
+- 15_End_To_End_Traceability_Attributes_Registry.md rows that name this (or Functional_Data_Flow...) as Design Artifact for export/evidence legs
+- Prompt store and persistence for version provenance in evidence (Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md)
+- Verification: artifact presence, manifest, and provenance tests (Tests/integration/test_results_export_quick_preview.py, Tests/integration/test_stride_export_artifact.py, etc.), FQT export cases (FQT-008), and release-candidate dry-run evidence under Releases/ and docs/verification/

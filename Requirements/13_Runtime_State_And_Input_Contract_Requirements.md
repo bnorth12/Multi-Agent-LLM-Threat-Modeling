@@ -38,24 +38,36 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 
 ### Derived From
 
-_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+- RIC-00x / runtime state and input contract requirements derived from C01-ORCH-001 (orchestration and stage control), C13-UI-001 (UI control surface and state visibility), C15-INT-001 (interface contracts), and C16-PRJ-001 (runtime reliability) in Capability_Hierarchy_Baseline.md
+- Strong linkage to C01-STATE-00x L2 capabilities and F-ORCH-TRACEABILITY-L1 / F-UI-TRACEABILITY-L1 functions
 
 ### Allocated To
 
-_None recorded._ <!-- [Req-ID] in [artifact path] -->
+- RIC-001 and related state/input contracts allocated to C01-ORCH-001 / C13-UI-001 and realized in Runtime_And_Orchestration_Design_Specification.md, backend/run_manager.py, state.py, and the UI projection components (ExecutionProgress, ArtifactsViewer, TokenUsageView, etc.)
 
 ### Refines
 
-_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+- 01_Project_Requirements.md (PRJ-019 asynchronous backend state, PRJ-023 LangGraph, PRJ-025 non-Streamlit runtime) and 10_GUI_Requirements.md (state projection and input surfaces) are refined by the detailed runtime state and input contract statements here
+- Component orchestrator and UI state requirements further refine these
 
 ### Satisfied By
 
-_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+- Runtime state authority, async projection, gate context persistence, and input contract enforcement satisfied by src/threat_modeler/backend/run_manager.py, src/threat_modeler/state.py (FrameworkState), src/threat_modeler/orchestrator.py, src/threat_modeler/ui/screens/* (execution, input_entry, stage_results, token_usage, artifacts viewer), frontend/src/components/ExecutionProgress.tsx, ArtifactsViewer.tsx, PipelineConfig.tsx, and Runtime_And_Orchestration_Design_Specification.md
+- 15_End_To_End rows (S13-005B/C/D, S12-020, S13-004, S13-005* RIC/GUI projection rows) cite Runtime_And_Orchestration_Design_Specification.md + run_manager + backend state + UI components as the design + implementation for these contracts
+- Prompt and snapshot persistence (Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md) support the durable state side
 
 ### Verified By
 
-_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+- Tests/integration/test_validation_gates.py, Tests/test_hmi_backend_api.py, Tests/unit/test_ui_app_shell.py, Tests/integration/test_agent_pipeline_completeness.py (state projection, gate ordering, input contract, async runtime behavior)
+- FQT cases that exercise input entry, gate state, stage results, token telemetry, and snapshot/restore (FQT-003, FQT-004/005, FQT-007, FQT-008, FQT-010)
+- 15_End_To_End verification artifacts and Test Artifact IDs for the RIC / state-projection rows
+- Governance surface coverage and sprint traceability verifiers
 
 ### Depends On
 
-_None recorded._ <!-- [Req-ID] — dependency rationale -->
+- 01_Project_Requirements.md (PRJ-019/023/025/028/029 state, LangGraph, liveness, gate enforcement), 03_HITL_Requirements.md (gate state), 10_GUI_Requirements.md (UI state surfaces)
+- Runtime_And_Orchestration_Design_Specification.md (primary design authority), Canonical_Graph_Lifecycle_And_Validation_Design_Specification.md, Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md
+- 15_End_To_End_Traceability_Attributes_Registry.md (the governed record of state/input legs)
+- C01-ORCH-001 / C13-UI-001 / C15-INT-001 capabilities and their L2/L3 functions
+- 05_Verification_Strategy.md and FQT for the verification methods applied to runtime contracts
+- 18_Traceability_Governance_Operating_Model.md (RIC requirements are a primary example of "Architecture satisfaction" upward from design to requirement and "Implementation" downward)

@@ -75,24 +75,41 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 
 ### Derived From
 
-_None recorded._ <!-- [Cap-ID or Req-ID] — rationale -->
+- HITL-001, HITL-009, HITL-012, and the conditional gates (HITL-010, HITL-011) derived from C12-HITL-001 (Human-in-the-Loop Governance) in docs/architecture/Capability_Hierarchy_Baseline.md and the L1/L2 HITL functions (F-HITL-TRACEABILITY-L1, F-HITL-GATE-CONTROL)
 
 ### Allocated To
 
-_None recorded._ <!-- [Req-ID] in [artifact path] -->
+- Allocated to C12-HITL-001 and realized in docs/design/software/Runtime_And_Orchestration_Design_Specification.md (gate integration, decision enforcement, conditional triggers) + src/threat_modeler/hitl/service.py and hitl/models.py, plus frontend gate surfaces (HITLGateManager.tsx)
 
 ### Refines
 
-_None recorded._ <!-- [Req-ID] refines [Req-ID] — rationale -->
+- The detailed conditional gate tables and default triggers here refine the higher-level HITL requirements in 03_HITL_Requirements.md (self) and project-level PRJ-006 (HITL Governance), PRJ-014 (Selective Re-Run), PRJ-028 (Orchestrator Gate Enforcement)
+- Component-level C12_HITL_Requirements.md and C12_HITL_Audit_Service_Requirements.md provide further elaboration of the gate behaviors and audit side
 
 ### Satisfied By
 
-_None recorded._ <!-- [Function-ID or design element] in [artifact path] -->
+- Gate 0 Input Integrity, Gate 0 Readiness Guard, Conditional Merge Conflict Resolution, and Conditional Export Consistency (plus the general pause/resume/reject with rationale) satisfied by:
+  - Runtime_And_Orchestration_Design_Specification.md (orchestrator gate enforcement, state persistence for decisions)
+  - src/threat_modeler/hitl/service.py (HitlService, decision recording, resume from checkpoint)
+  - src/threat_modeler/hitl/models.py (gate models)
+  - frontend/src/components/HITLGateManager.tsx and related UI for decision surfaces
+  - 15_End_To_End rows (e.g., S12-034 for VS-010 / HITL gate control, multiple S13-005D gate projection rows) list the exact design + impl + verification
 
 ### Verified By
 
-_None recorded._ <!-- [Tests/path/test.py] :: [test case or Req-ID] -->
+- Tests/integration/test_hitl_gate_set_2.py, Tests/integration/test_validation_gates.py (causal ordering, decision persistence, conditional triggers)
+- Tests/test_hmi_backend_api.py and UI shell tests for gate UI flows
+- FQT-004 (mandatory gates), FQT-005 (reject/recovery), FQT-006 (conditional gates)
+- 15_End_To_End verification artifacts + Test Artifact IDs for HITL/C12 rows
+- Governance outputs (independent reviews, sprint execution summaries) that evaluate gate compliance and evidence durability
 
 ### Depends On
 
-_None recorded._ <!-- [Req-ID] — dependency rationale -->
+- 01_Project_Requirements.md (PRJ-006, PRJ-014, PRJ-028, PRJ-029 for liveness at gates)
+- 10_GUI_Requirements.md (GUI-032 and related gate control surfaces)
+- 13_Runtime_State_And_Input_Contract_Requirements.md (state for gate context and projections)
+- Runtime_And_Orchestration_Design_Specification.md and Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md (for checkpoint/decision durability)
+- 15_End_To_End_Traceability_Attributes_Registry.md (the governed chain for all HITL legs)
+- C12-HITL capability and component requirements (C12_HITL_Requirements.md)
+- 05_Verification_Strategy.md (race-condition and gate verification methods, VS-010)
+- 18_Traceability_Governance_Operating_Model.md (HITL requirements are central to "Verification" upward and "Implementation" downward relationships, plus evidence substantiation for decisions)
