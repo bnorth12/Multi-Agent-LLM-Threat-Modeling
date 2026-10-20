@@ -60,6 +60,21 @@ def _dict_to_mitigation(d: dict[str, Any]) -> Mitigation:
     )
 
 
+def _coerce_source_ids(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [str(item) for item in value if item is not None]
+
+
+def _coerce_confidence(value: Any) -> float | None:
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
 def _dict_to_threat(d: dict[str, Any]) -> Threat:
     return Threat(
         name=d.get("name", ""),
@@ -71,6 +86,8 @@ def _dict_to_threat(d: dict[str, Any]) -> Threat:
         impact=_coerce_int(d.get("impact", 1), 1),
         mitigations_technical=[_dict_to_mitigation(m) for m in d.get("mitigations_technical", [])],
         mitigations_administrative=[_dict_to_mitigation(m) for m in d.get("mitigations_administrative", [])],
+        source_ids=_coerce_source_ids(d.get("source_ids", [])),
+        confidence=_coerce_confidence(d.get("confidence")),
     )
 
 

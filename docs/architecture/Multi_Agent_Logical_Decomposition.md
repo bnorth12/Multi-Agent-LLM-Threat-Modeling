@@ -96,3 +96,8 @@ Detailed ICD records:
 - PRJ-019 Asynchronous Backend State Authority; PRJ-020 Live-Mode Integrity Halt on Provider Degradation; PRJ-026 Inter-Agent Handoff Integrity; PRJ-028 Orchestrator Gate Enforcement and Resume Control; PRJ-029 Live Run Liveness Fail-Closed; PRJ-030 Prompt Store Authority and Fail-Closed Loading.
 - INT-002 Agent Input Contract; INT-003 Agent Output Contract; INT-004 Validation Result Contract; INT-005 Stage Event Contract; INT-006 HITL Decision Contract; INT-007 Re-Run Contract; INT-008 Visualization Read Contract; INT-009 Visualization Edit Contract; INT-012 Provider Config Contract; INT-013 Authorization Contract; INT-014 Audit Retrieval Contract; INT-015 Model Connection Contract.
 - GUI-002 HITL Gate Screens; GUI-003 Pipeline Status Dashboard; GUI-016 Backend Runtime State Projection; GUI-017 Live Mode Failover Hard-Stop Visibility; GUI-027 Run Diagnostics Panel; GUI-028 Execution Error Rendering.
+
+## GraphRAG Phase 0 Contract Delta (Sprint 2026_013, RR-2026_013-IMPLEMENTATION-EVIDENCE / RHMI-017 anchor)
+
+- Logical topology is unchanged. GraphRAG follows the accepted split (retrieve local, generate remote); Phase 0 adds data contracts only (`Threat` evidence fields, `KnowledgeSettings`).
+- No new logical element, agent, or handoff is introduced; no agent consumes the knowledge base in this phase.

@@ -148,3 +148,8 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 - 15_End_To_End_Traceability_Attributes_Registry.md rows citing external/integration design surfaces (INT family, provider, HMI data, export delivery)
 - Verification: interface admission/validation, provider dry-runs, export bundle checks, and FQT cases that cross external boundaries (FQT-002 provider, FQT-008 exports, FQT-010 documentation review) plus Tests/integration/test_validation_gates.py and e2e flows
 - Release artifacts (Releases/Deployment_Guide, docs/User_Manual.md, user_manual/) for standalone external interface documentation consequences
+
+## GraphRAG Phase 0 Contract Delta (Sprint 2026_013, RR-2026_013-IMPLEMENTATION-EVIDENCE / RHMI-017 anchor)
+
+- External boundary is unchanged: no new provider, endpoint, MCP, or hosted embedder. The canonical graph JSON interface gains optional `Threat.source_ids` / `Threat.confidence` (backward compatible, already in the schema), and the persisted runtime-state settings payload gains an optional `knowledge` object that legacy payloads may omit.
+- Remote LLM egress is unchanged in Phase 0; `egress_policy="excerpts_only"` is recorded as configuration only.

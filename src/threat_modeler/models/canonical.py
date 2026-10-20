@@ -78,6 +78,9 @@ class Threat:
     impact: int = 1
     mitigations_technical: list[Mitigation] = field(default_factory=list)
     mitigations_administrative: list[Mitigation] = field(default_factory=list)
+    # GraphRAG Phase 0 evidence fields (defaults preserve pre-RAG graphs).
+    source_ids: list[str] = field(default_factory=list)
+    confidence: float | None = None
 
 
 @dataclass

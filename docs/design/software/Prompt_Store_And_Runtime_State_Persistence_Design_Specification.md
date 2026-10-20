@@ -161,3 +161,9 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 - Agent subsystem and export designs for prompt-version linkage in generated content
 - 15_End_To_End_Traceability_Attributes_Registry.md rows for state projection, snapshot, prompt, and resume legs (S12/S13 UI and orchestration remediation slices)
 - Verification: restart/resume, prompt version, checkpoint integrity, and state alignment tests (Tests/integration/test_agent_pipeline_completeness.py, Tests/test_hmi_backend_api.py, Tests/unit/test_ui_app_shell.py, FQT-009 prompt cases, FQT-008 snapshot/export cases) plus governance execution ledger checks for persisted auditability (C18-ADM controls)
+
+## GraphRAG Phase 0 Contract Delta (Sprint 2026_013, RR-2026_013-IMPLEMENTATION-EVIDENCE / RHMI-017 anchor)
+
+- `KnowledgeSettings` (src/threat_modeler/config.py) is added on `RuntimeSettings.knowledge`: `enabled=False`, `persist_path=""` (empty resolves to `~/.multi_agent_threat_modeler_kb` at use time via `default_knowledge_persist_path()`), `snapshot_id=None`, `embedding_profile="chroma_default"`, `max_hits_per_stage=6`, `egress_policy="excerpts_only"`. `build_default_settings()` keeps the KB off.
+- Persistence: `backend/runtime_state.py::_serialize_settings` exports `knowledge` via `asdict` (model `api_key` still stripped). `_deserialize_settings` hydrates it through `_deserialize_knowledge`; a state file without a `knowledge` key (legacy) or with a malformed one restores defaults instead of failing. Partial payloads keep valid fields and default the rest.
+- `run_manager.py` has no `RuntimeSettings` rebuild path, so it is unchanged. Config only: no retrieval is called. Verification: Tests/unit/test_knowledge_settings.py.

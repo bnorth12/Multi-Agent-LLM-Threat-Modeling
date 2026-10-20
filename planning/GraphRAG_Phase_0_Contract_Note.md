@@ -1,0 +1,3 @@
+# GraphRAG Phase 0 — contract hardening note
+
+GraphRAG follows the accepted split in `Local_RAG_Remote_LLM_Alignment.md`: **retrieve local, generate remote**. The orchestrator, HITL, KB query and EvidencePack run locally; only `adapter.complete` goes to the remote LLM (or fixture), and the EvidencePack is the only RAG artifact allowed in the remote prompt. Phase 0 (see `GraphRAG_Phase_0_Laptop_Plan.md`) is **contracts only**: `Threat.source_ids` / `Threat.confidence`, `KnowledgeSettings` on `RuntimeSettings` (default `enabled=False`, default persist path `~/.multi_agent_threat_modeler_kb` resolved at use time), and safe hydration of legacy state without these fields. No agent wiring, no retrieval calls, no ingest; with the KB off, behaviour is unchanged.
