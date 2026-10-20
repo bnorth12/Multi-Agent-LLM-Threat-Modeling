@@ -165,3 +165,9 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 - 15_End_To_End_Traceability_Attributes_Registry.md rows citing this document (multiple orchestration, telemetry, UI state projection, and remediation slices)
 - Export/evidence packaging and UI consumers that must only derive from validated canonical content (Export_And_Evidence_Packaging_Design_Specification.md, various frontend components)
 - Executable tests exercising schema compliance, stage contracts, fallback preservation, and integration pipeline completeness (Tests/integration/test_validation_gates.py, Tests/integration/test_agent_pipeline_completeness.py, etc.) plus FQT cases that traverse full canonical lifecycle under governance
+
+## GraphRAG Phase 0 Contract Delta (Sprint 2026_013, RR-2026_013-IMPLEMENTATION-EVIDENCE / RHMI-017 anchor)
+
+- `Threat` (src/threat_modeler/models/canonical.py) gains two optional evidence fields: `source_ids: list[str]` (default `[]`) and `confidence: float | None` (default `None`). Both match docs/schemas/canonical_graph.schema.json (`source_ids` string array; `confidence` number|null in [0,1]).
+- Defaults preserve every pre-existing graph: `asdict` export adds `"source_ids": []` and `"confidence": null`; no validation rule changes. Range checking of `confidence` is left to a later validator (pass-through today).
+- Nothing populates these fields in Phase 0 (no retrieval, no agent wiring). Verification: Tests/unit/test_knowledge_settings.py.

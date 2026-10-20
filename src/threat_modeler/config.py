@@ -1,6 +1,7 @@
 """Runtime configuration primitives for the framework skeleton."""
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Sequence
 
 
@@ -102,9 +103,26 @@ class PipelineSettings:
 
 
 @dataclass(frozen=True)
+class KnowledgeSettings:
+    """GraphRAG knowledge-base settings (Phase 0: config contract only, no retrieval)."""
+
+    enabled: bool = False
+    persist_path: str = ""  # empty -> resolve default at use time (see default_knowledge_persist_path)
+    snapshot_id: str | None = None
+    embedding_profile: str = "chroma_default"  # "chroma_default" | "bge_large_local"
+    max_hits_per_stage: int = 6
+    egress_policy: str = "excerpts_only"  # fixed for public LLM
+
+
+def default_knowledge_persist_path() -> str:
+    return str(Path.home() / ".multi_agent_threat_modeler_kb")
+
+
+@dataclass(frozen=True)
 class RuntimeSettings:
     model: ModelSelection
     pipeline: PipelineSettings = field(default_factory=PipelineSettings)
+    knowledge: KnowledgeSettings = field(default_factory=KnowledgeSettings)
 
 
 def normalize_execution_mode(value: object, default: str = EXECUTION_MODE_GOVERNED) -> str:
@@ -126,4 +144,5 @@ def build_default_settings() -> RuntimeSettings:
             request_max_attempts=LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
         ),
         pipeline=PipelineSettings(execution_mode=EXECUTION_MODE_GOVERNED),
+        knowledge=KnowledgeSettings(enabled=False),
     )

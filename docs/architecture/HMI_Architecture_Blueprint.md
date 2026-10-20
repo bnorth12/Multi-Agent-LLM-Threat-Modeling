@@ -520,3 +520,7 @@ When implementing S05-04, the following constraints from this blueprint apply:
 | §8.3 Credential Handling | GUI-013 Model Connection Details Configuration; INT-015 Model Connection Contract; PRJ-008 Configurable Model Selection |
 | §9.4 Model Config Screens | GUI-012 Model Provider Selection Screen; GUI-013 Model Connection Details Configuration; GUI-014 Model Connection Validation; INT-015 Model Connection Contract |
 | §10 S05-04 Implementation Notes | GUI-002 HITL Gate Screens; PRJ-006 HITL Governance; HITL-001 through HITL-011 implementation notes |
+
+## GraphRAG Phase 0 Contract Delta (Sprint 2026_013, RR-2026_013-IMPLEMENTATION-EVIDENCE / RHMI-017 anchor)
+
+- No HMI change: no frontend component, screen, or HMI data contract is modified in Phase 0. `KnowledgeSettings` is not exposed in the UI.

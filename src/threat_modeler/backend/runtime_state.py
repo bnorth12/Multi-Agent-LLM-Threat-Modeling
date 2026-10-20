@@ -13,6 +13,7 @@ from threat_modeler.config import (
     EXECUTION_MODE_GOVERNED,
     LIVE_LLM_DEFAULT_MAX_ATTEMPTS,
     LIVE_LLM_DEFAULT_TIMEOUT_SECONDS,
+    KnowledgeSettings,
     ModelSelection,
     PipelineSettings,
     RuntimeSettings,
@@ -82,9 +83,30 @@ def _deserialize_settings(payload: dict | None) -> RuntimeSettings | None:
             stop_on_validation_error=bool(pipeline_data.get("stop_on_validation_error", True)),
             require_hitl_gates=bool(pipeline_data.get("require_hitl_gates", True)),
         )
-        return RuntimeSettings(model=model, pipeline=pipeline)
+        knowledge = _deserialize_knowledge(payload.get("knowledge"))
+        return RuntimeSettings(model=model, pipeline=pipeline, knowledge=knowledge)
     except Exception:
         return None
+
+
+def _deserialize_knowledge(payload: object) -> KnowledgeSettings:
+    """Hydrate KnowledgeSettings; missing/invalid payload (legacy state) -> defaults."""
+    defaults = KnowledgeSettings()
+    if not isinstance(payload, dict):
+        return defaults
+    snapshot_id = payload.get("snapshot_id", defaults.snapshot_id)
+    try:
+        max_hits = int(payload.get("max_hits_per_stage", defaults.max_hits_per_stage))
+    except (TypeError, ValueError):
+        max_hits = defaults.max_hits_per_stage
+    return KnowledgeSettings(
+        enabled=bool(payload.get("enabled", defaults.enabled)),
+        persist_path=str(payload.get("persist_path", defaults.persist_path) or ""),
+        snapshot_id=None if snapshot_id is None else str(snapshot_id),
+        embedding_profile=str(payload.get("embedding_profile", defaults.embedding_profile)),
+        max_hits_per_stage=max_hits,
+        egress_policy=str(payload.get("egress_policy", defaults.egress_policy)),
+    )
 
 
 def _persist_state_locked() -> None:

@@ -166,3 +166,7 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 - This package Depends On: the architecture and functional decomposition docs for the function IDs and allocation targets it traces
 - Depends On: 15_End_To_End_Traceability_Attributes_Registry.md and the capability matrix for cross-layer ID consistency
 - All listed implementation paths Depend On: the Tests/ entries remaining executable and covering the described data-flow responsibilities (no orphan code paths)
+
+## GraphRAG Phase 0 Contract Delta (Sprint 2026_013, RR-2026_013-IMPLEMENTATION-EVIDENCE / RHMI-017 anchor)
+
+- No data-flow change: no new flow, stage, or retrieval call is introduced, and with the KB off (the default) every pipeline path is identical. The only deltas are optional fields carried through existing canonical-graph and settings-persistence flows.

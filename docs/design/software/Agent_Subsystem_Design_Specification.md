@@ -240,3 +240,9 @@ Relationship definitions and placement policy: Requirements/18_Traceability_Gove
 - 15_End_To_End_Traceability_Attributes_Registry.md rows that cite this document as Design Artifact (multiple S12/S13 rows for INT-010/011, GUI export/report paths, agent input ingestion)
 - Prompt store and state persistence for versioned prompt consumption (cross-ref Prompt_Store_And_Runtime_State_Persistence_Design_Specification.md)
 - Executable verification in Tests/ (stage contract tests, integration pipeline completeness, results export, etc.) and FQT plan cases that exercise the 9 stages + handoff integrity
+
+## GraphRAG Phase 0 Contract Delta (Sprint 2026_013, RR-2026_013-IMPLEMENTATION-EVIDENCE / RHMI-017 anchor)
+
+- `agents/deserialise.py::_dict_to_threat` now maps `source_ids` and `confidence` so LLM/fixture JSON carrying evidence fields is no longer silently dropped.
+- Legacy-safe: missing keys yield `[]` / `None`; a non-list `source_ids` yields `[]` (list items are coerced to `str`, nulls dropped); a missing, null, boolean or unparseable `confidence` yields `None`.
+- No agent wiring changed: no stage (A1-A9) or `BaseAgent` calls retrieval, and agent prompts and mutation rules are unchanged. Verification: Tests/unit/test_knowledge_settings.py.
