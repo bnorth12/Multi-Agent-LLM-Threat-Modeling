@@ -100,7 +100,7 @@ def _deserialize_knowledge(payload: object) -> KnowledgeSettings:
     except (TypeError, ValueError):
         max_hits = defaults.max_hits_per_stage
     return KnowledgeSettings(
-        enabled=bool(payload.get("enabled", defaults.enabled)),
+        enabled=payload.get("enabled") is True,  # M1: real bool only; "false"/"0"/1 -> off
         persist_path=str(payload.get("persist_path", defaults.persist_path) or ""),
         snapshot_id=None if snapshot_id is None else str(snapshot_id),
         embedding_profile=str(payload.get("embedding_profile", defaults.embedding_profile)),

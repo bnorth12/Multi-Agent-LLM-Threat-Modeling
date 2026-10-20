@@ -116,3 +116,26 @@ def test_threat_bad_evidence_values_coerced():
     t = _dict_to_threat({"name": "t", "description": "d", "source_ids": ["a", 7], "confidence": "0.5"})
     assert t.source_ids == ["a", "7"]
     assert t.confidence == 0.5
+
+
+def test_deserialize_knowledge_enabled_accepts_only_real_bools():
+    """M1: only the exact bool objects survive; anything else falls back to False."""
+    from threat_modeler.backend.runtime_state import _deserialize_knowledge
+
+    for raw in ("false", "False", "0", "", "no", None, 0, 1, "true", [], {}):
+        assert _deserialize_knowledge({"enabled": raw}).enabled is False, repr(raw)
+    assert _deserialize_knowledge({"enabled": True}).enabled is True
+    assert _deserialize_knowledge({"enabled": False}).enabled is False
+    assert _deserialize_knowledge({}).enabled is False
+
+def test_knowledge_enabled_string_false_round_trips_as_json_false():
+    """M1: a persisted "false" string must come back off and be re-saved as JSON false."""
+    from threat_modeler.backend.runtime_state import _deserialize_knowledge
+
+    restored = _deserialize_knowledge({"enabled": "false"})
+    settings = RuntimeSettings(
+        model=ModelSelection(provider="fixture", model_name="x"), knowledge=restored
+    )
+    text = json.dumps(_serialize_settings(settings))
+    assert json.loads(text)["knowledge"]["enabled"] is False
+    assert '"enabled": false' in text
