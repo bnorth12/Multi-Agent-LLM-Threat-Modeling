@@ -18,3 +18,13 @@ Status: PAUSED once #187 merges. No new slots open until Brian resumes.
 1. Brian says resume through Grok Bot, and CoS re-admits.
 2. First slot: Phase 0 hardening from the follow-up issue (the strict bools must land before any retrieval wiring).
 3. Then GraphRAG Phase 1 plan (local KB ingest + EvidencePack, retrieve local, generate remote), with a Reviewer plan pass.
+
+## First slot on resume: registry rows moved to Appendix A (option A, #187)
+Requirements/15_End_To_End_Traceability_Attributes_Registry.md, "Appendix A: Unresolved Rows Moved From Core". These are the 15 issue groups (24 table lines) that need real design IDs before they return to the core table:
+- Conflicts: L94 2026_013-IMPLEMENTATION-EVIDENCE, L132 GUI-043, L133 RHMI-005, L134 RHMI-015
+- Suggested: L101 SUGGESTED-IER-ADM-001, L102 SUGGESTED-IER-ORCH-002, L103 SUGGESTED-IER-GUI-026
+- Placeholder F-xxx: L123 IER-GAP-PRJ-030, L124 IER-GAP-GUI-043, L125 IER-GAP-INT-009, L130 PRJ-030
+- Capability IDs as slices: L135 C11-LLM-001, L136 C11-LLM-004, L137 C14-VER-001, L138 C15-INT-001
+- Triplicates: GUI-026 (L120/L126/L139), GUI-029 (L121/L127/L140), PRJ-011 (L122/L128/L141)
+(Line numbers are from the pre-move core table at 33a1058e.)
+- Also on resume: fix the dangling S13-005A..E references (Requirements/17, 03_HITL, 13_Runtime, C11/C12, 2 design docs). See follow-up issue R2.
